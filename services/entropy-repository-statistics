@@ -24,26 +24,12 @@ def _print_help():
         "entropy-repository-statistics <machine name> <repository id> <branch> <arch> <product> <repository dir> <output file>\n\n")
 
 def _handle_stat_lines(entropy_client, target_month, target_year,
-    changelog_file):
+                       changelog_file):
 
-    # update security advisories
-    security = entropy_client.Security()
-    adv_meta = security.get_advisories_metadata()
     target_year_month = "%s%s" % (target_year, target_month)
-
-    pkg_map = {}
-    for glsa_id, val in adv_meta.items():
-        aff_meta = val.get("affected")
-        if not aff_meta:
-            continue
-        for pkg_key in aff_meta.keys():
-            if glsa_id.startswith(target_year_month):
-                obj = pkg_map.setdefault(pkg_key, set())
-                obj.add(glsa_id)
 
     date_format_string = etpConst['changelog_date_format']
     in_range = False
-    security_updates = 0
     commit_lines = []
     date_header = "Date: "
     atom_header = "Name: "
@@ -74,36 +60,10 @@ def _handle_stat_lines(entropy_client, target_month, target_year,
                 atom = entropy.dep.remove_tag(atom)
                 pkg_key = entropy.dep.dep_getkey(atom)
                 split_data = entropy.dep.catpkgsplit(atom)
-                glsa_lines = []
                 if split_data is not None:
                     etp_cat, etp_name, ver, rev = split_data
                     if rev != "r0":
                         ver += "-"+rev
-
-                    glsa_ids = pkg_map.get(pkg_key, [])
-                    for glsa_id in glsa_ids:
-                        glsa_meta = adv_meta[glsa_id]
-                        aff_list = glsa_meta['affected'].get(pkg_key)
-                        if not aff_list:
-                            continue
-                        is_interesting_adv = False
-                        for vul_meta in aff_list:
-                            unaff_vers = vul_meta['unaff_vers']
-                            for unaff_ver in unaff_vers:
-                                ver_cmp = entropy.dep.compare_versions(
-                                    ver, unaff_ver)
-                                if ver_cmp >= 0:
-                                    is_interesting_adv = True
-                            if is_interesting_adv:
-                                break
-                        if is_interesting_adv:
-                            glsa_line = "GLSA:    %s (%s)\n" % (
-                                adv_meta[glsa_id]['url'],
-                                adv_meta[glsa_id]['title'])
-                            glsa_lines.append(glsa_line)
-                            security_updates += 1
-                    if glsa_lines:
-                        commit_line += "".join(glsa_lines)
 
             if line.startswith(commit_header):
                 if in_range:
@@ -116,18 +76,14 @@ def _handle_stat_lines(entropy_client, target_month, target_year,
                 break
             line = changelog_f.readline()
 
-    return commit_lines, security_updates
+    return commit_lines
 
-def _calculate_stats(target_month, target_year, security_updates, stat_lines):
-    if security_updates < 0:
-        security_updates = "N/A"
-
+def _calculate_stats(target_month, target_year, stat_lines):
     stats = {
         'bumps': len(stat_lines),
         'recompiles': 0,
         'revisions': 0,
         'bumps/day': 0,
-        'security': security_updates,
     }
 
     package_ids = []
@@ -166,7 +122,7 @@ def _generate_statistics(entropy_client, machine, repository_id, branch,
         if target_month == 0:
             target_month = 12
             target_year -= 1
-        stat_lines, security_updates = _handle_stat_lines(entropy_client,
+        stat_lines = _handle_stat_lines(entropy_client,
             target_month, target_year, changelog_file)
     finally:
         if tmp_fd is not None:
@@ -174,8 +130,7 @@ def _generate_statistics(entropy_client, machine, repository_id, branch,
         if changelog_file is not None:
             os.remove(changelog_file)
 
-    stats = _calculate_stats(target_month, target_year, security_updates,
-        stat_lines)
+    stats = _calculate_stats(target_month, target_year, stat_lines)
 
     # header
     header_str = """\
@@ -193,10 +148,9 @@ Package bumps:  %s
 Recompiles:     %s
 Revisions:      %s
 Bumps/day:      %s
-Security bumps: %s
 """ % (target_year, target_month, machine, repository_id, branch, arch, product,
         stats['bumps'], stats['recompiles'], stats['revisions'],
-        stats['bumps/day'], stats['security'])
+        stats['bumps/day'])
 
     with open(output_file, "w") as out_f:
         out_f.write(header_str)
@@ -216,7 +170,6 @@ if __name__ == "__main__":
 
     # this expects that:
     # "equo update" is called
-    # "equo security update" is called
 
     entropy_client = None
     try:

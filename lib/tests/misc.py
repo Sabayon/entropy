@@ -6,7 +6,7 @@ import os
 import unittest
 import tempfile
 import json
-from entropy.const import const_convert_to_unicode
+from entropy.const import const_convert_to_unicode, const_mkstemp
 from entropy.misc import Lifo, TimeScheduled, ParallelTask, EmailSender, \
     FastRSS, FlockFile
 
@@ -95,7 +95,7 @@ class MiscTest(unittest.TestCase):
     def test_flock_file(self):
         tmp_fd, tmp_path = None, None
         try:
-            tmp_fd, tmp_path = tempfile.mkstemp(prefix="entropy.misc.test")
+            tmp_fd, tmp_path = const_mkstemp(prefix="entropy.misc.test")
             mf = FlockFile(tmp_path, fd = tmp_fd)
             mf.acquire_exclusive()
             mf.demote()
@@ -104,6 +104,27 @@ class MiscTest(unittest.TestCase):
             mf.acquire_shared()
             mf.release()
             mf.close()
+        finally:
+            if tmp_fd is not None:
+                self.assertRaises(OSError, os.close, tmp_fd)
+            if tmp_path is not None:
+                os.remove(tmp_path)
+
+    def test_flock_file_with(self):
+        tmp_fd, tmp_path = None, None
+        try:
+            tmp_fd, tmp_path = const_mkstemp(prefix="entropy.misc.test")
+            mf = FlockFile(tmp_path, fd = tmp_fd)
+            count = 0
+            with mf.exclusive():
+                count += 1
+
+            with mf.shared():
+                count += 1
+
+            mf.close()
+
+            self.assertEqual(count, 2)
         finally:
             if tmp_fd is not None:
                 self.assertRaises(OSError, os.close, tmp_fd)
@@ -127,7 +148,7 @@ class MiscTest(unittest.TestCase):
         sender.send_text_email(mail_sender, mail_recipients, mail_sub, mail_msg)
 
     def test_fast_rss(self):
-        tmp_fd, tmp_path = tempfile.mkstemp()
+        tmp_fd, tmp_path = const_mkstemp()
         os.close(tmp_fd) # who cares
         os.remove(tmp_path)
 
@@ -189,7 +210,7 @@ class MiscTest(unittest.TestCase):
         os.remove(tmp_path)
 
     def test_fast_rss_json_payload(self):
-        tmp_fd, tmp_path = tempfile.mkstemp()
+        tmp_fd, tmp_path = const_mkstemp()
         os.close(tmp_fd) # who cares
         os.remove(tmp_path)
 

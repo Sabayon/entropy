@@ -1731,14 +1731,11 @@ def get_hash_from_md5file(md5path):
     @raise ValueError: if md5path contains invalid data
     """
     enc = etpConst['conf_encoding']
-    try:
-        with codecs.open(md5path, "r", encoding=enc) as md5_f:
-            md5_str = md5_f.read(32)
-            if (not is_valid_md5(md5_str)) or len(md5_str) < 32:
-                raise ValueError("invalid md5 file")
-            return md5_str
-    except (IOError, OSError) as err:
-        raise ValueError(repr(err))
+    with codecs.open(md5path, "r", encoding=enc) as md5_f:
+        md5_str = md5_f.read(32)
+        if (not is_valid_md5(md5_str)) or len(md5_str) < 32:
+            raise ValueError("invalid md5 file")
+        return md5_str
 
 def compare_sha512(filepath, checksum):
     """
@@ -3137,107 +3134,3 @@ def codecs_fdopen(fd, mode, encoding, errors='strict'):
     # Add attributes to simplify introspection
     srw.encoding = encoding
     return srw
-
-def acquire_lock(lock_file, lock_map):
-    """
-    Make possible to protect a code region using an EXCLUSIVE, non-blocking
-    file lock. A lock map (dict) is required in order to register the lock
-    data (usually lock file object) and then unlock it using release_lock().
-
-    @param lock_file: path to lock file used for locking
-    @type lock_file: string
-    @param lock_map: lock map (dict object) that can be used to record the lock
-        data in order to unlock it on release_lock().
-    @type lock_map: dict
-    @return: True, if lock has been acquired, False otherwise
-    @rtype: bool
-    """
-    lock_f = open(lock_file, "a+")
-    try:
-        fcntl.flock(lock_f.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-        lock_f.truncate()
-        lock_f.write(str(os.getpid()))
-        lock_f.flush()
-        lock_map[lock_file] = lock_f
-        return True
-    except IOError as err:
-        lock_f.close()
-        if err.errno not in (errno.EACCES, errno.EAGAIN,):
-            # ouch, wtf?
-            raise
-        return False # lock already acquired
-    except Exception:
-        lock_f.close()
-        raise
-
-def release_lock(lock_file, lock_map):
-    """
-    Release a previously acquired lock through acquire_lock().
-
-    @param lock_file: path to lock file used for locking
-    @type lock_file: string
-    @param lock_map: lock map (dict object) that can be used to record the lock
-        data in order to unlock it on release_lock().
-    @type lock_map: dict
-    """
-    try:
-        lock_f = lock_map.pop(lock_file)
-    except KeyError:
-        lock_f = None
-
-    if lock_f is not None:
-        fcntl.flock(lock_f.fileno(), fcntl.LOCK_UN)
-        lock_f.close()
-
-    try:
-        os.remove(lock_file)
-    except OSError as err:
-        # cope with possible race conditions
-        if err.errno != errno.ENOENT:
-            raise
-
-def acquire_entropy_locks(entropy_client, blocking = False,
-                          shared = False, max_tries = 300, spinner = False):
-    """
-    Acquire Entropy Resources General Lock.
-    This lock is controlling write access to entropy package metadata and
-    other writeable destinations.
-    Can be unlocked by simply calling release_entropy_locks().
-
-    @param entropy_client: any Entropy Client based class
-    @type entropy_client: entropy.client.interfaces.Client
-    @keyword blocking: acquire locks in blocking mode?
-    @type blocking: bool
-    @keyword shared: acquire a shared lock? (readers lock,
-    default is False)
-    @type shared: bool
-    @keyword max_tries: number of tries for wait_resources()
-    @type max_tries: int
-    @keyword spinner: if True, a spinner will be used to wait indefinitely
-        and max_tries will be ignored in non-blocking mode.
-    @type spinner: bool
-    """
-    if not blocking:
-        gave_up = entropy_client.wait_resources(
-            max_lock_count = max_tries,
-            shared = shared, spinner = spinner)
-        if gave_up:
-            return False
-        # acquired
-        return True
-
-    # acquire resources lock in blocking mode
-    acquired = entropy_client.lock_resources(blocking = True,
-                                             shared = shared)
-    if not acquired:
-        return False
-    return True
-
-def release_entropy_locks(entropy_client):
-    """
-    Release Entropy Client/Server file locks.
-
-    @param entropy_client: any Entropy Client based class
-    @type entropy_client: entropy.client.interfaces.Client
-    """
-    entropy_client.unlock_resources()

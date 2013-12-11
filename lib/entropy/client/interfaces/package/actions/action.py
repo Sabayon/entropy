@@ -9,11 +9,16 @@
     B{Entropy Package Manager Client Package Interface}.
 
 """
+import errno
 import os
+import stat
+import sys
 
-from entropy.const import etpConst, const_convert_to_unicode
+from entropy.const import etpConst, const_convert_to_unicode, \
+    const_setup_directory
 from entropy.i18n import _
-from entropy.output import darkred, blue
+from entropy.misc import FlockFile
+from entropy.output import darkred, blue, darkgreen
 
 import entropy.dep
 
@@ -74,6 +79,129 @@ class PackageAction(object):
         """
         self._xterm_header = header
 
+    def path_lock(self, path):
+        """
+        Given a path, return a FlockFile object that can be used for
+        inter-process synchronization purposes.
+
+        @param path: path to protect with a file lock
+        @type path: string
+        @return: a FlockFile object instance
+        @rtype: entropy.misc.FlockFile
+        """
+        lock_path = path + "._entropy_package.lock"
+        path_dir = os.path.dirname(path)
+        const_setup_directory(path_dir)
+
+        def wait_msg_cb(obj, exclusive):
+            if exclusive:
+                msg = _("Acquiring exclusive lock on")
+            else:
+                msg = _("Acquiring shared lock on")
+
+            self._entropy.output(
+                "%s %s ..." % (
+                    darkred(msg),
+                    darkgreen(obj.get_path()),
+                ),
+                level = "warning", # use stderr, avoid breaking --quiet
+                back = True,
+                importance = 0)
+
+        def acquired_msg_cb(obj, exclusive):
+            if exclusive:
+                msg = _("Acquired exclusive lock on")
+            else:
+                msg = _("Acquired shared lock on")
+            self._entropy.output(
+                "%s %s" % (
+                    darkred(msg),
+                    darkgreen(obj.get_path()),
+                ),
+                level = "warning", # use stderr, avoid breaking --quiet
+                back = True,
+                importance = 0)
+
+        class PackageFlockFile(FlockFile):
+
+            _ALLOWED_ERRORS = (errno.EPERM, errno.ENOSYS, errno.ENOLCK)
+
+            def __init__(self, *args, **kwargs):
+                super(PackageFlockFile, self).__init__(*args, **kwargs)
+                self._wait_msg_cb = wait_msg_cb
+                self._acquired_msg_cb = acquired_msg_cb
+
+            def acquire_shared(self):
+                """
+                Avoid failures if lock cannot be acquired due to filesystem
+                limitations (NFS?).
+                """
+                try:
+                    return super(PackageFlockFile, self).acquire_shared()
+                except (OSError, IOError) as err:
+                    if err.errno not in self._ALLOWED_ERRORS:
+                        raise
+                    sys.stderr.write(
+                        "PackageFlockFile(%s).shared: lock error: %s\n" % (
+                            self._path, err))
+
+            def try_acquire_shared(self):
+                """
+                Avoid failures if lock cannot be acquired due to filesystem
+                limitations (NFS?).
+                """
+                try:
+                    return super(PackageFlockFile, self).try_acquire_shared()
+                except (OSError, IOError) as err:
+                    if err.errno not in self._ALLOWED_ERRORS:
+                        raise
+                    sys.stderr.write(
+                        "PackageFlockFile(%s).try_shared: lock error: %s\n" % (
+                            self._path, err))
+                    return True
+
+            def acquire_exclusive(self):
+                """
+                Avoid failures if lock cannot be acquired due to filesystem
+                limitations (NFS?).
+                """
+                try:
+                    return super(PackageFlockFile, self).acquire_exclusive()
+                except (OSError, IOError) as err:
+                    if err.errno not in self._ALLOWED_ERRORS:
+                        raise
+                    sys.stderr.write(
+                        "PackageFlockFile(%s).exclusive: lock error: %s\n" % (
+                            self._path, err))
+
+            def try_acquire_exclusive(self):
+                """
+                Avoid failures if lock cannot be acquired due to filesystem
+                limitations (NFS?).
+                """
+                try:
+                    return super(PackageFlockFile, self).try_acquire_exclusive()
+                except (OSError, IOError) as err:
+                    if err.errno not in self._ALLOWED_ERRORS:
+                        raise
+                    sys.stderr.write(
+                        "PackageFlockFile(%s).try_excl: lock error: %s\n" % (
+                            self._path, err))
+                    return True
+
+
+        return PackageFlockFile(lock_path)
+
+    def _stat_path(self, path):
+        """
+        Return true whether path is a regular file (no symlinks allowed).
+        """
+        try:
+            st = os.stat(path)
+            return stat.S_ISREG(st.st_mode)
+        except OSError:
+            return False
+
     def setup(self):
         """
         Setup the action metadata. There is no need to call this directly,
@@ -87,16 +215,7 @@ class PackageAction(object):
         Execute the action. Return an exit status.
         """
         acquired = False
-        exit_st = 1
-        try:
-            acquired = not self._entropy.wait_resources()
-            if not acquired:
-                return 20
-            exit_st = self._run()
-        finally:
-            if acquired:
-                self._entropy.unlock_resources()
-
+        exit_st = self._run()
         if exit_st != 0:
             self._entropy.output(
                 blue(_("An error occured. Action aborted.")),

@@ -1,8 +1,11 @@
 Short term:
 
-- eit cache clean
+
+- entropy.client.interfaces code refactoring (including inst_repo locking)
+- wrap available repositories usage around a ResourceLock, this will
+  decrease the need for an exclusively held Entropy Resources Lock.
+
 - drop all the EntropyCacher.CACHE_IDS
-- rewrite entropy.Security() to be O(1)
 
 - conditional deps:
   enabled with ETP_PORTAGE_CONDITIONAL_DEPS_ENABLE

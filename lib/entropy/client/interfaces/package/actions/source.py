@@ -9,10 +9,10 @@
     B{Entropy Package Manager Client Package Interface}.
 
 """
+import errno
 import os
-import shutil
 
-from entropy.const import etpConst, const_setup_perms
+from entropy.const import etpConst, const_setup_directory
 from entropy.i18n import _
 from entropy.output import blue, red, brown
 
@@ -62,9 +62,25 @@ class _PackageSourceAction(_PackageFetchAction):
             # already configured
             return
 
+        repo = self._entropy.open_repository(self._repository_id)
+
         metadata = {}
-        splitdebug_metadata = self._get_splitdebug_metadata()
-        metadata.update(splitdebug_metadata)
+        metadata['phases'] = []
+        metadata['download'] = repo.retrieveSources(
+            self._package_id, extended = True)
+
+        atom = repo.retrieveAtom(self._package_id)
+        metadata['atom'] = atom
+
+        unpack_dir = os.path.join(
+            etpConst['entropyunpackdir'],
+            "sources", atom)
+        metadata['unpackdir'] = unpack_dir
+
+        if not metadata['download']:
+            metadata['phases'].append(self._fetch_not_available_phase)
+            self._meta = metadata
+            return
 
         metadata['fetch_abort_function'] = self._opts.get(
             'fetch_abort_function')
@@ -78,42 +94,7 @@ class _PackageSourceAction(_PackageFetchAction):
             if entropy.tools.is_valid_path(fetch_path):
                 metadata['fetch_path'] = fetch_path
 
-        # if splitdebug is enabled, check if it's also enabled
-        # via package.splitdebug
-        splitdebug = metadata['splitdebug']
-        if splitdebug:
-            splitdebug = self._package_splitdebug_enabled(
-                self._package_match)
-
-        repo = self._entropy.open_repository(self._repository_id)
-        metadata['atom'] = repo.retrieveAtom(self._package_id)
-        metadata['slot'] = repo.retrieveSlot(self._package_id)
-
-        inst_repo = self._entropy.installed_repository()
-        metadata['installed_package_id'], _inst_rc = inst_repo.atomMatch(
-            entropy.dep.dep_getkey(metadata['atom']),
-            matchSlot = metadata['slot'])
-
-        metadata['edelta_support'] = False
-        metadata['extra_download'] = tuple()
-        metadata['download'] = repo.retrieveSources(
-            self._package_id, extended = True)
-        # fake path, don't use
-        metadata['pkgpath'] = etpConst['entropypackagesworkdir']
-
-        metadata['phases'] = []
-
-        if not metadata['download']:
-            metadata['phases'].append(self._fetch_not_available)
-            return
-
-        metadata['phases'].append(self._fetch)
-
-        # create sources destination directory
-        unpack_dir = os.path.join(
-            etpConst['entropyunpackdir'],
-            "sources", metadata['atom'])
-        metadata['unpackdir'] = unpack_dir
+        metadata['phases'].append(self._fetch_phase)
 
         self._meta = metadata
 
@@ -127,28 +108,20 @@ class _PackageSourceAction(_PackageFetchAction):
 
         if not self._meta.get('fetch_path'):
             try:
-                if os.path.lexists(unpack_dir):
-                    if os.path.isfile(unpack_dir):
-                        os.remove(unpack_dir)
-                    elif os.path.isdir(unpack_dir):
-                        shutil.rmtree(unpack_dir, True)
-                if not os.path.lexists(unpack_dir):
-                    os.makedirs(unpack_dir, 0o755)
-                const_setup_perms(unpack_dir, etpConst['entropygid'],
-                    recursion = False, uid = etpConst['uid'])
-
+                os.makedirs(unpack_dir, 0o755)
+                const_setup_directory(unpack_dir)
             except (OSError, IOError) as err:
-                self._entropy.output(
-                    "%s: %s" % (
-                        blue(_("Fetch path setup error")),
-                        err,
-                    ),
-                    importance = 1,
-                    level = "info",
-                    header = red("   ## ")
-                )
-
-                return 1
+                if err.errno != errno.EEXIST:
+                    self._entropy.output(
+                        "%s: %s" % (
+                            blue(_("Fetch path setup error")),
+                            err,
+                        ),
+                        importance = 1,
+                        level = "info",
+                        header = red("   ## ")
+                    )
+                    return 1
 
         exit_st = 0
         for method in self._meta['phases']:
@@ -157,7 +130,7 @@ class _PackageSourceAction(_PackageFetchAction):
                 break
         return exit_st
 
-    def _fetch_not_available(self):
+    def _fetch_not_available_phase(self):
         """
         Execute the fetch not available phase.
         """
@@ -169,7 +142,7 @@ class _PackageSourceAction(_PackageFetchAction):
         )
         return 0
 
-    def _fetch_source(self, url, dest_file):
+    def _fetch_source(self, url, download_path):
         """
         Fetch the source code tarball(s).
         """
@@ -183,8 +156,15 @@ class _PackageSourceAction(_PackageFetchAction):
             header = red("   ## ")
         )
 
-        exit_st, data_transfer, _resumed = self._fetch_file(
-            url, dest_file, digest = None, resume = False)
+        lock = None
+        try:
+            lock = self.path_lock(download_path)
+            with lock.exclusive():
+                exit_st, data_transfer, _resumed = self._download_file(
+                    url, download_path, digest = None, resume = False)
+        finally:
+            if lock is not None:
+                lock.close()
 
         if exit_st == 0:
             human_bytes = entropy.tools.bytes_into_human(data_transfer)
@@ -205,7 +185,7 @@ class _PackageSourceAction(_PackageFetchAction):
             self._entropy.output(
                 "%s: %s" % (
                     blue(_("Local path")),
-                    brown(dest_file),
+                    brown(download_path),
                 ),
                 importance = 1,
                 level = "info",
@@ -238,7 +218,7 @@ class _PackageSourceAction(_PackageFetchAction):
         )
         return exit_st
 
-    def _fetch(self):
+    def _fetch_phase(self):
         """
         Execute the source fetch phase.
         """
@@ -267,15 +247,15 @@ class _PackageSourceAction(_PackageFetchAction):
 
                 file_name = os.path.basename(url)
                 if self._meta.get('fetch_path'):
-                    dest_file = os.path.join(
+                    download_path = os.path.join(
                         self._meta['fetch_path'],
                         file_name)
                 else:
-                    dest_file = os.path.join(self._meta['unpackdir'],
-                                             file_name)
+                    download_path = os.path.join(
+                        self._meta['unpackdir'], file_name)
 
                 try:
-                    exit_st = self._fetch_source(url, dest_file)
+                    exit_st = self._fetch_source(url, download_path)
                 except KeyboardInterrupt:
                     keyboard_interrupt = True
                     break

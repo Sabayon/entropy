@@ -19,7 +19,7 @@ from entropy.output import brown, blue, darkred, darkgreen, purple, teal
 from entropy.client.interfaces.package import preservedlibs
 
 from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.command import SoloCommand
+from solo.commands.command import SoloCommand, sharedlock
 
 from solo.utils import enlightenatom
 
@@ -97,7 +97,7 @@ Tools to manage the preserved libraries currently stored on the system.
             return parser.print_help, []
 
         self._nsargs = nsargs
-        return self._call_locked, [nsargs.func]
+        return self._call_unlocked, [nsargs.func]
 
     def bashcomp(self, last_arg):
         """
@@ -108,18 +108,18 @@ Tools to manage the preserved libraries currently stored on the system.
         return self._hierarchical_bashcomp(
             last_arg, outcome, self._commands)
 
-    def _list(self, entropy_client):
+    @sharedlock
+    def _list(self, entropy_client, inst_repo):
         """
         Solo PreservedLibs List command.
         """
         quiet = self._nsargs.quiet
         verbose = self._nsargs.verbose
 
-        inst_repo = entropy_client.installed_repository()
-
         preserved_mgr = preservedlibs.PreservedLibraries(
             inst_repo, None, frozenset(),
             root=etpConst['systemroot'])
+
         preserved = preserved_mgr.list()
 
         if not preserved:
@@ -166,15 +166,15 @@ Tools to manage the preserved libraries currently stored on the system.
 
         return 0
 
-    def _gc(self, entropy_client):
+    @sharedlock
+    def _gc(self, entropy_client, inst_repo):
         """
         Solo PreservedLibs Gc command.
         """
-        inst_repo = entropy_client.installed_repository()
-
         preserved_mgr = preservedlibs.PreservedLibraries(
             inst_repo, None, frozenset(),
             root=etpConst['systemroot'])
+
         collectables = preserved_mgr.collect()
 
         if not collectables:

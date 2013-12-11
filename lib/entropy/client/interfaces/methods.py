@@ -13,6 +13,7 @@ import os
 import bz2
 import stat
 import fcntl
+import glob
 import errno
 import sys
 import shutil
@@ -42,6 +43,7 @@ from entropy.client.interfaces.db import ClientEntropyRepositoryPlugin, \
 from entropy.client.mirrors import StatusInterface
 from entropy.output import purple, bold, red, blue, darkgreen, darkred, brown, \
     teal
+from entropy.client.interfaces.package.actions.action import PackageAction
 from entropy.core.settings.base import RepositoryConfigParser, SystemSettings
 
 from entropy.db.exceptions import IntegrityError, OperationalError, \
@@ -49,6 +51,7 @@ from entropy.db.exceptions import IntegrityError, OperationalError, \
 
 import entropy.dep
 import entropy.tools
+
 
 class RepositoryMixin:
 
@@ -200,7 +203,7 @@ class RepositoryMixin:
     def _open_repository(self, repository_id, _enabled_repos = None):
         # support for installed packages repository here as well
         if repository_id == InstalledPackagesRepository.NAME:
-            return self._installed_repository
+            return self.installed_repository()
 
         key = self.__get_repository_cache_key(repository_id)
         with self._repodb_cache_mutex:
@@ -1071,7 +1074,7 @@ class RepositoryMixin:
         Close the Installed Packages repository. It will be reopened
         on demand.
         """
-        self._installed_repository.close(
+        self.installed_repository().close(
             _token = InstalledPackagesRepository.NAME)
 
     def open_generic_repository(self, repository_path, dbname = None,
@@ -1302,7 +1305,8 @@ class RepositoryMixin:
             valid_backups.append(path)
         return valid_backups
 
-    def clean_downloaded_packages(self, dry_run = False, days_override = None):
+    def clean_downloaded_packages(self, dry_run = False, days_override = None,
+                                  skip_available_packages = False):
         """
         Clean Entropy Client downloaded packages older than the setting
         specified by "packages-autoprune-days" in /etc/entropy/client.conf.
@@ -1312,8 +1316,13 @@ class RepositoryMixin:
 
         @keyword dry_run: do not remove files, just return them
         @type dry_run: bool
-        @keyword days_override: override SystemSettings setting (from client.conf)
+        @keyword days_override: override SystemSettings setting
+            (from client.conf)
         @type days_override: int
+        @keyword skip_available_packages: if True, the package files still
+            available in repositories are skipped. This can be used to implement
+            cleanups using just a shared Entropy Resources lock.
+        @type skip_available_packages: bool
         @return: list of removed package file paths.
         @rtype: list
         @raise AttributeError: if days_override or client.conf setting is
@@ -1328,8 +1337,19 @@ class RepositoryMixin:
         if not const_isnumber(autoprune_days):
             raise AttributeError("autoprune_days is invalid")
 
-        def filter_expired_pkg(pkg_path):
+        repo_packages = set()
+        if skip_available_packages:
+            for repository_id in self.repositories():
+                repo = self.open_repository(repository_id)
+                repo_packages.update(
+                    (PackageAction.get_standard_fetch_disk_path(x) for x in
+                     repo.listAllDownloads(do_sort = False, full_path = True))
+                )
 
+        def filter_expired_pkg(pkg_path):
+            if skip_available_packages:
+                if pkg_path in repo_packages:
+                    return False
             if not os.path.isfile(pkg_path):
                 return False
             if not const_file_readable(pkg_path):
@@ -1405,16 +1425,11 @@ class RepositoryMixin:
             except OSError:
                 pass
 
-            try:
-                os.remove(repo_pkg + etpConst['packagesmd5fileext'])
-            except OSError:
-                pass
-            try:
-                os.remove(repo_pkg + \
-                    etpConst['packagemtimefileext'])
-            except OSError:
-                # KeyError is for backward compatibility
-                pass
+            for path in glob.iglob(repo_pkg + ".*"):
+                try:
+                    os.remove(path)
+                except OSError:
+                    pass
 
         return successfully_removed
 
@@ -1438,7 +1453,7 @@ class RepositoryMixin:
         const_debug_write(__name__,
             "run_repositories_post_branch_switch_hooks: called")
 
-        client_dbconn = self._installed_repository
+        client_dbconn = self.installed_repository()
         hooks_ran = set()
         if client_dbconn is None:
             const_debug_write(__name__,
@@ -1556,7 +1571,7 @@ class RepositoryMixin:
             "run_repository_post_branch_upgrade_hooks: called"
         )
 
-        client_dbconn = self._installed_repository
+        client_dbconn = self.installed_repository()
         hooks_ran = set()
         if client_dbconn is None:
             return hooks_ran, True
@@ -1681,276 +1696,6 @@ class RepositoryMixin:
 
 class MiscMixin:
 
-    # resources lock file object container
-    # RESOURCES_LOCK_F_REF = None
-    # RESOURCES_LOCK_F_COUNT = 0
-    # RESOURCES_LOCK_F_COUNT_MUTEX = threading.Lock()
-    _FILE_LOCK_MUTEX = threading.Lock()
-    _FILE_LOCK_MAP = {
-    }
-
-    @classmethod
-    def _file_lock_setup(cls, file_path):
-        """
-        Setup _FILE_LOCK_MAP for file_path, allocating locking information.
-        """
-        mapped = MiscMixin._FILE_LOCK_MAP.get(file_path)
-        if mapped is None:
-            mapped = {
-                'count': 0,
-                'ref': None,
-                'path': file_path,
-            }
-            MiscMixin._FILE_LOCK_MAP[file_path] = mapped
-        return mapped
-
-    @classmethod
-    def _lock_resource(cls, lock_path, blocking, shared):
-        """
-        Internal function that does the locking given a lock
-        file path.
-        """
-        with MiscMixin._FILE_LOCK_MUTEX:
-            mapped = cls._file_lock_setup(lock_path)
-            if mapped['ref'] is not None:
-                # reentrant lock, already acquired
-                mapped['count'] += 1
-                return True
-            path = mapped['path']
-        acquired, flock_f = cls._file_lock_create(
-            path, blocking = blocking, shared = shared)
-        if acquired:
-            with MiscMixin._FILE_LOCK_MUTEX:
-                mapped['count'] += 1
-                if flock_f is not None:
-                    mapped['ref'] = flock_f
-        return acquired
-
-    @classmethod
-    def _promote_resource(cls, lock_path, blocking):
-        """
-        Internal function that does the file lock promotion.
-        """
-        with MiscMixin._FILE_LOCK_MUTEX:
-            mapped = cls._file_lock_setup(lock_path)
-            flock_f = mapped['ref']
-            if flock_f is None:
-                # wtf ?
-                raise IOError("not acquired")
-
-        acquired = True
-        if blocking:
-            flock_f.promote()
-        else:
-            acquired = flock_f.try_promote()
-        return acquired
-
-    @classmethod
-    def _unlock_resource(cls, lock_path):
-        """
-        Internal function that does the unlocking of a given
-        lock file.
-        """
-        with MiscMixin._FILE_LOCK_MUTEX:
-            mapped = cls._file_lock_setup(lock_path)
-            # decrement lock counter
-            if mapped['count'] > 0:
-                mapped['count'] -= 1
-            # if lock counter > 0, still locked
-            # waiting for other upper-level calls
-            if mapped['count'] > 0:
-                return
-
-            ref_obj = mapped['ref']
-            if ref_obj is not None:
-                # do not remove!
-                ref_obj.release()
-                ref_obj.close()
-                mapped['ref'] = None
-
-    @classmethod
-    def _file_lock_create(cls, pidfile, blocking = False, shared = False):
-        """
-        Create and allocate the lock file pointed by lock_data structure.
-        """
-        lockdir = os.path.dirname(pidfile)
-        if not os.path.isdir(lockdir):
-            os.makedirs(lockdir, 0o775)
-        const_setup_perms(lockdir, etpConst['entropygid'], recursion = False)
-        mypid = os.getpid()
-
-        try:
-            pid_f = open(pidfile, "a+")
-        except IOError as err:
-            if err.errno in (errno.ENOENT, errno.EACCES):
-                # cannot get lock or dir doesn't exist
-                return False, None
-            raise
-
-        # ensure that entropy group can write on that
-        try:
-            const_setup_file(pidfile, etpConst['entropygid'], 0o664)
-        except OSError:
-            pass
-
-        flock_f = FlockFile(pidfile, fobj = pid_f)
-        if blocking:
-            if shared:
-                flock_f.acquire_shared()
-            else:
-                flock_f.acquire_exclusive()
-        else:
-            acquired = False
-            if shared:
-                acquired = flock_f.try_acquire_shared()
-            else:
-                acquired = flock_f.try_acquire_exclusive()
-            if not acquired:
-                return False, None
-
-        cls._clear_resources_after_lock()
-        return True, flock_f
-
-    @classmethod
-    def _clear_resources_after_lock(cls):
-        """
-        Clear resources that could have become stale after
-        the Entropy Lock acquisition.
-        """
-        cacher = EntropyCacher()
-        with cacher:
-
-            if isinstance(cls, types.InstanceType):
-                # this is only required to run if called within
-                # an instance
-                if cls._installed_repository is not None:
-                    cls._installed_repository.clearCache()
-
-                with cls._repodb_cache_mutex:
-                    for repo in cls._repodb_cache.values():
-                        repo.clearCache()
-
-            SystemSettings().clear()
-            cacher.discard()
-
-        cacher.sync()
-
-    @classmethod
-    def _wait_resource(cls, lock_func, sleep_seconds = 1.0,
-                       max_lock_count = 300, shared = False,
-                       spinner = False):
-        """
-        Poll on a given resource hoping to get its lock.
-        """
-        lock_count = 0
-        # check lock file
-        while True:
-            acquired = lock_func(blocking=False, shared=shared)
-            if acquired:
-                if lock_count > 0:
-                    cls.output(
-                        blue(_("Resources unlocked, let's go!")),
-                        importance = 1,
-                        level = "info",
-                        header = darkred(" @@ ")
-                    )
-                break
-
-            if spinner:
-                header = teal("|/-\\"[lock_count % 4] + " ")
-                count = None
-            else:
-                header = darkred(" @@ ")
-                count = (lock_count + 1, max_lock_count)
-
-            if lock_count >= max_lock_count and not spinner:
-                cls.output(
-                    blue(_("Resources still locked, giving up!")),
-                    importance = 1,
-                    level = "warning",
-                    header = header
-                )
-                return True # gave up
-
-            lock_count += 1
-            cls.output(
-                blue(_("Resources locked, sleeping...")),
-                importance = 1,
-                level = "warning",
-                header = header,
-                back = True,
-                count = count
-            )
-            time.sleep(sleep_seconds)
-        return False # yay!
-
-    @classmethod
-    def lock_resources(cls, blocking = False, shared = False):
-        """
-        Acquire Entropy Resources lock; once acquired, it's possible
-        to alter:
-        - Installed Packages Repository
-        - Available Packages Repositories
-        - Entropy Configuration and metadata
-        If shared=True, you are likely calling this method as user, if
-        so, make sure that the same is in the "entropy" group, by
-        using entropy.tools.is_user_in_entropy_group().
-
-        @keyword blocking: execute in blocking mode?
-        @type blocking: bool
-        @keyword shared: acquire a shared lock? (default is False)
-        @type shared: bool
-        @return: True, if lock has been acquired. False otherwise.
-        @rtype: bool
-        """
-        lock_path = etpConst['locks']['using_resources']
-        return cls._lock_resource(lock_path, blocking, shared)
-
-    @classmethod
-    def promote_resources(cls, blocking = False):
-        """
-        Promote previously acquired Entropy Resources Lock from
-        shared to exclusive.
-
-        @keyword blocking: execute in blocking mode?
-        @type blocking: bool
-        """
-        lock_path = etpConst['locks']['using_resources']
-        return cls._promote_resource(lock_path, blocking)
-
-    @classmethod
-    def unlock_resources(cls):
-        """
-        Release previously locked Entropy Resources, see lock_resources().
-        """
-        lock_path = etpConst['locks']['using_resources']
-        return cls._unlock_resource(lock_path)
-
-    @classmethod
-    def wait_resources(cls, sleep_seconds = 1.0, max_lock_count = 300,
-                       shared = False, spinner = False):
-        """
-        Wait until Entropy resources are unlocked.
-        This method polls over the available repositories lock and
-        could run into starvation.
-
-        @keyword sleep_seconds: time between checks
-        type sleep_seconds: float
-        @keyword max_lock_count: maximum number of times the lock is checked
-        @type max_lock_count: int
-        @keyword shared: acquire a shared lock? (default is False)
-        @type shared: bool
-        @keyword spinner: if True, a spinner will be used to wait indefinitely
-            and max_lock_count will be ignored in non-blocking mode.
-        @type spinner: bool
-        @return: True, if lock hasn't been released, False otherwise.
-        @rtype: bool
-        """
-        return cls._wait_resource(
-            cls.lock_resources, sleep_seconds=sleep_seconds,
-            max_lock_count=max_lock_count, shared=shared,
-            spinner=spinner)
-
     def switch_chroot(self, chroot):
         """
         Switch Entropy Client to work on given chroot.
@@ -1977,7 +1722,7 @@ class MiscMixin:
         self.close_repositories()
         if chroot:
             try:
-                self._installed_repository.resetTreeupdatesDigests()
+                self.installed_repository().resetTreeupdatesDigests()
             except EntropyRepositoryError:
                 pass
 
@@ -2038,7 +1783,7 @@ class MiscMixin:
             for key in keys:
                 if key in wl:
                     continue
-                found = self._installed_repository.isLicenseAccepted(key)
+                found = self.installed_repository().isLicenseAccepted(key)
                 if found:
                     continue
                 obj = licenses.setdefault(key, set())
@@ -2218,7 +1963,7 @@ class MiscMixin:
 
         # reset treeupdatesactions
         self.reopen_installed_repository()
-        self._installed_repository.resetTreeupdatesDigests()
+        self.installed_repository().resetTreeupdatesDigests()
         self._validate_repositories(quiet = True)
         self.close_repositories()
         if cacher_started:
@@ -2252,8 +1997,9 @@ class MiscMixin:
 
         if from_installed:
             if hasattr(self, '_installed_repository'):
-                if self._installed_repository is not None:
-                    valid_repos.append(self._installed_repository)
+                inst_repo = self.installed_repository()
+                if inst_repo is not None:
+                    valid_repos.append(inst_repo)
 
         elif not valid_repos:
             valid_repos.extend(self._filter_available_repositories())
@@ -2453,7 +2199,7 @@ class MatchMixin:
         @return: package status
         @rtype: int
         """
-        inst_repo = self._installed_repository
+        inst_repo = self.installed_repository()
         pkg_id, pkg_repo = package_match
         dbconn = self.open_repository(pkg_repo)
 
@@ -2792,7 +2538,7 @@ class MatchMixin:
         @return: list of installed package identifiers
         @rtype: list
         """
-        return self._installed_repository.searchProvidedMime(mimetype)
+        return self.installed_repository().searchProvidedMime(mimetype)
 
     def search_available_mimetype(self, mimetype):
         """

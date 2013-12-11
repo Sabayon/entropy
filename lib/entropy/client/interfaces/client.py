@@ -14,6 +14,7 @@ import codecs
 import threading
 
 from entropy.core import Singleton
+from entropy.locks import EntropyResourcesLock
 from entropy.fetchers import UrlFetcher, MultipleUrlFetcher
 from entropy.output import TextInterface, bold, red, darkred, blue
 from entropy.client.interfaces.loaders import LoadersMixin
@@ -737,6 +738,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
             entropy.fetchers.MultipleUrlFetcher class usage. Provide your own
             implementation of MultipleUrlFetcher using this argument.
         """
+        self.__post_acquire_hook_idx = None
         self.__instance_destroyed = False
         self._repo_error_messages_cache = set()
         self._repodb_cache = {}
@@ -827,9 +829,29 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
         # Make sure we connect Entropy Client plugin AFTER client db init
         self._settings.add_plugin(self.sys_settings_client_plugin)
 
+        # Add Entropy Resources Lock post-acquire hook that cleans
+        # repository caches.
+        hook_ref = EntropyResourcesLock.add_post_acquire_hook(
+            self._resources_post_hook)
+        self.__post_acquire_hook_idx = hook_ref
+
         # enable System Settings hooks
         self._can_run_sys_set_hooks = True
         const_debug_write(__name__, "singleton loaded")
+
+    def _resources_post_hook(self):
+        """
+        Hook running after Entropy Resources Lock acquisition.
+        This method takes care of the repository memory caches, by
+        invalidating it.
+        """
+        with self._real_installed_repository_lock:
+            if self._real_installed_repository is not None:
+                self._real_installed_repository.clearCache()
+
+        with self._repodb_cache_mutex:
+            for repo in self._repodb_cache.values():
+                repo.clearCache()
 
     def destroy(self, _from_shutdown = False):
         """
@@ -838,10 +860,17 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
         This method should be always called when instance is not used anymore.
         """
         self.__instance_destroyed = True
+
+        if self.__post_acquire_hook_idx is not None:
+            EntropyResourcesLock.remove_post_acquire_hook(
+                self.__post_acquire_hook_idx)
+            self.__post_acquire_hook_idx = None
+
         if hasattr(self, '_installed_repository'):
-            if self._installed_repository is not None:
-                self._installed_repository.close(
-                    _token = InstalledPackagesRepository.NAME)
+            inst_repo = self.installed_repository()
+            if inst_repo is not None:
+                inst_repo.close(_token = InstalledPackagesRepository.NAME)
+
         if hasattr(self, 'logger'):
             self.logger.close()
         if hasattr(self, '_settings') and \
@@ -890,7 +919,9 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
         @return: bool stating if changes have been made
         @rtype: bool
         """
-        if not self._installed_repository:
+        inst_repo = self.installed_repository()
+
+        if not inst_repo:
             # nothing to do if client db is not availabe
             return False
 
@@ -911,22 +942,21 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
         client_digest = "0"
         if not do_rescan:
             client_digest = \
-                self._installed_repository.retrieveRepositoryUpdatesDigest(
+                inst_repo.retrieveRepositoryUpdatesDigest(
                     repository_identifier)
 
         if do_rescan or (str(stored_digest) != str(client_digest)) or force:
 
             # reset database tables
-            self._installed_repository.clearTreeupdatesEntries(
+            inst_repo.clearTreeupdatesEntries(
                 repository_identifier)
 
             # load updates
             update_actions = repo_db.retrieveTreeUpdatesActions(
                 repository_identifier)
             # now filter the required actions
-            update_actions = \
-                self._installed_repository.filterTreeUpdatesActions(
-                    update_actions)
+            update_actions = inst_repo.filterTreeUpdatesActions(
+                update_actions)
 
             if update_actions:
 
@@ -951,19 +981,19 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
                     header = darkred(" * ")
                 )
                 # run stuff
-                self._installed_repository.runTreeUpdatesActions(
+                inst_repo.runTreeUpdatesActions(
                     update_actions)
 
             # store new digest into database
-            self._installed_repository.setRepositoryUpdatesDigest(
+            inst_repo.setRepositoryUpdatesDigest(
                 repository_identifier, stored_digest)
             # store new actions
-            self._installed_repository.addRepositoryUpdatesActions(
+            inst_repo.addRepositoryUpdatesActions(
                 InstalledPackagesRepository.NAME, update_actions,
                     self._settings['repositories']['branch'])
-            self._installed_repository.commit()
+            inst_repo.commit()
             # clear client cache
-            self._installed_repository.clearCache()
+            inst_repo.clearCache()
             return True
 
     def is_destroyed(self):

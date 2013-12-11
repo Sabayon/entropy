@@ -16,7 +16,7 @@ from entropy.i18n import _, ngettext
 from entropy.output import darkred, blue, brown, darkgreen, purple
 
 from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.command import SoloCommand
+from solo.commands.command import SoloCommand, sharedlock
 from solo.utils import print_table, print_package_info
 
 import entropy.dep
@@ -114,13 +114,12 @@ Search for packages.
         args.sort()
         return self._bashcomp(sys.stdout, last_arg, args)
 
-    def _search_string(self, entropy_client, string):
+    def _search_string(self, entropy_client, inst_repo, string):
         """
         Search method, returns search results.
         """
         search_data = set()
         found = False
-        inst_repo = entropy_client.installed_repository()
 
         def _adv_search(dbconn, package):
             slot = entropy.dep.dep_getslot(package)
@@ -131,7 +130,7 @@ Search for packages.
                     package, slot = slot,
                     tag = tag, just_id = True, order_by = "atom"))
             if not pkg_ids: # look for something else?
-                pkg_id, rc = dbconn.atomMatch(
+                pkg_id, _rc = dbconn.atomMatch(
                     package, matchSlot = slot)
                 if pkg_id != -1:
                     pkg_ids.add(pkg_id)
@@ -148,17 +147,20 @@ Search for packages.
         # try to actually match something in installed packages db
         if not found and (inst_repo is not None) \
             and not self._available:
-            pkg_ids = _adv_search(inst_repo, string)
+            with inst_repo.shared():
+                pkg_ids = _adv_search(inst_repo, string)
             if pkg_ids:
                 found = True
             search_data.update(
                 ((x, inst_repo.repository_id()) for x in pkg_ids))
 
-        key_sorter = lambda x: \
-            entropy_client.open_repository(x[1]).retrieveAtom(x[0])
-        return sorted(search_data, key=key_sorter)
+        with inst_repo.shared():
+            key_sorter = lambda x: \
+                entropy_client.open_repository(x[1]).retrieveAtom(x[0])
+            return sorted(search_data, key=key_sorter)
 
-    def search(self, entropy_client):
+    @sharedlock
+    def search(self, entropy_client, inst_repo):
         """
         Solo Search command.
         """
@@ -170,7 +172,7 @@ Search for packages.
         matches_found = 0
         for string in self._packages:
             results = self._search(
-                entropy_client, string)
+                entropy_client, inst_repo, string)
             matches_found += len(results)
 
         if not self._quiet:
@@ -186,22 +188,19 @@ Search for packages.
             return 1
         return 0
 
-    def _search(self, entropy_client, string):
+    def _search(self, entropy_client, inst_repo, string):
         """
         Solo Search string command.
         """
         results = self._search_string(
-            entropy_client, string)
+            entropy_client, inst_repo, string)
 
-        inst_repo = entropy_client.installed_repository()
-        inst_repo_class = inst_repo.__class__
         for pkg_id, pkg_repo in results:
-            dbconn = entropy_client.open_repository(pkg_repo)
-            from_client = isinstance(dbconn, inst_repo_class)
+            repo = entropy_client.open_repository(pkg_repo)
             print_package_info(
-                pkg_id, entropy_client, dbconn,
+                pkg_id, entropy_client, repo,
                 extended = self._verbose,
-                installed_search = from_client,
+                installed_search = repo is inst_repo,
                 quiet = self._quiet)
 
         return results

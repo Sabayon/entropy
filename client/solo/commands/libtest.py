@@ -100,7 +100,7 @@ Test system integrity by looking for missing libraries.
             return parser.print_help, []
 
         self._nsargs = nsargs
-        return self._call_locked, [self._test]
+        return self._call_unlocked, [self._test]
 
     def bashcomp(self, last_arg):
         """
@@ -123,10 +123,12 @@ Test system integrity by looking for missing libraries.
             quiet = True
 
         qa = entropy_client.QA()
-        pkgs_matched, brokenlibs, exit_st = qa.test_shared_objects(
-            inst_repo, dump_results_to_file=dump, silent=quiet)
-        if exit_st != 0:
-            return 1
+
+        with inst_repo.shared():
+            pkgs_matched, brokenlibs, exit_st = qa.test_shared_objects(
+                inst_repo, dump_results_to_file=dump, silent=quiet)
+            if exit_st != 0:
+                return 1
 
         if listfiles:
             for lib in brokenlibs:
@@ -151,12 +153,13 @@ Test system integrity by looking for missing libraries.
                     return False
                 return True
 
-            for mylib in list(pkgs_matched.keys()):
-                pkgs_matched[mylib] = list(
-                    filter(_reinstall_filter, pkgs_matched[mylib])
-                )
-                if not pkgs_matched[mylib]:
-                    pkgs_matched.pop(mylib)
+            with inst_repo.shared():  # due to get_package_action
+                for mylib in list(pkgs_matched.keys()):
+                    pkgs_matched[mylib] = list(
+                        filter(_reinstall_filter, pkgs_matched[mylib])
+                    )
+                    if not pkgs_matched[mylib]:
+                        pkgs_matched.pop(mylib)
 
         if quiet:
             for mylib in pkgs_matched:

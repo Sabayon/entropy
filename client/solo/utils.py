@@ -297,70 +297,99 @@ def print_package_info(package_id, entropy_client, entropy_repository,
     """
     Print Entropy Package Metadata in a pretty and uniform way.
     """
-    corrupted_str = _("corrupted")
-    pkgatom = entropy_repository.retrieveAtom(package_id) or corrupted_str
     if quiet:
-        repoinfo = ''
-        desc = ''
-        download = ''
+        atom = entropy_repository.retrieveAtom(package_id)
+        if atom is None:
+            return
+        if not extended:
+            atom = entropy.dep.dep_getkey(atom)
+
+        repoinfo = ""
         if show_repo_if_quiet:
             repoinfo = "[%s] " % (entropy_repository.repository_id(),)
+
+        desc = ""
         if show_desc_if_quiet:
-            desc = ' %s' % (
-                entropy_repository.retrieveDescription(package_id),)
+            pkgdesc = entropy_repository.retrieveDescription(package_id)
+            if pkgdesc is None:
+                return
+            desc = " %s" % (pkgdesc,)
+
+        download = ""
         if show_download_if_quiet:
-            download = ' %s' % (
-                entropy_repository.retrieveDownloadURL(package_id),)
-        if not extended:
-            pkgatom = entropy.dep.dep_getkey(pkgatom)
+            pkgdown = entropy_repository.retrieveDownloadURL(package_id)
+            if pkgdown is None:
+                return
+            download = " %s" % (pkgdown,)
+
         if show_slot_if_quiet:
-            pkgatom += etpConst['entropyslotprefix']
-            pkgatom += entropy_repository.retrieveSlot(package_id)
+            pkgslot = entropy_repository.retrieveSlot(package_id)
+            if pkgslot is None:
+                return
+
+            atom += etpConst['entropyslotprefix']
+            atom += pkgslot
+
         entropy_client.output(
-            "%s%s%s%s" % (repoinfo, pkgatom, desc, download,),
+            "%s%s%s%s" % (repoinfo, atom, desc, download,),
             level="generic")
         return
+
+    corrupted_str = _("n/a")
+
+    pkgatom = entropy_repository.retrieveAtom(package_id) or corrupted_str
 
     pkghome = entropy_repository.retrieveHomepage(package_id)
     if pkghome is None:
         pkghome = corrupted_str
-    pkgslot = entropy_repository.retrieveSlot(package_id) \
-        or corrupted_str
-    pkgver = entropy_repository.retrieveVersion(package_id) \
-        or corrupted_str
+
+    pkgslot = entropy_repository.retrieveSlot(package_id)
+    if pkgslot is None:
+        pkgslot = corrupted_str
+
+    pkgver = entropy_repository.retrieveVersion(package_id)
+    if pkgver is None:
+        pkgver = corrupted_str
+
     pkgtag = entropy_repository.retrieveTag(package_id)
     if pkgtag is None:
         pkgtag = corrupted_str
+
     pkgrev = entropy_repository.retrieveRevision(package_id)
     if pkgrev is None:
         pkgrev = 0
+
     pkgdesc = entropy_repository.retrieveDescription(package_id)
     if pkgdesc is None:
         pkgdesc = corrupted_str
-    pkgbranch = entropy_repository.retrieveBranch(package_id) \
-        or corrupted_str
+
+    pkgbranch = entropy_repository.retrieveBranch(package_id)
+    if pkgbranch is None:
+        pkgbranch = corrupted_str
+
     if not pkgtag:
         pkgtag = "NoTag"
 
     installed_ver = _("Not installed")
-    installed_tag = _("N/A")
-    installed_rev = _("N/A")
-    if not installed_search:
+    installed_tag = _("n/a")
+    installed_rev = _("n/a")
 
-        # client info
-        pkginstalled = entropy_client.installed_repository().atomMatch(
+    if not installed_search:
+        inst_repo = entropy_client.installed_repository()
+        pkginstalled = inst_repo.atomMatch(
             entropy.dep.dep_getkey(pkgatom), matchSlot = pkgslot)
+
         if pkginstalled[1] == 0:
             idx = pkginstalled[0]
-            # found
-            installed_ver = entropy_client.installed_repository(
-                ).retrieveVersion(idx) or corrupted_str
-            installed_tag = entropy_client.installed_repository(
-                ).retrieveTag(idx)
+            installed_ver = inst_repo.retrieveVersion(idx)
+            if installed_ver is None:
+                installed_ver = corrupted_str
+
+            installed_tag = inst_repo.retrieveTag(idx)
             if not installed_tag:
                 installed_tag = "NoTag"
-            installed_rev = entropy_client.installed_repository(
-                ).retrieveRevision(idx)
+
+            installed_rev = inst_repo.retrieveRevision(idx)
             if installed_rev is None:
                 installed_rev = const_convert_to_unicode("0")
             else:
@@ -372,11 +401,15 @@ def print_package_info(package_id, entropy_client, entropy_repository,
         bold(pkgatom) + \
         " "+ blue("%s: " % (_("branch"),)) + bold(pkgbranch) + \
         ", [" + purple(str(entropy_repository.repository_id())) + "] ")
+
     if not strict_output and extended:
-        pkgname = entropy_repository.retrieveName(package_id) \
-            or corrupted_str
-        pkgcat = entropy_repository.retrieveCategory(package_id) \
-            or corrupted_str
+        pkgname = entropy_repository.retrieveName(package_id)
+        if pkgname is None:
+            pkgname = corrupted_str
+        pkgcat = entropy_repository.retrieveCategory(package_id)
+        if pkgcat is None:
+            pkgcat = corrupted_str
+
         toc.append((darkgreen("       %s:" % (_("Category"),)),
             blue(pkgcat)))
         toc.append((darkgreen("       %s:" % (_("Name"),)),
@@ -385,10 +418,9 @@ def print_package_info(package_id, entropy_client, entropy_repository,
     if extended:
 
         pkgmasked = False
-        masking_reason = ''
-        # check if it's masked
-        package_id_masked, idmasking_reason = \
-            entropy_repository.maskFilter(package_id)
+        masking_reason = ""
+        package_id_masked, idmasking_reason = entropy_repository.maskFilter(
+            package_id)
         if package_id_masked == -1:
             pkgmasked = True
             masking_reason = ", %s" % (
@@ -420,11 +452,15 @@ def print_package_info(package_id, entropy_client, entropy_repository,
         if extended:
             pkgsize = entropy_repository.retrieveSize(package_id)
             pkgsize = entropy.tools.bytes_into_human(pkgsize)
+
             pkgbin = entropy_repository.retrieveDownloadURL(package_id)
             if pkgbin is None:
                 pkgbin = corrupted_str
-            pkgdigest = entropy_repository.retrieveDigest(package_id) or \
-                corrupted_str
+
+            pkgdigest = entropy_repository.retrieveDigest(package_id)
+            if pkgdigest is None:
+                pkgdigest = corrupted_str
+
             pkgsign = entropy_repository.retrieveSignatures(package_id)
             pkgdeps = entropy_repository.retrieveDependencies(package_id,
                 extended = True, resolve_conditional_deps = False)
@@ -463,13 +499,11 @@ def print_package_info(package_id, entropy_client, entropy_repository,
                         "%s%s%s %s" % (blue("["), p_id, blue("]"),
                         brown(pdep),)))
 
-                # show legend
                 len_txt = "       %s" % (brown("##"),)
                 toc.append((len_txt, "%s:" % (blue(_("Legend")),),))
                 dep_leg = show_dependencies_legend(entropy_client,
                     indent = "", get_data = True)
                 toc.extend([(len_txt, x) for x in dep_leg])
-
 
             if pkgconflicts:
                 toc.append(darkred("       ##") + " " + \
@@ -505,10 +539,6 @@ def print_package_info(package_id, entropy_client, entropy_repository,
             for use_line in use_lines:
                 toc.append((darkgreen(use_txt), use_line))
                 use_txt = " "
-
-    if not strict_output:
-
-        if extended:
 
             chost, cflags, cxxflags = \
                 entropy_repository.retrieveCompileFlags(package_id)
@@ -546,7 +576,7 @@ def print_package_info(package_id, entropy_client, entropy_repository,
                 keyword_txt = " "
 
             mydate = entropy_repository.retrieveCreationDate(package_id)
-            pkgcreatedate = "N/A"
+            pkgcreatedate = _("n/a")
             if mydate:
                 pkgcreatedate = \
                     entropy.tools.convert_unix_time_to_human_time(
@@ -558,6 +588,7 @@ def print_package_info(package_id, entropy_client, entropy_repository,
         pkglic = entropy_repository.retrieveLicense(package_id)
         if pkglic is None:
             pkglic = corrupted_str
+
         toc.append((darkgreen("       %s:" % (_("License"),)),
             teal(pkglic)))
 

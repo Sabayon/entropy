@@ -15,6 +15,7 @@
 import os
 import subprocess
 import sys
+import threading
 
 from matter.binpms.base import BaseBinaryResourceLock, \
     BaseBinaryPMS
@@ -33,6 +34,7 @@ sys.path.insert(0, "../lib")
 
 from entropy.exceptions import PermissionDenied, OnlineMirrorError
 from entropy.server.interfaces import Server
+from entropy.locks import EntropyResourcesLock
 
 import entropy.dep
 import entropy.tools
@@ -49,7 +51,7 @@ class EntropyResourceLock(BaseBinaryResourceLock):
     class NotAcquired(BaseBinaryResourceLock.NotAcquired):
         """ Raised when Entropy Resource Lock cannot be acquired """
 
-    def __init__(self, entropy_server, blocking):
+    def __init__(self, blocking):
         """
         EntropyResourceLock constructor.
 
@@ -59,15 +61,18 @@ class EntropyResourceLock(BaseBinaryResourceLock):
         @type blocking: bool
         """
         super(EntropyResourceLock, self).__init__(blocking)
-        self._entropy = entropy_server
         self.__inside_with_stmt = 0
 
     def acquire(self):
         """
         Overridden from BaseBinaryResourceLock.
         """
-        acquired = entropy.tools.acquire_entropy_locks(self._entropy,
-            blocking = self._blocking)
+        lock = EntropyResourcesLock(output=Server)
+        if self._blocking:
+            lock.acquire_exclusive()
+            acquired = True
+        else:
+            acquired = lock.wait_exclusive()
         if not acquired:
             raise EntropyResourceLock.NotAcquired(
                 "unable to acquire lock")
@@ -76,7 +81,8 @@ class EntropyResourceLock(BaseBinaryResourceLock):
         """
         Overridden from BaseBinaryResourceLock.
         """
-        entropy.tools.release_entropy_locks(self._entropy)
+        lock = EntropyResourcesLock(output=Server)
+        lock.release()
 
     def __enter__(self):
         """
@@ -140,22 +146,37 @@ class EntropyBinaryPMS(BaseBinaryPMS):
         if nsargs.entropy_community:
             os.environ['ETP_COMMUNITY_MODE'] = "1"
         super(EntropyBinaryPMS, self).__init__(cwd, nsargs)
-        try:
-            self._entropy = Server()
-        except PermissionDenied as err:
-            raise EntropyBinaryPMS.BinaryPMSLoadError(err)
+
+        self._real_entropy = None
+        self._real_entropy_lock = threading.Lock()
+
+    @property
+    def _entropy(self):
+        """
+        Return the Entropy Server instance object.
+        """
+        with self._real_entropy_lock:
+            if self._real_entropy is None:
+                try:
+                    self._real_entropy = Server()
+                except PermissionDenied as err:
+                    raise EntropyBinaryPMS.BinaryPMSLoadError(err)
+
+        return self._real_entropy
 
     def get_resource_lock(self, blocking):
         """
         Overridden from BaseBinaryPMS.
         """
-        return EntropyResourceLock(self._entropy, blocking)
+        return EntropyResourceLock(blocking)
 
     def shutdown(self):
         """
         Overridden from BaseBinaryPMS.
         """
-        self._entropy.shutdown()
+        with self._real_entropy_lock:
+            if self._real_entropy is not None:
+                self._real_entropy.shutdown()
 
     def validate_spec(self, spec):
         """

@@ -27,6 +27,8 @@ class PreservedLibraries(object):
 
     An instance of this class should be used just for one package and then
     thrown away.
+
+    Installed Packages Repository locking must be done externally.
     """
 
     def __init__(self, installed_repository, installed_package_id,

@@ -195,7 +195,7 @@ System security tools.
             return parser.print_help, []
 
         self._nsargs = nsargs
-        return self._call_locked, [nsargs.func]
+        return self._call_unlocked, [nsargs.func]
 
     def bashcomp(self, last_arg):
         """
@@ -334,27 +334,11 @@ System security tools.
 
         print_table(entropy_client, toc, cell_spacing=3)
 
-    def _oscheck(self, entropy_client):
+    def _oscheck_scan_unlocked(self, entropy_client, inst_repo,
+                               quiet, verbose, assimilate):
         """
-        Solo Security Oscheck command.
+        Execute the filesystem scan.
         """
-        mtime = self._nsargs.mtime
-        assimilate = self._nsargs.assimilate
-        reinstall = self._nsargs.reinstall
-        verbose = self._nsargs.verbose
-        quiet = self._nsargs.quiet
-        ask = self._nsargs.ask
-        pretend = self._nsargs.pretend
-        fetch = self._nsargs.fetch
-
-        inst_repo = entropy_client.installed_repository()
-
-        if not quiet:
-            entropy_client.output(
-                "%s..." % (
-                    blue(_("Checking system files")),),
-                header=darkred(" @@ "))
-
         pkg_ids = inst_repo.listAllPackageIds()
         total = len(pkg_ids)
         faulty_pkg_ids = []
@@ -463,6 +447,32 @@ System security tools.
                         )
                         entropy_client.output(txt)
 
+        return faulty_pkg_ids
+
+    def _oscheck(self, entropy_client):
+        """
+        Solo Security Oscheck command.
+        """
+        mtime = self._nsargs.mtime
+        assimilate = self._nsargs.assimilate
+        reinstall = self._nsargs.reinstall
+        verbose = self._nsargs.verbose
+        quiet = self._nsargs.quiet
+        ask = self._nsargs.ask
+        pretend = self._nsargs.pretend
+        fetch = self._nsargs.fetch
+
+        if not quiet:
+            entropy_client.output(
+                "%s..." % (
+                    blue(_("Checking system files")),),
+                header=darkred(" @@ "))
+
+        inst_repo = entropy_client.installed_repository()
+        with inst_repo.shared():
+            faulty_pkg_ids = self._oscheck_scan_unlocked(
+                entropy_client, inst_repo, quiet, verbose, assimilate)
+
         if not faulty_pkg_ids:
             if not quiet:
                 entropy_client.output(
@@ -507,7 +517,7 @@ System security tools.
         Solo Security Update command.
         """
         sec = entropy_client.Security()
-        return sec.sync(force=self._nsargs.force)
+        return sec.update(force=self._nsargs.force)
 
     def _list(self, entropy_client):
         """
@@ -517,15 +527,14 @@ System security tools.
         unaffected = self._nsargs.unaffected
         sec = entropy_client.Security()
 
-        adv_metadata = None
         if not (affected or unaffected):
-            adv_metadata = sec.get_advisories_metadata()
+            advisory_ids = sec.list()
         elif affected:
-            adv_metadata = sec.get_vulnerabilities()
+            advisory_ids = sec.vulnerabilities()
         else:
-            adv_metadata = sec.get_fixed_vulnerabilities()
+            advisory_ids = sec.fixed_vulnerabilities()
 
-        if not adv_metadata:
+        if not advisory_ids:
             entropy_client.output(
                 "%s." % (
                     darkgreen(_("No advisories available or applicable")),
@@ -533,52 +542,62 @@ System security tools.
                 header=brown(" :: "))
             return 0
 
-        for key in sorted(adv_metadata.keys()):
-            is_affected = sec.is_affected(key)
-            if affected and not is_affected:
+        for advisory_id in sorted(advisory_ids):
+
+            affected_deps = sec.affected_id(advisory_id)
+            if affected and not affected_deps:
                 continue
-            if unaffected and is_affected:
+            if unaffected and affected_deps:
                 continue
-            if is_affected:
+
+            if affected_deps:
                 affection_string = darkred("A")
             else:
                 affection_string = darkgreen("N")
-            affected_data = adv_metadata[key]['affected']
-            if affected_data:
-                for a_key in list(affected_data.keys()):
-                    k_data = adv_metadata[key]['affected'][a_key]
-                    vulnerables = ', '.join(k_data[0]['vul_vers'])
-                    description = "[Id:%s:%s][%s] %s: %s" % (
-                        darkgreen(key),
-                        affection_string,
-                        brown(vulnerables),
-                        darkred(a_key),
-                        blue(adv_metadata[key]['title']))
-                    entropy_client.output(description)
+
+            advisory = sec.advisory(advisory_id)
+            if advisory is None:
+                continue
+
+            affected_data = advisory['affected']
+            if not affected_data:
+                continue
+
+            for a_key in list(affected_data.keys()):
+                k_data = advisory['affected'][a_key]
+                vulnerables = ', '.join(k_data[0]['vul_vers'])
+                description = "[Id:%s:%s][%s] %s: %s" % (
+                    darkgreen(advisory_id),
+                    affection_string,
+                    brown(vulnerables),
+                    darkred(a_key),
+                    blue(advisory['title']))
+                entropy_client.output(description)
+
         return 0
 
     def _info(self, entropy_client):
         """
         Solo Security Info command.
         """
-        advisories = self._nsargs.ids
+        advisory_ids = self._nsargs.ids
 
         sec = entropy_client.Security()
-        adv_metadata = sec.get_advisories_metadata()
-
         exit_st = 1
-        for advisory in advisories:
-            if advisory not in adv_metadata:
+
+        for advisory_id in advisory_ids:
+
+            advisory = sec.advisory(advisory_id)
+            if advisory is None:
                 entropy_client.output(
                     "%s: %s." % (
                         darkred(_("Advisory does not exist")),
-                        blue(advisory),),
+                        blue(advisory_id),),
                     header=brown(" :: "))
                 continue
+
             self._print_advisory_information(
-                entropy_client,
-                adv_metadata[advisory],
-                key=advisory)
+                entropy_client, advisory, key=advisory_id)
             exit_st = 0
 
         return exit_st
@@ -593,25 +612,30 @@ System security tools.
         fetch = self._nsargs.fetch
 
         sec = entropy_client.Security()
-        inst_repo = entropy_client.installed_repository()
 
         entropy_client.output(
             "%s..."  % (
                 blue(_("Calculating security updates")),),
             header=darkred(" @@ "))
 
-        affected_atoms = sec.get_affected_packages()
+        inst_repo = entropy_client.installed_repository()
+        with inst_repo.shared():
 
-        valid_matches = set()
-        for atom in affected_atoms:
-            inst_package_id, pkg_rc = inst_repo.atomMatch(atom)
-            if pkg_rc != 0:
-                continue
+            affected_deps = set()
+            for advisory_id in sec.list():
+                affected_deps.update(sec.affected_id(advisory_id))
 
-            key_slot = inst_repo.retrieveKeySlotAggregated(inst_package_id)
-            package_id, repository_id = entropy_client.atom_match(key_slot)
-            if package_id != -1:
-                valid_matches.add((package_id, repository_id))
+            valid_matches = set()
+            for atom in affected_deps:
+                inst_package_id, pkg_rc = inst_repo.atomMatch(atom)
+                if pkg_rc != 0:
+                    continue
+
+                key_slot = inst_repo.retrieveKeySlotAggregated(
+                    inst_package_id)
+                package_id, repository_id = entropy_client.atom_match(key_slot)
+                if package_id != -1:
+                    valid_matches.add((package_id, repository_id))
 
         if not valid_matches:
             entropy_client.output(

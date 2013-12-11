@@ -14,12 +14,13 @@
 import codecs
 import datetime
 import errno
+import hashlib
 import os
 import shutil
 import subprocess
-import sys
 import time
-import hashlib
+import threading
+import xml.dom.minidom
 
 from entropy.exceptions import EntropyException
 from entropy.const import etpConst, const_setup_perms, const_mkdtemp, \
@@ -31,21 +32,68 @@ from entropy.output import blue, bold, red, darkgreen, darkred, purple, brown
 from entropy.cache import EntropyCacher
 from entropy.core.settings.base import SystemSettings
 from entropy.fetchers import UrlFetcher
+from entropy.locks import ResourceLock
 
 import entropy.tools
+
+
+class SystemResourcesLock(ResourceLock):
+    """
+    System security resources lock that can be used to acquire exclusive
+    or shared access to the System data.
+    """
+
+    _FILE_LOCK_MUTEX = threading.Lock()
+    _FILE_LOCK_MAP = {}
+
+    def __init__(self, output=None):
+        """
+        Object constructor.
+
+        @keyword output: a TextInterface interface
+        @type output: entropy.output.TextInterface or None
+        """
+        super(SystemResourcesLock, self).__init__(
+            SystemResourcesLock._FILE_LOCK_MAP,
+            SystemResourcesLock._FILE_LOCK_MUTEX,
+            output=output)
+
+    def path(self):
+        """
+        Return the path to the lock file.
+        """
+        return os.path.join(etpConst['entropyrundir'],
+                            '.entropy.security.System.lock')
+
+
+def systemexclusive(method):
+    """
+    Decorator used to acquire an exclusive lock through SystemResourcesLock.
+    """
+    def wrapped(*args, **kwargs):
+        lock = SystemResourcesLock()
+        with lock.exclusive():
+            return method(*args, **kwargs)
+
+    return wrapped
+
+
+def systemshared(method):
+    """
+    Decorator used to acquire an exclusive lock through SystemResourcesLock.
+    """
+    def wrapped(*args, **kwargs):
+        lock = SystemResourcesLock()
+        with lock.shared():
+            return method(*args, **kwargs)
+
+    return wrapped
 
 
 class System(object):
 
     """
     ~~ GIVES YOU WINGS ~~
-
-    @note: thanks to Gentoo "gentoolkit" package, License below:
-    @note:    This program is licensed under the GPL, version 2
-
-    @note: WARNING: this code is not intended to replace any Security mechanism,
-    @note: but it's just a way to handle Gentoo GLSAs.
-    @note: There are possible security holes and probably bugs in this code.
 
     This class implements the Entropy packages Security framework.
     It can be used to retrieve security advisories, get information
@@ -73,612 +121,15 @@ class System(object):
         The former MUST be named signature.asc while the latter must match
         securityurl value plus ".asc"
 
+    This class uses a SystemResourcesLock resource lock internally, there is
+    no need for external synchronization primitives.
     """
-    _CACHE_ID = 'advisories_cache_'
-    _CACHE_DIR = os.path.join(etpConst['entropyworkdir'], "security_cache")
-    SECURITY_DIR = etpConst['securitydir']
-    SECURITY_URL = None
 
     class UpdateError(EntropyException):
         """Raised when security advisories couldn't be updated correctly"""
 
-    def __init__(self, entropy_client):
-
-        """
-        Instance constructor.
-
-        @param entropy_client: a valid entropy.client.interfaces.Client
-            instance
-        @type entropy_client: entropy.client.interfaces.Client instance
-        """
-        self._entropy = entropy_client
-        self.__cacher = None
-        self.__settings = None
-        self._adv_metadata = None
-        self._affected_pkgs = set()
-        self._gpg_keystore_dir = os.path.join(etpConst['confdir'],
-            "security-advisories-keys")
-
-        self._gpg_feature = True
-        env_gpg = os.getenv('ETP_DISABLE_GPG')
-        if env_gpg is not None:
-            self._gpg_feature = False
-
-        self._op_mappings = {
-            "le": "<=",
-            "lt": "<",
-            "eq": "=",
-            "gt": ">",
-            "ge": ">=",
-            "rge": ">=", # >=~
-            "rle": "<=", # <=~
-            "rgt": ">", # >~
-            "rlt": "<" # <~
-        }
-
-        if System.SECURITY_URL is None:
-            self._url = \
-                self._settings['repositories']['security_advisories_url']
-        else:
-            self._url = System.SECURITY_URL
-
-    @property
-    def _cacher(self):
-        """
-        Return an EntropyCacher instance, not thread-safe.
-        """
-        if self.__cacher is None:
-            self.__cacher = EntropyCacher()
-        return self.__cacher
-
-    @property
-    def _settings(self):
-        """
-        Return a SystemSettings instance, not thread-safe.
-        """
-        if self.__settings is None:
-            self.__settings = SystemSettings()
-        return self.__settings
-
     @classmethod
-    def _read_checksum_file(cls, path, enc=None, maxlen=4096):
-        """
-        Read checksum file at path, return content as string.
-        """
-        if enc is None:
-            enc = etpConst['conf_encoding']
-        with codecs.open(path, "r", encoding=enc) as f_down:
-            try:
-                return f_down.read(maxlen).strip().split()[0]
-            except (OSError, IOError, IndexError,):
-                return None
-
-    def _generic_download(self, url, save_to, show_speed = True):
-        """
-        Generic, secure, URL download method.
-
-        @param url: download URL
-        @type url: string
-        @param save_to: path to save file
-        @type save_to: string
-        @keyword show_speed: if True, download speed will be shown
-        @type show_speed: bool
-        @return: download status (True if download succeeded)
-        @rtype: bool
-        """
-        fetch_errors = (
-            UrlFetcher.TIMEOUT_FETCH_ERROR,
-            UrlFetcher.GENERIC_FETCH_ERROR,
-            UrlFetcher.GENERIC_FETCH_WARN,
-        )
-        fetcher = self._entropy._url_fetcher(url, save_to, resume = False,
-            show_speed = show_speed)
-        rc_fetch = fetcher.download()
-        if rc_fetch in fetch_errors:
-            return False
-        # setup permissions
-        const_setup_file(save_to, etpConst['entropygid'], 0o664)
-        return True
-
-    def _install_gpg_key(self, repo_sec, package_gpg_pubkey):
-
-        pk_expired = False
-        try:
-            pk_avail = repo_sec.is_pubkey_available(self._url)
-        except repo_sec.KeyExpired:
-            pk_avail = False
-            pk_expired = True
-
-        def do_warn_user(fingerprint):
-            mytxt = purple(
-                _("Make sure to verify the imported "
-                  "key and set an appropriate trust level"))
-            self._entropy.output(
-                mytxt + ":",
-                level = "warning",
-                header = red("   # ")
-            )
-            mytxt = brown("gpg --homedir '%s' --edit-key '%s'" % (
-                self._gpg_keystore_dir, fingerprint,)
-            )
-            self._entropy.output(
-                "$ " + mytxt,
-                level = "warning",
-                header = red("   # ")
-            )
-
-        easy_url = "N/A"
-        splitres = entropy.tools.spliturl(self._url)
-        if hasattr(splitres, 'netloc'):
-            easy_url = splitres.netloc
-
-        if pk_avail:
-
-            tmp_dir = const_mkdtemp()
-            repo_tmp_sec = self._entropy.RepositorySecurity(
-                keystore_dir = tmp_dir)
-            # try to install and get fingerprint
-            try:
-                downloaded_key_fp = repo_tmp_sec.install_key(
-                    self._url, package_gpg_pubkey)
-            except repo_sec.GPGError:
-                downloaded_key_fp = None
-
-            fingerprint = repo_sec.get_key_metadata(
-                self._url)['fingerprint']
-            shutil.rmtree(tmp_dir, True)
-
-            if downloaded_key_fp != fingerprint and \
-                (downloaded_key_fp is not None):
-                mytxt = "%s: %s !!!" % (
-                    purple(_("GPG key changed for")),
-                    bold(easy_url),
-                )
-                self._entropy.output(
-                    mytxt,
-                    level = "warning",
-                    header = red("   # ")
-                )
-                mytxt = "[%s => %s]" % (
-                    darkgreen(fingerprint),
-                    purple(downloaded_key_fp),
-                )
-                self._entropy.output(
-                    mytxt,
-                    level = "warning",
-                    header = red("   # ")
-                )
-            else:
-                mytxt = "%s: %s" % (
-                    purple(_("GPG key already installed for")),
-                    bold(easy_url),
-                )
-                self._entropy.output(
-                    mytxt,
-                    level = "info",
-                    header = red("   # ")
-                )
-            do_warn_user(fingerprint)
-            return True
-
-        elif pk_expired:
-            mytxt = "%s: %s" % (
-                purple(_("GPG key EXPIRED for URL")),
-                bold(easy_url),
-            )
-            self._entropy.output(
-                mytxt,
-                level = "warning",
-                header = red("   # ")
-            )
-
-        # actually install
-        mytxt = "%s: %s" % (
-            purple(_("Installing GPG key for URL")),
-            brown(easy_url),
-        )
-        self._entropy.output(
-            mytxt,
-            level = "info",
-            header = red("   # "),
-            back = True
-        )
-        try:
-            fingerprint = repo_sec.install_key(self._url,
-                package_gpg_pubkey)
-        except repo_sec.GPGError as err:
-            mytxt = "%s: %s" % (
-                darkred(_("Error during GPG key installation")),
-                err,
-            )
-            self._entropy.output(
-                mytxt,
-                level = "error",
-                header = red("   # ")
-            )
-            return False
-
-        mytxt = "%s: %s" % (
-            purple(_("Successfully installed GPG key for URL")),
-            brown(easy_url),
-        )
-        self._entropy.output(
-            mytxt,
-            level = "info",
-            header = red("   # ")
-        )
-        mytxt = "%s: %s" % (
-            darkgreen(_("Fingerprint")),
-            bold(fingerprint),
-        )
-        self._entropy.output(
-            mytxt,
-            level = "info",
-            header = red("   # ")
-        )
-        do_warn_user(fingerprint)
-        return True
-
-    def _verify_gpg(self, package, package_gpg_pubkey, package_gpg_sign):
-
-        try:
-            repo_sec = self._entropy.RepositorySecurity(
-                keystore_dir = self._gpg_keystore_dir)
-        except Repository.GPGError:
-            return None # GPG not available
-
-        installed = self._install_gpg_key(repo_sec, package_gpg_pubkey)
-        if not installed:
-            return None
-
-        # verify GPG now
-        gpg_good, err_msg = repo_sec.verify_file(self._url,
-            package, package_gpg_sign)
-        if not gpg_good:
-            mytxt = "%s: %s" % (
-                purple(_("Error during GPG verification of")),
-                os.path.basename(package),
-            )
-            self._entropy.output(
-                mytxt,
-                level = "error",
-                header = red("   # ") + bold(" !!! ")
-            )
-            mytxt = "%s: %s" % (
-                purple(_("It could mean a potential security risk")),
-                err_msg,
-            )
-            self._entropy.output(
-                mytxt,
-                level = "error",
-                header = red("   # ") + bold(" !!! ")
-            )
-            return False
-
-        mytxt = "%s: %s." % (
-            bold(_("Security Advisories")),
-            purple(_("GPG key verification successful")),
-        )
-        self._entropy.output(
-            mytxt,
-            level = "info",
-            header = red("   # ")
-        )
-
-        return True
-
-    def _validate_cache(self):
-        """
-        Validate cache by looking at some checksum data
-        """
-        inst_pkgs_cksum = self._entropy.installed_repository().checksum(
-            do_order = True, strict = False)
-        repo_cksum = self._entropy._repositories_hash()
-
-        sha = hashlib.sha1()
-        sha.update(const_convert_to_rawstring(repo_cksum + inst_pkgs_cksum))
-        cache_key = "_security_validate_cache_%s" % (sha.hexdigest(),)
-
-        cached = self._cacher.pop(cache_key, cache_dir = self._CACHE_DIR)
-        if cached is None:
-            self.clear() # kill the cache
-        self._cacher.push(cache_key, True, cache_dir = self._CACHE_DIR)
-
-    def clear(self):
-        """
-        Clear instance cache (RAM and on-disk).
-        """
-        self._adv_metadata = None
-        self._cacher.discard()
-        EntropyCacher.clear_cache_item(self._CACHE_ID,
-            cache_dir = self._CACHE_DIR)
-
-        self._setup_paths()
-
-    def _get_advisories_cache_hash(self):
-        dir_checksum = entropy.tools.md5sum_directory(
-            self.SECURITY_DIR)
-
-        sha = hashlib.sha1()
-
-        cache_s = "b{%s}dc{%s}r{%s}" % (
-            self._settings['repositories']['branch'],
-            dir_checksum, etpConst['systemroot'],
-        )
-        sha.update(const_convert_to_rawstring(cache_s))
-
-        cache_key = "%s%s" % (self._CACHE_ID, sha.hexdigest(),)
-        return cache_key
-
-    def get_advisories_cache(self):
-        """
-        Return cached advisories information metadata. It first tries to load
-        them from RAM and, in case of failure, it tries to gather the info
-        from disk, using EntropyCacher.
-        """
-        if self._adv_metadata is not None:
-            return self._adv_metadata.copy()
-
-        # validate cache
-        self._validate_cache()
-
-        c_hash = self._get_advisories_cache_hash()
-        adv_metadata = self._cacher.pop(c_hash,
-            cache_dir = self._CACHE_DIR)
-        if adv_metadata is not None:
-            self._adv_metadata = adv_metadata
-            return self._adv_metadata.copy()
-
-    def set_advisories_cache(self, adv_metadata):
-        """
-        Set advisories information metadata cache.
-
-        @param adv_metadata: advisories metadata to store
-        @type adv_metadata: dict
-        """
-        self._adv_metadata = None
-        c_hash = self._get_advisories_cache_hash()
-        # async false to allow 3rd-party applications to not wait
-        # before getting cached results. A straight example: sulfur
-        # and its security cache generation separate thread.
-        self._cacher.push(c_hash, adv_metadata,
-            cache_dir = self._CACHE_DIR, async = False)
-
-    def _get_advisories_list(self):
-        """
-        Return a list of advisory files. Internal method.
-        """
-        if not self.check_advisories_availability():
-            return []
-        xmls = os.listdir(self.SECURITY_DIR)
-        xmls = sorted([x for x in xmls if x.endswith(".xml") and \
-            x.startswith("glsa-")])
-        return xmls
-
-    def get_advisories_metadata(self, use_cache = True, quiet = False):
-        """
-        Get security advisories metadata.
-
-        @return: advisories metadata
-        @rtype: dict
-        """
-        if use_cache:
-            cached = self.get_advisories_cache()
-            if cached is not None:
-                return cached
-
-        adv_metadata = {}
-        xmls = self._get_advisories_list()
-        maxlen = len(xmls)
-        count = 0
-        t_up = time.time()
-        for xml in xmls:
-
-            count += 1
-            if quiet:
-                cur_t = time.time()
-                if ((cur_t - t_up) > 1):
-                    t_up = cur_t
-                    self._entropy.output(":: " + \
-                        str(round((float(count)/maxlen)*100, 1)) + "% ::",
-                        importance = 0, level = "info", back = True)
-
-            xml_metadata = None
-            exc_string = ""
-            exc_err = ""
-            try:
-                xml_metadata = self.__get_xml_metadata(xml)
-            except KeyboardInterrupt:
-                return {}
-            except Exception as err:
-                exc_string = str(Exception)
-                exc_err = str(err)
-            if xml_metadata == None:
-                more_info = ""
-                if exc_string:
-                    mytxt = _("Error")
-                    more_info = " %s: %s: %s" % (mytxt, exc_string, exc_err,)
-                mytxt = "%s: %s: %s! %s" % (
-                    blue(_("Warning")),
-                    bold(xml),
-                    blue(_("advisory broken")),
-                    more_info,
-                )
-                self._entropy.output(
-                    mytxt,
-                    importance = 1,
-                    level = "warning",
-                    header = red(" !!! ")
-                )
-                continue
-            elif not xml_metadata:
-                continue
-            adv_metadata.update(xml_metadata)
-
-        adv_metadata = self._filter_advisories(adv_metadata)
-        self.set_advisories_cache(adv_metadata)
-        self._adv_metadata = adv_metadata.copy()
-        return adv_metadata
-
-    def _filter_advisories(self, adv_metadata):
-        """
-        This function filters advisories metadata dict removing non-applicable
-        ones.
-
-        @param adv_metadata: security advisories metadata dict
-        @type adv_metadata: dict
-        @return: filtered security advisories metadata
-        @rtype: dict
-        """
-        # do not match package repositories, never consider them in updates!
-        # that would be a nonsense, since package repos are temporary.
-        enabled_repos = self._entropy._filter_available_repositories()
-        match_repos = tuple([x for x in \
-            self._settings['repositories']['order'] if x in enabled_repos])
-
-        keys = list(adv_metadata.keys())
-        for key in keys:
-            valid = True
-            if adv_metadata[key]['affected']:
-                affected = adv_metadata[key]['affected']
-                affected_keys = list(affected.keys())
-                valid = False
-                skipping_keys = set()
-                for a_key in affected_keys:
-                    match = self._entropy.atom_match(a_key,
-                        match_repo = match_repos)
-                    if match[0] != -1:
-                        # it's in the repos, it's valid
-                        valid = True
-                    else:
-                        skipping_keys.add(a_key)
-                if not valid:
-                    del adv_metadata[key]
-                for a_key in skipping_keys:
-                    try:
-                        del adv_metadata[key]['affected'][a_key]
-                    except KeyError:
-                        continue
-                try:
-                    if not adv_metadata[key]['affected']:
-                        del adv_metadata[key]
-                except KeyError:
-                    continue
-
-        return adv_metadata
-
-    def is_affected(self, adv_key, adv_data = None):
-        """
-        Determine whether the system is affected by vulnerabilities listed
-        in the provided security advisory identifier.
-
-        @param adv_key: security advisories identifier
-        @type adv_key: string
-        @keyword adv_data: use the provided security advisories instead of
-            the stored one.
-        @type adv_data: dict
-        @return: True, if system is affected by vulnerabilities listed in the
-            provided security advisory.
-        @rtype: bool
-        """
-        if not adv_data:
-            adv_data = self.get_advisories_metadata()
-        if adv_key not in adv_data:
-            return False
-        mydata = adv_data[adv_key].copy()
-        del adv_data
-
-        if not mydata['affected']:
-            return False
-
-        for key in mydata['affected']:
-
-            vul_atoms = mydata['affected'][key][0]['vul_atoms']
-            unaff_atoms = mydata['affected'][key][0]['unaff_atoms']
-            unaffected_atoms = set()
-            if not vul_atoms:
-                return False
-            for atom in unaff_atoms:
-                matches = self._entropy.installed_repository().atomMatch(atom,
-                    multiMatch = True)
-                for idpackage in matches[0]:
-                    unaffected_atoms.add((idpackage, 0))
-
-            for atom in vul_atoms:
-                match = self._entropy.installed_repository().atomMatch(atom)
-                if (match[0] != -1) and (match not in unaffected_atoms):
-                    self._affected_pkgs.add(atom)
-                    return True
-        return False
-
-    def get_vulnerabilities(self):
-        """
-        Return advisories metadata for installed packages containing
-        vulnerabilities.
-
-        @return: advisories metadata for vulnerable packages.
-        @rtype: dict
-        """
-        return self.__get_affection()
-
-    def get_fixed_vulnerabilities(self):
-        """
-        Return advisories metadata for installed packages not affected
-        by any vulnerability.
-
-        @return: advisories metadata for NON-vulnerable packages.
-        @rtype: dict
-        """
-        return self.__get_affection(affected = False)
-
-    def __get_affection(self, affected = True):
-        """
-        If not affected: not affected packages will be returned.
-        If affected: affected packages will be returned.
-        """
-        adv_data = self.get_advisories_metadata()
-        adv_data_keys = list(adv_data.keys())
-        valid_keys = set()
-        for adv in adv_data_keys:
-            is_affected = self.is_affected(adv, adv_data)
-            if affected == is_affected:
-                valid_keys.add(adv)
-        # we need to filter our adv_data and return
-        for key in adv_data_keys:
-            if key not in valid_keys:
-                try:
-                    del adv_data[key]
-                except KeyError:
-                    pass
-        # now we need to filter packages in adv_dat
-        for adv in adv_data:
-            for key in list(adv_data[adv]['affected'].keys()):
-                atoms = adv_data[adv]['affected'][key][0]['vul_atoms']
-                applicable = True
-                for atom in atoms:
-                    if atom in self._affected_pkgs:
-                        applicable = False
-                        break
-                if applicable == affected:
-                    del adv_data[adv]['affected'][key]
-        return adv_data
-
-    def get_affected_packages(self):
-        """
-        Return a list of package names affected by vulnerabilities.
-
-        @return: list (set) of package names affected by vulnerabilities
-        @rtype: set
-        """
-        adv_data = self.get_advisories_metadata()
-        adv_data_keys = list(adv_data.keys())
-        del adv_data
-        self._affected_pkgs.clear()
-        for key in adv_data_keys:
-            self.is_affected(key)
-        return self._affected_pkgs
-
-    def __get_xml_metadata(self, xmlfilename):
+    def _get_xml_metadata(cls, xmlfile):
         """
         Parses a Gentoo GLSA XML file extracting advisory metadata.
 
@@ -687,22 +138,22 @@ class System(object):
         @return: advisory metadata extracted
         @rtype: dict
         """
-        from xml.dom import minidom
-
         xml_data = {}
-        xmlfile = os.path.join(self.SECURITY_DIR, xmlfilename)
         try:
-            xmldoc = minidom.parse(xmlfile)
-        except (IOError, OSError, TypeError, AttributeError,):
+            xmldoc = xml.dom.minidom.parse(xmlfile)
+        except (IOError, OSError, TypeError, AttributeError,) as err:
+            const_debug_write(
+                __name__, "_get_xml_metadata, error: %s" % (err,))
             return None
 
-        # get base data
         glsa_tree = xmldoc.getElementsByTagName("glsa")[0]
         glsa_product = glsa_tree.getElementsByTagName("product")[0]
         if glsa_product.getAttribute("type") != "ebuild":
-            return {}
+            return None
 
         glsa_id = glsa_tree.getAttribute("id")
+        xml_data['__id__'] = glsa_id
+
         glsa_title = glsa_tree.getElementsByTagName("title")[0]
         glsa_title = glsa_title.firstChild.data
         glsa_synopsis = glsa_tree.getElementsByTagName("synopsis")[0]
@@ -712,6 +163,7 @@ class System(object):
         glsa_revised = glsa_tree.getElementsByTagName("revised")[0]
         glsa_revised = glsa_revised.firstChild.data
 
+        xmlfilename = os.path.basename(xmlfile)
         xml_data['filename'] = xmlfilename
         xml_data['url'] = "http://www.gentoo.org/security/en/glsa/%s" % (
             xmlfilename,)
@@ -783,6 +235,48 @@ class System(object):
         except IndexError:
             xml_data['background'] = ""
 
+        op_mappings = {
+            "le": "<=",
+            "lt": "<",
+            "eq": "=",
+            "gt": ">",
+            "ge": ">=",
+            "rge": ">=", # >=~
+            "rle": "<=", # <=~
+            "rgt": ">", # >~
+            "rlt": "<" # <~
+        }
+
+        def make_version(vnode):
+            """
+            creates from the information in the I{versionNode} a
+            version string (format <op><version>).
+
+            @param vnode: a <vulnerable> or <unaffected> Node that
+                contains the version information for this atom
+            @type vnode: xml.dom.Node
+            @return: the version string
+            @rtype: string
+            """
+            op = op_mappings[vnode.getAttribute("range")]
+            return "%s%s" % (op, vnode.firstChild.data.strip())
+
+        def make_atom(pkgname, vnode):
+            """
+            creates from the given package name and information in the
+            I{versionNode} a (syntactical) valid portage atom.
+
+            @param pkgname: the name of the package for this atom
+            @type pkgname: string
+            @param vnode: a <vulnerable> or <unaffected> Node that
+                contains the version information for this atom
+            @type vnode: xml.dom.Node
+            @return: the portage atom
+            @rtype: string
+            """
+            op = op_mappings[vnode.getAttribute("range")]
+            return "%s%s-%s" % (op, pkgname, vnode.firstChild.data.strip())
+
         # affection information
         affected = glsa_tree.getElementsByTagName("affected")[0]
         affected_packages = {}
@@ -796,75 +290,604 @@ class System(object):
             pdata = {}
             pdata["arch"] = pkg.getAttribute("arch").strip()
             pdata["auto"] = (pkg.getAttribute("auto") == "yes")
-            pdata["vul_vers"] = [self.__make_version(v) for v in \
-                pkg.getElementsByTagName("vulnerable")]
-            pdata["unaff_vers"] = [self.__make_version(v) for v in \
-                pkg.getElementsByTagName("unaffected")]
-            pdata["vul_atoms"] = [self.__make_atom(name, v) for v \
-                in pkg.getElementsByTagName("vulnerable")]
-            pdata["unaff_atoms"] = [self.__make_atom(name, v) for v \
-                in pkg.getElementsByTagName("unaffected")]
+            pdata["vul_vers"] = [make_version(v) for v in
+                                 pkg.getElementsByTagName("vulnerable")]
+            pdata["unaff_vers"] = [make_version(v) for v in
+                                   pkg.getElementsByTagName("unaffected")]
+            pdata["vul_atoms"] = [make_atom(name, v) for v in
+                                  pkg.getElementsByTagName("vulnerable")]
+            pdata["unaff_atoms"] = [make_atom(name, v) for v in
+                                    pkg.getElementsByTagName("unaffected")]
             affected_packages[name].append(pdata)
         xml_data['affected'] = affected_packages.copy()
 
-        return {glsa_id: xml_data}
+        return xml_data
 
-    def __make_version(self, vnode):
+    def __init__(self, entropy_client, security_dir=None, url=None):
         """
-        creates from the information in the I{versionNode} a
-        version string (format <op><version>).
+        Object constructor.
 
-        @param vnode: a <vulnerable> or <unaffected> Node that
-            contains the version information for this atom
-        @type vnode: xml.dom.Node
-        @return: the version string
-        @rtype: string
+        @param entropy_client: an Entropy Client based object instance
+        @type entropy_client: entropy.client.interfaces.Client instance
+        @keyword security_dir: the directory where security advisores are
+            written and read
+        @type security_dir: string or None
+        @keyword url: url from where advisories are fetched from
+        @type url: string or None
         """
-        return self._op_mappings[vnode.getAttribute("range")] + \
-            vnode.firstChild.data.strip()
+        if security_dir is None:
+            self._dir = etpConst['securitydir']
+        else:
+            self._dir = security_dir
 
-    def __make_atom(self, pkgname, vnode):
+        self._real_url = url
+
+        self._cache_dir = os.path.join(
+            etpConst['entropyworkdir'], "security_cache")
+
+        self._entropy = entropy_client
+        self.__cacher = None
+        self.__settings = None
+
+        self._gpg_enabled = os.getenv("ETP_DISABLE_GPG") is None
+        self._gpg_keystore_dir = os.path.join(
+            etpConst['confdir'], "security-advisories-keys")
+
+    @property
+    def _cacher(self):
         """
-        creates from the given package name and information in the
-        I{versionNode} a (syntactical) valid portage atom.
-
-        @param pkgname: the name of the package for this atom
-        @type pkgname: string
-        @param vnode: a <vulnerable> or <unaffected> Node that
-            contains the version information for this atom
-        @type vnode: xml.dom.Node
-        @return: the portage atom
-        @rtype: string
+        Return an EntropyCacher instance, not thread-safe.
         """
-        return str(self._op_mappings[vnode.getAttribute("range")] + pkgname + \
-            "-" + vnode.firstChild.data.strip())
+        if self.__cacher is None:
+            self.__cacher = EntropyCacher()
+        return self.__cacher
 
-    def check_advisories_availability(self):
+    @property
+    def _settings(self):
+        """
+        Return a SystemSettings instance, not thread-safe.
+        """
+        if self.__settings is None:
+            self.__settings = SystemSettings()
+        return self.__settings
+
+    @property
+    def _url(self):
+        """
+        Return the remote URL from where advisories are downloaded.
+        """
+        if self._real_url is None:
+            return self._settings['repositories']['security_advisories_url']
+
+        return self._real_url
+
+    def _generic_download(self, url, save_to, show_speed = True):
+        """
+        Generic, secure, URL download method.
+
+        @param url: download URL
+        @type url: string
+        @param save_to: path to save file
+        @type save_to: string
+        @keyword show_speed: if True, download speed will be shown
+        @type show_speed: bool
+        @return: download status (True if download succeeded)
+        @rtype: bool
+        """
+        fetch_errors = (
+            UrlFetcher.TIMEOUT_FETCH_ERROR,
+            UrlFetcher.GENERIC_FETCH_ERROR,
+            UrlFetcher.GENERIC_FETCH_WARN,
+        )
+        fetcher = self._entropy._url_fetcher(url, save_to, resume = False,
+            show_speed = show_speed)
+        rc_fetch = fetcher.download()
+        if rc_fetch in fetch_errors:
+            return False
+
+        const_setup_file(save_to, etpConst['entropygid'], 0o664)
+        return True
+
+    def _install_gpg_key(self, repo_sec, package_gpg_pubkey):
+
+        pk_expired = False
+        try:
+            pk_avail = repo_sec.is_pubkey_available(self._url)
+        except repo_sec.KeyExpired:
+            pk_avail = False
+            pk_expired = True
+
+        def do_warn_user(fingerprint):
+            txt = purple(
+                _("Make sure to verify the imported "
+                  "key and set an appropriate trust level"))
+            self._entropy.output(
+                txt + ":",
+                level = "warning",
+                header = red("   # ")
+            )
+            txt = brown("gpg --homedir '%s' --edit-key '%s'" % (
+                self._gpg_keystore_dir, fingerprint,)
+            )
+            self._entropy.output(
+                "$ " + txt,
+                level = "warning",
+                header = red("   # ")
+            )
+
+        easy_url = "N/A"
+        splitres = entropy.tools.spliturl(self._url)
+        if hasattr(splitres, 'netloc'):
+            easy_url = splitres.netloc
+
+        if pk_avail:
+
+            tmp_dir = const_mkdtemp()
+            repo_tmp_sec = self._entropy.RepositorySecurity(
+                keystore_dir = tmp_dir)
+            # try to install and get fingerprint
+            try:
+                downloaded_key_fp = repo_tmp_sec.install_key(
+                    self._url, package_gpg_pubkey)
+            except repo_sec.GPGError:
+                downloaded_key_fp = None
+
+            fingerprint = repo_sec.get_key_metadata(
+                self._url)['fingerprint']
+            shutil.rmtree(tmp_dir, True)
+
+            if downloaded_key_fp != fingerprint and \
+                (downloaded_key_fp is not None):
+                txt = "%s: %s !!!" % (
+                    purple(_("GPG key changed for")),
+                    bold(easy_url),
+                )
+                self._entropy.output(
+                    txt,
+                    level = "warning",
+                    header = red("   # ")
+                )
+                txt = "[%s => %s]" % (
+                    darkgreen(fingerprint),
+                    purple(downloaded_key_fp),
+                )
+                self._entropy.output(
+                    txt,
+                    level = "warning",
+                    header = red("   # ")
+                )
+            else:
+                txt = "%s: %s" % (
+                    purple(_("GPG key already installed for")),
+                    bold(easy_url),
+                )
+                self._entropy.output(
+                    txt,
+                    level = "info",
+                    header = red("   # ")
+                )
+            do_warn_user(fingerprint)
+            return True
+
+        elif pk_expired:
+            txt = "%s: %s" % (
+                purple(_("GPG key EXPIRED for URL")),
+                bold(easy_url),
+            )
+            self._entropy.output(
+                txt,
+                level = "warning",
+                header = red("   # ")
+            )
+
+        txt = "%s: %s" % (
+            purple(_("Installing GPG key for URL")),
+            brown(easy_url),
+        )
+        self._entropy.output(
+            txt,
+            level = "info",
+            header = red("   # "),
+            back = True
+        )
+        try:
+            fingerprint = repo_sec.install_key(self._url,
+                package_gpg_pubkey)
+        except repo_sec.GPGError as err:
+            txt = "%s: %s" % (
+                darkred(_("Error during GPG key installation")),
+                err,
+            )
+            self._entropy.output(
+                txt,
+                level = "error",
+                header = red("   # ")
+            )
+            return False
+
+        txt = "%s: %s" % (
+            purple(_("Successfully installed GPG key for URL")),
+            brown(easy_url),
+        )
+        self._entropy.output(
+            txt,
+            level = "info",
+            header = red("   # ")
+        )
+        txt = "%s: %s" % (
+            darkgreen(_("Fingerprint")),
+            bold(fingerprint),
+        )
+        self._entropy.output(
+            txt,
+            level = "info",
+            header = red("   # ")
+        )
+        do_warn_user(fingerprint)
+        return True
+
+    def _verify_gpg(self, package, package_gpg_pubkey, package_gpg_sign):
+
+        try:
+            repo_sec = self._entropy.RepositorySecurity(
+                keystore_dir = self._gpg_keystore_dir)
+        except Repository.GPGError:
+            return None # GPG not available
+
+        installed = self._install_gpg_key(repo_sec, package_gpg_pubkey)
+        if not installed:
+            return None
+
+        # verify GPG now
+        gpg_good, err_msg = repo_sec.verify_file(self._url,
+            package, package_gpg_sign)
+        if not gpg_good:
+            txt = "%s: %s" % (
+                purple(_("Error during GPG verification of")),
+                os.path.basename(package),
+            )
+            self._entropy.output(
+                txt,
+                level = "error",
+                header = red("   # ") + bold(" !!! ")
+            )
+            txt = "%s: %s" % (
+                purple(_("It could mean a potential security risk")),
+                err_msg,
+            )
+            self._entropy.output(
+                txt,
+                level = "error",
+                header = red("   # ") + bold(" !!! ")
+            )
+            return False
+
+        txt = "%s: %s." % (
+            bold(_("Security Advisories")),
+            purple(_("GPG key verification successful")),
+        )
+        self._entropy.output(
+            txt,
+            level = "info",
+            header = red("   # ")
+        )
+
+        return True
+
+    def _cache_key(self, advisory_id):
+        """
+        Return the disk cache key that can be used to retrieve stored metadata.
+
+        @param advisory_id: the advisory for which the cache should be fetched.
+            Use "all" for the metadata containing all the advisories.
+        @type advisory_id: string
+        """
+        sha = hashlib.sha1()
+
+        inst_repo = self._entropy.installed_repository()
+        with inst_repo.direct():
+            inst_pkgs_cksum = inst_repo.checksum(
+                do_order=True, strict=False)
+
+        repo_cksum = self._entropy._repositories_hash()
+
+        cache_s = "rc{%s}irc{%s}b{%s}dp{%s}dt{%s}r{%s}" % (
+            repo_cksum,
+            inst_pkgs_cksum,
+            self._settings['repositories']['branch'],
+            self._dir,
+            os.path.getmtime(self._dir),
+            etpConst['systemroot'],
+        )
+        sha.update(const_convert_to_rawstring(cache_s))
+
+        # basename protects against relative paths
+        return "_advcache_%s_%s" % (
+            os.path.basename(advisory_id),
+            sha.hexdigest(),)
+
+    def _get_cache(self, advisory_id):
+        """
+        Return cached advisories information metadata. It first tries to load
+        them from RAM and, in case of failure, it tries to gather the info
+        from disk, using EntropyCacher.
+
+        @param advisory_id: the advisory for which the cache should be fetched.
+            Use "all" for the metadata containing all the advisories.
+        @type advisory_id: string
+        """
+        return self._cacher.pop(self._cache_key(advisory_id),
+                                cache_dir=self._cache_dir)
+
+    def _set_cache(self, advisory_id, data):
+        """
+        Set advisories information metadata cache.
+
+        @param advisory_id: the advisory for which the cache should be fetched.
+            Use "all" for the metadata containing all the advisories.
+        @type advisory_id: string
+        @param data: advisories metadata to store
+        @type data: dict
+        """
+        self._cacher.push(self._cache_key(advisory_id), data,
+            cache_dir=self._cache_dir)
+
+    def _xml_list(self):
+        """
+        Return a sorted list of available XML advisory files.
+
+        @return: a list of available advisory files.
+        @rtype: list
+        """
+        try:
+            xmls = os.listdir(self._dir)
+        except OSError as err:
+            if err.errno != errno.ENOENT:
+                raise
+            xmls = []
+        xmls = [x for x in xmls if x.endswith(".xml") and x.startswith("glsa-")]
+        xmls.sort()
+
+        return xmls
+
+    def _id_to_xml(self, advisory_id):
+        """
+        Return a path to the XML file given a GLSA advisory id.
+        """
+        return os.path.join(self._dir, advisory_id + ".xml")
+
+    def _xml_to_id(self, xml_path):
+        """
+        Return the GLSA advisory id given a path to an XML file.
+        """
+        return os.path.basename(xml_path)[:-len(".xml")]
+
+    @systemshared
+    def list(self):
+        """
+        Return a list of all the available advisory identifiers.
+
+        @return: a list of GLSA-IDs
+        @rtype: list
+        """
+        xmls = self._xml_list()
+        ids = [x[:-len(".xml")] for x in xmls]
+        return ids
+
+    @systemshared
+    def advisories(self):
+        """
+        Return the metadata for all the advisories.
+        This method is heavy and should not be used.
+
+        @return: advisories metadata
+        @rtype: dict
+        """
+        metadata = self._get_cache("all")
+        if metadata is None:
+
+            metadata = {}
+            for xml_path in self._xml_list():
+
+                adv_id = self._xml_to_id(xml_path)
+                xml_metadata = self.advisory(adv_id, _quiet=False)
+                if xml_metadata is None:
+                    continue
+
+                metadata.update(
+                    {xml_metadata['__id__']: xml_metadata}
+                )
+
+            metadata = dict((x, y) for x, y in
+                            metadata.items() if self._applicable(y))
+            self._set_cache("all", metadata)
+
+        return metadata
+
+    @systemshared
+    def advisory(self, advisory_id, _quiet=True):
+        """
+        Return the advisory metadata for the given GLSA advisory id.
+        If the advisory does not exist or is broken, None is returned.
+
+        @return: the advisory metadata dictionary
+        @rtype: dict or None
+        """
+        metadata = self._get_cache(advisory_id)
+        if metadata is not None:
+            return metadata
+
+        xml_path = self._id_to_xml(advisory_id)
+        metadata = None
+        try:
+            metadata = self._get_xml_metadata(xml_path)
+        except Exception as err:
+            if not _quiet:
+                txt = "%s, %s, %s: %s" % (
+                    blue(_("Warning")),
+                    bold(xml_path),
+                    blue(_("broken advisory")),
+                    err,
+                )
+                self._entropy.output(
+                    txt,
+                    importance=1,
+                    level="warning",
+                    header=red(" !!! ")
+                )
+
+        if metadata is not None:
+            self._set_cache(advisory_id, metadata)
+        return metadata
+
+    def _applicable(self, metadata):
+        """
+        Return whether the given GLSA advisory is applicable on this system.
+        Basically, determine if any of the packages listed in the advisory
+        is in the available repositories.
+
+        @param metadata: a single advisory metadata dictionary
+        @type metadata: dict
+        """
+        if not metadata['affected']:
+            return False
+
+        valid = False
+        for dep in metadata['affected'].keys():
+            package_id, _repository_id = self._entropy.atom_match(dep)
+            if package_id != -1:
+                valid = True
+                break
+
+        return valid
+
+    @systemshared
+    def affected(self, metadata):
+        """
+        Return a list (set) of dependencies that are currently
+        affected by the GLSA in the passed advisory metadata.
+
+        @param metadata: a single advisory metadata dictionary
+        @type metadata: dict
+        @return: a set of package dependencies that have been found
+            in the installed packages repository
+        @rtype: set
+        """
+        affected = set()
+        inst_repo = self._entropy.installed_repository()
+
+        if not metadata['affected']:
+            return affected
+
+        for key in metadata['affected']:
+
+            affection = metadata['affected'][key][0]
+
+            vul_atoms = affection['vul_atoms']
+            if not vul_atoms:
+                continue
+
+            unaffected = set()
+
+            with inst_repo.direct():
+                for dep in affection['unaff_atoms']:
+                    package_ids, _inst_rc = inst_repo.atomMatch(
+                        dep, multiMatch=True)
+                    unaffected.update(package_ids)
+
+                for dep in vul_atoms:
+                    package_id, _rc = inst_repo.atomMatch(dep)
+                    if package_id != -1 and package_id not in unaffected:
+                        affected.add(dep)
+
+        return affected
+
+    def affected_id(self, advisory_id):
+        """
+        Return a list (set) of dependencies that are currently
+        affected by the GLSA in the passed advisory metadata.
+
+        @param advisory_id: an advisory identifier
+        @type advisory_id: string
+        @return: a set of package dependencies that have been found
+            in the installed packages repository
+        @rtype: set
+        """
+        metadata = self.advisory(advisory_id)
+        if metadata is None:
+            return set()
+        return self.affected(metadata)
+
+    @systemshared
+    def vulnerabilities(self):
+        """
+        Return a list (set) of advisory identifiers for which the system is
+        currently vulnerable.
+
+        @return: list (set) of advisory identifiers
+        @rtype: set
+        """
+        return self._vulnerabilities()
+
+    @systemshared
+    def fixed_vulnerabilities(self):
+        """
+        Return a list (set) of advisory identifiers for which the system is
+        currently not vulnerable.
+
+        @return: list (set) of advisory identifiers
+        @rtype: set
+        """
+        return self._vulnerabilities(applied=True)
+
+    def _vulnerabilities(self, applied=False):
+        """
+        Return a list (set) of applied or unapplied advisory identifiers.
+
+        @keyword applied: True, if the advisories to return should be those
+            already applied
+        @type applied: bool
+        @return: a list (set) of applied or unapplied advisory identifiers.
+        @rtype: set
+        """
+        advisory_ids = set()
+
+        for advisory_id in self.list():
+            affected = self.affected_id(advisory_id)
+            if affected and not applied:
+                advisory_ids.add(advisory_id)
+            elif not affected and applied:
+                advisory_ids.add(advisory_id)
+
+        return advisory_ids
+
+    @systemshared
+    def available(self):
         """
         Return whether security advisories are available.
 
-        @return: availability
+        @return: True, if advisories are available
         @rtype: bool
         """
-        return os.path.isdir(self.SECURITY_DIR)
+        if self.list():
+            return True
+        return False
 
-    def unlocked_sync(self, do_cache = True, force = False):
+    @systemexclusive
+    def update(self, force=False):
         """
-        This is equivalent to sync() but doesn't acquire the
-        Entropy Resources Lock.
+        Update the local advisories by downloading a new version online.
 
-        @keyword do_cache: generates advisories cache
-        @type do_cache: bool
-        @return: execution status (0 means all file)
+        @return: exit code
         @rtype: int
         """
-        mytxt = "%s: %s %s" % (
+        txt = "%s: %s %s" % (
             bold(_("Security Advisories")),
             blue(_("getting latest advisories")),
             red("..."),
         )
         self._entropy.output(
-            mytxt,
+            txt,
             importance = 2,
             level = "info",
             header = red(" @@ ")
@@ -898,8 +921,6 @@ class System(object):
                     bold(_("Security Advisories")),
                     darkgreen(_("updated successfully")),
                 )
-                if do_cache:
-                    self.get_advisories_metadata()
             else:
                 advtext = "%s: %s" % (
                     bold(_("Security Advisories")),
@@ -913,54 +934,31 @@ class System(object):
             )
         return rc_lock
 
-    def sync(self, do_cache = True, force = False):
-        """
-        This is the service method for remotely fetch advisories metadata.
-
-        @keyword do_cache: generates advisories cache
-        @type do_cache: bool
-        @return: execution status (0 means all file)
-        @rtype: int
-        """
-        gave_up = self._entropy.wait_resources()
-        if gave_up:
-            return 7
-
-        # acquired
-        try:
-            rc_lock = self.unlocked_sync(do_cache = do_cache,
-                               force = force)
-            if rc_lock != 0:
-                return rc_lock
-        finally:
-            self._entropy.unlock_resources()
-        return 0
-
     def _setup_paths(self):
         """
         Setup Entropy Security directory and file paths.
         """
-        sec_dir = self.SECURITY_DIR
-        if not os.path.isdir(sec_dir) and os.path.lexists(sec_dir):
-            os.remove(sec_dir)
-        const_setup_directory(sec_dir)
+        sec_dir = self._dir
+        cache_dir = self._cache_dir
 
-        cache_dir = self._CACHE_DIR
-        if not os.path.isdir(cache_dir) and os.path.lexists(cache_dir):
-            os.remove(cache_dir)
-        const_setup_directory(cache_dir)
+        for dir_path in (sec_dir, cache_dir):
+            try:
+                const_setup_directory(dir_path)
+            except OSError as err:
+                if err.errno != errno.EEXIST:
+                    raise
 
     def _clear_security_dir(self):
         """
         Remove the content of the security directory.
         """
-        sec_dir = self.SECURITY_DIR
-        for name in os.listdir(sec_dir):
-            path = os.path.join(sec_dir, name)
-            if os.path.isfile(path) or os.path.islink(path):
+        for name in os.listdir(self._dir):
+            path = os.path.join(self._dir, name)
+            try:
                 os.remove(path)
-            else:
-                shutil.rmtree(path, True)
+            except OSError as err:
+                if err.errno not in (errno.ENOENT, errno.EISDIR):
+                    raise
 
     def _fetch(self, tempdir, force = False):
         """
@@ -977,7 +975,7 @@ class System(object):
         package = os.path.join(tempdir, security_file)
         package_checksum = package + md5_ext
         old_package_checksum = os.path.join(
-            self._CACHE_DIR, package_checksum)
+            self._cache_dir, os.path.basename(package_checksum))
 
         url_gpg_sign = self._url + etpConst['etpgpgextension']
         package_gpg_sign = package + etpConst['etpgpgextension']
@@ -992,75 +990,84 @@ class System(object):
             url_checksum, package_checksum,
             show_speed = False)
         if not status:
-            mytxt = "%s: %s." % (
+            txt = "%s: %s." % (
                 bold(_("Security Advisories")),
                 darkred(_("cannot download checksum, sorry")),
             )
             self._entropy.output(
-                mytxt,
+                txt,
                 importance = 2,
                 level = "error",
                 header = red("   ## ")
             )
             return 2, updated
 
-        previous_checksum = self._read_checksum_file(old_package_checksum)
-        checksum = self._read_checksum_file(package_checksum)
-        if (checksum == previous_checksum) and not force:
+        try:
+            previous_checksum = entropy.tools.get_hash_from_md5file(
+                old_package_checksum)
+        except (OSError, IOError) as err:
+            if err.errno != errno.ENOENT:
+                raise
+            previous_checksum = None
+
+        checksum = entropy.tools.get_hash_from_md5file(
+            package_checksum)
+
+        if (checksum == previous_checksum) and (
+                previous_checksum is not None) and not force:
             return 0, updated
 
-        # download package
         status =  self._generic_download(self._url, package)
         if not status:
-            mytxt = "%s: %s." % (
+            txt = "%s: %s." % (
                 bold(_("Security Advisories")),
                 darkred(_("unable to download advisories, sorry")),
             )
             self._entropy.output(
-                mytxt,
+                txt,
                 importance = 2,
                 level = "error",
                 header = red("   ## ")
             )
             return 1, updated
 
-        mytxt = "%s: %s %s" % (
+        txt = "%s: %s %s" % (
             bold(_("Security Advisories")),
             blue(_("Verifying checksum")),
             red("..."),
         )
         self._entropy.output(
-            mytxt,
+            txt,
             importance = 1,
             level = "info",
             header = red("   # "),
             back = True
         )
 
-        # verify digest
-        checksum = self._read_checksum_file(package_checksum)
+        checksum = entropy.tools.get_hash_from_md5file(
+            package_checksum)
         if checksum != previous_checksum:
             updated = True
 
         md5res = entropy.tools.compare_md5(package, checksum)
         if md5res:
-            mytxt = "%s: %s." % (
+            txt = "%s: %s." % (
                 bold(_("Security Advisories")),
                 darkgreen(_("verification successful")),
             )
             self._entropy.output(
-                mytxt,
+                txt,
                 importance = 1,
                 level = "info",
                 header = red("   # ")
             )
         else:
-            mytxt = "%s: %s." % (
+            txt = "%s: %s." % (
                 bold(_("Security Advisories")),
                 darkred(_("checksum verification failed, sorry")),
             )
             self._entropy.output(
-                mytxt,
+                txt,
                 importance = 2,
                 level = "error",
                 header = red("   ## ")
@@ -1069,7 +1076,7 @@ class System(object):
 
         # download GPG key and package signature in a row
         # env hook, disable GPG check
-        if self._gpg_feature:
+        if self._gpg_enabled:
             gpg_sign_sts = self._generic_download(
                 url_gpg_sign, package_gpg_sign,
                 show_speed = False)
@@ -1080,12 +1087,12 @@ class System(object):
                 verify_sts = self._verify_gpg(
                     package, package_gpg_pubkey, package_gpg_sign)
                 if verify_sts is None:
-                    mytxt = "%s: %s." % (
+                    txt = "%s: %s." % (
                         bold(_("Security Advisories")),
                         purple(_("GPG service not available")),
                     )
                     self._entropy.output(
-                        mytxt,
+                        txt,
                         level = "info",
                         header = red("   # ")
                     )
@@ -1098,28 +1105,35 @@ class System(object):
             if err.errno != errno.EXDEV:
                 raise
             shutil.copy2(package_checksum, old_package_checksum)
+
         const_setup_file(old_package_checksum,
             etpConst['entropygid'], 0o664)
 
         status = entropy.tools.uncompress_tarball(
             package,
-            extract_path = self.SECURITY_DIR,
+            extract_path = self._dir,
             catch_empty = True
         )
+
+        # update mtime and atime of the directory as a way to invalidate
+        # previous cached data. 1sec timestamp granularity of ext3 should
+        # be enough anyway. This is much faster than md5summing all the xmls.
+        t = time.time()
+        os.utime(self._dir, (t, t))
+
         if status != 0:
-            mytxt = "%s: %s." % (
+            txt = "%s: %s." % (
                 bold(_("Security Advisories")),
                 darkred(_("digest verification failed, try again later")),
             )
             self._entropy.output(
-                mytxt,
+                txt,
                 importance = 2,
                 level = "error",
                 header = red("   ## ")
             )
             return 6, updated
 
-        self.clear()
         return 0, updated
 
 
@@ -1958,7 +1972,7 @@ class Repository:
                 raise Repository.GPGError("cannot verify file %s, exit status %s" % (
                     file_path, proc_rc,))
         finally:
-             self.__default_popen_close(proc)
+            self.__default_popen_close(proc)
 
     def verify_file(self, repository_identifier, file_path, signature_path):
         """

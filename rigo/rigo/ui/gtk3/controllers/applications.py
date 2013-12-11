@@ -173,8 +173,7 @@ class ApplicationsViewController(GObject.Object):
 
         show_exact = search_cmd == ApplicationsViewController.SHOW_EXACT_MATCH
 
-        self._entropy.rwsem().reader_acquire()
-        try:
+        with self._entropy.rwsem().reader():
             matches = []
             use_fallback = True
 
@@ -182,16 +181,20 @@ class ApplicationsViewController(GObject.Object):
             if search_cmd == ApplicationsViewController.SHOW_INSTALLED_KEY:
                 use_fallback = False
                 sort = True
+
                 inst_repo = self._entropy.installed_repository()
-                if not search_args:
-                    for pkg_id in inst_repo.listAllPackageIds(
-                        order_by="atom"):
-                        matches.append((pkg_id, inst_repo.repository_id()))
-                else:
-                    for search_arg in search_args:
-                        for pkg_id in inst_repo.searchPackages(
-                            search_arg.lower(), just_id=True):
+                with inst_repo.direct():
+                    if not search_args:
+                        for pkg_id in inst_repo.listAllPackageIds(
+                                order_by="atom"):
                             matches.append((pkg_id, inst_repo.repository_id()))
+                    else:
+                        for search_arg in search_args:
+                            for pkg_id in inst_repo.searchPackages(
+                                search_arg.lower(), just_id=True):
+                                matches.append(
+                                    (pkg_id, inst_repo.repository_id()))
+
             elif search_cmd == \
                     ApplicationsViewController.SHOW_CATEGORY_KEY and \
                     search_args:
@@ -246,8 +249,6 @@ class ApplicationsViewController(GObject.Object):
             if sort:
                 matches.sort(key=self._sort_key)
             return matches
-        finally:
-            self._entropy.rwsem().reader_release()
 
     def install(self, dependency, simulate=False):
         """
@@ -257,11 +258,9 @@ class ApplicationsViewController(GObject.Object):
         const_debug_write(
             __name__,
             "install: %s" % (dependency,))
-        self._entropy.rwsem().reader_acquire()
-        try:
+
+        with self._entropy.rwsem().reader():
             pkg_match = self._entropy.atom_match(dependency)
-        finally:
-            self._entropy.rwsem().reader_release()
 
         pkg_id, pkg_repo = pkg_match
         if pkg_id == -1:
@@ -317,13 +316,12 @@ class ApplicationsViewController(GObject.Object):
         const_debug_write(
             __name__,
             "remove: %s" % (dependency,))
-        self._entropy.rwsem().reader_acquire()
-        try:
+
+        with self._entropy.rwsem().reader():
             inst_repo = self._entropy.installed_repository()
             pkg_repo = inst_repo.repository_id()
-            pkg_id, rc = inst_repo.atomMatch(dependency)
-        finally:
-            self._entropy.rwsem().reader_release()
+            with inst_repo.direct():
+                pkg_id, rc = inst_repo.atomMatch(dependency)
 
         if pkg_id == -1:
             const_debug_write(
@@ -382,16 +380,13 @@ class ApplicationsViewController(GObject.Object):
                     " %s" % (app,))
                 matches.append(app.get_details().pkg)
         else:
-            self._entropy.rwsem().reader_acquire()
-            try:
+            with self._entropy.rwsem().reader():
                 inst_repo = self._entropy.installed_repository()
                 repo_name = inst_repo.repository_id()
                 matches.extend(
                     [(-2, repo_name),
                      (-5, repo_name),
                      (-10, repo_name)])
-            finally:
-                self._entropy.rwsem().reader_release()
 
         if matches:
             self.set_many_safe(matches,
@@ -403,13 +398,11 @@ class ApplicationsViewController(GObject.Object):
             __name__,
             "__simulate_orphaned_apps: "
             "%s" % (text,))
-        self._entropy.rwsem().reader_acquire()
-        try:
+        with self._entropy.rwsem().reader():
             inst_repo = self._entropy.installed_repository()
-            pkg_ids = inst_repo.searchPackages(text, just_id=True)
-            manual_pkg_ids, rc = inst_repo.atomMatch(text, multiMatch=True)
-        finally:
-            self._entropy.rwsem().reader_release()
+            with inst_repo.direct():
+                pkg_ids = inst_repo.searchPackages(text, just_id=True)
+                manual_pkg_ids, rc = inst_repo.atomMatch(text, multiMatch=True)
 
         def _notify():
             self._service._unsupported_applications_signal(
@@ -479,11 +472,8 @@ class ApplicationsViewController(GObject.Object):
                 self.remove(sim_str)
 
         def _do_optimize_mirrors():
-            self._entropy.rwsem().reader_acquire()
-            try:
+            with self._entropy.rwsem().reader():
                 repository_ids = self._entropy.repositories()
-            finally:
-                self._entropy.rwsem().reader_release()
             self._service.optimize_mirrors(repository_ids)
 
         special_keys_map = {
@@ -561,8 +551,7 @@ class ApplicationsViewController(GObject.Object):
         Setup "not found" message label and layout
         """
         nf_box = self._not_found_box
-        self._entropy.rwsem().reader_acquire()
-        try:
+        with self._entropy.rwsem().reader():
             # now self._not_found_label is available
             meant_packages = self._entropy.get_meant_packages(
                 search_text)
@@ -582,8 +571,6 @@ class ApplicationsViewController(GObject.Object):
                     prepare_markup(_("did you mean <a href=\"%s\">%s</a>?")) % (
                         escape_markup(name),
                         escape_markup(name),),)
-        finally:
-            self._entropy.rwsem().reader_release()
 
         self._not_found_label.set_markup(msg)
 
@@ -773,11 +760,8 @@ class ApplicationsViewController(GObject.Object):
         self._prefc.append(pref)
 
         def _optimize_mirrors():
-            self._entropy.rwsem().reader_acquire()
-            try:
+            with self._entropy.rwsem().reader():
                 repository_ids = self._entropy.repositories()
-            finally:
-                self._entropy.rwsem().reader_release()
             self._service.optimize_mirrors(repository_ids)
         pref = Preference(
             50, _("Optimize Download Speed"),

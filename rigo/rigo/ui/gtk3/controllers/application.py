@@ -590,11 +590,8 @@ class ApplicationViewController(GObject.Object):
         """
         Logout from any configured repository.
         """
-        self._entropy.rwsem().reader_acquire()
-        try:
+        with self._entropy.rwsem().reader():
             repositories = self._entropy.repositories()
-        finally:
-            self._entropy.rwsem().reader_release()
 
         for repository in repositories:
             webserv = self._entropy_ws.get(repository)

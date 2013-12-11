@@ -101,12 +101,12 @@ if __name__ == "__main__":
         if os.path.isdir(user_home):
             magneto_lock_dir = user_home
 
-    import entropy.tools
+    from entropy.locks import SimpleFileLock
     lock_map = {}
     magneto_lock = os.path.join(magneto_lock_dir, magneto_lock_file)
-    acquired = entropy.tools.acquire_lock(magneto_lock, lock_map)
+    acquired = SimpleFileLock.acquire_lock(magneto_lock, lock_map)
     def _unlock_func():
-        entropy.tools.release_lock(magneto_lock, lock_map)
+        SimpleFileLock.release_lock(magneto_lock, lock_map)
 
     try:
         if acquired:

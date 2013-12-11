@@ -920,7 +920,7 @@ class SpmPlugin(Singleton):
         """
         raise NotImplementedError()
 
-    def remove_installed_package(self, package_metadata):
+    def remove_installed_package(self, atom, package_metadata):
         """
         Remove installed package from SPM database.
         "package_metadata" is a dictionary featuring the following (relevant)
@@ -928,9 +928,10 @@ class SpmPlugin(Singleton):
             ['accept_license', 'imagedir', 'xpakpath', 'slot', 'pkgdbpath',
              'versiontag', 'version', 'xpakstatus', 'unpackdir', 'revision',
              'category', 'repository', 'xpakdir', 'name', 'install_source',
-             'removeatom'
             ]
 
+        @param atom: the Entropy package atom
+        @type atom: string
         @param package_metadata: Entropy package metadata
         @type package_metadata: dict
         @return: execution status

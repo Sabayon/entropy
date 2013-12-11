@@ -212,7 +212,6 @@ def initconfig_entropy_constants(rootdir):
     const_read_entropy_release()
 
     const_create_working_dirs()
-    const_configure_lock_paths()
 
     # reflow back settings
     etpConst.update(backed_up_settings)
@@ -252,6 +251,10 @@ def const_default_settings(rootdir):
         'DEV_ETP_VAR_DIR',
         os.path.join(rootdir, "var/lib/entropy"))
     default_etp_dbdir_name = "database"
+
+    default_etp_run_dir = os.getenv(
+        'DEV_ETP_RUN_DIR',
+        os.path.join(rootdir, "run/entropy"))
 
     default_etp_dbdir = os.path.join(
         default_etp_dbdir_name, ETP_ARCH_CONST)
@@ -300,6 +303,7 @@ def const_default_settings(rootdir):
         'packagesrelativepath_basename': ETP_ARCH_CONST,
         'databaserelativepath_basedir': default_etp_dbdir_name,
 
+        'entropyrundir': default_etp_run_dir, # /run/entropy
         'entropyworkdir': default_etp_dir, # Entropy workdir
         # new (since 0.99.48) Entropy downloaded packages location
         # equals to /var/lib/entropy/client/packages containing packages/,
@@ -851,8 +855,13 @@ def const_regain_privileges():
 
     etpConst['uid'] = 0
 
-def const_create_working_dirs():
+def const_setup_run_directory():
+    """
+    Setup the Entropy /run directory with appropriate permissions.
+    """
+    const_setup_directory(etpConst['entropyrundir'])
 
+def const_create_working_dirs():
     """
     Setup Entropy directory structure, as much automagically as possible.
 
@@ -888,6 +897,12 @@ def const_create_working_dirs():
     if nopriv_gid is not None:
         etpConst['entropygid_nopriv'] = nopriv_gid
 
+    try:
+        const_setup_run_directory()
+    except (OSError, IOError):
+        # best effort
+        pass
+
 def const_convert_log_level(entropy_log_level):
     """
     Converts Entropy log levels (0, 1, 2) to logging.ERROR, logging.INFO,
@@ -906,18 +921,6 @@ def const_convert_log_level(entropy_log_level):
         2: logging.DEBUG
     }
     return log_map.get(entropy_log_level, logging.INFO)
-
-def const_configure_lock_paths():
-    """
-    Setup Entropy lock file paths.
-
-    @rtype: None
-    @return: None
-    """
-    etpConst['locks'] = {
-        'using_resources': os.path.join(etpConst['entropyworkdir'],
-            '.using_resources'),
-    }
 
 def const_setup_perms(mydir, gid, f_perms = None, recursion = True, uid = -1):
     """

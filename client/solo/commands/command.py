@@ -16,6 +16,7 @@ import argparse
 from entropy.i18n import _
 from entropy.const import const_convert_to_unicode, \
     const_convert_to_rawstring
+from entropy.locks import EntropyResourcesLock
 from entropy.output import darkgreen, teal, purple, print_error, \
     print_generic, bold, brown
 from entropy.exceptions import PermissionDenied
@@ -49,6 +50,36 @@ def _fix_argparse_print_help():
 
 
 _fix_argparse_print_help()
+
+
+def sharedlock(func):
+    """
+    Solo command methods decorator that acquires the Installed
+    Packages Repository lock in shared mode and calls the wrapped
+    function with an extra argument (the Installed Packages
+    Repository object instance).
+    """
+    def wrapped(zelf, entropy_client, *args, **kwargs):
+        inst_repo = entropy_client.installed_repository()
+        with inst_repo.shared():
+            return func(zelf, entropy_client, inst_repo, *args, **kwargs)
+
+    return wrapped
+
+
+def exclusivelock(func):
+    """
+    Solo command methods decorator that acquires the Installed
+    Packages Repository lock in exclusive mode and calls the wrapped
+    function with an extra argument (the Installed Packages
+    Repository object instance).
+    """
+    def wrapped(zelf, entropy_client, *args, **kwargs):
+        inst_repo = entropy_client.installed_repository()
+        with inst_repo.exclusive():
+            return func(zelf, entropy_client, inst_repo, *args, **kwargs)
+
+    return wrapped
 
 
 class SoloCommand(object):
@@ -344,6 +375,7 @@ class SoloCommand(object):
         client_class = None
         client = None
         acquired = False
+        lock = None
         try:
             try:
                 client_class = self._entropy_class()
@@ -356,8 +388,13 @@ class SoloCommand(object):
                         _("Acquiring Entropy Resources "
                           "Lock, please wait...")),
                               back=True)
-            acquired = entropy.tools.acquire_entropy_locks(
-                client_class, blocking=blocking, spinner=True)
+
+            lock = EntropyResourcesLock(output=client_class)
+            if blocking:
+                lock.acquire_exclusive()
+                acquired = True
+            else:
+                acquired = lock.wait_exclusive()
             if not acquired:
                 client_class.output(
                     darkgreen(_("Another Entropy is currently running.")),
@@ -371,7 +408,7 @@ class SoloCommand(object):
             if client is not None:
                 client.shutdown()
             if acquired:
-                entropy.tools.release_entropy_locks(client_class)
+                lock.release()
 
     def _call_unlocked(self, func):
         """
@@ -382,21 +419,17 @@ class SoloCommand(object):
         client_class = None
         client = None
         acquired = False
+        lock = None
         try:
             try:
                 client_class = self._entropy_class()
             except PermissionDenied as err:
                 print_error(err.value)
                 return 1
-            # use blocking mode to avoid tainting stdout
-            acquired = entropy.tools.acquire_entropy_locks(
-                client_class, blocking=True, shared=True)
-            if not acquired:
-                client_class.output(
-                    darkgreen(_("Another Entropy is currently running.")),
-                    level="error", importance=1
-                )
-                return 1
+
+            lock = EntropyResourcesLock(output=client_class)
+            lock.acquire_shared()
+            acquired = True
 
             client = client_class()
             return func(client)
@@ -404,7 +437,7 @@ class SoloCommand(object):
             if client is not None:
                 client.shutdown()
             if acquired:
-                entropy.tools.release_entropy_locks(client_class)
+                lock.release()
 
     def _settings(self):
         """

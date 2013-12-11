@@ -12,6 +12,7 @@
 import argparse
 
 from entropy.i18n import _
+from entropy.locks import EntropyResourcesLock
 from entropy.output import darkgreen, print_error, print_generic
 from entropy.exceptions import PermissionDenied
 from entropy.server.interfaces import Server
@@ -198,14 +199,16 @@ class EitCommand(object):
         server = None
         server_class = None
         acquired = False
+        lock = None
         try:
             try:
                 server_class = self._entropy_class()
             except PermissionDenied as err:
                 print_error(err.value)
                 return 1
-            acquired = entropy.tools.acquire_entropy_locks(
-                server_class, spinner=True)
+
+            lock = EntropyResourcesLock(output=server_class)
+            acquired = lock.wait_exclusive()
             if not acquired:
                 server_class.output(
                     darkgreen(_("Another Entropy is currently running.")),
@@ -228,7 +231,7 @@ class EitCommand(object):
             if server is not None:
                 server.shutdown()
             if acquired:
-                entropy.tools.release_entropy_locks(server_class)
+                lock.release()
 
     def _call_unlocked(self, func, repo):
         """
@@ -239,15 +242,18 @@ class EitCommand(object):
         server = None
         server_class = None
         acquired = False
+        lock = None
         try:
             try:
                 server_class = self._entropy_class()
             except PermissionDenied as err:
                 print_error(err.value)
                 return 1
-            # use blocking mode to avoid tainting stdout
-            acquired = entropy.tools.acquire_entropy_locks(
-                server_class, blocking=True, shared=True)
+
+            lock = EntropyResourcesLock(output=server_class)
+            lock.acquire_shared()
+            acquired = True
+
             if not acquired:
                 server_class.output(
                     darkgreen(_("Another Entropy is currently running.")),
@@ -270,7 +276,7 @@ class EitCommand(object):
             if server is not None:
                 server.shutdown()
             if acquired:
-                entropy.tools.release_entropy_locks(server_class)
+                lock.release()
 
     def _settings(self):
         """

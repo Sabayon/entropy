@@ -8,6 +8,7 @@ sys.path.insert(0, "../client")
 import os
 import argparse
 
+from entropy.locks import EntropyResourcesLock
 from entropy.output import brown, print_warning, print_error, teal
 from entropy.i18n import _
 from entropy.client.interfaces import Client
@@ -50,18 +51,19 @@ if __name__ == "__main__":
     def _wrap_locked_api(method, *args, **kwargs):
         etp_client = None
         acquired = False
+        lock = EntropyResourcesLock(output=Client)
         try:
+            lock.acquire_shared()
+            acquired = True
+
             etp_client = Client()
-            acquired = entropy.tools.acquire_entropy_locks(etp_client)
-            if not acquired:
-                print_error(brown(_("Another Entropy is currently running.")))
-                return 1
+
             return method(etp_client, *args, **kwargs)
         finally:
-            if acquired and (etp_client is not None):
-                entropy.tools.release_entropy_locks(etp_client)
             if etp_client is not None:
                 etp_client.shutdown()
+            if acquired:
+                lock.release()
 
     def _switch_kernel(f_nsargs):
 
@@ -74,6 +76,7 @@ if __name__ == "__main__":
                 False, False, 1, [], package_matches=list(matches))
             if _show_cfgupd:
                 install._show_config_files_update(etp_client)
+                install._show_preserved_libraries(etp_client)
             if f_nsargs.pretend:
                 # this won't trigger any post install action
                 return 1
@@ -123,13 +126,17 @@ if __name__ == "__main__":
             if not kernels:
                 print_warning(_("No kernel packages found"))
                 return 1
-            for pkg_id, pkg_repo in kernels:
-                repo = etp_client.open_repository(pkg_repo)
-                print_package_info(
-                    pkg_id, etp_client, repo,
-                    show_repo_if_quiet = True,
-                    extended=f_nsargs.verbose,
-                    quiet=f_nsargs.quiet)
+
+            inst_repo = etp_client.installed_repository()
+            with inst_repo.shared():
+                for pkg_id, pkg_repo in kernels:
+
+                    repo = etp_client.open_repository(pkg_repo)
+                    print_package_info(
+                        pkg_id, etp_client, repo,
+                        show_repo_if_quiet = True,
+                        extended=f_nsargs.verbose,
+                        quiet=f_nsargs.quiet)
             return 0
 
         return _wrap_locked_api(_list)

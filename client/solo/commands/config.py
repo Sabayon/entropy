@@ -94,6 +94,7 @@ Configure installed packages (calling pkg_config() hook).
         exit_st, _show_cfgupd = self._config_action(entropy_client)
         if _show_cfgupd:
             self._show_config_files_update(entropy_client)
+            self._show_preserved_libraries(entropy_client)
         return exit_st
 
     def _config_action(self, entropy_client):
@@ -104,36 +105,38 @@ Configure installed packages (calling pkg_config() hook).
         pretend = self._nsargs.pretend
         verbose = self._nsargs.verbose
 
-        packages = entropy_client.packages_expand(
-            self._nsargs.packages)
         inst_repo = entropy_client.installed_repository()
-        package_ids = self._scan_installed_packages(
-            entropy_client, inst_repo, packages)
+        with inst_repo.shared():
 
-        if not packages:
-            entropy_client.output(
-                "%s." % (
-                    darkred(_("No packages found")),),
-                level="error", importance=1)
-            return 1, False
+            packages = entropy_client.packages_expand(
+                self._nsargs.packages)
+            package_ids = self._scan_installed_packages(
+                entropy_client, inst_repo, packages)
 
-        for count, package_id in enumerate(package_ids, 1):
+            if not package_ids:
+                entropy_client.output(
+                    "%s." % (
+                        darkred(_("No packages found")),),
+                    level="error", importance=1)
+                return 1, False
 
-            atom = inst_repo.retrieveAtom(package_id)
-            installed_from = inst_repo.getInstalledPackageRepository(
-                package_id)
-            if installed_from is None:
-                installed_from = _("Not available")
+            for count, package_id in enumerate(package_ids, 1):
 
-            mytxt = "%s | %s: %s" % (
-                enlightenatom(atom),
-                brown(_("installed from")),
-                darkred(installed_from),
-                )
-            entropy_client.output(
-                mytxt,
-                count=(count, len(package_ids)),
-                header=darkgreen("   # "))
+                atom = inst_repo.retrieveAtom(package_id)
+                installed_from = inst_repo.getInstalledPackageRepository(
+                    package_id)
+                if installed_from is None:
+                    installed_from = _("Not available")
+
+                mytxt = "%s | %s: %s" % (
+                    enlightenatom(atom),
+                    brown(_("installed from")),
+                    darkred(installed_from),
+                    )
+                entropy_client.output(
+                    mytxt,
+                    count=(count, len(package_ids)),
+                    header=darkgreen("   # "))
 
         if verbose or ask or pretend:
             entropy_client.output(
@@ -162,7 +165,7 @@ Configure installed packages (calling pkg_config() hook).
             try:
                 pkg = action_factory.get(
                     action_factory.CONFIG_ACTION,
-                    (package_id, inst_repo.name))
+                    (package_id, inst_repo.repository_id()))
 
                 xterm_header = "equo (%s) :: %d of %d ::" % (
                     _("configure"), count, len(package_ids))

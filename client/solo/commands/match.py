@@ -16,7 +16,7 @@ from entropy.i18n import _, ngettext
 from entropy.output import darkred, blue, brown, darkgreen, purple
 
 from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.command import SoloCommand
+from solo.commands.command import SoloCommand, sharedlock
 from solo.utils import print_table, print_package_info
 
 import entropy.dep
@@ -157,55 +157,66 @@ Match package names.
 
         return self._call_unlocked, [self.match]
 
-    def _match_string(self, entropy_client, string):
+    def _match_string(self, entropy_client, inst_repo, string):
         """
         Match method, returns search results.
         """
-        matches = []
-        inst_repo = entropy_client.installed_repository()
         inst_repo_id = inst_repo.repository_id()
 
-        if self._installed:
-            inst_pkg_id, inst_rc = inst_repo.atomMatch(
-                string, multiMatch = self._multimatch)
-            if inst_rc != 0:
-                match = (-1, 1)
-            else:
-                if self._multimatch:
-                    match = ([(x, inst_repo_id) for x in inst_pkg_id], 0)
+        def iterify(match):
+            if match[1] == 1:
+                return
+            if not self._multimatch:
+                if self._multirepo:
+                    for x in match[0]:
+                        yield x
                 else:
-                    match = (inst_pkg_id, inst_repo_id)
+                    yield match
+            else:
+                for x in match[0]:
+                    yield x
+
+        def filter_injected(pkgs):
+            if self._injected:
+                is_injected = lambda x: entropy_client.open_repository(
+                    x[1]).isInjected(x[0])
+                return filter(is_injected, pkgs)
+
+            return pkgs
+
+        def key_sorter(pkg):
+            x, y = pkg
+            return entropy_client.open_repository(y).retrieveAtom(x)
+
+        if self._installed:
+            with inst_repo.shared():
+                inst_pkg_id, inst_rc = inst_repo.atomMatch(
+                    string, multiMatch = self._multimatch)
+
+                if inst_rc != 0:
+                    match = (-1, 1)
+                else:
+                    if self._multimatch:
+                        match = ([(x, inst_repo_id) for x in inst_pkg_id], 0)
+                    else:
+                        match = (inst_pkg_id, inst_repo_id)
+
+                return sorted(
+                    filter_injected(iterify(match)),
+                    key=key_sorter)
+
         else:
+
             match = entropy_client.atom_match(
                 string, multi_match = self._multimatch,
                 multi_repo = self._multirepo,
                 mask_filter = False)
+            return sorted(
+                filter_injected(iterify(match)),
+                key=key_sorter)
 
-        _matches = []
-        if match[1] != 1:
-            if not self._multimatch:
-                if self._multirepo:
-                    _matches += match[0]
-                else:
-                    _matches += [match]
-            else:
-                _matches += match[0]
-
-        # apply filters
-        if self._injected:
-
-            def is_injected(x, y):
-                return entropy_client.open_repository(y).isInjected(x)
-
-            _matches = filter(is_injected, _matches)
-
-        matches.extend(_matches)
-
-        key_sorter = lambda x: \
-            entropy_client.open_repository(x[1]).retrieveAtom(x[0])
-        return sorted(matches, key=key_sorter)
-
-    def match(self, entropy_client):
+    @sharedlock
+    def match(self, entropy_client, inst_repo):
         """
         Solo Match command.
         """
@@ -217,7 +228,7 @@ Match package names.
         matches_found = 0
         for string in self._packages:
             results = self._match(
-                entropy_client, string)
+                entropy_client, inst_repo, string)
             matches_found += len(results)
 
         if not self._quiet:
@@ -233,26 +244,23 @@ Match package names.
             return 1
         return 0
 
-    def _match(self, entropy_client, string):
+    def _match(self, entropy_client, inst_repo, string):
         """
         Solo Search string command.
         """
-        results = self._match_string(
-            entropy_client, string)
+        results = self._match_string(entropy_client, inst_repo, string)
 
-        inst_repo = entropy_client.installed_repository()
-        inst_repo_class = inst_repo.__class__
         for pkg_id, pkg_repo in results:
-            dbconn = entropy_client.open_repository(pkg_repo)
-            from_client = isinstance(dbconn, inst_repo_class)
+            repo = entropy_client.open_repository(pkg_repo)
+
             print_package_info(
-                pkg_id, entropy_client, dbconn,
+                pkg_id, entropy_client, repo,
                 show_download_if_quiet = self._showdownload,
                 show_repo_if_quiet = self._showrepo,
                 show_desc_if_quiet = self._showdesc,
                 show_slot_if_quiet = self._showslot,
                 extended = self._verbose,
-                installed_search = from_client,
+                installed_search = repo is inst_repo,
                 quiet = self._quiet)
 
         return results

@@ -23,7 +23,7 @@ import entropy.tools
 import entropy.dep
 
 from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.command import SoloCommand
+from solo.commands.command import SoloCommand, sharedlock
 
 
 class SoloPkg(SoloCommand):
@@ -71,12 +71,6 @@ Execute advanced tasks on Entropy packages and the running system.
             description=_("execute advanced tasks on packages"),
             help=_("available commands"))
 
-        def _add_ask_to_parser(p):
-            p.add_argument(
-                "--ask", "-a", action="store_true",
-                default=self._ask,
-                help=_("ask before making any changes"))
-
         def _argparse_easygoing_valid_entropy_path(string):
             if os.path.isfile(string) and os.path.exists(string):
                 return string
@@ -100,7 +94,6 @@ Execute advanced tasks on Entropy packages and the running system.
             default=self._savedir,
             help=_("destination directory "
                    "where to save generated packages"))
-        _add_ask_to_parser(quickpkg_parser)
         quickpkg_parser.set_defaults(func=self._quickpkg)
         _commands["quickpkg"] = {}
 
@@ -117,7 +110,6 @@ Execute advanced tasks on Entropy packages and the running system.
             default=self._savedir,
             help=_("destination directory "
                    "where to save generated packages"))
-        _add_ask_to_parser(inflate_parser)
         inflate_parser.set_defaults(func=self._inflate)
         _commands["inflate"] = {}
 
@@ -134,7 +126,6 @@ Execute advanced tasks on Entropy packages and the running system.
             default=self._savedir,
             help=_("destination directory "
                    "where to save generated packages"))
-        _add_ask_to_parser(deflate_parser)
         deflate_parser.set_defaults(func=self._deflate)
         _commands["deflate"] = {}
 
@@ -151,7 +142,6 @@ Execute advanced tasks on Entropy packages and the running system.
             default=self._savedir,
             help=_("destination directory "
                    "where to save generated packages"))
-        _add_ask_to_parser(extract_parser)
         extract_parser.set_defaults(func=self._extract)
         _commands["extract"] = {}
 
@@ -174,7 +164,7 @@ Execute advanced tasks on Entropy packages and the running system.
             return parser.print_help, []
 
         self._nsargs = nsargs
-        return self._call_locked, [nsargs.func]
+        return self._call_unlocked, [nsargs.func]
 
     def bashcomp(self, last_arg):
         """
@@ -183,19 +173,15 @@ Execute advanced tasks on Entropy packages and the running system.
         self._get_parser() # this will generate self._commands
         return self._hierarchical_bashcomp(last_arg, [], self._commands)
 
-    def _scan_packages(self, entropy_client, packages, installed=False):
+    def _scan_packages(self, entropy_client, inst_repo, packages):
         """
         Scan the list of package names filtering out unmatched
         entries.
         """
         found_pkgs = []
         for package in packages:
-            if installed:
-                repo = entropy_client.installed_repository()
-                repo_id = repo.repository_id()
-                package_id, _pkg_rc = repo.atomMatch(package)
-            else:
-                package_id, repo_id = entropy_client.atom_match(package)
+            package_id, _pkg_rc = inst_repo.atomMatch(package)
+
             if package_id == -1:
                 mytxt = "!!! %s: %s %s." % (
                     purple(_("Warning")),
@@ -209,20 +195,24 @@ Execute advanced tasks on Entropy packages and the running system.
                 entropy_client.output(
                     "!!!", level="warning", importance=1)
                 continue
-            found_pkgs.append((package_id, repo_id))
+
+            found_pkgs.append(package_id)
+
         return found_pkgs
 
-    def _quickpkg(self, entropy_client):
+    @sharedlock
+    def _quickpkg(self, entropy_client, inst_repo):
         """
         Solo Pkg Quickpkg command.
         """
         packages = self._nsargs.packages
-        ask = self._ask
         savedir = self._nsargs.savedir
+
         if not os.path.isdir(savedir) and not os.path.exists(savedir):
             # this is validated by the parser
             # but not in case of no --savedir provided
             const_setup_directory(savedir)
+
         if not os.path.exists(savedir):
             entropy_client.output(
                 "%s: %s" % (
@@ -230,47 +220,20 @@ Execute advanced tasks on Entropy packages and the running system.
                     savedir,), level="error", importance=1)
             return 1
 
-        entropy_repository = entropy_client.installed_repository()
-
-        pkg_matches = self._scan_packages(entropy_client, packages,
-                                          installed=True)
-        if not pkg_matches:
+        package_ids = self._scan_packages(entropy_client, inst_repo, packages)
+        if not package_ids:
             return 1
 
-        entropy_client.output(
-            "%s:" % (
-                brown(_("This is the list of packages "
-                        "that would be considered")),
-                ))
+        for package_id in package_ids:
 
-        for pkg in pkg_matches:
-            pkg_id, pkg_repo = pkg
-            repo = entropy_client.open_repository(pkg_repo)
-            atom = repo.retrieveAtom(pkg_id)
-            entropy_client.output(
-                "[%s] %s" % (
-                    brown(pkg_repo),
-                    darkgreen(atom),),
-                header="  ")
-
-        if ask:
-            q_rc = entropy_client.ask_question(
-                _("Would you like to continue ?"))
-            if q_rc == _("No"):
-                return 0
-
-        for pkg in pkg_matches:
-
-            pkg_id, pkg_repo = pkg
-            repo = entropy_client.open_repository(pkg_repo)
-            atom = repo.retrieveAtom(pkg_id)
+            atom = inst_repo.retrieveAtom(package_id)
             entropy_client.output(
                 "%s: %s" % (
                     teal(_("generating package")),
                     purple(atom),),
                 header=brown(" @@ "), back=True)
 
-            pkg_data = repo.getPackageData(pkg_id)
+            pkg_data = inst_repo.getPackageData(package_id)
             file_path = entropy_client.generate_package(
                 pkg_data, save_directory=savedir)
             if file_path is None:
@@ -295,12 +258,13 @@ Execute advanced tasks on Entropy packages and the running system.
         Solo Pkg Inflate command.
         """
         files = self._nsargs.files
-        ask = self._ask
         savedir = self._nsargs.savedir
+
         if not os.path.isdir(savedir) and not os.path.exists(savedir):
             # this is validated by the parser
             # but not in case of no --savedir provided
             const_setup_directory(savedir)
+
         if not os.path.exists(savedir):
             entropy_client.output(
                 "%s: %s" % (
@@ -346,7 +310,8 @@ Execute advanced tasks on Entropy packages and the running system.
                 ext=etpConst['packagesext'],
                 revision=pkg_data['revision'],
                 sha1=sha1)
-            pkg_data['download'] = download_dirpath + "/" + download_name
+            pkg_data['download'] = download_dirpath + os.path.sep + \
+                                   download_name
 
             # migrate to the proper format
             final_path = os.path.join(savedir, download_name)
@@ -362,7 +327,7 @@ Execute advanced tasks on Entropy packages and the running system.
             # attach entropy metadata to package file
             repo = entropy_client.open_generic_repository(tmp_path)
             repo.initializeRepository()
-            package_id = repo.addPackage(
+            _package_id = repo.addPackage(
                 pkg_data, revision=pkg_data['revision'])
             repo.commit()
             repo.close()
@@ -391,12 +356,13 @@ Execute advanced tasks on Entropy packages and the running system.
         Solo Pkg Deflate command.
         """
         files = self._nsargs.files
-        ask = self._ask
         savedir = self._nsargs.savedir
+
         if not os.path.isdir(savedir) and not os.path.exists(savedir):
             # this is validated by the parser
             # but not in case of no --savedir provided
             const_setup_directory(savedir)
+
         if not os.path.exists(savedir):
             entropy_client.output(
                 "%s: %s" % (
@@ -438,12 +404,13 @@ Execute advanced tasks on Entropy packages and the running system.
         Solo Pkg Extract command.
         """
         files = self._nsargs.files
-        ask = self._ask
         savedir = self._nsargs.savedir
+
         if not os.path.isdir(savedir) and not os.path.exists(savedir):
             # this is validated by the parser
             # but not in case of no --savedir provided
             const_setup_directory(savedir)
+
         if not os.path.exists(savedir):
             entropy_client.output(
                 "%s: %s" % (

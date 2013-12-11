@@ -19,6 +19,7 @@ import fcntl
 import signal
 import errno
 import codecs
+import contextlib
 
 from entropy.const import const_is_python3
 
@@ -566,6 +567,28 @@ class ReadersWritersSemaphore(object):
         self.__no_writers.release()
         self.__write_switch.release(self.__no_readers)
 
+    @contextlib.contextmanager
+    def reader(self):
+        """
+        Acquire the Reader end.
+        """
+        self.reader_acquire()
+        try:
+            yield
+        finally:
+            self.reader_release()
+
+    @contextlib.contextmanager
+    def writer(self):
+        """
+        Acquire the Writer end.
+        """
+        self.writer_acquire()
+        try:
+            yield
+        finally:
+            self.writer_release()
+
 
 class FlockFile(object):
 
@@ -582,6 +605,9 @@ class FlockFile(object):
         """
 
     def __init__(self, file_path, fd = None, fobj = None):
+        self._wait_msg_cb = None
+        self._acquired_msg_cb = None
+
         self._path = file_path
         if fobj:
             self._f = fobj
@@ -594,6 +620,54 @@ class FlockFile(object):
                 if err.errno in (errno.ENOENT, errno.EACCES):
                     raise FlockFile.FlockFileInitFailure(err)
                 raise
+
+    @contextlib.contextmanager
+    def shared(self):
+        """
+        Acquire the lock in shared mode (context manager).
+        """
+        acquired = False
+        try:
+            acquired = self.try_acquire_shared()
+            if not acquired:
+                if self._wait_msg_cb:
+                    self._wait_msg_cb(self, False)
+
+                self.acquire_shared()
+                acquired = True
+
+                if self._acquired_msg_cb:
+                    self._acquired_msg_cb(self, False)
+
+            yield
+
+        finally:
+            if acquired:
+                self.release()
+
+    @contextlib.contextmanager
+    def exclusive(self):
+        """
+        Acquire the lock in exclusive mode.
+        """
+        acquired = False
+        try:
+            acquired = self.try_acquire_exclusive()
+            if not acquired:
+                if self._wait_msg_cb:
+                    self._wait_msg_cb(self, True)
+
+                self.acquire_exclusive()
+                acquired = True
+
+                if self._acquired_msg_cb:
+                    self._acquired_msg_cb(self, True)
+
+            yield
+
+        finally:
+            if acquired:
+                self.release()
 
     def acquire_shared(self):
         """
@@ -699,6 +773,12 @@ class FlockFile(object):
         Release the lock previously acquired.
         """
         fcntl.flock(self._f.fileno(), fcntl.LOCK_UN)
+
+    def get_path(self):
+        """
+        Return the file path associated with this instance.
+        """
+        return self._path
 
     def get_file(self):
         """

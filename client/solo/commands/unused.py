@@ -19,7 +19,8 @@ from entropy.output import red, blue, brown, darkgreen
 import entropy.tools
 
 from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.command import SoloCommand
+from solo.commands.command import SoloCommand, sharedlock
+
 
 class SoloUnused(SoloCommand):
     """
@@ -94,7 +95,7 @@ Report unused packages that could be removed.
         self._sortbysize = nsargs.sortbysize
         self._byuser = nsargs.by_user
 
-        return self._call_locked, [self._unused]
+        return self._call_unlocked, [self._unused]
 
     def bashcomp(self, last_arg):
         """
@@ -105,7 +106,8 @@ Report unused packages that could be removed.
         self._get_parser()
         return self._bashcomp(sys.stdout, last_arg, self._commands)
 
-    def _unused(self, entropy_client):
+    @sharedlock
+    def _unused(self, entropy_client, inst_repo):
         """
         Command implementation.
         """
@@ -116,18 +118,17 @@ Report unused packages that could be removed.
                       "pay attention, there can be false positives")),),
                 header=red(" @@ "))
 
-        installed_repo = entropy_client.installed_repository()
         def _unused_packages_test():
-            return [x for x in installed_repo.retrieveUnusedPackageIds() \
+            return [x for x in inst_repo.retrieveUnusedPackageIds() \
                         if entropy_client.validate_package_removal(x)]
 
-        data = [(installed_repo.retrieveOnDiskSize(x), x, \
-            installed_repo.retrieveAtom(x),) for x in \
+        data = [(inst_repo.retrieveOnDiskSize(x), x, \
+            inst_repo.retrieveAtom(x),) for x in \
                 _unused_packages_test()]
 
         def _user_filter(item):
             _size, _pkg_id, _atom = item
-            _source = installed_repo.getInstalledPackageSource(_pkg_id)
+            _source = inst_repo.getInstalledPackageSource(_pkg_id)
             if _source == etpConst['install_sources']['user']:
                 # remove from list, user installed stuff not going
                 # to be listed

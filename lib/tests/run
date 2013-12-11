@@ -15,12 +15,12 @@ sys.path.insert(0,'../')
 from entropy.const import etpSys
 etpSys['unittest'] = True
 
-from tests import db, client, server, misc, fetchers, tools, dep, i18n, spm, \
-    qa, core, security, const
+from tests import locks, db, client, server, misc, fetchers, tools, dep, \
+    i18n, spm, qa, core, security, const
 
 # Add to the list the module to test
-mods = [db, client, server, misc, fetchers, tools, dep, i18n, spm, qa, core,
-    security, const]
+mods = [locks, db, client, server, misc, fetchers, tools, dep, i18n, spm, qa,
+        core, security, const]
 
 tests = []
 for mod in mods:

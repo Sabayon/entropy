@@ -83,7 +83,7 @@ Test system integrity by checking installed packages dependencies.
         self._quiet = nsargs.quiet
         self._pretend = nsargs.pretend
 
-        return self._call_locked, [self._test]
+        return self._call_unlocked, [self._test]
 
     def bashcomp(self, last_arg):
         """
@@ -96,22 +96,17 @@ Test system integrity by checking installed packages dependencies.
         outcome += repos
         return self._bashcomp(sys.stdout, last_arg, outcome)
 
-    def _test(self, entropy_client):
+    def _test_installed(self, entropy_client, inst_repo):
         """
-        Command implementation.
+        Test the installed packages dependencies.
         """
-        entropy_client.output(
-            "%s..." % (blue(_("Running dependency test")),),
-            header=darkred(" @@ "))
+        crying_atoms = {}
+        found_deps = set()
 
         deps_not_matched = entropy_client.dependencies_test()
         if not deps_not_matched:
-            entropy_client.output("")
-            return 0
+            return deps_not_matched, crying_atoms, found_deps
 
-        crying_atoms = {}
-        found_deps = set()
-        inst_repo = entropy_client.installed_repository()
         for dep in deps_not_matched:
 
             r_dep_id = inst_repo.searchDependency(dep)
@@ -155,11 +150,32 @@ Test system integrity by checking installed packages dependencies.
                     found_deps.add(key_slot)
                     continue
 
+        return deps_not_matched, crying_atoms, found_deps
+
+    def _test(self, entropy_client):
+        """
+        Command implementation.
+        """
+        entropy_client.output(
+            "%s..." % (blue(_("Running dependency test")),),
+            header=darkred(" @@ "))
+
+        inst_repo = entropy_client.installed_repository()
+        with inst_repo.shared():
+            not_found_deps, crying_atoms, found_deps = self._test_installed(
+                entropy_client, inst_repo)
+
+        if not not_found_deps:
+            entropy_client.output(
+                darkgreen(_("No missing dependencies")),
+                header=darkred(" @@ "))
+            return 0
+
         entropy_client.output(
             "%s:" % (blue(_("These are the dependencies not found")),),
             header=darkred(" @@ "))
 
-        for atom in deps_not_matched:
+        for atom in not_found_deps:
             entropy_client.output(
                 darkred(atom),
                 header="   # ")

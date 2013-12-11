@@ -19,6 +19,7 @@ from entropy.core.settings.base import SystemSettings
 from entropy.exceptions import EntropyException
 
 from entropy.const import const_convert_to_rawstring, etpConst
+from entropy.locks import SimpleFileLock
 import entropy.dep
 import entropy.tools
 
@@ -527,7 +528,7 @@ def _generate(args):
     acquired = False
     try:
 
-        acquired = entropy.tools.acquire_lock(lock_file, lock_map)
+        acquired = SimpleFileLock.acquire_lock(lock_file, lock_map)
         if not acquired:
             print_error(brown(_("Another instance is running.")))
             return 1
@@ -559,7 +560,7 @@ def _generate(args):
 
     finally:
         if acquired:
-            entropy.tools.release_lock(lock_file, lock_map)
+            SimpleFileLock.release_lock(lock_file, lock_map)
 
 
 if __name__ == "__main__":

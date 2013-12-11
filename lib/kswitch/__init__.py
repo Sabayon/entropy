@@ -135,6 +135,13 @@ class CannotFindRunningKernel(EntropyException):
 
 class KernelSwitcher(object):
 
+    """
+    Helper class for operating system kernel upgrades.
+
+    This class is process and thread safe with regards to the
+    Installed Packages Repository.
+    """
+
     def __init__(self, entropy_client):
         """
         KernelSwitcher constructor.
@@ -188,6 +195,9 @@ class KernelSwitcher(object):
         The installed package identifier is then returned or
         CannotFindRunningKernel() exception is raised otherwise.
 
+        This method is process and thread safe with regards to the Installed
+        Packages Repository.
+
         @return: the installed package identifier
         @rtype: int
         @raise CannotFindRunningKernel: if the package is not found
@@ -203,10 +213,10 @@ class KernelSwitcher(object):
         if uname_r is not None:
             pkg_file = _guess_kernel_package_file(uname_r)
 
-        package_id = -1
         if pkg_file is not None:
             inst_repo = self._entropy.installed_repository()
-            pkg_ids = list(inst_repo.searchBelongs(pkg_file))
+            with inst_repo.shared():
+                pkg_ids = list(inst_repo.searchBelongs(pkg_file))
             if pkg_ids:
                 # if more than one, get the latest
                 pkg_ids.sort(reverse=True)
@@ -220,6 +230,9 @@ class KernelSwitcher(object):
         Return a PreparedSwitch object that can be used to execute the kernel
         switch process. API user should call, in order, pre(), run() and post().
         post() should only be called if run() returns zero exit status.
+
+        This method is process and thread safe with regards to the Installed
+        Packages Repository.
         """
 
         class PreparedSwitch(object):
@@ -242,8 +255,6 @@ class KernelSwitcher(object):
                 return self._matches
 
             def pre(self):
-                pkg_id, pkg_repo = self._kernel_match
-
                 # this can be None !
                 self._target_tag = self._switcher._get_target_tag(
                     self._kernel_match)
@@ -257,14 +268,6 @@ class KernelSwitcher(object):
                         latest_kernel = self._switcher.running_kernel_package()
                     except CannotFindRunningKernel:
                         raise
-
-                if latest_kernel == -1:
-                    latest_kernel, _k_rc = inst_repo.atomMatch(
-                        KERNEL_BINARY_VIRTUAL)
-                installed_revdeps = []
-                if (latest_kernel != -1) and self._target_tag:
-                    installed_revdeps = self._entropy.get_removal_queue(
-                        [latest_kernel], recursive = False)
 
                 # only pull in packages that are installed at this time.
                 def _installed_pkgs_translator(inst_pkg_id):
@@ -281,7 +284,18 @@ class KernelSwitcher(object):
                         return None
                     return pkg_id, pkg_repo
 
-                matches = map(_installed_pkgs_translator, installed_revdeps)
+                with inst_repo.shared():
+                    if latest_kernel == -1:
+                        latest_kernel, _k_rc = inst_repo.atomMatch(
+                            KERNEL_BINARY_VIRTUAL)
+
+                    installed_revdeps = []
+                    if (latest_kernel != -1) and self._target_tag:
+                        installed_revdeps = self._entropy.get_removal_queue(
+                            [latest_kernel], recursive = False)
+
+                    matches = map(_installed_pkgs_translator, installed_revdeps)
+
                 matches = [x for x in matches if x is not None]
                 matches.append(kernel_match)
                 self._matches = matches
@@ -320,6 +334,9 @@ class KernelSwitcher(object):
         Caller is expected to acquire any relevant Entropy lock before
         calling this function.
 
+        This method is process and thread safe with regards to the Installed
+        Packages Repository.
+
         @param kernel_match: an Entropy package match referencing
             a valid kernel package
         @type kernel_match: tuple
@@ -349,6 +366,9 @@ class KernelSwitcher(object):
         """
         Return a sorted (by atom) list of currently available
         kernels.
+
+        This method is process and thread safe with regards to the Installed
+        Packages Repository.
 
         @param entropy_client: an Entropy Client object instance
         @type entropy_client: entropy.client.interfaces.Client

@@ -50,6 +50,7 @@ from RigoDaemon.config import DbusConfig as DaemonDbusConfig
 
 from entropy.const import const_debug_write, \
     const_debug_enabled, etpConst
+from entropy.locks import EntropyResourcesLock
 from entropy.misc import ParallelTask
 from entropy.exceptions import EntropyPackageException
 
@@ -89,12 +90,12 @@ class RigoServiceController(GObject.Object):
         SharedLocker ensures that Entropy Resources
         lock and unlock operations are called once,
         avoiding reentrancy, which is a property of
-        lock_resources() and unlock_resources(), even
-        during concurrent access.
+        *acquire*(), even during concurrent access.
         """
 
         def __init__(self, entropy_client, locked):
             self._entropy = entropy_client
+            self._reslock = EntropyResourcesLock(output=self._entropy)
             self._locking_mutex = Lock()
             self._locked = locked
 
@@ -105,8 +106,7 @@ class RigoServiceController(GObject.Object):
                     lock = True
                     self._locked = True
             if lock:
-                self._entropy.lock_resources(
-                    blocking=True, shared=True)
+                self._reslock.acquire_shared()
 
         def unlock(self):
             with self._locking_mutex:
@@ -115,7 +115,7 @@ class RigoServiceController(GObject.Object):
                     unlock = True
                     self._locked = False
             if unlock:
-                self._entropy.unlock_resources()
+                self._reslock.release()
 
     __gsignals__ = {
         # we request to lock the whole UI wrt repo
@@ -945,14 +945,11 @@ class RigoServiceController(GObject.Object):
 
         if self._nc is not None:
 
-            self._entropy.rwsem().reader_acquire()
-            try:
+            with self._entropy.rwsem().reader():
                 def _key_func(x):
                     return self._entropy.open_repository(
                         x[1]).retrieveName(x[0]).lower()
                 update.sort(key=_key_func)
-            finally:
-                self._entropy.rwsem().reader_release()
 
             def _on_upgrade(box):
                 self._nc.remove(box)
@@ -1028,12 +1025,9 @@ class RigoServiceController(GObject.Object):
 
         if self._confc is not None and self._nc is not None:
 
-            self._entropy.rwsem().reader_acquire()
-            try:
-                repository_id = self._entropy.installed_repository(
-                    ).repository_id()
-            finally:
-                self._entropy.rwsem().reader_release()
+            with self._entropy.rwsem().reader():
+                inst_repo = self._entropy.installed_repository()
+                repository_id = inst_repo.repository_id()
 
             config_updates = []
             for root, source, dest, pkg_ids, auto in updates:
@@ -1061,12 +1055,9 @@ class RigoServiceController(GObject.Object):
             "%s, normal: %s" % (
                 manual_package_ids, package_ids))
 
-        self._entropy.rwsem().reader_acquire()
-        try:
-            repository_id = self._entropy.installed_repository(
-                ).repository_id()
-        finally:
-            self._entropy.rwsem().reader_release()
+        with self._entropy.rwsem().reader():
+            inst_repo = self._entropy.installed_repository()
+            repository_id = inst_repo.repository_id()
 
         if manual_package_ids or package_ids:
             manual_apps = []
@@ -1121,11 +1112,8 @@ class RigoServiceController(GObject.Object):
         # so that Entropy.repositories() and other internal
         # metadata is consistent with the newly available
         # repositories.
-        self._entropy.rwsem().writer_acquire()
-        try:
+        with self._entropy.rwsem().writer():
             self._entropy._validate_repositories()
-        finally:
-            self._entropy.rwsem().writer_release()
 
         local_activity = LocalActivityStates.UPDATING_REPOSITORIES
         # we don't expect to fail here, it would
@@ -1627,12 +1615,8 @@ class RigoServiceController(GObject.Object):
         """
         Return the Entropy Package Groups object.
         """
-        self._entropy.rwsem().reader_acquire()
-        try:
-            groups = self._entropy.get_package_groups()
-            return groups
-        finally:
-            self._entropy.rwsem().reader_release()
+        with self._entropy.rwsem().reader():
+            return self._entropy.get_package_groups()
 
     def list_repositories(self):
         """
@@ -1640,8 +1624,8 @@ class RigoServiceController(GObject.Object):
         repository_id. Each list item is a tuple composed by
         (repository_id, description, enabled/disabled)
         """
-        self._entropy.rwsem().reader_acquire()
-        try:
+        with self._entropy.rwsem().reader():
+
             settings = self._entropy.Settings()
             repo_data = settings['repositories']
             available = repo_data['available']
@@ -1657,8 +1641,6 @@ class RigoServiceController(GObject.Object):
 
             repositories.sort(key=lambda x: x[0])
             return repositories
-        finally:
-            self._entropy.rwsem().reader_release()
 
     def enable_repository(self, repository_id):
         """
@@ -1971,8 +1953,7 @@ class RigoServiceController(GObject.Object):
         """
         Release all the local package file repositories.
         """
-        self._entropy.rwsem().writer_acquire()
-        try:
+        with self._entropy.rwsem().writer():
             while True:
                 try:
                     repository_id = self._package_repositories.popleft()
@@ -1980,8 +1961,6 @@ class RigoServiceController(GObject.Object):
                     break
                 self._entropy.remove_repository(
                     repository_id)
-        finally:
-            self._entropy.rwsem().writer_release()
 
     def _release_local_resources(self, clear_avc=True,
                                  clear_avc_silent=False,
@@ -1992,8 +1971,8 @@ class RigoServiceController(GObject.Object):
         For example, leaving EntropyRepository objects open
         would cause sqlite3 to deadlock.
         """
-        self._entropy.rwsem().writer_acquire()
-        try:
+        with self._entropy.rwsem().writer():
+
             if clear_avc and self._avc is not None:
                 if clear_avc_silent:
                     self._avc.clear_silent_safe()
@@ -2002,8 +1981,6 @@ class RigoServiceController(GObject.Object):
             self._entropy.close_repositories()
             if clear_callback is not None:
                 clear_callback()
-        finally:
-            self._entropy.rwsem().writer_release()
 
     def _please_wait(self, show):
         """
@@ -2614,23 +2591,21 @@ class RigoServiceController(GObject.Object):
         """
         Forward Application Package Install request to RigoDaemon.
         """
-        self._entropy.rwsem().writer_acquire()
-        try:
-            package_matches = self._entropy.add_package_repository(
-                package_path)
-        except EntropyPackageException as exc:
-            def _notify():
-                msg = _("Package Install Error: <i>%s</i>") % (exc,)
-                box = self.ServiceNotificationBox(
-                    prepare_markup(msg),
-                    Gtk.MessageType.ERROR,
-                    context_id=self.PKG_INSTALL_CONTEXT_ID)
-                box.add_destroy_button(_("Okay"))
-                self._nc.append(box)
-            GLib.idle_add(_notify)
-            return
-        finally:
-            self._entropy.rwsem().writer_release()
+        with self._entropy.rwsem().writer():
+            try:
+                package_matches = self._entropy.add_package_repository(
+                    package_path)
+            except EntropyPackageException as exc:
+                def _notify():
+                    msg = _("Package Install Error: <i>%s</i>") % (exc,)
+                    box = self.ServiceNotificationBox(
+                        prepare_markup(msg),
+                        Gtk.MessageType.ERROR,
+                        context_id=self.PKG_INSTALL_CONTEXT_ID)
+                    box.add_destroy_button(_("Okay"))
+                    self._nc.append(box)
+                GLib.idle_add(_notify)
+                return
 
         accepted = False
         accepted_count = 0
@@ -2648,13 +2623,10 @@ class RigoServiceController(GObject.Object):
             accepted_count += 1
 
         if accepted_count == 0:
-            self._entropy.rwsem().writer_acquire()
-            try:
+            with self._entropy.rwsem().writer():
                 for repository_id in repository_ids:
                     self._entropy.remove_repository(
                         repository_id)
-            finally:
-                self._entropy.rwsem().writer_release()
         else:
             for repository_id in repository_ids:
                 self._package_repositories.append(
@@ -2763,8 +2735,8 @@ class RigoServiceController(GObject.Object):
         Examine Applications that are going to be upgraded looking for
         licenses to read and accept.
         """
-        self._entropy.rwsem().reader_acquire()
-        try:
+        with self._entropy.rwsem().reader():
+
             outcome = self._entropy.calculate_updates()
 
             update = outcome['update']
@@ -2774,9 +2746,6 @@ class RigoServiceController(GObject.Object):
             licenses = self._entropy.get_licenses_to_accept(update)
             if not licenses:
                 return True
-
-        finally:
-            self._entropy.rwsem().reader_release()
 
         license_map = {}
         for lic_id, pkg_matches in licenses.items():

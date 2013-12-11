@@ -15,13 +15,15 @@ import warnings
 import hashlib
 import codecs
 import collections
+import contextlib
+import threading
 
 from entropy.i18n import _
 from entropy.exceptions import InvalidAtom
 from entropy.const import etpConst, const_cmp, const_debug_write, \
     const_convert_to_rawstring, const_mkstemp, const_is_python3
 from entropy.output import TextInterface, brown, bold, red, blue, purple, \
-    darkred
+    darkred, darkgreen
 from entropy.cache import EntropyCacher
 from entropy.core import EntropyPluginStore
 from entropy.core.settings.base import SystemSettings
@@ -404,6 +406,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         @param name: repository identifier (or name)
         @type name: string
         """
+        self._tls = threading.local()
+
         TextInterface.__init__(self)
         self._readonly = readonly
         self._caching = xcache
@@ -416,6 +420,259 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         self.__db_match_cache_key = EntropyCacher.CACHE_IDS['db_match']
 
         EntropyRepositoryPluginStore.__init__(self)
+
+    def lock_path(self):
+        """
+        Return the path of the file lock for this repository.
+        """
+        return os.path.join(
+            etpConst['entropyrundir'],
+            "repository", self.name + ".lock")
+
+    @contextlib.contextmanager
+    def direct(self):
+        """
+        Avoid acquiring any kind of lock, disable caches and access directly
+        to the underlying repository data.
+
+        In latency sensitive code paths, acquiring locks (especially file locks)
+        and blocking may be impractical. This context manager makes possible to
+        avoid that, at the price of returning stale or null data.
+
+        This method uses Thread Local Storage. In order to determine if
+        direct mode is enabled, just call directed().
+        memory cache is not cleared by this method, but both shared() and
+        exclusive() do that.
+        Nested calls are reference counted, so it's possible to enter the
+        direct() context more than once (in a nested way) without problems.
+
+        This method exists because some subclasses may have implemented their
+        own in-memory caches and if the locks aren't acquired, they may contain
+        stale data. However, keeping the cache clear may result in a big
+        performance penalty due to the fact that cold caches kill latency.
+        """
+        counter = getattr(self._tls, "_EntropyRepositoryCacheCounter", 0)
+        self._tls._EntropyRepositoryCacheCounter = counter + 1
+
+        try:
+            yield
+        finally:
+            self._tls._EntropyRepositoryCacheCounter -= 1
+
+    def directed(self):
+        """
+        Return whether direct mode is enabled or not for the current thread.
+        See direct() for more information.
+        """
+        return getattr(self._tls, "_EntropyRepositoryCacheCounter", 0) != 0
+
+    @contextlib.contextmanager
+    def shared(self):
+        """
+        Acquire a shared file lock for this repository (context manager).
+        This is used for inter-process synchronization only.
+
+        This locking infrastructure assumes that resources initialized during
+        object instantiation are valid throughout the whole object lifecycle.
+        If this is not the case, please synchronize using the Entropy Resources
+        Lock.
+        """
+        opaque = None
+        try:
+            opaque = self.try_acquire_shared()
+            if opaque is None:
+                lock_path = self.lock_path()
+
+                self.output(
+                    "%s %s ..." % (
+                        darkred(_("Acquiring shared lock on")),
+                        darkgreen(lock_path),
+                    ),
+                    level = "warning", # use stderr, avoid breaking --quiet
+                    back = True,
+                    importance = 0)
+
+                opaque = self.acquire_shared()
+
+                self.output(
+                    "%s %s" % (
+                        darkred(_("Acquired shared lock on")),
+                        darkgreen(lock_path),
+                    ),
+                    level = "warning", # use stderr, avoid breaking --quiet
+                    back = True,
+                    importance = 0)
+
+            yield
+
+        finally:
+            if opaque is not None:
+                self.release_shared(opaque)
+
+    @contextlib.contextmanager
+    def exclusive(self):
+        """
+        Acquire an exclusive file lock for this repository (context manager).
+        This is used for inter-process synchronization only.
+
+        This locking infrastructure assumes that resources initialized during
+        object instantiation are valid throughout the whole object lifecycle.
+        If this is not the case, please synchronize using the Entropy Resources
+        Lock.
+        """
+        opaque = None
+        try:
+            opaque = self.try_acquire_exclusive()
+            if opaque is None:
+                lock_path = self.lock_path()
+
+                self.output(
+                    "%s %s ..." % (
+                        darkred(_("Acquiring exclusive lock on")),
+                        darkgreen(lock_path),
+                    ),
+                    level = "warning", # use stderr, avoid breaking --quiet
+                    back = True,
+                    importance = 0)
+
+                opaque = self.acquire_exclusive()
+
+                self.output(
+                    "%s %s" % (
+                        darkred(_("Acquired exclusive lock on")),
+                        darkgreen(lock_path),
+                    ),
+                    level = "warning", # use stderr, avoid breaking --quiet
+                    back = True,
+                    importance = 0)
+
+            yield
+
+        finally:
+            if opaque is not None:
+                self.release_exclusive(opaque)
+
+    def acquire_shared(self):
+        """
+        Acquire a shared file lock for this repository.
+        This is used for inter-process synchronization only.
+
+        This locking infrastructure assumes that resources initialized during
+        object instantiation are valid throughout the whole object lifecycle.
+        If this is not the case, please synchronize using the Entropy Resources
+        Lock.
+
+        The only effect of not using these synchronization methods is that
+        stale results, incomplete results, None (in case of using a no
+        longer valid package id, for instance) could be returned by methods.
+        If your code can deal with such conditions, it is perfectly fine to
+        avoid locking.
+
+        @return: an opaque that must be used to release the lock.
+        @rtype: object
+        """
+        raise NotImplementedError()
+
+    def acquire_exclusive(self):
+        """
+        Acquire an exclusive file lock for this repository.
+        This is used for inter-process synchronization only.
+
+        This locking infrastructure assumes that resources initialized during
+        object instantiation are valid throughout the whole object lifecycle.
+        If this is not the case, please synchronize using the Entropy Resources
+        Lock.
+
+        The only effect of not using these synchronization methods is that
+        stale results, incomplete results, None (in case of using a no
+        longer valid package id, for instance) could be returned by methods.
+        If your code can deal with such conditions, it is perfectly fine to
+        avoid locking.
+
+        @return: an opaque that must be used to release the lock.
+        @rtype: object
+        """
+        raise NotImplementedError()
+
+    def try_acquire_shared(self):
+        """
+        Try to acquire a shared file lock for this repository.
+        This is used for inter-process synchronization only.
+
+        This locking infrastructure assumes that resources initialized during
+        object instantiation are valid throughout the whole object lifecycle.
+        If this is not the case, please synchronize using the Entropy Resources
+        Lock.
+
+        The only effect of not using these synchronization methods is that
+        stale results, incomplete results, None (in case of using a no
+        longer valid package id, for instance) could be returned by methods.
+        If your code can deal with such conditions, it is perfectly fine to
+        avoid locking.
+
+        @return: an opaque object that must be used to release the lock, None
+            otherwise.
+        @rtype: object or None
+        """
+        raise NotImplementedError()
+
+    def try_acquire_exclusive(self):
+        """
+        Try to acquire an exclusive file lock for this repository.
+        This is used for inter-process synchronization only.
+
+        This locking infrastructure assumes that resources initialized during
+        object instantiation are valid throughout the whole object lifecycle.
+        If this is not the case, please synchronize using the Entropy Resources
+        Lock.
+
+        The only effect of not using these synchronization methods is that
+        stale results, incomplete results, None (in case of using a no
+        longer valid package id, for instance) could be returned by methods.
+        If your code can deal with such conditions, it is perfectly fine to
+        avoid locking.
+
+        @return: an opaque object that must be used to release the lock, None
+            otherwise.
+        @rtype: object or None
+        """
+        raise NotImplementedError()
+
+    def release_shared(self, opaque):
+        """
+        Release the previously acquired shared file lock for this repository.
+        This is used for inter-process synchronization only.
+
+        Make sure to commit any pending transaction before releasing the lock.
+
+        The only effect of not using these synchronization methods is that
+        stale results, incomplete results, None (in case of using a no
+        longer valid package id, for instance) could be returned by methods.
+        If your code can deal with such conditions, it is perfectly fine to
+        avoid locking.
+
+        @param opaque: the opaque object returned by *acquire_shared methods.
+        @type opaque: object
+        """
+        raise NotImplementedError()
+
+    def release_exclusive(self, opaque):
+        """
+        Release the previously acquired exclusive file lock for this repository.
+        This is used for inter-process synchronization only.
+
+        Make sure to commit any pending transaction before releasing the lock.
+
+        The only effect of not using these synchronization methods is that
+        stale results, incomplete results, None (in case of using a no
+        longer valid package id, for instance) could be returned by methods.
+        If your code can deal with such conditions, it is perfectly fine to
+        avoid locking.
+
+        @param opaque: the opaque object returned by *acquire_exclusive methods.
+        @type opaque: object
+        """
+        raise NotImplementedError()
 
     def caching(self):
         """
@@ -4645,14 +4902,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             cached = self.__atomMatchFetchCache(atom, matchSlot,
                 multiMatch, maskFilter, extendedResults)
             if cached is not None:
-
-                try:
-                    cached = self.__atomMatchValidateCache(cached,
-                        multiMatch, extendedResults)
-                except (TypeError, ValueError, IndexError, KeyError,):
-                    cached = None
-
-            if cached is not None:
                 return cached
 
         # "or" dependency support
@@ -5154,47 +5403,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             self._cacher.push("%s/%s/%s_%s" % (
                 self.__db_match_cache_key, self.name, ck_sum, hash_str,),
                 kwargs.get('result'), async = False)
-
-    def __atomMatchValidateCache(self, cached_obj, multiMatch, extendedResults):
-        """
-        This method validates the cache in order to avoid cache keys collissions
-        or corruption that could lead to improper data returned.
-        """
-
-        # time wasted for a reason
-        data, rc = cached_obj
-
-        if multiMatch:
-            # data must be set !
-            if not isinstance(data, set):
-                return None
-        else:
-            # data must be int !
-            if not entropy.tools.isnumber(data):
-                return None
-
-        if rc != 0:
-            return cached_obj
-
-        if (not extendedResults) and (not multiMatch):
-            if not self.isPackageIdAvailable(data):
-                return None
-
-        elif extendedResults and (not multiMatch):
-            if not self.isPackageIdAvailable(data[0]):
-                return None
-
-        elif extendedResults and multiMatch:
-            package_ids = set([x[0] for x in data])
-            if not self.arePackageIdsAvailable(package_ids):
-                return None
-
-        elif (not extendedResults) and multiMatch:
-            # (set([x[0] for x in dbpkginfo]),0)
-            if not self.arePackageIdsAvailable(data):
-                return None
-
-        return cached_obj
 
     def __filterSlot(self, package_id, slot):
         if slot is None:

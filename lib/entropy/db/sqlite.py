@@ -11,6 +11,7 @@
 
 """
 import collections
+import errno
 import os
 import hashlib
 import time
@@ -23,9 +24,11 @@ import subprocess
 
 from entropy.const import etpConst, const_convert_to_unicode, \
     const_get_buffer, const_convert_to_rawstring, const_pid_exists, \
-    const_is_python3, const_debug_write, const_file_writable
+    const_is_python3, const_debug_write, const_file_writable, \
+    const_setup_directory, const_setup_file
 from entropy.exceptions import SystemDatabaseError
 from entropy.output import bold, red, blue, purple
+from entropy.locks import ResourceLock
 
 from entropy.db.exceptions import Warning, Error, InterfaceError, \
     DatabaseError, DataError, OperationalError, IntegrityError, \
@@ -197,6 +200,9 @@ class EntropySQLiteRepository(EntropySQLRepository):
             on close()
         @type temporary: bool
         """
+        self._rwsem_lock = threading.RLock()
+        self._rwsem = None
+
         self._sqlite = self.ModuleProxy.get()
 
         EntropySQLRepository.__init__(
@@ -213,7 +219,9 @@ class EntropySQLiteRepository(EntropySQLRepository):
         except (OSError, IOError):
             self.__cur_mtime = None
 
-        self.__structure_update = False
+        self._schema_update_run = False
+        self._schema_update_lock = threading.Lock()
+
         if not self._skip_checks:
 
             if not entropy.tools.is_user_in_entropy_group():
@@ -223,8 +231,36 @@ class EntropySQLiteRepository(EntropySQLRepository):
             if entropy.tools.islive() and not etpConst['systemroot']:
                 self._indexing = False
 
+        self._maybeDatabaseSchemaUpdates()
+
+    def lock_path(self):
+        """
+        Overridden from EntropyBaseRepository.
+        """
+        if self._is_memory():
+            return os.path.join(
+                etpConst['entropyrundir'],
+                "repository",
+                "%s_%s_%s.lock" % (
+                    self.name,
+                    os.getpid(),
+                    id(self)
+                )
+            )
+        return super(EntropySQLiteRepository, self).lock_path()
+
+    def _maybeDatabaseSchemaUpdates(self):
+        """
+        Determine whether it is necessary to run a schema update.
+        """
+        if self._schema_update_run:
+            return
+
+        update = False
+        if not self._skip_checks:
+
             def _is_avail():
-                if self._db == ":memory:":
+                if self._is_memory():
                     return True
                 return const_file_writable(self._db)
 
@@ -234,16 +270,18 @@ class EntropySQLiteRepository(EntropySQLRepository):
 
                     if entropy.tools.islive(): # this works
                         if etpConst['systemroot']:
-                            self.__structure_update = True
+                            update = True
                     else:
-                        self.__structure_update = True
+                        update = True
 
             except Error:
                 self._cleanup_all(_cleanup_main_thread=False)
                 raise
 
-        if self.__structure_update:
-            self._databaseStructureUpdates()
+        if update:
+            with self.exclusive(), self._schema_update_lock:
+                self._schema_update_run = True
+                self._databaseSchemaUpdates()
 
     def _concatOperator(self, fields):
         """
@@ -321,7 +359,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
         """
         Reimplemented from EntropySQLRepository.
         """
-        if (not self._readonly) and (self._db != ":memory:"):
+        if (not self._readonly) and not self._is_memory():
             if os.getuid() != 0:
                 # make sure that user can write to file
                 # before returning False, override actual
@@ -367,7 +405,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
                 _init_db = True
         # memory databases are critical because every new cursor brings
         # up a totally empty repository. So, enforce initialization.
-        if _init_db and self._db == ":memory:":
+        if _init_db and self._is_memory():
             self.initializeRepository()
         return cursor
 
@@ -400,7 +438,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
                 conn = SQLiteConnectionWrapper.connect(
                     self.ModuleProxy, self._sqlite,
                     SQLiteConnectionWrapper,
-                    self._db, timeout=30.0,
+                    self._db, timeout=60.0,
                     check_same_thread=False)
                 connection_pool[c_key] = conn, threads
                 if not _from_cursor:
@@ -419,8 +457,8 @@ class EntropySQLiteRepository(EntropySQLRepository):
         second_part = ", ro: %s|%s, caching: %s, indexing: %s" % (
             self._readonly, self.readonly(), self.caching(),
             self._indexing,)
-        third_part = ", name: %s, skip_upd: %s, st_upd: %s" % (
-            self.name, self._skip_checks, self.__structure_update,)
+        third_part = ", name: %s, skip_upd: %s" % (
+            self.name, self._skip_checks,)
         fourth_part = ", conn_pool: %s, cursor_cache: %s>" % (
             self._connection_pool(), self._cursor_pool(),)
 
@@ -444,6 +482,12 @@ class EntropySQLiteRepository(EntropySQLRepository):
         """
         self._cursor().execute('PRAGMA cache_size = %s' % (size,))
 
+    def _is_memory(self):
+        """
+        Return True whether the database is stored in memory.
+        """
+        return self._db == ":memory:"
+
     def _setDefaultCacheSize(self, size):
         """
         Change default low-level, storage engine based cache size.
@@ -466,6 +510,110 @@ class EntropySQLiteRepository(EntropySQLRepository):
             self._discardLiveCache()
         return self._live_cacher.get(self._getLiveCacheKey() + key)
 
+    _FLOCK_LOCK_MAP = {}
+    _FLOCK_LOCK_MUTEX = threading.Lock()
+
+    def _get_reslock(self, mode):
+        """
+        Get the lock object used for locking.
+        """
+
+        class RepositoryResourceLock(ResourceLock):
+
+            def __init__(self, repo, mode, path):
+                super(RepositoryResourceLock, self).__init__(
+                    EntropySQLiteRepository._FLOCK_LOCK_MAP,
+                    EntropySQLiteRepository._FLOCK_LOCK_MUTEX,
+                    output = repo)
+                self._path = path
+                self._mode = mode
+
+            def path(self):
+                """
+                Overridden from ResourceLock.
+                """
+                return self._path
+
+        return RepositoryResourceLock(self, mode, self.lock_path())
+
+    def acquire_shared(self):
+        """
+        Reimplemented from EntropyBaseRepository.
+        """
+        lock = self._get_reslock(False)
+        lock.acquire_shared()
+
+        # in-RAM cached data may have become stale
+        if not self._is_memory():
+            self.clearCache()
+
+        return lock
+
+    def try_acquire_shared(self):
+        """
+        Reimplemented from EntropyBaseRepository.
+        """
+        lock = self._get_reslock(False)
+
+        acquired = lock.try_acquire_shared()
+        if acquired:
+            # in-RAM cached data may have become stale
+            if not self._is_memory():
+                self.clearCache()
+            return lock
+        else:
+            return None
+
+    def acquire_exclusive(self):
+        """
+        Reimplemented from EntropyBaseRepository.
+        """
+        lock = self._get_reslock(True)
+        lock.acquire_exclusive()
+
+        # in-RAM cached data may have become stale
+        if not self._is_memory():
+            self.clearCache()
+        return lock
+
+    def try_acquire_exclusive(self):
+        """
+        Reimplemented from EntropyBaseRepository.
+        """
+        lock = self._get_reslock(True)
+
+        acquired = lock.try_acquire_exclusive()
+        if acquired:
+            # in-RAM cached data may have become stale
+            if not self._is_memory():
+                self.clearCache()
+            return lock
+
+    def _release_reslock(self, lock, mode):
+        """
+        Release the resource associated with the RepositoryResourceLock object.
+        """
+        if lock._mode != mode:
+            raise RuntimeError(
+                "Programming error: acquired lock in a different mode")
+        lock.release()
+
+    def release_shared(self, opaque):
+        """
+        Reimplemented from EntropyBaseRepository.
+        """
+        self.commit()
+
+        self._release_reslock(opaque, False)
+
+    def release_exclusive(self, opaque):
+        """
+        Reimplemented from EntropyBaseRepository.
+        """
+        self.commit()
+
+        self._release_reslock(opaque, True)
+
     def close(self, safe=False):
         """
         Reimplemented from EntropySQLRepository.
@@ -474,7 +622,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
         super(EntropySQLiteRepository, self).close(safe=safe)
 
         self._cleanup_all(_cleanup_main_thread=not safe)
-        if self._temporary and (self._db != ":memory:") and \
+        if self._temporary and (not self._is_memory()) and \
             os.path.isfile(self._db):
             try:
                 os.remove(self._db)
@@ -512,7 +660,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
         # set cache size
         self._setCacheSize(self._CACHE_SIZE)
         self._setDefaultCacheSize(self._CACHE_SIZE)
-        self._databaseStructureUpdates()
+        self._databaseSchemaUpdates()
 
         self.commit()
         self._clearLiveCache("_doesTableExist")
@@ -795,6 +943,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropySQLRepository.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).getVersioningData(
+                package_id)
+
         cached = self._getLiveCache("getVersioningData")
         if cached is None:
             cur = self._cursor().execute("""
@@ -813,6 +965,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropySQLRepository.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).getStrictData(
+                package_id)
+
         cached = self._getLiveCache("getStrictData")
         if cached is None:
             if self._isBaseinfoExtrainfo2010():
@@ -844,6 +1000,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropySQLRepository.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).getStrictScopeData(
+                package_id)
+
         cached = self._getLiveCache("getStrictScopeData")
         if cached is None:
             cur = self._cursor().execute("""
@@ -941,6 +1101,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropySQLRepository.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).retrieveDigest(
+                package_id)
+
         cached = self._getLiveCache("retrieveDigest")
         if cached is None:
             cur = self._cursor().execute("""
@@ -973,6 +1137,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         We must use the in-memory cache to do some memoization.
         We must handle _baseinfo_extrainfo_2010.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).retrieveKeySplit(
+                package_id)
+
         cached = self._getLiveCache("retrieveKeySplit")
         if cached is None:
             if self._isBaseinfoExtrainfo2010():
@@ -1001,6 +1169,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         We must use the in-memory cache to do some memoization.
         We must handle _baseinfo_extrainfo_2010.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).retrieveKeySlot(
+                package_id)
+
         cached = self._getLiveCache("retrieveKeySlot")
         if cached is None:
             if self._isBaseinfoExtrainfo2010():
@@ -1029,6 +1201,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         """
         Reimplemented from EntropyRepositoryBase.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository,
+                         self).retrieveKeySlotAggregated(package_id)
+
         cached = self._getLiveCache("retrieveKeySlotAggregated")
         if cached is None:
             if self._isBaseinfoExtrainfo2010():
@@ -1076,6 +1252,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropySQLRepository.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).retrieveVersion(
+                package_id)
+
         cached = self._getLiveCache("retrieveVersion")
         if cached is None:
             cur = self._cursor().execute("""
@@ -1094,6 +1274,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropySQLRepository.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).retrieveRevision(
+                package_id)
+
         cached = self._getLiveCache("retrieveRevision")
         if cached is None:
             cur = self._cursor().execute("""
@@ -1112,6 +1296,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropySQLRepository.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).retrieveUseflags(
+                package_id)
+
         cached = self._getLiveCache("retrieveUseflags")
         if cached is None:
             cur = self._cursor().execute("""
@@ -1137,6 +1325,12 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropyRepositoryBase.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).retrieveDependencies(
+                package_id, exnteded = extended, deptype = deptype,
+                exclude_deptypes = exclude_deptypes,
+                resolve_conditional_deps = resolve_conditional_deps)
+
         cached = self._getLiveCache("retrieveDependencies")
         if cached is None:
             cur = self._cursor().execute("""
@@ -1261,6 +1455,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropySQLRepository.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).retrieveSlot(
+                package_id)
+
         cached = self._getLiveCache("retrieveSlot")
         if cached is None:
             cur = self._cursor().execute("""
@@ -1279,6 +1477,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropySQLRepository.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).retrieveTag(
+                package_id)
+
         cached = self._getLiveCache("retrieveTag")
         # gain 2% speed on atomMatch()
         if cached is None:
@@ -1299,6 +1501,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         We must handle _baseinfo_extrainfo_2010.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).retrieveCategory(
+                package_id)
+
         cached = self._getLiveCache("retrieveCategory")
         # this gives 14% speed boost in atomMatch()
         if cached is None:
@@ -1372,6 +1578,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         We must handle _baseinfo_extrainfo_2010.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).searchKeySlot(
+                key, slot)
+
         cached = self._getLiveCache("searchKeySlot")
         if cached is None:
             if self._isBaseinfoExtrainfo2010():
@@ -1404,6 +1614,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         We must handle _baseinfo_extrainfo_2010.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).searchKeySlotTag(
+                key, slot, tag)
+
         cached = self._getLiveCache("searchKeySlotTag")
         if cached is None:
             if self._isBaseinfoExtrainfo2010():
@@ -1497,6 +1711,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         We must handle _baseinfo_extrainfo_2010.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).searchNameCategory(
+                name, category, just_id = just_id)
+
         cached = self._getLiveCache("searchNameCategory")
         # this gives 30% speed boost on atomMatch()
         if cached is None:
@@ -1602,7 +1820,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
         self.commit()
         self._settings_cache.clear()
 
-    def _databaseStructureUpdates(self):
+    def _databaseSchemaUpdates(self):
         """
         Do not forget to bump _SCHEMA_REVISION whenever you add more tables
         """
@@ -1810,7 +2028,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
         """
         if self._db is None:
             return 0.0
-        if self._db == ":memory:":
+        if self._is_memory():
             return 0.0
         return os.path.getmtime(self._db)
 
@@ -1950,6 +2168,11 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropySQLRepository.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository,
+                         self).getInstalledPackageRepository(
+                             package_id)
+
         cached = self._getLiveCache("getInstalledPackageRepository")
         if cached is None:
             cur = self._cursor().execute("""
@@ -1968,6 +2191,11 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropySQLRepositoryBase.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository,
+                         self).getInstalledPackageSource(
+                             package_id)
+
         cached = self._getLiveCache("getInstalledPackageSource")
         if cached is None:
             try:

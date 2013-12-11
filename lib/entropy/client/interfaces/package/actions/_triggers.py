@@ -9,21 +9,22 @@
     B{Entropy Package Manager Client Package installation triggers Interface}.
 
 """
-import sys
+import codecs
 import os
 import subprocess
-import codecs
+import sys
+import threading
 
-from entropy.client.interfaces.client import Client
-from entropy.const import etpConst, const_isunicode, etpSys, \
-    const_convert_to_rawstring, const_mkstemp
+from entropy.const import etpConst, etpSys, const_convert_to_rawstring, \
+    const_mkstemp
 from entropy.output import brown, bold, darkred, red, teal, purple
 from entropy.i18n import _
 
 import entropy.dep
 import entropy.tools
 
-class Trigger:
+
+class Trigger(object):
 
     """
     Entropy Client Package installation phases trigger functions.
@@ -63,28 +64,26 @@ class Trigger:
         self._prepared = False
         self._triggers = []
         self._trigger_data = {}
-        self._spm = None
-        try:
-            self._spm = self._entropy.Spm()
-        except Exception as err:
-            entropy.tools.print_traceback()
-            mytxt = darkred("%s, %s: %s, %s !") % (
-                _("Source Package Manager interface can't be loaded"),
-                _("Error"),
-                repr(err),
-                _("please fix"),
-            )
-            self._entropy.output(
-                mytxt,
-                importance = 0,
-                header = bold(" !!! ")
-            )
+
+        self._real_spm = None
+        self._real_spm_lock = threading.Lock()
 
         self._phase = phase
         # validate phase
         if self._phase not in Trigger.VALID_PHASES:
             mytxt = "Valid phases: %s" % (Trigger.VALID_PHASES,)
             raise AttributeError(mytxt)
+
+    @property
+    def _spm(self):
+        """
+        Return the Source Package Manager object.
+        """
+        with self._real_spm_lock:
+            if self._real_spm is None:
+                self._real_spm = self._entropy.Spm()
+
+        return self._real_spm
 
     def prepare(self):
         """
@@ -127,24 +126,23 @@ class Trigger:
         The postinstall phases generator.
         """
         functions = []
-        if self._spm is not None:
-            spm_class = self._entropy.Spm_class()
-            phases_map = spm_class.package_phases_map()
-            while True:
-                if self._pkgdata['spm_phases'] is not None:
-                    if phases_map.get('postinstall') not \
-                        in self._pkgdata['spm_phases']:
-                        break
-                functions.append(self._trigger_spm_postinstall)
-                break
+        spm_class = self._entropy.Spm_class()
+
+        phases_map = spm_class.package_phases_map()
+        while True:
+            if self._pkgdata['spm_phases'] is not None:
+                if phases_map.get('postinstall') not \
+                    in self._pkgdata['spm_phases']:
+                    break
+            functions.append(self._trigger_spm_postinstall)
+            break
 
         cont_dirs = self._pkgdata['affected_directories']
         ldpaths = entropy.tools.collect_linker_paths()
         if len(cont_dirs) != len(cont_dirs - set(ldpaths)):
             functions.insert(0, self._trigger_env_update)
-        elif self._spm is not None:
+        else:
             # check if environment dirs have been touched
-            spm_class = self._entropy.Spm_class()
             env_dirs = spm_class.ENV_DIRS
             if len(env_dirs) != len(env_dirs - cont_dirs):
                 functions.insert(0, self._trigger_env_update)
@@ -161,20 +159,19 @@ class Trigger:
         The setup phase generator.
         """
         functions = []
-        if self._spm is not None:
-            spm_class = self._entropy.Spm_class()
-            phases_map = spm_class.package_phases_map()
-            append_setup = False
-            if self._pkgdata['spm_phases'] != None:
-                if "setup" in self._pkgdata['spm_phases']:
-                    append_setup = True
-            else:
+
+        append_setup = False
+        if self._pkgdata['spm_phases'] != None:
+            if "setup" in self._pkgdata['spm_phases']:
                 append_setup = True
-            if append_setup:
-                functions.append(self._trigger_spm_setup)
+        else:
+            append_setup = True
+        if append_setup:
+            functions.append(self._trigger_spm_setup)
 
         if self._pkgdata['trigger']:
             functions.append(self._trigger_call_ext_setup)
+
         return functions
 
     def _preinstall(self):
@@ -182,19 +179,20 @@ class Trigger:
         The preinstall phases generator.
         """
         functions = []
-        if self._spm is not None:
-            spm_class = self._entropy.Spm_class()
-            phases_map = spm_class.package_phases_map()
-            while True:
-                if self._pkgdata['spm_phases'] != None:
-                    if phases_map.get('preinstall') not \
-                        in self._pkgdata['spm_phases']:
-                        break
-                functions.append(self._trigger_spm_preinstall)
-                break
+        spm_class = self._entropy.Spm_class()
+
+        phases_map = spm_class.package_phases_map()
+        while True:
+            if self._pkgdata['spm_phases'] != None:
+                if phases_map.get('preinstall') not \
+                    in self._pkgdata['spm_phases']:
+                    break
+            functions.append(self._trigger_spm_preinstall)
+            break
 
         if self._pkgdata['trigger']:
             functions.append(self._trigger_call_ext_preinstall)
+
         return functions
 
     def _postremove(self):
@@ -202,33 +200,33 @@ class Trigger:
         The postremove phases generator.
         """
         functions = []
-        if self._spm is not None:
-            spm_class = self._entropy.Spm_class()
-            phases_map = spm_class.package_phases_map()
+        spm_class = self._entropy.Spm_class()
 
-            # doing here because we need /var/db/pkg stuff
-            # in place and also because doesn't make any difference
-            while True:
-                if self._pkgdata['spm_phases'] != None:
-                    if phases_map.get('postremove') not \
-                        in self._pkgdata['spm_phases']:
-                        break
-                functions.append(self._trigger_spm_postremove)
-                break
+        phases_map = spm_class.package_phases_map()
+
+        # doing here because we need /var/db/pkg stuff
+        # in place and also because doesn't make any difference
+        while True:
+            if self._pkgdata['spm_phases'] != None:
+                if phases_map.get('postremove') not \
+                    in self._pkgdata['spm_phases']:
+                    break
+            functions.append(self._trigger_spm_postremove)
+            break
 
         cont_dirs = self._pkgdata['affected_directories']
         ldpaths = entropy.tools.collect_linker_paths()
         if len(cont_dirs) != len(cont_dirs - set(ldpaths)):
             functions.insert(0, self._trigger_env_update)
-        elif self._spm is not None:
+        else:
             # check if environment dirs have been touched
-            spm_class = self._entropy.Spm_class()
             env_dirs = spm_class.ENV_DIRS
             if len(env_dirs) != len(env_dirs - cont_dirs):
                 functions.insert(0, self._trigger_env_update)
 
         if self._pkgdata['trigger']:
             functions.append(self._trigger_call_ext_postremove)
+
         return functions
 
     def _preremove(self):
@@ -236,17 +234,17 @@ class Trigger:
         The preremove phases generator.
         """
         functions = []
-        if self._spm is not None:
-            spm_class = self._entropy.Spm_class()
-            phases_map = spm_class.package_phases_map()
+        spm_class = self._entropy.Spm_class()
 
-            while True:
-                if self._pkgdata['spm_phases'] != None:
-                    if phases_map.get('preremove') not \
-                        in self._pkgdata['spm_phases']:
-                        break
-                functions.append(self._trigger_spm_preremove)
-                break
+        phases_map = spm_class.package_phases_map()
+
+        while True:
+            if self._pkgdata['spm_phases'] != None:
+                if phases_map.get('preremove') not \
+                    in self._pkgdata['spm_phases']:
+                    break
+            functions.append(self._trigger_spm_preremove)
+            break
 
         if self._pkgdata['trigger']:
             functions.append(self._trigger_call_ext_preremove)
@@ -433,8 +431,8 @@ class Trigger:
 
     class _EntropyPySandbox:
 
-        def __init__(self, Entropy):
-            self._entropy = Entropy
+        def __init__(self, entropy_client):
+            self._entropy = entropy_client
 
         def run(self, stage, pkgdata, trigger_file):
             globalz = globals()
@@ -477,14 +475,12 @@ class Trigger:
                     pass
 
     def _trigger_env_update(self):
-        if self._spm is not None:
-            self._entropy.logger.log(
-                "[Trigger]",
-                etpConst['logging']['normal_loglevel_id'],
-                "[POST] Running env_update"
-            )
-            return self._spm.environment_update()
-        return 0
+        self._entropy.logger.log(
+            "[Trigger]",
+            etpConst['logging']['normal_loglevel_id'],
+            "[POST] Running env_update"
+        )
+        return self._spm.environment_update()
 
     def _trigger_infofile_install(self):
         info_exec = Trigger.INSTALL_INFO_EXEC
@@ -522,22 +518,19 @@ class Trigger:
         Wrapper against Source Package Manager's execute_package_phase.
         This method handles both fatal and non-fatal exceptions.
         """
-        if self._spm is None:
-            # Source Package Manager not available.
-            # TODO: In future this will be come fatal.
-            return 0
-
         self._entropy.output(
             "%s: %s" % (brown(_("Package phase")), teal(phase_name),),
             importance = 0,
             header = red("   ## "))
 
-        try:
-            self._spm.execute_package_phase(
-                action_metadata, package_metadata, action_name,
-                phase_name)
+        spm = self._spm
 
-        except self._spm.PhaseFailure as err:
+        try:
+            spm.execute_package_phase(
+                action_metadata, package_metadata,
+                action_name, phase_name)
+
+        except spm.PhaseFailure as err:
             txt = "%s: %s %s, %s. %s." % (
                 bold(_("QA")),
                 brown(_("Cannot run phase")),
@@ -552,7 +545,7 @@ class Trigger:
                 level = "warning")
             return 0  # non-fatal
 
-        except self._spm.OutdatedPhaseError as err:
+        except spm.OutdatedPhaseError as err:
             err_msg = "%s: %s" % (
                 brown(_("Source Package Manager is too old, "
                         "please update it")),
@@ -565,7 +558,7 @@ class Trigger:
                 )
             return 1
 
-        except self._spm.PhaseError as err:
+        except spm.PhaseError as err:
             err_msg = "%s: %s" % (
                 brown(_("Source Package Manager phase error")),
                 err)
