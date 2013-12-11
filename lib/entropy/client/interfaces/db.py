@@ -2070,6 +2070,7 @@ class AvailablePackagesRepositoryUpdater(object):
                     status = self._webservice_database_sync()
                 except:
                     # avoid broken entries, deal with every exception
+                    entropy.tools.print_traceback()
                     self.__remove_repository_files()
                     raise
 
