@@ -279,7 +279,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
                 raise
 
         if update:
-            with self._schema_update_lock:
+            with self.exclusive(), self._schema_update_lock:
                 self._schema_update_run = True
                 self._databaseSchemaUpdates()
 
