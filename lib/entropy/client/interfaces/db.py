@@ -2674,11 +2674,13 @@ class AvailablePackagesRepository(CachedRepository, MaskableRepository):
         Reimplemented from EntropyRepositoryBase
         """
         try:
-            return AvailablePackagesRepositoryUpdater(
+            updater = AvailablePackagesRepositoryUpdater(
                 entropy_client, repository_id,
-                force, gpg).update()
-        except KeyError:
+                force, gpg)
+        except KeyError as err:
             return EntropyRepositoryBase.REPOSITORY_NOT_AVAILABLE
+        else:
+            return updater.update()
 
     @staticmethod
     def revision(repository_id):
