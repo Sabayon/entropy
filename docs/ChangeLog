@@ -1,3 +1,1033 @@
+commit 43f4bd5ee3f18a3f2e462ae261cf33e426c3015d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 11 16:39:02 2013 +0100
+
+    Release Entropy 248
+
+commit 29c1eba9a69cd1088e4c3aaac5faaa978a0146cd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 11 16:37:53 2013 +0100
+
+    [Rigo] expand NotificationBox content area horizontally. This fix is needed by Gtk+ 3.10
+
+commit 592f6e9279899ea295c341125b3796b74390b16e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 11 16:25:02 2013 +0100
+
+    [server] update translations
+
+commit 8284141f642c020e05f5f7c2b2a3a96b9b2324ee
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 11 16:24:46 2013 +0100
+
+    [client] update translations
+
+commit cc9c35fd81b23271302b74ec423b7e6ca98ea3eb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 11 16:23:45 2013 +0100
+
+    [Rigo] update translations
+
+commit 041cf6687561db734952814f1770bfdf6a5d6a5b
+Merge: f758c1b 4bf19be
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 11 15:52:56 2013 +0100
+
+    Merge branch 'brave-new-lock'
+
+commit 4bf19be3bf1d80d21f88432d9e0ae81698ea18f7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 11 15:22:01 2013 +0100
+
+    [server] update translations
+
+commit bd253f3dabb18114c69c246a5f3fe5c07624c63a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 11 15:21:53 2013 +0100
+
+    [client] update translations
+
+commit fa786cce39df5397e8eb1f9fbad5781a47260d90
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 11 15:21:42 2013 +0100
+
+    [Rigo] update translations
+
+commit 68fe99d33ec80ad14a6446cb07c93e9b39515111
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 11 07:49:04 2013 +0100
+
+    [entropy.db.sqlite] acquire an exclusive lock if schema updates are needed
+    
+    _maybeDatabaseSchemaUpdates is only called inside the costructor,
+    at that time, it's not possible to acquire the lock elsewhere
+    because the object doesn't exist yet.
+
+commit 061b02bebc5cd0bfeae1750f387daf572ca3880f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 11 07:43:50 2013 +0100
+
+    [entropy.db.sqlite] move indexing setup back to object constructor
+    
+    This has nothing to do with schema update
+
+commit 023dc52368e977cfa4fb00bbec1bae88c0ee7031
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 10 22:30:22 2013 +0100
+
+    [todo] update TODO
+
+commit c67e227b48b27fc323f58ba22447c7f6710c1e6e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 10 22:27:05 2013 +0100
+
+    [todo] update TODO
+
+commit de88d6cc73e691722dd537b4d632e3176c3e239a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 10 22:22:41 2013 +0100
+
+    [entropy.client.repository] wrap Repository.sync() around a ResourceLock
+
+commit 82d6d37bcf8881028a8a0abfd34c9524e2b0b368
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 10 21:58:19 2013 +0100
+
+    [entropy.db.sqlite] move schema update code away from __init__
+
+commit 7808ad6b92926491026396fd48c9a932c6c13c03
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 10 21:42:34 2013 +0100
+
+    [entropy.db.sqlite] migrate locking code to entropy.locks.ResourceLock
+    
+    The new EntropySQLiteRepository uses ResourceLock, and gains support
+    for reentrancy, anti-deadlock safety measures (only for nested calls),
+    unification of memory and file repositories locking code (the semantics
+    was already the same).
+
+commit 401b9cbeb3ffe2c3558e02cb74bc9cb58b93f43f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 10 16:42:34 2013 +0100
+
+    [entropy.client.loaders] Security: pass args and kwargs down to the object constructor
+
+commit 498674828dd4fe774ab313055edbc80c76221dca
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 10 16:39:55 2013 +0100
+
+    [entropy.tools] get_hash_from_md5_file: do not hide IOError exceptions
+
+commit fc597d04c59373ed912028de445b248699388895
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 10 12:08:26 2013 +0100
+
+    [entropy.security] refactor System, add internal locking support, improve speed
+
+commit b99def91287d04c1ca7b245f878f9dbdb522ebdb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 10 11:22:42 2013 +0100
+
+    [entropy.locks] add exclusive() and shared() context managers
+
+commit 47e9b6ee0ebd136f626190ca73c58da62fae9d98
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 10 05:39:59 2013 +0100
+
+    [entropy.locks] rename _GenericResourceLock to ResourceLock
+
+commit 94ab49fd0b0e6aa7cf32a3dec415de2184a12047
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Dec 9 14:36:34 2013 +0100
+
+    [tests] use const_mk{s,d}temp instead of tmpfile ones, default TMPDIR to /var/tmp
+
+commit 6a2d45df4712dd1830a715218b8ff910d0990a59
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Dec 9 14:24:37 2013 +0100
+
+    [entropy.locks] set recursed to False only when the reference counter is 0
+
+commit d080db0d3b63d6fb239adc0db656fdd2461a4876
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Dec 9 14:21:05 2013 +0100
+
+    [tests] locks: fix test class name
+
+commit bf3a8b79f9c6e7cadd784161e9003212916d0445
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Dec 9 14:19:21 2013 +0100
+
+    [entropy.locks] use TLS for reentrancy safety checks, update tests
+
+commit 7e30b65744b543237bf5657fd6014a16b112dde4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 8 16:33:29 2013 +0100
+
+    [entropy.locks] _file_lock_create: beautify, open O_CREAT | O_RDONLY if shared mode
+
+commit ebf63e606051aa5643de2c7048b99144eb633545
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 8 16:15:39 2013 +0100
+
+    [entropy.locks] fix shared/exclusive locking mix due to reentrancy, add tests
+
+commit 97f18338bad1c78a4bd38eaf9df3ab00c3f0e61d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 8 14:54:42 2013 +0100
+
+    [entropy.locks] move acquire_lock(), release_lock() from entropy.tools
+
+commit d0f11728c848f53b93aee98cfe63667fc42da6e2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 8 14:46:05 2013 +0100
+
+    [entropy.security] remove unlocked_sync(), locking happens externally nowadays
+
+commit 358c6cc80c4d4e38b8075644a84c31eb031d133b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 8 14:42:23 2013 +0100
+
+    [entropy.client.repository] drop unlocked_sync(), locking happens externally nowadays
+
+commit 1917771b545092e70e4985fa70aaceb1893fadb2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 8 14:37:57 2013 +0100
+
+    [entropy.locks] move Entropy Resources Lock code to a separate module
+
+commit f758c1bfb5dc7ec4366763e216c069b08b4096f6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 8 07:37:20 2013 +0100
+
+    [Rigo] initialize the CSS provider as soon as possible, fixes a glitch with GTK 3.10
+
+commit 99bb796952f3609a7058292dba2c42cef90be84b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 8 07:37:20 2013 +0100
+
+    [Rigo] initialize the CSS provider as soon as possible, fixes a glitch with GTK 3.10
+
+commit b1ed42d80a315965be0ea47edf7552ae405a7d20
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 8 06:28:08 2013 +0100
+
+    [entropy.db.skel] drop __atomMatchValidateCache
+    
+    SHA1 is used nowadays and all the caching bugs should be fixed
+    rather than being hidden.
+
+commit c0776b07bdc98a5deda85197df5aa44b1e8dc6a5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 8 06:17:15 2013 +0100
+
+    [RigoDaemon] import the threading module directly
+
+commit 0f32ae26960ec68983bd2f0c197b9b835d316817
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 8 06:13:38 2013 +0100
+
+    [RigoDaemon] use systemd-logind shutdown/idle Inhibit() API
+    
+    Inhibit shutdown or idling (see systemd documentation) during
+    application management or repository update phases.
+
+commit d8ee468768698c8d092d309864cf838a15193c62
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 8 06:13:11 2013 +0100
+
+    [RigoDaemon] add execute_mainloop() wrapper method
+
+commit e213a5e775f5e38e752faca7256098aae23d77f6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 7 20:11:34 2013 +0100
+
+    [RigoDaemon] fix regression in api(), the keyword argument must be "sender"
+
+commit 4e597b87692d7649d9c836f23224c6f94332d908
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 7 20:06:00 2013 +0100
+
+    [RigoDaemon] use a shared lock with clean_package_cache
+
+commit 1688ce53ace5c355575d422fbc648968f65e2bf2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 7 20:04:14 2013 +0100
+
+    [entropy.client] clean_downloaded_packages, add skip_available_packages keyword arg
+    
+    skip_available_packages can be used to filter out the removal of
+    package tarballs still belonging to available packages. This makes
+    possible to just use a shared Entropy Resources lock.
+
+commit 16025afc75bdf6fd05e10d7c0a638f0371225b3f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 7 16:52:29 2013 +0100
+
+    [entropy.client.package] move "QA:" to translatable strings
+
+commit e75b95a1b314b2c87c1f3a3dd394f688ff7c170f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 7 16:51:38 2013 +0100
+
+    [entropy.client.package] workout_subdir: do not rmtree if symlink expected but directory found
+
+commit e6cca254730d35c00373eed3688353747ea47e7b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 7 16:44:04 2013 +0100
+
+    [entropy.client.package] fail (rather than rmtree) when a file is expected but directory is found
+
+commit 0d486bc47090d4f3600b415fbfd0283eaccc4a31
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 7 16:33:18 2013 +0100
+
+    [entropy.client.package] if a directory is a file, do not unlink() but rename()
+
+commit a0d4711cdce8d239d802f90ebad785e89305cf56
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 7 16:25:17 2013 +0100
+
+    [entropy.client.package.actions] remove: commit after insertSpmUid()
+
+commit 6d4f9e3089634fd70fb569ad208f70f32513b6bd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 7 16:22:31 2013 +0100
+
+    [entropy.client.package.actions] install: commit after insertSpmUid()
+
+commit 529203ce5a284b1db13dfc191c3f90b5e820fa99
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 7 16:05:15 2013 +0100
+
+    [RigoDaemon] maybe_enqueue_kernel_actions: use simulate
+
+commit 4f9d8ef61ddbc4d29149544e4124e661acedf091
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 7 16:04:56 2013 +0100
+
+    [RigoDaemon] fixup pylint warnings
+
+commit b26842e8265252407a9a2d2ab9c4cb3030ef014c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 7 12:33:20 2013 +0100
+
+    [entropy.db] direct: wrap yield around a try/finally block
+
+commit c356d615f357d736aa8905c00928fd3c79236645
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 7 12:27:55 2013 +0100
+
+    [Rigo] use direct access to the installed packages repository, avoid locking
+    
+    Locking is too expensive, and using memory cached data may result
+    in huge inconsistencies due to stale data. Direct mode allows to
+    skip memory cache and read data directly from the database storage.
+    However, entropy.db.sqlite queries using memory caches did not
+    perform very well when cache is cold. But this has been solved by
+    directed() already (a different query is run if memory cache is disabled).
+
+commit 3545f2b6199a203adcfdf20225cf45edcb9c84b3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 7 12:23:47 2013 +0100
+
+    [entropy.db] add direct access support to repository
+    
+    In latency sensitive code paths, the performance penality caused
+    by file lock contention and memory cache invalidation is too high.
+    This problem happens in Rigo, which is extremely latency sensitive.
+    Since we don't want to crap on the user, a way to solve this is
+    letting API consumers skip the memory cache and read data directly
+    from the database store. The trade off is that data may be stale,
+    incomplete, or invalid, but as long as the consumer is aware of this,
+    that's fine.
+
+commit 1739953f8d3cb30a56509bd8c5cc534251acf00b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 7 10:56:22 2013 +0100
+
+    [Rigo] add installed pkgs repository wherever it makes sense
+    
+    In latency sensitive code paths, it's much better to deal with
+    stale and invalid data rather than causing long delays.
+
+commit 94e07648ec54b2cd37d062ad1107827e4765a437
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 7 10:19:27 2013 +0100
+
+    [RigoDaemon] add concurrency support \o/
+
+commit f8d0511506f140043d347214a7ffb6e6d001adf1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 7 10:09:55 2013 +0100
+
+    [entropy.client.package.actions] multifetch: fix pre_download_hook for edeltas
+
+commit d88e33c40ccea2fbf71a08485df1e26df949f1ee
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 21:13:08 2013 +0100
+
+    [RigoDaemon] use context manager with ReadersWritersSemaphore
+
+commit 65f5dce076e1f0bdbfa8efa5dd928e8459fb91de
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 17:08:28 2013 +0100
+
+    [entropy.client.package] add sys import
+
+commit a8c98a508199b217ec0dd72890e4def8658b3c7a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 17:05:59 2013 +0100
+
+    [entropy.client.package.actions] action: cope with unavailability of file locking
+    
+    Some filesystems, especially old network file systems, don't support
+    file locking. Try not to explode if this is the case but rather nag
+    the user with scary error messages.
+
+commit 76df355ca4036cf16705d66964c47a30f618dccd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 16:40:45 2013 +0100
+
+    [solo.commands.pkg] add concurrency support
+
+commit 53b5d9cddc6f072649f4981171b5677c2bbae9fa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 16:26:38 2013 +0100
+
+    [solo.commands.unused] add concurrency support
+
+commit e0142412d8317aa2fd7a726d7643c1c051df2093
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 16:23:44 2013 +0100
+
+    [solo.commands.mask] acquire the Entropy Resources Lock in shared mode
+
+commit 25d88d95b66da0f33f118137b9256a1e51963661
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 16:23:35 2013 +0100
+
+    [solo.commands.conf] acquire the Entropy Resources Lock in shared mode
+
+commit 9298c740fe0c3c8f9986506edd4541cd99a5e9e1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 16:23:10 2013 +0100
+
+    [solo.commands.ugc] acquire the Entropy Resources Lock in shared mode
+
+commit ecb09140845addbb192ca05a7d14473f1311e698
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 15:57:45 2013 +0100
+
+    [Rigo] add "in:exact" command to allow users to match packages, use it for lts kernels
+
+commit b7eeb5ce8a780818bfa33841fdfb285424a7f0b8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 15:38:24 2013 +0100
+
+    [Rigo] use context manager with Entropy.rwsem()
+
+commit 73789063967c27877b05b9645ac10301d0601e10
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 15:22:50 2013 +0100
+
+    [entropy.misc] ReadersWritersSemaphore: add reader() and writer() context managers
+
+commit 68f5fd0320690e99d62433cc21f74eae16310e6d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 15:05:38 2013 +0100
+
+    [entropy.client] Trigger: lazily load the Source Package Manager instance object
+
+commit 6af6a2115ef9b9a3cdc4c7100adc1fbbdedc0a85
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 14:56:10 2013 +0100
+
+    [entropy.client] move Trigger class under package.actions, make it "private"
+
+commit c8a037784519b7c6e66fdb92159bfa9ab75d3366
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 14:45:22 2013 +0100
+
+    [solo.commands.cache] add concurrency support
+
+commit 818f96fdf7fb5b1c4461366b53e7a8e68de85ee8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 14:40:56 2013 +0100
+
+    [entropy.db.sqlite] increase sqlite3 internal lock timeout to 60 seconds
+
+commit 8c73f9b24cfa7f8938765d33d6d4ec89f8391024
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 14:38:34 2013 +0100
+
+    [matter] lazily load the Entropy Server instance object
+
+commit b886d7e3fc1f5c4d603afa0a04855d6444806293
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 14:38:13 2013 +0100
+
+    [matter] use Server class with acquire_entropy_locks
+
+commit 072561250828ddc5db8743167420b472a23b3b8b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 14:16:51 2013 +0100
+
+    [kernel-switcher] use Client class with acquire_entropy_locks
+
+commit 6e81d188c3ef99a0bdc659f77eaf856c1374166a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 14:13:57 2013 +0100
+
+    [kernel-switcher] add concurrency support
+
+commit a8fcfd7b1588bd9acd38aa029f0ea53f6bd118e6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 14:11:55 2013 +0100
+
+    [kswitch] add concurrency support
+
+commit e7555f4127d3309a5d25a46ef01da7ede757599b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 12:35:59 2013 +0100
+
+    [solo.commands.manage] allow concurrency, use the Entropy Resources Lock in shared mode
+
+commit 9c38af6a341cb5075b964f86b20bcd6576200d55
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 12:35:29 2013 +0100
+
+    [entropy.security] document installed repository lock usage requirements
+    
+    entropy.Security will undergo a complete overhaul in the next months.
+
+commit 19439db61cd5ce873499098f53f6e04c0031c7f4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 12:35:07 2013 +0100
+
+    [solo.commands.security] add concurrency support
+
+commit 13af91c7bacca75f90c3ce86a59891b6c4daa7f6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 12:18:42 2013 +0100
+
+    [solo.commands.libtest] add concurrency support
+
+commit e317a71524a1398e765ae0b83e059acae646c00a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 12:13:39 2013 +0100
+
+    [solo.commands.deptest] add concurrency support
+
+commit f4a25af5d0a270ecee648e2ad7b944ef96f896fb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 11:59:59 2013 +0100
+
+    [solo.commands.upgrade] add concurrency support
+
+commit 5dfcdb2794c44ba9d2b86cc343a9fd12d5984104
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 11:59:40 2013 +0100
+
+    [solo.commands.remove] add concurrency support
+
+commit 3e97a39779e147a97fe5d3a58023d747e1c365b1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 11:37:47 2013 +0100
+
+    [solo.commands.preservedlibs] add concurrency support
+
+commit 008b65d11b8b5ab264d02f194a27e4756bc798cf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 11:34:33 2013 +0100
+
+    [solo.commands.download] add concurrency support
+
+commit 55d1b8aa8f829bf09c5e1193c14564d9ae17d9f4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 11:33:19 2013 +0100
+
+    [solo.commands.source] add concurrency support
+
+commit 7046aedc5217f2f309b6b1e07b1b4c1d58da8782
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 11:32:34 2013 +0100
+
+    [solo.commands.config] add concurrency support
+
+commit 53a1b117ae7564bc27ff0bd8b322f68e7149d387
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 11:25:53 2013 +0100
+
+    [entropy.client.package] preservedlibs: update API documentation
+
+commit ac0e1ca28e858b82a94fb6333f1b45b8eb569d65
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 11:24:33 2013 +0100
+
+    [solo.commands._manage] make _show_preserved_libraries process and thread safe
+
+commit 24993db8bbb8dcafcce8104cb0e16c245329557c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 11:09:52 2013 +0100
+
+    [solo.commands.remove] remove _prompt_removal(), old heritage
+
+commit 87ef9a169dc327cffd51a1b2a94bc4d8890b35f6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 11:04:09 2013 +0100
+
+    [solo.commands.install] add concurrency support
+
+commit 72069d4227e7c325d7ed570a3969e64340c93ca6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 10:51:09 2013 +0100
+
+    [solo.commands._manage] remove _show_packages_info(), old heritage
+
+commit 1c7b684aa41c9f9aca4fb352a72effecd1ad40e0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 10:42:40 2013 +0100
+
+    [entropy.client.misc] make ConfigurationFiles process and thread safe wrt inst_repo
+
+commit 2393f5dda2f4346f3a268023ff3a4c6d9b5dbfea
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 10:33:20 2013 +0100
+
+    [entropy.client] update API documentation with information regarding repository locking
+
+commit 50940859165a2798f0e1aabee06841c7b6f14866
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 10:26:38 2013 +0100
+
+    [solo.commands.query] add concurrency support
+
+commit fc686c9c09587bf915d8a032b65200f48bd0a843
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 10:15:55 2013 +0100
+
+    [solo.commands.match] use the sharedlock decorator
+
+commit 7b0dbac6eb993a44661687770025ff3bf2c04923
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 10:15:37 2013 +0100
+
+    [solo.commands.search] use the sharedlock decorator
+
+commit 6b3f25a8ef2a13d3dd1ff30fc98626defbca5484
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 10:14:59 2013 +0100
+
+    [solo.commands.command] add sharedlock and exclusivelock decorators
+
+commit d802bb81861f986e9c5706445f2de97489367f73
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 5 15:20:58 2013 +0100
+
+    [entropy.db.skel] clarify the cases where locking could be avoided
+
+commit 20a3cc35254df70615f4f5c0ae32c2d53f6a1b8c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 5 14:54:21 2013 +0100
+
+    [solo.commands.query] rename entropy_repository to inst_repo for consistency
+
+commit 532c71261b803ced933ff01b9e0359ddaf4199d2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 5 08:22:33 2013 +0100
+
+    [solo.utils] print_package_info: improve ability to deal with stale data
+
+commit d5d5ef11ea00bd05a4a1e8d9b53bcd472affdbcb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 5 08:00:08 2013 +0100
+
+    [solo.commands.match] add concurrency support
+
+commit b0c85ffcce6bca6458d3454710156881f6ee42b2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 5 07:56:22 2013 +0100
+
+    [solo.commands.search] do not hold the inst_repo lock while using stdio functions
+    
+    print_package_info is already able to deal with stale data and we
+    better not deadlock other threads or processes there.
+
+commit aa30310ae2983dc71fad49ee975da2536071c9db
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 4 22:46:23 2013 +0100
+
+    [solo.commands.search] add concurrency support
+
+commit fa68f56545cbd54b3958273c16d9959f881690b4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 4 22:45:38 2013 +0100
+
+    [entropy.client.package.actions] install: pass remove_package_id to _install_package_unlocked
+
+commit 95c69168c56a647f2580d13d603ecf169124d545
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 4 22:42:01 2013 +0100
+
+    [entropy.db.sqlite] make possible to acquire the repository lock file in shared mode by users
+
+commit 86b25739c729c2169ae91504d776247024d9a0c0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 4 18:49:44 2013 +0100
+
+    [entropy.client.package.actions] remove: add concurrency support
+
+commit e6e020e4041ac623557c09a3ebfe802f20884614
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 4 18:48:11 2013 +0100
+
+    [entropy.client.package.actions] _manage: move _get_remove_trigger_data() here
+
+commit 1a8c291ae002013ea367cfaa7fcd9afd6ad49d68
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 4 18:46:29 2013 +0100
+
+    [solo.commands.query] acquire the Entropy Resources General Lock in shared mode
+
+commit 8111284a4fc79282965ebd6fcaa884d700b953e9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 4 18:08:35 2013 +0100
+
+    [entropy.client.package.actions] config: add concurrency support
+
+commit 12e4c4a7a353e4dc9220e2d936d6aa0aff1ebb5b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 4 17:35:43 2013 +0100
+
+    [entropy.client.package.actions] install: rewrite lock handling
+    
+    This is a complete rewrite of the PackageInstallAction class, due to
+    potentially state data collected on setup() that should be rather
+    collected with the lock held for the whole install transaction.
+
+commit 3b069f111d697c1bb1e178f6bc21bc77a7565af9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 4 08:59:12 2013 +0100
+
+    [entropy.client.package.actions] install: always validate installed_package_id
+
+commit 3bd97b8c32c0e661dc8f60c3880ef40464aecca1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 3 22:54:29 2013 +0100
+
+    [entropy.client.package.actions] source: add concurrency support
+
+commit 685b7625d9fd482161f7bca7176571c20e29528c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 3 22:08:57 2013 +0100
+
+    [entropy.client.package.actions] multifetch: do not show data transfer if it's 0
+
+commit fca17af8c85dc448b48867339cdad44090f42a33
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 3 21:42:16 2013 +0100
+
+    [entropy.client.package.actions] fetch: avoid using output() with back = True
+    
+    This improve the output in multithreaded scenarios.
+
+commit 8c3798c4dc8acaafd68df79e227235cd9fed3bb5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 3 18:08:25 2013 +0100
+
+    [entropy.client.package.actions] fetch: replace "matches" with "validated"
+
+commit 2e92fddbf5b86d956af68bb0e7b8b396c2afe440
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 3 17:58:09 2013 +0100
+
+    [entropy.client.package.actions] multifetch: add concurrency support
+
+commit 1ac0e3811560d625f5a92d3336d2152415bb9a9b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 3 17:57:16 2013 +0100
+
+    [entropy.fetchers] update pre_download_hook API, add post_download_hook
+
+commit 126caaca9ee3d242f3ced9acbcb31c1fb8b1755c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 3 15:03:52 2013 +0100
+
+    [entropy.client.package] install: use _is_package_repository()
+
+commit eab15e1cb7a66c2b800b230fc496c7a9ea72df25
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 3 15:03:05 2013 +0100
+
+    [entropy.client.package] install: avoid deadlocks during conflicts removal
+
+commit c54c893e554c40ea5e5f0b51a5de73fc72e4ca91
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 3 14:49:54 2013 +0100
+
+    [entropy.db] implement locking infrastructure (with the same semantics) for in-memory repositories
+
+commit d7f22534b24ae2c7663855764e68c3aaa2cdc0ba
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 3 14:30:12 2013 +0100
+
+    [entropy.db] rewrite locking infrastructure, handle multithreading use case
+
+commit 8c2b9c48415fe92e7fe68548375b56085660d77e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 3 12:39:14 2013 +0100
+
+    [entropy.fetchers] add locking infrastructure support code
+
+commit 5b1d071361eb6d79adfb82c4abd121c2193d59c7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 3 11:18:03 2013 +0100
+
+    [entropy.client.package.actions] fetch: update docstring
+
+commit 43223c03c5cb31ec270c2f4842bf9966f6d117e2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 3 10:52:03 2013 +0100
+
+    [entropy.client.package.actions] fetch: avoid potential deadlocks
+    
+    Holding shared locks on other downloadable files while holding an
+    exclusive lock on the file to be downloaded is looking for a disaster.
+    Try not to hold locks on other potentially downloadable files while
+    holding one already.
+
+commit 6efc069ddc750f903aa4efa8cd769d2f54a926e1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 3 10:15:19 2013 +0100
+
+    [entropy.client.package.actions] fetch: reduce installed_repository() lock contention
+
+commit 4447190b4c39e0931934744b6ae3d61a1dc87120
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Dec 2 15:44:10 2013 +0100
+
+    [entropy.client.package.actions] action: add stat import
+
+commit bd5100730e8c473084dd1e18cae4e126bf12430e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Dec 2 15:43:25 2013 +0100
+
+    [entropy.client.package] rename fetch phase to _fetch_phase()
+
+commit 9d3acd63aa3f6f1c3351199c721e5bd169640665
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Dec 2 15:42:44 2013 +0100
+
+    [entropy.client.package.actions] install: complete concurrency support
+    
+    Add concurrency support to package files.
+
+commit 173b93ab5240214c5c8bff24453850d9ff2653dd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Dec 2 15:13:06 2013 +0100
+
+    [entropy.client.package.actions] action: move _stat_path() here
+
+commit 1b5253c6e85a93c0f5d216545b8e47ec51ab86e1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Dec 2 15:09:02 2013 +0100
+
+    [entropy.client.package.actions] fetch: remove unused method
+
+commit 7e7058eb46860b16dfb6966b74eb1a505f8e7fcf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Dec 2 15:03:18 2013 +0100
+
+    [entropy.client.package] fetch: add initial concurrency support
+
+commit 85e360b1964a41023ae11aaa8b389a2b9968cddb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Dec 2 14:52:44 2013 +0100
+
+    [entropy.client.package.actions] action: fix typo in path_lock()
+
+commit 582bf7262a3017b273b9e5c9f5c9cc013ffc93ee
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 1 19:18:02 2013 +0100
+
+    [entropy.client.package.actions] action: expose a path_lock() method
+    
+    This method returns a FlockFile based class object instance that
+    can be used for inter-process synchronization of arbitrary regular
+    files.
+
+commit 5d8055cb3c119a653c0a320e7fa8bfed673432fc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 1 19:13:02 2013 +0100
+
+    [entropy.client.package.actions] install: drop unused metadata
+
+commit 9953048c6f4abda4eb7ded7dd3e992e574155a1d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 1 19:07:56 2013 +0100
+
+    [entropy.client.package.action] install: apply tarball files ownership to extra download files as well
+
+commit f1ef4bb5e59edb35060d2089f168d7a50714ffbd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 1 18:58:01 2013 +0100
+
+    [entropy.misc] FlockFile: also pass the FlockFile instance to the callback
+
+commit 8dd42f9663cbed06d3080da42457f5d3f0fdc0f0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 1 18:54:11 2013 +0100
+
+    [entropy.misc] FlockFile: move wait and acquired message callbacks to instance
+
+commit 2514ab2725b79793354bad82106c0a5a72d54f1a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 1 18:45:45 2013 +0100
+
+    [entropy.misc] FlockFile: add support for wait messages in shared() and exclusive()
+
+commit 4d24a9566786f0b6ea05a3b97f0e1f253900275f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 1 18:45:19 2013 +0100
+
+    [entropy.misc] FlockFile: add a get_path() method
+
+commit 76bd97981679646f0a93aa261cef8102663cc91c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 1 17:23:12 2013 +0100
+
+    [entropy.client.package] install: add initial concurrency support
+
+commit 02d35f58c337543ce1a321c6e3092c0a03a1091b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 1 15:53:35 2013 +0100
+
+    [entropy.db.sqlite] commit() any pending transactions on release
+    
+    This avoids potential deadlocks to occur.
+
+commit e717f7a1b36a2630ce5a8155ca7900abc65e23b7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 1 15:01:02 2013 +0100
+
+    [entropy.db.sqlite] drop support for locking based on rwsem for memory repositories
+    
+    Firstly, rwsem is semantically different from flock (but this was known) and
+    this may confuse the API consumer. Secondly, the locking infrastructure is
+    purely meant for inter-process synchronization, threads synchronization is
+    not a current use case.
+
+commit 5b6da64e35bcee9471a698fa2dca7e6c33fbf11a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 1 14:41:43 2013 +0100
+
+    [entropy.db.skel] document further locking infrastructure assumptions
+
+commit 688b8f97965023b5431d6c00f0744f94c92d3b85
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 1 14:34:26 2013 +0100
+
+    [entropy.db.sqlite] clear in-RAM cache after lock acquisition
+
+commit df4b71d6a9eee1d48df412ac375a3ba0158e4f45
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 1 14:26:36 2013 +0100
+
+    [entropy.db.sqlite] use lock_path() instead of self._db for file locking
+
+commit 5e5b006da0cb7593b7093da4fe3f893da0bbd27a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 1 14:26:05 2013 +0100
+
+    [entropy.db.skel] expose lock_path() and make file lock path configurable
+
+commit 58815a17ed96bd78da7d5d58421dd318d37d9aad
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 1 14:11:59 2013 +0100
+
+    [entropy.const] add /run/entropy directory setup, expose it through etpConst['entropyrundir']
+
+commit d9f76137f0aaf5f4794078f33a6c4ed9657cd150
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 1 13:56:10 2013 +0100
+
+    [entropy.db.skel] improve output during lock contention phases
+
+commit d5634b2b29bc1fd93801595e41975db7bc3de810
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 1 13:49:20 2013 +0100
+
+    [entropy.db.skel] write locking output to stderr
+    
+    This avoids breaking scriptability of --quiet options
+
+commit 75b1d8498bcd2568944fd02dbda4df6727f086f5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 30 22:27:13 2013 +0100
+
+    [entropy.db.skel] fix exclusive() wrt acquired bool
+
+commit 489e48ba4694cba615af20ebfb024a3d71d2fc35
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 30 22:21:51 2013 +0100
+
+    [entropy.db.skel] warn when repository locks are being acquired
+
+commit 6f37738781aa217702c33d02b7fb5c030a4d7776
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 30 21:21:41 2013 +0100
+
+    [entropy.client] always prefer installed_repository() over protected attribute
+
+commit 366fc37f59670c0d71e802cad712cb6bb08a88ed
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 30 16:17:01 2013 +0100
+
+    [entropy.db.sqlite] implement locking infrastructure
+
+commit a8fd6c52c0d631f4ef85d7dda6ea425d4e2f66b2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 30 16:15:53 2013 +0100
+
+    [entropy.db.skel] warn about flock related methods usage
+
+commit 3d6021042f65ff99aab6b250a88ba75e51a4204a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 30 16:15:29 2013 +0100
+
+    [entropy.db.skel] split release() into release_shared() and release_exclusive()
+
+commit 6206c3de48aed87ec60df42314ae9a0ad8a2dce0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 30 15:21:35 2013 +0100
+
+    [entropy.db.sqlite] add _is_memory() method
+
+commit 4903d261daff8e1f772daaf8603cd1b93076af28
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 30 14:35:29 2013 +0100
+
+    [entropy.db.skel] add base API for handling flock based synchronization
+
+commit 8852a159137b0c635022d805d3dc2216005edcb5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 30 14:21:28 2013 +0100
+
+    [entropy.misc] add shared(), release() context managers to FlockFile
+
+commit a13d78d840c624cdd1dbad41a51247975de89d4f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 7 20:19:22 2013 +0100
+
+    [magneto] tell the user not to shutdown nor reboot if the system upgrade started
+
+commit 1c25cda14977b96ac706b01134bb7d5519a41f82
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 17:49:22 2013 +0100
+
+    Tagging Entropy version 247
+
 commit f28ab4f7027663827fdd13f8c98cd7757943786d
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Dec 6 17:49:22 2013 +0100
