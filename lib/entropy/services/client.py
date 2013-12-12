@@ -697,6 +697,7 @@ class WebService(object):
         name collisions.
         """
         request_params["__repository_id__"] = self._repository_id
+        request_params["__version__"] = etpConst['entropyversion']
 
     def enable_cache_aging(self, days):
         """
