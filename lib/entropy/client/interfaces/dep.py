@@ -188,12 +188,16 @@ class CalculatorsMixin:
             sha = hashlib.sha1()
 
             cache_s = "a{%s}mr{%s}ms{%s}rh{%s}mf{%s}er{%s}ar{%s}s{%s;%s;%s}" % (
-                atom, ";".join(match_repo), match_slot,
-                self._all_repositories_hash(), mask_filter,
+                atom,
+                ";".join(match_repo),
+                match_slot,
+                self._all_repositories_hash(),
+                mask_filter,
                 ";".join(self._enabled_repos),
-                ";".join(self._settings['repositories']['available']),
-                multi_match, multi_repo, extended_results,
-                )
+                ";".join(sorted(self._settings['repositories']['available'])),
+                multi_match,
+                multi_repo,
+                extended_results)
             sha.update(const_convert_to_rawstring(cache_s))
 
             cache_key = "%s%s" % (
@@ -363,10 +367,12 @@ class CalculatorsMixin:
             sha = hashlib.sha1()
 
             cache_s = "k{%s}re{%s}de{%s}rh{%s}er{%s}ar{%s}" % (
-                keyword, ";".join(repositories), description,
+                keyword,
+                ";".join(repositories),
+                description,
                 self._all_repositories_hash(),
                 ";".join(self._enabled_repos),
-                ";".join(self._settings['repositories']['available']),
+                ";".join(sorted(self._settings['repositories']['available'])),
                 )
             sha.update(const_convert_to_rawstring(cache_s))
 
@@ -633,20 +639,28 @@ class CalculatorsMixin:
         cl_settings = self.ClientSettings()
         misc_settings = cl_settings['misc']
         ignore_spm_downgrades = misc_settings['ignore_spm_downgrades']
+        cache_key = None
 
         if self.xcache:
-            c_data = sorted(dependencies)
-            client_checksum = inst_repo.checksum()
-            c_hash = "%s|%s|%s|%s|%s|%s|v2" % (c_data, deep_deps,
-                client_checksum, relaxed_deps, ignore_spm_downgrades,
-                match_repo)
-            c_hash = "%s_%s" % (
-                EntropyCacher.CACHE_IDS['filter_satisfied_deps'], c_hash)
             sha = hashlib.sha1()
-            sha.update(const_convert_to_rawstring(repr(c_hash)))
-            c_hex = sha.hexdigest()
 
-            cached = self._cacher.pop(c_hex)
+            cache_s = "%s|%s|%s|%s|%s|%s|%s|%s|%s|v4" % (
+                ";".join(sorted(dependencies)),
+                deep_deps,
+                inst_repo.checksum(),
+                self._all_repositories_hash(),
+                ";".join(self._enabled_repos),
+                ";".join(sorted(self._settings['repositories']['available'])),
+                relaxed_deps,
+                ignore_spm_downgrades,
+                match_repo)
+            sha.update(const_convert_to_rawstring(cache_s))
+
+            cache_key = "%s_%s" % (
+                EntropyCacher.CACHE_IDS['filter_satisfied_deps'],
+                sha.hexdigest())
+
+            cached = self._cacher.pop(cache_key)
             if cached is not None:
                 return cached
 
@@ -1027,7 +1041,7 @@ class CalculatorsMixin:
             push_to_cache(dependency, True)
 
         if self.xcache:
-            self._cacher.push(c_hex, unsatisfied)
+            self._cacher.push(cache_key, unsatisfied)
 
         return unsatisfied
 
@@ -1857,20 +1871,25 @@ class CalculatorsMixin:
         This method uses ELF NEEDED package metadata in order to accomplish
         this task.
         """
-        # there is no need to update this cache when "match"
-        # will be installed, because at that point
-        # installed_package_id will differ.
-        hash_str = "%s|%s|r3" % (
-            match,
-            installed_package_id,
-        )
-        sha = hashlib.sha1()
-        sha.update(const_convert_to_rawstring(repr(hash_str)))
-        c_hash = sha.hexdigest()
-        c_hash = "%s%s" % (
-            EntropyCacher.CACHE_IDS['library_breakage'], c_hash,)
+        inst_repo = self.installed_repository()
+        cache_key = None
+
         if self.xcache:
-            cached = self._cacher.pop(c_hash)
+            cache_s = "%s|%s|%s|%s|%s|%s|r4" % (
+                match,
+                installed_package_id,
+                inst_repo.checksum(),
+                self._all_repositories_hash(),
+                ";".join(self._enabled_repos),
+                ";".join(sorted(self._settings['repositories']['available'])),
+            )
+            sha = hashlib.sha1()
+            sha.update(const_convert_to_rawstring(cache_s))
+
+            cache_key = "%s%s" % (
+                EntropyCacher.CACHE_IDS['library_breakage'], sha.hexdigest(),)
+
+            cached = self._cacher.pop(cache_key)
             if cached is not None:
                 return cached
 
@@ -1888,7 +1907,7 @@ class CalculatorsMixin:
         installed_matches -= matches
 
         if self.xcache:
-            self._cacher.push(c_hash, (installed_matches, matches))
+            self._cacher.push(cache_key, (installed_matches, matches))
 
         return installed_matches, matches
 
@@ -2135,26 +2154,33 @@ class CalculatorsMixin:
         deep_deps = False, relaxed_deps = False, build_deps = False,
         only_deps = False, quiet = False, recursive = True):
 
-        sha = hashlib.sha1()
-        c_hex = "%s|%s|%s|%s|%s|%s|%s|%s|%s|v3" % (
-                repr(sorted(package_matches)),
+        inst_repo = self.installed_repository()
+        cache_key = None
+
+        if self.xcache:
+            sha = hashlib.sha1()
+
+            cache_s = "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|v4" % (
+                ";".join(["%s" % (x,) for x in sorted(package_matches)]),
                 empty_deps,
                 deep_deps,
                 relaxed_deps,
                 build_deps,
                 only_deps,
                 recursive,
-                self.installed_repository().checksum(),
+                inst_repo.checksum(),
+                self._all_repositories_hash(),
+                ";".join(sorted(self._settings['repositories']['available'])),
                 # needed when users do bogus things like editing config files
                 # manually (branch setting)
-                self._settings['repositories']['branch'],
-        )
-        sha.update(const_convert_to_rawstring(repr(c_hex)))
-        c_hash = "%s_%s" % (EntropyCacher.CACHE_IDS['dep_tree'],
-            sha.hexdigest())
+                self._settings['repositories']['branch'])
 
-        if self.xcache:
-            cached = self._cacher.pop(c_hash)
+            sha.update(const_convert_to_rawstring(cache_s))
+            cache_key = "%s%s" % (
+                EntropyCacher.CACHE_IDS['dep_tree'],
+                sha.hexdigest())
+
+            cached = self._cacher.pop(cache_key)
             if cached is not None:
                 return cached
 
@@ -2277,7 +2303,7 @@ class CalculatorsMixin:
         reverse_tree[0] = deptree_conflicts
 
         if self.xcache:
-            self._cacher.push(c_hash, reverse_tree)
+            self._cacher.push(cache_key, reverse_tree)
 
         return reverse_tree
 
@@ -2357,14 +2383,24 @@ class CalculatorsMixin:
                         for x in matched_atoms], deep, recursive, empty,
                         system_packages, elf_needed_scanning))
 
+        inst_repo = self.installed_repository()
         cache_key = None
+
         if self.xcache:
             sha = hashlib.sha1()
 
-            cache_s = "ma{%s}s{%s;%s;%s;%s;%s}" % (
+            cache_s = "ma{%s}s{%s;%s;%s;%s;%s;%s;%s;%s;%s}v2" % (
                 ";".join(["%s" % (x,) for x in sorted(matched_atoms)]),
-                deep, recursive, empty, system_packages,
-                elf_needed_scanning,)
+                deep,
+                recursive,
+                empty,
+                system_packages,
+                elf_needed_scanning,
+                inst_repo.checksum(),
+                self._all_repositories_hash(),
+                ";".join(self._enabled_repos),
+                ";".join(sorted(self._settings['repositories']['available'])),
+                )
             sha.update(const_convert_to_rawstring(cache_s))
 
             cache_key = "%s%s" % (
@@ -2782,9 +2818,12 @@ class CalculatorsMixin:
             [((package_id, repository_id), reason_id), ...]
         @rtype: list
         """
-        c_hash = self._get_available_packages_hash()
+        cache_key = "%s%s_v2" % (
+            EntropyCacher.CACHE_IDS['world_masked'],
+            self._get_available_packages_hash())
+
         if use_cache and self.xcache:
-            cached = self._get_masked_packages_cache(c_hash)
+            cached = self._cacher.pop(cache_key)
             if cached is not None:
                 return cached
 
@@ -2814,8 +2853,7 @@ class CalculatorsMixin:
             masked.append(match_data)
 
         if self.xcache:
-            self._cacher.push("%s%s" % (
-                EntropyCacher.CACHE_IDS['world_masked'], c_hash), masked)
+            self._cacher.push(cache_key, masked)
 
         return masked
 
@@ -3387,11 +3425,20 @@ class CalculatorsMixin:
 
     def check_package_update(self, atom, deep = False):
 
+        inst_repo = self.installed_repository()
         cache_key = None
+
         if self.xcache:
             sha = hashlib.sha1()
 
-            cache_s = "{%s;%s}" % (atom, deep,)
+            cache_s = "{%s;%s;%s;%s;%s;%s}v2" % (
+                atom,
+                deep,
+                inst_repo.checksum(),
+                self._all_repositories_hash(),
+                ";".join(self._enabled_repos),
+                ";".join(sorted(self._settings['repositories']['available'])),
+                )
             sha.update(const_convert_to_rawstring(cache_s))
 
             cache_key = "%s%s" % (
@@ -3403,13 +3450,13 @@ class CalculatorsMixin:
                 return cached
 
         found = False
-        pkg_id, pkg_rc = self.installed_repository().atomMatch(atom)
+        pkg_id, pkg_rc = inst_repo.atomMatch(atom)
         matched = None
         if pkg_id != -1:
-            myatom = self.installed_repository().retrieveAtom(pkg_id)
+            myatom = inst_repo.retrieveAtom(pkg_id)
             mytag = entropy.dep.dep_gettag(myatom)
             myatom = entropy.dep.remove_tag(myatom)
-            myrev = self.installed_repository().retrieveRevision(pkg_id)
+            myrev = inst_repo.retrieveRevision(pkg_id)
             pkg_match = "="+myatom+"~"+str(myrev)
             if mytag is not None:
                 pkg_match += "%s%s" % (etpConst['entropytagprefix'], mytag,)
