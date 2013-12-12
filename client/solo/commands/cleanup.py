@@ -72,7 +72,7 @@ Remove downloaded packages and clean temporary directories.
             sys.stderr.write("%s\n" % (err,))
             return parser.print_help, []
 
-        return self._call_locked, [self._cleanup]
+        return self._call_exclusive, [self._cleanup]
 
     def _cleanup(self, entropy_client):
         """

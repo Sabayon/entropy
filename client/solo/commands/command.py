@@ -366,7 +366,7 @@ class SoloCommand(object):
             webserv._set_transfer_callback(_transfer_callback)
         return webserv
 
-    def _call_locked(self, func):
+    def _call_exclusive(self, func):
         """
         Execute the given function at func after acquiring Entropy
         Resources Lock, for given repository at repo.
@@ -410,7 +410,7 @@ class SoloCommand(object):
             if acquired:
                 lock.release()
 
-    def _call_unlocked(self, func):
+    def _call_shared(self, func):
         """
         Execute the given function at func after acquiring Entropy
         Resources Lock in shared mode, for given repository at repo.

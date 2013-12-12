@@ -102,7 +102,7 @@ Search for packages.
         self._installed = nsargs.installed
         self._available = nsargs.available
         self._packages = nsargs.string
-        return self._call_unlocked, [self.search]
+        return self._call_shared, [self.search]
 
     def bashcomp(self, last_arg):
         """

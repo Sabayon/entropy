@@ -82,7 +82,7 @@ Update Entropy Repositories.
         self._force = nsargs.force
         self._repositories += nsargs.repo
 
-        return self._call_locked, [self._update]
+        return self._call_exclusive, [self._update]
 
     def bashcomp(self, last_arg):
         """

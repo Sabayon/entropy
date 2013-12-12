@@ -69,7 +69,7 @@ Show Repositories status.
             sys.stderr.write("%s\n" % (err,))
             return parser.print_help, []
 
-        return self._call_unlocked, [self._status]
+        return self._call_shared, [self._status]
 
     def bashcomp(self, last_arg):
         """

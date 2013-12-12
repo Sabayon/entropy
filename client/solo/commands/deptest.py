@@ -83,7 +83,7 @@ Test system integrity by checking installed packages dependencies.
         self._quiet = nsargs.quiet
         self._pretend = nsargs.pretend
 
-        return self._call_unlocked, [self._test]
+        return self._call_shared, [self._test]
 
     def bashcomp(self, last_arg):
         """

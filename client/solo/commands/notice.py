@@ -70,7 +70,7 @@ Read Repository Notice Board.
             return parser.print_help, []
 
         self._nsargs = nsargs
-        return self._call_unlocked, [self._reader]
+        return self._call_shared, [self._reader]
 
     def bashcomp(self, last_arg):
         """

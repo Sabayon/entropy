@@ -99,7 +99,7 @@ Manage package file updates.
             return parser.print_help, []
 
         self._nsargs = nsargs
-        return self._call_unlocked, [nsargs.func]
+        return self._call_shared, [nsargs.func]
 
     def bashcomp(self, last_arg):
         """

@@ -95,7 +95,7 @@ Report unused packages that could be removed.
         self._sortbysize = nsargs.sortbysize
         self._byuser = nsargs.by_user
 
-        return self._call_unlocked, [self._unused]
+        return self._call_shared, [self._unused]
 
     def bashcomp(self, last_arg):
         """

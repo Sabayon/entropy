@@ -71,7 +71,7 @@ Upgrade the System to a new branch.
 
         self._branch = nsargs.branch
 
-        return self._call_locked, [self._hop]
+        return self._call_exclusive, [self._hop]
 
     def bashcomp(self, last_arg):
         """

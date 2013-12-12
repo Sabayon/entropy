@@ -155,7 +155,7 @@ Match package names.
         self._showdesc = nsargs.showdesc
         self._showslot = nsargs.showslot
 
-        return self._call_unlocked, [self.match]
+        return self._call_shared, [self.match]
 
     def _match_string(self, entropy_client, inst_repo, string):
         """

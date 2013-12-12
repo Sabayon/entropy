@@ -83,7 +83,7 @@ class SoloMaskUnmask(SoloCommand):
         self._pretend = nsargs.pretend
         self._ask = nsargs.ask
 
-        return self._call_unlocked, [self._run]
+        return self._call_shared, [self._run]
 
     def _run(self, entropy_client):
         """

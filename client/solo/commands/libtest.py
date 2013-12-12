@@ -100,7 +100,7 @@ Test system integrity by looking for missing libraries.
             return parser.print_help, []
 
         self._nsargs = nsargs
-        return self._call_unlocked, [self._test]
+        return self._call_shared, [self._test]
 
     def bashcomp(self, last_arg):
         """
