@@ -497,7 +497,7 @@ def _std_write(msg, stderr = False):
         else:
             obj.write(msg)
 
-_PRINT_PRIO_HEADER = const_convert_to_unicode("\u2560 ")
+MESSAGE_HEADER = const_convert_to_unicode("\u2560 ")
 
 def _print_prio(msg, color_func, back = False, flush = True, end = '\n',
     stderr = False):
@@ -510,7 +510,7 @@ def _print_prio(msg, color_func, back = False, flush = True, end = '\n',
     if is_tty:
         writechar("\r", stderr = stderr)
 
-    header = color_func(_PRINT_PRIO_HEADER)
+    header = color_func(MESSAGE_HEADER)
 
     _std_write(header, stderr = stderr)
     _std_write(msg, stderr = stderr)
