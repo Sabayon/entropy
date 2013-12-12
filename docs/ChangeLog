@@ -1,3 +1,39 @@
+commit 412759e20fab4fa8bd2aa2d107c2782b29268af9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 12:38:28 2013 +0100
+
+    Release Entropy 251
+
+commit db8bd0fb40c17e400b412d056cb5d71b53e18adc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 12:36:45 2013 +0100
+
+    [entropy.client.package] multifetch: ensure that path exists before calling _match_checksum
+
+commit 4b8b3b1af752dbcd0deb17959d43db03e6da9381
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 12:36:03 2013 +0100
+
+    [entropy.client.package] multifetch: use the same path for both calls
+
+commit 864e3ecf21a053f74294ee5626165e2175ec9dd9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 12:30:25 2013 +0100
+
+    [entropy.client.package] multifetch: fix exit status in case of download failures
+
+commit 36b634aea7df8351b4fa82bc382a64a59d483616
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 11:56:04 2013 +0100
+
+    [entropy.output] _print_prio: use nice unicode header chars :-)
+
+commit 89b0c053ff547715469d1e7ef231e0c4ac86e239
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 10:50:16 2013 +0100
+
+    Tagging Entropy version 250
+
 commit e21d56466998eaac865a2c44bf939c1b7ed8646c
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Dec 12 10:50:15 2013 +0100
