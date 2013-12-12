@@ -93,7 +93,7 @@ list notice-board titles for user consumption.
             return parser.print_help, []
 
         self._repository_id = nsargs.repo
-        return self._call_locked, [nsargs.func, self._repository_id]
+        return self._call_exclusive, [nsargs.func, self._repository_id]
 
     def _add_notice_editor(self, entropy_server, repository_id):
         """

@@ -105,7 +105,7 @@ So, please setup your repository there and only then run *eit init <repo>*.
             return parser.print_help, []
 
         self._ask = not nsargs.quick
-        return self._call_locked, [self._init, nsargs.repo[0]]
+        return self._call_exclusive, [self._init, nsargs.repo[0]]
 
     def _init(self, entropy_server):
         rc = entropy_server.initialize_repository(

@@ -83,7 +83,7 @@ For a direct dependency graph, please see *eit graph*.
         self._packages += nsargs.packages
         self._complete = nsargs.complete
         self._repository_id = nsargs.inrepo
-        return self._call_unlocked, [self._revgraph, self._repository_id]
+        return self._call_shared, [self._revgraph, self._repository_id]
 
     def _revgraph(self, entropy_server):
         """

@@ -129,12 +129,12 @@ repositories.
         self._repository_id = nsargs.repo[0]
         self._quiet = nsargs.quiet
         if nsargs.status:
-            return self._call_unlocked, [self._status, None]
+            return self._call_shared, [self._status, None]
         if self._client:
-            return self._call_locked, [self._client_lock,
+            return self._call_exclusive, [self._client_lock,
                                        self._repository_id]
         else:
-            return self._call_locked, [self._lock, self._repository_id]
+            return self._call_exclusive, [self._lock, self._repository_id]
 
     def _status(self, entropy_server):
         """

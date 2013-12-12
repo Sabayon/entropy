@@ -120,7 +120,7 @@ This commands makes possible to manually force a cleanup.
         if nsargs.days is not None:
             self._days = nsargs.days
         self._pretend = nsargs.pretend
-        return self._call_locked, [self._cleanup, nsargs.repo]
+        return self._call_exclusive, [self._cleanup, nsargs.repo]
 
     def _cleanup(self, entropy_server):
         """

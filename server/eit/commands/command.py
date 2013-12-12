@@ -190,7 +190,7 @@ class EitCommand(object):
         """
         return Server
 
-    def _call_locked(self, func, repo):
+    def _call_exclusive(self, func, repo):
         """
         Execute the given function at func after acquiring Entropy
         Resources Lock, for given repository at repo.
@@ -233,7 +233,7 @@ class EitCommand(object):
             if acquired:
                 lock.release()
 
-    def _call_unlocked(self, func, repo):
+    def _call_shared(self, func, repo):
         """
         Execute the given function at func after acquiring Entropy
         Resources Lock in shared mode, for given repository at repo.

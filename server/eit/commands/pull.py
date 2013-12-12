@@ -137,7 +137,7 @@ repository) by pulling updated data.
         self._pretend = nsargs.pretend
         self._entropy_class()._inhibit_treeupdates = nsargs.conservative
 
-        return self._call_locked, [self._pull, nsargs.repo]
+        return self._call_exclusive, [self._pull, nsargs.repo]
 
     def _pull(self, entropy_server):
         """

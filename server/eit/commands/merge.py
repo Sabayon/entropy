@@ -79,7 +79,7 @@ back in. This tool does exactly this.
 
         self._ask = not nsargs.quick
         self._merge_branch = nsargs.branch
-        return self._call_locked, [self._branch, nsargs.into]
+        return self._call_exclusive, [self._branch, nsargs.into]
 
     def _branch(self, entropy_server):
         """

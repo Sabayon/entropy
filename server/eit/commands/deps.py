@@ -73,7 +73,7 @@ non-permanent way.
             return parser.print_help, []
 
         self._packages += nsargs.packages
-        return self._call_locked, [self._deps, nsargs.inrepo]
+        return self._call_exclusive, [self._deps, nsargs.inrepo]
 
     def _show_dependencies_legend(self, entropy_server, indent = None):
         """

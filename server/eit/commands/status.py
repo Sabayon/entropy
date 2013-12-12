@@ -99,7 +99,7 @@ Show repository status (such as: *configured mirrors*,
             sys.stderr.write("%s\n" % (err,))
             return parser.print_help, []
 
-        return self._call_locked, [self._status, nsargs.repo]
+        return self._call_exclusive, [self._status, nsargs.repo]
 
     def _status(self, entropy_server):
 

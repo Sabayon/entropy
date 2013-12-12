@@ -113,7 +113,7 @@ Toolset containing all the Entropy Server built-in QA tests available.
             return parser.print_help, []
 
         self._nsargs = nsargs
-        return self._call_locked, [nsargs.func, None]
+        return self._call_exclusive, [nsargs.func, None]
 
     def _deptest(self, entropy_server):
         missing_deps = entropy_server.extended_dependencies_test(

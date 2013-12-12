@@ -82,7 +82,7 @@ If you wonder what's inside a repository, you've found the right tool.
         self._verbose = nsargs.verbose
         self._injected = nsargs.injected
         self._repositories += nsargs.repo
-        return self._call_unlocked, [self._list, None]
+        return self._call_shared, [self._list, None]
 
     def _list(self, entropy_server):
         rc = 0

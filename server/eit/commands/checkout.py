@@ -96,7 +96,7 @@ another branch, iuse *eit branch*.
         except IOError as err:
             return parser.print_help, []
 
-        return self._call_locked, [self._checkout, nsargs.repo]
+        return self._call_exclusive, [self._checkout, nsargs.repo]
 
     def _checkout(self, entropy_server):
         """

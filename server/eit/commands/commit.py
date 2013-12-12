@@ -130,7 +130,7 @@ If you would like to selectively add certain packages, please see
             self._ask = not nsargs.quick
         self._entropy_class()._inhibit_treeupdates = nsargs.conservative
 
-        return self._call_locked, [self._commit, nsargs.repo]
+        return self._call_exclusive, [self._commit, nsargs.repo]
 
     def _repackage_scan(self, entropy_server):
         """

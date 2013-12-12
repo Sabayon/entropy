@@ -62,7 +62,7 @@ This commands opens repository ChangeLog.bz2 using *bzless*.
             sys.stderr.write("%s\n" % (err,))
             return parser.print_help, []
 
-        return self._call_locked, [self._log, nsargs.repo]
+        return self._call_exclusive, [self._log, nsargs.repo]
 
     def _log(self, entropy_server):
         changelog_path = \

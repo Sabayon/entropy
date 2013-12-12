@@ -97,7 +97,7 @@ over just use the *--no-copy* switch.
         self._repository_id = nsargs.repo
         self._ask = not nsargs.quick
         self._copy = not nsargs.nocopy
-        return self._call_locked, [self._branch, self._repository_id]
+        return self._call_exclusive, [self._branch, self._repository_id]
 
     def _branch(self, entropy_server):
         """

@@ -81,7 +81,7 @@ then is removed from source.
         self._copy = False
         self._entropy_class()._inhibit_treeupdates = nsargs.conservative
 
-        return self._call_locked, [self._move_copy, self._source]
+        return self._call_exclusive, [self._move_copy, self._source]
 
 
 EitCommandDescriptor.register(

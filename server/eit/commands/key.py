@@ -125,7 +125,7 @@ package and repository files through *gnupg*.
             return parser.print_help, []
 
         self._nsargs = nsargs
-        return self._call_locked, [nsargs.func, nsargs.repo]
+        return self._call_exclusive, [nsargs.func, nsargs.repo]
 
     def __get_gpg(self, entropy_server):
         obj = Repository()

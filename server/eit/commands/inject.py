@@ -79,7 +79,7 @@ repositories as much as you can.
             return parser.print_help, []
 
         self._packages += nsargs.packages
-        return self._call_locked, [self._inject, nsargs.to]
+        return self._call_exclusive, [self._inject, nsargs.to]
 
     def _inject(self, entropy_server):
         """

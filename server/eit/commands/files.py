@@ -75,7 +75,7 @@ package owners), please use *eit own*.
 
         self._quiet = nsargs.quiet
         self._packages += nsargs.packages
-        return self._call_unlocked, [self._files, None]
+        return self._call_shared, [self._files, None]
 
     def _files(self, entropy_server):
         """

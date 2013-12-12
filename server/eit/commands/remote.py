@@ -90,7 +90,7 @@ Manage (add, remove, list) configured repositories.
             return parser.print_help, []
 
         self._nsargs = nsargs
-        return self._call_locked, [nsargs.func, None]
+        return self._call_exclusive, [nsargs.func, None]
 
     def _add(self, entropy_server):
         """

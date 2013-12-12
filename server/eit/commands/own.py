@@ -87,7 +87,7 @@ please use *eit files*.
         self._quiet = nsargs.quiet
         self._paths += nsargs.paths
         self._repository_id = nsargs.inrepo
-        return self._call_unlocked, [self._own, self._repository_id]
+        return self._call_shared, [self._own, self._repository_id]
 
     def _own(self, entropy_server):
         """

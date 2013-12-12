@@ -112,7 +112,7 @@ Manage Entropy Server Repositories.
             return parser.print_help, []
 
         self._nsargs = nsargs
-        return self._call_locked, [nsargs.func, None]
+        return self._call_exclusive, [nsargs.func, None]
 
     def _show(self, entropy_server):
         entropy_server._show_interface_status()

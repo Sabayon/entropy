@@ -72,7 +72,7 @@ Entropy package scope is given by the following tuple:
         self._ask = not nsargs.quick
         self._entropy_class()._inhibit_treeupdates = nsargs.conservative
         self._packages = nsargs.packages[:]
-        return self._call_locked, [self._commit, nsargs.to]
+        return self._call_exclusive, [self._commit, nsargs.to]
 
 EitCommandDescriptor.register(
     EitCommandDescriptor(

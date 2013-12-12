@@ -74,7 +74,7 @@ If you are interested in a simple text search, please see *eit search*.
 
         self._quiet = nsargs.quiet
         self._packages += nsargs.packages
-        return self._call_unlocked, [self._match, None]
+        return self._call_shared, [self._match, None]
 
     def _match(self, entropy_server):
         """

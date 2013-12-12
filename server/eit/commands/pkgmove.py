@@ -107,7 +107,7 @@ doing.
             return parser.print_help, []
 
         self._repository_id = nsargs.repo
-        return self._call_locked, [self._pkgmove, self._repository_id]
+        return self._call_exclusive, [self._pkgmove, self._repository_id]
 
     def _pkgmove(self, entropy_server):
         """

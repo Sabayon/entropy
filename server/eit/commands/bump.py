@@ -104,7 +104,7 @@ will be accepted and new repository data will be uploaded.
             return parser.print_help, []
 
         self._sync = nsargs.sync
-        return self._call_locked, [self._bump, nsargs.repo]
+        return self._call_exclusive, [self._bump, nsargs.repo]
 
     def _bump(self, entropy_server):
         """

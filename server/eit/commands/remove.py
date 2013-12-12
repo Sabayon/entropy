@@ -78,7 +78,7 @@ Remove a package from repository. It's no-brainer actually.
         self._nodeps = nsargs.nodeps
         self._from = nsargs.fromrepo
         self._packages += nsargs.packages
-        return self._call_locked, [self._remove, self._from]
+        return self._call_exclusive, [self._remove, self._from]
 
     def _remove(self, entropy_server):
         """

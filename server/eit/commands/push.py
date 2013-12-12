@@ -153,7 +153,7 @@ repository) by pushing updated data.
         self._force = nsargs.force
         self._entropy_class()._inhibit_treeupdates = nsargs.conservative
 
-        return self._call_locked, [self._push, nsargs.repo]
+        return self._call_exclusive, [self._push, nsargs.repo]
 
     def _push(self, entropy_server):
         """

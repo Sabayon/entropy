@@ -112,7 +112,7 @@ re-fetching the remote version available on mirrors.
             self._repositories.append(nsargs.repo)
             self._reset_repository_id = nsargs.repo
 
-        return self._call_locked, [self._reset, nsargs.repo]
+        return self._call_exclusive, [self._reset, nsargs.repo]
 
     def _reset(self, entropy_server):
         repository_id = self._reset_repository_id

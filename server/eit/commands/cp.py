@@ -126,7 +126,7 @@ Copy packages from source repository to destination repository.
         self._packages += nsargs.package
         self._entropy_class()._inhibit_treeupdates = nsargs.conservative
 
-        return self._call_locked, [self._move_copy, self._source]
+        return self._call_exclusive, [self._move_copy, self._source]
 
     def _move_copy(self, entropy_server):
         """

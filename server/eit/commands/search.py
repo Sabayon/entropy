@@ -82,7 +82,7 @@ If you are interested in dependency string matching, please see
         self._quiet = nsargs.quiet
         self._packages += nsargs.packages
         self._repository_id = nsargs.inrepo
-        return self._call_unlocked, [self._search, self._repository_id]
+        return self._call_shared, [self._search, self._repository_id]
 
     def _search(self, entropy_server):
         """
