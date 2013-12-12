@@ -1079,7 +1079,7 @@ class RepositoryMixin:
 
     def open_generic_repository(self, repository_path, dbname = None,
         name = None, xcache = None, read_only = False, indexing_override = None,
-        skip_checks = False):
+        skip_checks = False, direct = False):
         """
         Open a Generic Entropy Repository interface, using
         entropy.client.interfaces.db.GenericRepository class.
@@ -1103,6 +1103,8 @@ class RepositoryMixin:
         @type skip_checks: bool
         @return: a GenericRepository object
         @rtype: entropy.client.interfaces.db.GenericRepository
+        @keyword direct: True, if direct mode should be always enabled
+        @type direct: bool
         """
         if xcache is None:
             xcache = self.xcache
@@ -1119,7 +1121,8 @@ class RepositoryMixin:
             name = name,
             xcache = xcache,
             indexing = indexing,
-            skipChecks = skip_checks
+            skipChecks = skip_checks,
+            direct = direct
         )
         self._add_plugin_to_client_repository(conn)
         return conn

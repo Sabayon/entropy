@@ -557,7 +557,8 @@ class EntropyMySQLRepository(EntropySQLRepository):
     ModuleProxy = MySQLProxy
 
     def __init__(self, uri, readOnly = False, xcache = False,
-        name = None, indexing = True, skipChecks = False):
+                 name = None, indexing = True, skipChecks = False,
+                 direct = False):
         """
         EntropyMySQLRepository constructor.
 
@@ -573,6 +574,8 @@ class EntropyMySQLRepository(EntropySQLRepository):
         @type indexing: bool
         @keyword skipChecks: if True, skip integrity checks
         @type skipChecks: bool
+        @keyword direct: True, if direct mode should be always enabled
+        @type direct: bool
         """
         self._mysql = self.ModuleProxy.get()
 

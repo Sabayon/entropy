@@ -1128,6 +1128,9 @@ class EntropyRepositoryTest(unittest.TestCase):
         counter = local._EntropyRepositoryCacheCounter
         self.assertEquals(counter, 0)
 
+        self.test_db._direct_enabled = True
+        self.assertEquals(self.test_db.directed(), True)
+
 
 if __name__ == '__main__':
     unittest.main()

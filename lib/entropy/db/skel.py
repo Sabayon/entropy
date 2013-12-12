@@ -393,7 +393,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             raise NotImplementedError()
 
 
-    def __init__(self, readonly, xcache, temporary, name):
+    def __init__(self, readonly, xcache, temporary, name, direct=False):
         """
         EntropyRepositoryBase constructor.
 
@@ -405,8 +405,11 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         @type temporary: bool
         @param name: repository identifier (or name)
         @type name: string
+        @keyword direct: True, if direct mode should be always enabled
+        @type direct: bool
         """
         self._tls = threading.local()
+        self._direct_enabled = direct
 
         TextInterface.__init__(self)
         self._readonly = readonly
@@ -464,6 +467,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         Return whether direct mode is enabled or not for the current thread.
         See direct() for more information.
         """
+        if self._direct_enabled:
+            return True
         return getattr(self._tls, "_EntropyRepositoryCacheCounter", 0) != 0
 
     @contextlib.contextmanager

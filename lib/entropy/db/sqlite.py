@@ -180,7 +180,8 @@ class EntropySQLiteRepository(EntropySQLRepository):
     ModuleProxy = SQLiteProxy
 
     def __init__(self, readOnly = False, dbFile = None, xcache = False,
-        name = None, indexing = True, skipChecks = False, temporary = False):
+                 name = None, indexing = True, skipChecks = False,
+                 temporary = False, direct = False):
         """
         EntropySQLiteRepository constructor.
 
@@ -199,6 +200,8 @@ class EntropySQLiteRepository(EntropySQLRepository):
         @keyword temporary: if True, dbFile will be automatically removed
             on close()
         @type temporary: bool
+        @keyword direct: True, if direct mode should be always enabled
+        @type direct: bool
         """
         self._rwsem_lock = threading.RLock()
         self._rwsem = None
@@ -207,7 +210,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
 
         EntropySQLRepository.__init__(
             self, dbFile, readOnly, skipChecks, indexing,
-            xcache, temporary, name)
+            xcache, temporary, name, direct=direct)
 
         if self._db is None:
             raise AttributeError("valid database path needed")
