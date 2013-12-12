@@ -497,6 +497,8 @@ def _std_write(msg, stderr = False):
         else:
             obj.write(msg)
 
+_PRINT_PRIO_HEADER = const_convert_to_unicode("\u2560 ")
+
 def _print_prio(msg, color_func, back = False, flush = True, end = '\n',
     stderr = False):
     if is_mute():
@@ -507,12 +509,14 @@ def _print_prio(msg, color_func, back = False, flush = True, end = '\n',
     is_tty = is_stdout_a_tty()
     if is_tty:
         writechar("\r", stderr = stderr)
-    if back:
-        msg = color_func(">>") + " " + msg
-    else:
-        msg = color_func(">>") + " " + msg + end
 
+    header = color_func(_PRINT_PRIO_HEADER)
+
+    _std_write(header, stderr = stderr)
     _std_write(msg, stderr = stderr)
+    if not back:
+        _std_write(end, stderr = stderr)
+
     if back and (not is_tty):
         # in this way files are properly written
         writechar("\n", stderr = stderr)
