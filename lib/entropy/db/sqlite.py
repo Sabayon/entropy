@@ -1330,7 +1330,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
         """
         if self.directed():
             return super(EntropySQLiteRepository, self).retrieveDependencies(
-                package_id, exnteded = extended, deptype = deptype,
+                package_id, extended = extended, deptype = deptype,
                 exclude_deptypes = exclude_deptypes,
                 resolve_conditional_deps = resolve_conditional_deps)
 
