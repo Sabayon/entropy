@@ -21,25 +21,8 @@ from entropy.exceptions import RepositoryError
 from entropy.cache import EntropyCacher
 from entropy.db.exceptions import OperationalError, DatabaseError
 
-REPO_LIST_CACHE_ID = 'repos/repolist'
 
 class CacheMixin:
-
-    def _validate_repositories_cache(self):
-        # is the list of repos changed?
-        cached = self._cacher.pop(REPO_LIST_CACHE_ID)
-        if cached != self._settings['repositories']['order']:
-            # invalidate matching cache
-            try:
-                self._settings._clear_repository_cache(repoid = None)
-            except IOError:
-                pass
-            self._store_repository_list_cache()
-
-    def _store_repository_list_cache(self):
-        self._cacher.push(REPO_LIST_CACHE_ID,
-            self._settings['repositories']['order'],
-            async = False)
 
     def clear_cache(self):
         """

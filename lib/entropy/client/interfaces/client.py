@@ -796,18 +796,12 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
         if shell_xcache:
             self.xcache = False
 
-        do_validate_repo_cache = False
         # now if we are on live, we should disable it
         # are we running on a livecd? (/proc/cmdline has "cdroot")
         if entropy.tools.islive():
             self.xcache = False
         elif (not entropy.tools.is_user_in_entropy_group()) and not user_xcache:
             self.xcache = False
-        elif not user_xcache:
-            do_validate_repo_cache = True
-
-        if do_validate_repo_cache:
-            self._validate_repositories_cache()
 
         if self._repo_validation:
             self._validate_repositories()
