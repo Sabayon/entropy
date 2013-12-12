@@ -1727,6 +1727,18 @@ class Server(Client):
             fake_default_repo_desc = None, handle_uninitialized = True,
             **kwargs):
 
+        self._indexing = False
+
+        # initialize Entropy Client superclass
+        if "installed_repo" not in kwargs:
+            kwargs["installed_repo"] = False
+        if "repo_validation" not in kwargs:
+            kwargs["repo_validation"] = False
+        Client.init_singleton(self,
+            indexing = self._indexing,
+            **kwargs
+        )
+
         if fake_default_repo_desc is None:
             fake_default_repo_desc = 'this is a fake repository'
         self.__instance_destroyed = False
@@ -1738,7 +1750,6 @@ class Server(Client):
         etpSys['serverside'] = True
         self.fake_default_repo = fake_default_repo
         self.fake_default_repo_id = fake_default_repo_id
-        self._indexing = False
         self.Mirrors = None
         self._settings_to_backup = []
         self._save_repository = save_repository
@@ -1814,15 +1825,6 @@ class Server(Client):
 
         self.switch_default_repository(
             self._repository, handle_uninitialized=handle_uninitialized)
-        # initialize Entropy Client superclass
-        if "installed_repo" not in kwargs:
-            kwargs["installed_repo"] = False
-        if "repo_validation" not in kwargs:
-            kwargs["repo_validation"] = False
-        Client.init_singleton(self,
-            indexing = self._indexing,
-            **kwargs
-        )
 
     def destroy(self, _from_shutdown = False):
         """
@@ -1846,13 +1848,6 @@ class Server(Client):
                 self._settings.remove_plugin(plug)
 
         self.close_repositories()
-
-    @property
-    def _settings(self):
-        """
-        Return a SystemSettings object instance.
-        """
-        return SystemSettings()
 
     @property
     def _cacher(self):
