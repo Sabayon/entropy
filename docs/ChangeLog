@@ -1,3 +1,21 @@
+commit da31e2b49dff8239a67a748d97e20e7d137d1b9e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 20:11:50 2013 +0100
+
+    Release Entropy 253
+
+commit 4d3eef0d19272a1fe9625d0ae8e1ee0bf81a1162
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 20:11:19 2013 +0100
+
+    [entropy.server] Server: initialize Client superclass as soon as possible
+
+commit 869e8df574448c07cf3b3f51893575dd9d4a3f4b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 19:38:50 2013 +0100
+
+    Tagging Entropy version 252
+
 commit 42c66c84b4f02a3cc0f855b1b8a45073fb13c375
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Dec 12 19:38:50 2013 +0100
