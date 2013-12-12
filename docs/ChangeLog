@@ -1,3 +1,27 @@
+commit e21d56466998eaac865a2c44bf939c1b7ed8646c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 10:50:15 2013 +0100
+
+    Release Entropy 250
+
+commit d04f67c96ff1918bcdd78eb72241c00b2fe0a4b6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 10:41:21 2013 +0100
+
+    [entropy.db.sqlite] fix typo in argument name
+
+commit 023e8e1b7240cacbade230505f2bdc6ae34890e6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 10:20:56 2013 +0100
+
+    [entropy.db] EntropyBaseRepository: make possible to permanently enable direct mode
+
+commit 0f84117aa2b49d21d56a7966d23cdbd641bd915e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 11 22:44:44 2013 +0100
+
+    Tagging Entropy version 249
+
 commit af2ce34d576edcaa3c240d5e01c84c6a6ba5cefe
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Dec 11 22:44:44 2013 +0100
