@@ -806,9 +806,6 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
         elif not user_xcache:
             do_validate_repo_cache = True
 
-        if not self.xcache and (entropy.tools.is_user_in_entropy_group()):
-            self.clear_cache()
-
         if do_validate_repo_cache:
             self._validate_repositories_cache()
 
