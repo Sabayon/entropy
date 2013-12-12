@@ -28,15 +28,16 @@
 ../lib/entropy/client/__init__.py
 ../lib/entropy/client/mirrors.py
 ../lib/entropy/client/misc.py
+../lib/entropy/client/interfaces/sets.py
 ../lib/entropy/client/interfaces/cache.py
 ../lib/entropy/client/interfaces/__init__.py
 ../lib/entropy/client/interfaces/methods.py
 ../lib/entropy/client/interfaces/noticeboard.py
+../lib/entropy/client/interfaces/settings.py
 ../lib/entropy/client/interfaces/loaders.py
 ../lib/entropy/client/interfaces/db.py
 ../lib/entropy/client/interfaces/client.py
 ../lib/entropy/client/interfaces/repository.py
-../lib/entropy/client/interfaces/sets.py
 ../lib/entropy/client/interfaces/dep.py
 ../lib/entropy/client/interfaces/qa.py
 ../lib/entropy/client/interfaces/package/_content.py

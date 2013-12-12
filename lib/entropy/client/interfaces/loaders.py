@@ -18,6 +18,7 @@ from entropy.const import etpConst
 from entropy.qa import QAInterface
 from entropy.security import System
 from entropy.security import Repository as RepositorySecurity
+from entropy.client.interfaces.settings import ClientSystemSettingsPlugin
 
 class LoadersMixin:
 
@@ -167,7 +168,7 @@ class LoadersMixin:
         """
         Return SystemSettings Entropy Client plugin metadata dictionary
         """
-        p_id = etpConst['system_settings_plugins_ids']['client_plugin']
+        p_id = ClientSystemSettingsPlugin.ID
         return self._settings[p_id]
 
     def Cacher(self):

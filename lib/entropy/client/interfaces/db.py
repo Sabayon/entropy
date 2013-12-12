@@ -2223,8 +2223,6 @@ class AvailablePackagesRepositoryUpdater(object):
         return EntropyRepositoryBase.REPOSITORY_UPDATED_OK
 
 
-_CL_PLUGIN_ID = etpConst['system_settings_plugins_ids']['client_plugin']
-
 class MaskableRepository(EntropyRepositoryBase):
     """
     Objects inheriting from this class support package masking.
@@ -2234,6 +2232,26 @@ class MaskableRepository(EntropyRepositoryBase):
     installable packages, like AvailablePackagesRepository.
     """
     _MASK_FILTER_CACHE_ID = EntropyCacher.CACHE_IDS['mask_filter']
+
+    _real_client_settings = None
+    _real_client_settings_lock = threading.Lock()
+
+    def __init__(self, *args, **kwargs):
+        super(MaskableRepository, self).__init__(*args, **kwargs)
+
+    @property
+    def _client_settings(self):
+        """
+        Load the Entropy Client settings object.
+        """
+        if self._real_client_settings is None:
+            with self._real_client_settings_lock:
+                if self._real_client_settings is None:
+                    from entropy.client.interfaces import Client
+
+                    self._real_client_settings = Client().ClientSettings()
+
+        return self._real_client_settings
 
     def _mask_filter_fetch_cache(self, package_id):
         if self._caching:
@@ -2294,8 +2312,8 @@ class MaskableRepository(EntropyRepositoryBase):
             myr = ref['user_package_mask']
 
             try:
-                cl_data = self._settings[_CL_PLUGIN_ID]
-                validator_cache = cl_data['masking_validation']['cache']
+                clset = self._client_settings
+                validator_cache = clset['masking_validation']['cache']
                 validator_cache[(package_id, self.name, live)] = -1, myr
             except KeyError: # system settings client plugin not found
                 pass
@@ -2334,8 +2352,8 @@ class MaskableRepository(EntropyRepositoryBase):
             ref = self._settings['pkg_masking_reference']
             myr = ref['user_package_unmask']
             try:
-                cl_data = self._settings[_CL_PLUGIN_ID]
-                validator_cache = cl_data['masking_validation']['cache']
+                clset = self._client_settings
+                validator_cache = clset['masking_validation']['cache']
                 validator_cache[(package_id, self.name, live)] = \
                     package_id, myr
             except KeyError: # system settings client plugin not found
@@ -2347,10 +2365,9 @@ class MaskableRepository(EntropyRepositoryBase):
 
         # check if repository packages.db.mask needs it masked
         repos_mask = {}
-        client_plg_id = etpConst['system_settings_plugins_ids']['client_plugin']
-        client_settings = self._settings.get(client_plg_id, {})
-        if client_settings:
-            repos_mask = client_settings['repositories']['mask']
+        clset = self._client_settings
+        if clset:
+            repos_mask = clset['repositories']['mask']
 
         repomask = repos_mask.get(self.name)
         if isinstance(repomask, (list, set, frozenset)):
@@ -2376,8 +2393,7 @@ class MaskableRepository(EntropyRepositoryBase):
                 myr = ref['repository_packages_db_mask']
 
                 try:
-                    cl_data = self._settings[_CL_PLUGIN_ID]
-                    validator_cache = cl_data['masking_validation']['cache']
+                    validator_cache = clset['masking_validation']['cache']
                     validator_cache[(package_id, self.name, live)] = \
                         -1, myr
                 except KeyError: # system settings client plugin not found
@@ -2401,8 +2417,8 @@ class MaskableRepository(EntropyRepositoryBase):
             ref = self._settings['pkg_masking_reference']
             myr = ref['user_license_mask']
             try:
-                cl_data = self._settings[_CL_PLUGIN_ID]
-                validator_cache = cl_data['masking_validation']['cache']
+                clset = self._client_settings
+                validator_cache = clset['masking_validation']['cache']
                 validator_cache[(package_id, self.name, live)] = -1, myr
             except KeyError: # system settings client plugin not found
                 pass
@@ -2426,9 +2442,8 @@ class MaskableRepository(EntropyRepositoryBase):
         if same_keywords:
             myr = mask_ref['system_keyword']
             try:
-
-                cl_data = self._settings[_CL_PLUGIN_ID]
-                validator_cache = cl_data['masking_validation']['cache']
+                clset = self._client_settings
+                validator_cache = clset['masking_validation']['cache']
                 validator_cache[(package_id, self.name, live)] = \
                     package_id, myr
 
@@ -2456,8 +2471,8 @@ class MaskableRepository(EntropyRepositoryBase):
                 # all packages in this repo with keyword "keyword" are ok
                 myr = mask_ref['user_repo_package_keywords_all']
                 try:
-                    cl_data = self._settings[_CL_PLUGIN_ID]
-                    validator_cache = cl_data['masking_validation']['cache']
+                    clset = self._client_settings
+                    validator_cache = clset['masking_validation']['cache']
                     validator_cache[(package_id, self.name, live)] = \
                         package_id, myr
                 except KeyError: # system settings client plugin not found
@@ -2483,8 +2498,8 @@ class MaskableRepository(EntropyRepositoryBase):
 
                 myr = mask_ref['user_repo_package_keywords']
                 try:
-                    cl_data = self._settings[_CL_PLUGIN_ID]
-                    validator_cache = cl_data['masking_validation']['cache']
+                    clset = self._client_settings
+                    validator_cache = clset['masking_validation']['cache']
                     validator_cache[(package_id, self.name, live)] = \
                         package_id, myr
                 except KeyError: # system settings client plugin not found
@@ -2526,8 +2541,8 @@ class MaskableRepository(EntropyRepositoryBase):
                 # valid!
                 myr = mask_ref['user_package_keywords']
                 try:
-                    cl_data = self._settings[_CL_PLUGIN_ID]
-                    validator_cache = cl_data['masking_validation']['cache']
+                    clset = self._client_settings
+                    validator_cache = clset['masking_validation']['cache']
                     validator_cache[(package_id, self.name, live)] = \
                         package_id, myr
                 except KeyError: # system settings client plugin not found
@@ -2541,12 +2556,13 @@ class MaskableRepository(EntropyRepositoryBase):
         ## package keywords
         # check if repository contains keyword unmasking data
 
-        cl_data = self._settings.get(_CL_PLUGIN_ID)
-        if cl_data is None:
+        clset = self._client_settings
+        if clset is None:
             # SystemSettings Entropy Client plugin not available
             return
+
         # let's see if something is available in repository config
-        repo_keywords = cl_data['repositories']['repos_keywords'].get(
+        repo_keywords = clset['repositories']['repos_keywords'].get(
             self.name)
         if repo_keywords is None:
             # nopers, sorry!
@@ -2557,7 +2573,7 @@ class MaskableRepository(EntropyRepositoryBase):
         if same_keywords:
             # universal keyword matches!
             myr = mask_ref['repository_packages_db_keywords']
-            validator_cache = cl_data['masking_validation']['cache']
+            validator_cache = clset['masking_validation']['cache']
             validator_cache[(package_id, self.name, live)] = \
                 package_id, myr
             return package_id, myr
@@ -2594,7 +2610,7 @@ class MaskableRepository(EntropyRepositoryBase):
         if same_keywords:
             # found! this pkg is not masked, yay!
             myr = mask_ref['repository_packages_db_keywords']
-            validator_cache = cl_data['masking_validation']['cache']
+            validator_cache = clset['masking_validation']['cache']
             validator_cache[(package_id, self.name, live)] = \
                 package_id, myr
             return package_id, myr
@@ -2603,7 +2619,7 @@ class MaskableRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase
         """
-        validator_cache = self._settings.get(_CL_PLUGIN_ID, {}).get(
+        validator_cache = self._client_settings.get(
             'masking_validation', {}).get('cache', {})
 
         cached = validator_cache.get((package_id, self.name, live))
@@ -2663,7 +2679,8 @@ class AvailablePackagesRepository(CachedRepository, MaskableRepository):
     to make possible to update the repository.
     """
     def __init__(self, *args, **kwargs):
-        EntropyRepository.__init__(self, *args, **kwargs)
+        super(AvailablePackagesRepository, self).__init__(*args, **kwargs)
+
         # ensure proper repository file permissions
         if entropy.tools.is_root() and os.path.isfile(self._db):
             const_setup_file(self._db, etpConst['entropygid'], 0o644,
@@ -2740,8 +2757,15 @@ class AvailablePackagesRepository(CachedRepository, MaskableRepository):
 
     def clearCache(self):
         # clear package masking filter
-        cl_data = self._settings.get(_CL_PLUGIN_ID, {})
-        cl_data.get('masking_validation', {}).get('cache', {}).clear()
+        try:
+            clset = self._client_settings
+        except AttributeError:
+            # EntropyBaseRepository constructor calls
+            # _maybeDatabaseSchemaUpdates that calls us here
+            # while _real_client_settings is not set yet.
+            pass
+        else:
+            clset.get('masking_validation', {}).get('cache', {}).clear()
         EntropyRepository.clearCache(self)
 
 

@@ -56,7 +56,8 @@ class SecurityTest(unittest.TestCase):
 
     def test_security_cache(self):
 
-        cacher = EntropyCacher()
+        cacher = self._entropy._cacher
+        # this starts the cacher as well
 
         cache_key = "zomg"
         data = {"1": 1, "2": 2}
