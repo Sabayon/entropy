@@ -1,3 +1,21 @@
+commit c60cee8082aeea5cc3db65545b7f903ebb91718d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 21:24:24 2013 +0100
+
+    Release Entropy 254
+
+commit 7bb3007704c3719285ea324b64c6fd61262e9963
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 21:16:16 2013 +0100
+
+    [entropy.services.client] always append the entropy version string to requests
+
+commit 1f6dd3500157f98c9618a5340cdc355e36b9c42e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 20:11:50 2013 +0100
+
+    Tagging Entropy version 253
+
 commit da31e2b49dff8239a67a748d97e20e7d137d1b9e
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Dec 12 20:11:50 2013 +0100
