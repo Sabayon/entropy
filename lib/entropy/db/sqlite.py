@@ -537,13 +537,38 @@ class EntropySQLiteRepository(EntropySQLRepository):
                 """
                 return self._path
 
-        return RepositoryResourceLock(self, mode, self.lock_path())
+            def directed(self):
+                """
+                Return whether this lock has been created
+                with direct mode enabled.
+                """
+                return False
+
+        class DirectFakeResourceLock(object):
+
+            def __init__(self, mode):
+                self._mode = mode
+
+            def directed(self):
+                """
+                Return whether this lock has been created
+                with direct mode enabled.
+                """
+                return True
+
+        if self.directed():
+            return DirectFakeResourceLock(mode)
+        else:
+            return RepositoryResourceLock(self, mode, self.lock_path())
 
     def acquire_shared(self):
         """
         Reimplemented from EntropyBaseRepository.
         """
         lock = self._get_reslock(False)
+        if lock.directed():
+            return lock
+
         lock.acquire_shared()
 
         # in-RAM cached data may have become stale
@@ -557,6 +582,8 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropyBaseRepository.
         """
         lock = self._get_reslock(False)
+        if lock.directed():
+            return lock
 
         acquired = lock.try_acquire_shared()
         if acquired:
@@ -572,6 +599,9 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropyBaseRepository.
         """
         lock = self._get_reslock(True)
+        if lock.directed():
+            return lock
+
         lock.acquire_exclusive()
 
         # in-RAM cached data may have become stale
@@ -584,6 +614,8 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropyBaseRepository.
         """
         lock = self._get_reslock(True)
+        if lock.directed():
+            return lock
 
         acquired = lock.try_acquire_exclusive()
         if acquired:
@@ -599,6 +631,13 @@ class EntropySQLiteRepository(EntropySQLRepository):
         if lock._mode != mode:
             raise RuntimeError(
                 "Programming error: acquired lock in a different mode")
+
+        if lock.directed():
+            if not self.directed():
+                raise RuntimeError(
+                    "Programming error: acquired lock in directed mode")
+            return
+
         lock.release()
 
     def release_shared(self, opaque):

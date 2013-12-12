@@ -1131,6 +1131,41 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.test_db._direct_enabled = True
         self.assertEquals(self.test_db.directed(), True)
 
+        self.test_db._direct_enabled = False
+        self.assertEquals(self.test_db.directed(), False)
+
+        with self.test_db.direct():
+            opaque = self.test_db.try_acquire_exclusive()
+            self.assertTrue(opaque is not None)
+            self.assertEquals(opaque.directed(), True)
+
+            opaque_shared = self.test_db.try_acquire_shared()
+            self.assertTrue(opaque_shared is not None)
+            self.assertEquals(opaque_shared.directed(), True)
+
+            opaque_exclusive = self.test_db.try_acquire_exclusive()
+            self.assertTrue(opaque_exclusive is not None)
+            self.assertEquals(opaque_exclusive.directed(), True)
+            self.assertEquals(self.test_db.directed(), True)
+
+            self.assertRaises(
+                RuntimeError,
+                self.test_db.release_shared, opaque_exclusive)
+            self.test_db.release_exclusive(opaque_exclusive)
+            self.assertEquals(self.test_db.directed(), True)
+
+            self.assertRaises(
+                RuntimeError,
+                self.test_db.release_exclusive, opaque_shared)
+            self.test_db.release_shared(opaque_shared)
+            self.assertEquals(self.test_db.directed(), True)
+
+            self.assertRaises(
+                RuntimeError,
+                self.test_db.release_shared, opaque)
+            self.test_db.release_exclusive(opaque)
+            self.assertEquals(self.test_db.directed(), True)
+
 
 if __name__ == '__main__':
     unittest.main()
