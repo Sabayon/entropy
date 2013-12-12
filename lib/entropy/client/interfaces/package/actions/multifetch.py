@@ -498,6 +498,8 @@ class _PackageMultiFetchAction(_PackageFetchAction):
                 val, signatures)
 
         exit_st = 0
+        if failed_map:
+            exit_st = -1
         # determine if we got a -100, KeyboardInterrupt
         for _key, (val, _signs) in tuple(failed_map.items()):
             if val == -100:
