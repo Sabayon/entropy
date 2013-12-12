@@ -2310,11 +2310,7 @@ class RigoDaemonService(dbus.service.Object):
                 raise InterruptError("simulated")
 
         action_factory = self._entropy.PackageActionFactory()
-        _settings = self._entropy.Settings()
-        _plg_ids = etpConst['system_settings_plugins_ids']
-        client_plg_id = _plg_ids['client_plugin']
-        client_settings = _settings[client_plg_id]
-        misc_settings = client_settings['misc']
+        misc_settings = self._entropy.ClientSettings()['misc']
 
         download_map = {}
         _count = 0
