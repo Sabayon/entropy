@@ -1,3 +1,127 @@
+commit 42c66c84b4f02a3cc0f855b1b8a45073fb13c375
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 19:38:50 2013 +0100
+
+    Release Entropy 252
+
+commit e47db9bfd7c0e1fe631f37a744fcfb527237695b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 19:27:31 2013 +0100
+
+    [eit.utils] use the public message header variable
+
+commit 162c08961fd6c0b0fd92d6f88a3c56d0cfc107ac
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 19:27:19 2013 +0100
+
+    [solo.utils] use the public message header variable
+
+commit c02da8d31527ba52aee255297c36d7dddd29e8d8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 19:27:05 2013 +0100
+
+    [entropy.output] make the message header variable public
+
+commit 44c1f6662946364cf59fabbd6d2df197c0010ef2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 19:25:17 2013 +0100
+
+    [client] update entropy.pot
+
+commit e6b129ae7e3409aaa56f7bb8a4a3a29c70028e4c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 19:24:19 2013 +0100
+
+    [entropy.client] move ClientSystemSettingsPlugin to a separate module
+    
+    This will break the circular dependency between loaders and client modules
+
+commit c78b90563c751b2de3f7fb5728b4f1a696d3a58f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 19:23:41 2013 +0100
+
+    [entropy.client.package] use ClientSettings() rather than SystemSettings()[id]
+
+commit 1eed3123c8325f421fa98612e57af32232fd6fc7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 19:23:20 2013 +0100
+
+    [entropy.client.misc] use ClientSettings() rather than SystemSettings()[id]
+
+commit c22f4121f69e7657ea7136c97ee178a0ecc68032
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 19:22:42 2013 +0100
+
+    [RigoDaemon] use ClientSettings() rather than SystemSettings()[id]
+
+commit aa4e2441beb54afedc8abe78190ef5577e01d3a0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 18:35:17 2013 +0100
+
+    [entropy.client] move _enabled_repos to a property, allow lazy loading
+
+commit 88ca752724253c52a79b9a3bc1f28ec1ea05f175
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 18:14:43 2013 +0100
+
+    [entropy.client] remove repositories list cache validation code
+    
+    Dead code, no longer needed.
+
+commit fdceeaffbd7b1cf2b42c26e93900aa492998c061
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 18:10:59 2013 +0100
+
+    [entropy.client] always use repositories hashes for cache keys
+
+commit 3574cb029fa3dc5aa7d8406b43b866ef516d7564
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 17:26:14 2013 +0100
+
+    [entropy.client] do not clear cache if xcache is False
+    
+    Nowadays, cache in entropy.client uses hashes of repositories
+    as part of the key, there is no need to clear cache explicitly
+
+commit 67cccf3e8a67ebbebe939564237bc7b067408117
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 17:13:19 2013 +0100
+
+    [entropy.client] lazy load ClientSystemSettingsPlugin
+
+commit 8a7afe97e8cc943ad475b80d2d81078517021289
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 16:49:01 2013 +0100
+
+    [entropy.client] use ClientSettings() whenever needed
+    
+    This commit also drops the sys_settings_client_plugin_id attribute
+
+commit 56f0ed4fd5dd3536f07651f053c6b61d8b0d1b37
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 14:49:34 2013 +0100
+
+    [entropy.client] Client: move object attributes to @property to enable lazy loading
+
+commit 3a7269aa5c4f963e04010d7837783b4576ff2046
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 14:25:44 2013 +0100
+
+    [entropy.db] EntropyBaseRepository: turn lock methods into no-op if direct mode
+    
+    Now that the repository lock is reentrant, it's good to have the
+    methods take into account direct mode as well. In direct mode,
+    we explicitly don't want to deal with any kind of locking, because
+    we accept to manipulate stale data. In order to hide locking code
+    from the outside and have it transparently managed inside entropy.*
+    methods, we must respect requests made in direct mode.
+
+commit e55ac6e58f617afa7b016534124869e3a1a6db49
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 12:38:28 2013 +0100
+
+    Tagging Entropy version 251
+
 commit 412759e20fab4fa8bd2aa2d107c2782b29268af9
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Dec 12 12:38:28 2013 +0100
