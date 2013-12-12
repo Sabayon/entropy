@@ -58,7 +58,10 @@ class RepositoryMixin:
     def __get_repository_cache_key(self, repository_id):
         return (repository_id, etpConst['systemroot'],)
 
-    def _validate_repositories(self, quiet = False):
+    def _validate_repositories(self, quiet = False, enabled_repos = None):
+
+        if enabled_repos is None:
+            enabled_repos = self._enabled_repos
 
         StatusInterface().clear()
         self._repo_error_messages_cache.clear()
@@ -86,7 +89,7 @@ class RepositoryMixin:
 
         t2 = _("Please update your repositories now in order to remove this message!")
 
-        del self._enabled_repos[:]
+        del enabled_repos[:]
         _enabled_repos = []
         all_repos = self._settings['repositories']['order'][:]
         for repoid in self._settings['repositories']['order']:
@@ -143,7 +146,7 @@ class RepositoryMixin:
                 continue
 
         # write back correct _enabled_repos
-        self._enabled_repos.extend(_enabled_repos)
+        enabled_repos.extend(_enabled_repos)
 
     def _init_generic_temp_repository(self, repoid, description,
         package_mirrors = None, temp_file = None):

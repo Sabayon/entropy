@@ -27,8 +27,6 @@ class EntropyRepositoryTest(unittest.TestCase):
             xcache = False, repo_validation = False)
         self.Spm = self.Client.Spm()
         self.test_db_name = "test_suite"
-        self.client_sysset_plugin_id = \
-            etpConst['system_settings_plugins_ids']['client_plugin']
         self.test_db = self.__open_test_db(":memory:")
         # GenericRepository supports package masking if this property is set
         self.test_db.enable_mask_filter = True
@@ -400,9 +398,8 @@ class EntropyRepositoryTest(unittest.TestCase):
             self.test_db.atomMatch(pkg_atom))
 
         # test package masking
-        plug_id = self.client_sysset_plugin_id
         masking_validation = \
-            self._settings[plug_id]['masking_validation']['cache']
+            self.Client.ClientSettings()['masking_validation']['cache']
         f_match_mask = (1, self.test_db_name,)
 
         self._settings['live_packagemasking']['mask_matches'].add(
@@ -465,9 +462,8 @@ class EntropyRepositoryTest(unittest.TestCase):
             self.test_db.atomMatch(pkg_atom))
 
         # test package masking
-        plug_id = self.client_sysset_plugin_id
-        masking_validation = \
-            self._settings[plug_id]['masking_validation']['cache']
+        masking_validation = self.Client.ClientSettings(
+            )['masking_validation']['cache']
         f_match_mask = (1, self.test_db_name,)
 
         self._settings['live_packagemasking']['mask_matches'].add(
@@ -504,9 +500,8 @@ class EntropyRepositoryTest(unittest.TestCase):
             self.test_db.atomMatch(pkg_atom))
 
         # test package masking
-        plug_id = self.client_sysset_plugin_id
-        masking_validation = \
-            self._settings[plug_id]['masking_validation']['cache']
+        masking_validation = self.Client.ClientSettings(
+            )['masking_validation']['cache']
         f_match_mask = (1, self.test_db_name,)
 
         self._settings['live_packagemasking']['mask_matches'].add(
@@ -552,9 +547,8 @@ class EntropyRepositoryTest(unittest.TestCase):
             self.test_db.atomMatch(pkg_atom))
 
         # test package masking
-        plug_id = self.client_sysset_plugin_id
-        masking_validation = \
-            self._settings[plug_id]['masking_validation']['cache']
+        masking_validation = self.Client.ClientSettings(
+            )['masking_validation']['cache']
         f_match_mask = (1, self.test_db_name,)
 
         self._settings['live_packagemasking']['mask_matches'].add(

@@ -753,7 +753,6 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
         self._can_run_sys_set_hooks = False
         const_debug_write(__name__, "debug enabled")
 
-        self._enabled_repos = []
         self.safe_mode = 0
         self._indexing = indexing
         self._repo_validation = repo_validation
@@ -770,6 +769,9 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
 
         self._real_logger = None
         self._real_logger_lock = threading.Lock()
+
+        self._real_enabled_repos = None
+        self._real_enabled_repos_lock = threading.RLock()
 
         # class init
         LoadersMixin.__init__(self)
@@ -802,11 +804,6 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
             self.xcache = False
         elif (not entropy.tools.is_user_in_entropy_group()) and not user_xcache:
             self.xcache = False
-
-        if self._repo_validation:
-            self._validate_repositories()
-        else:
-            self._enabled_repos.extend(self._settings['repositories']['order'])
 
         # Add Entropy Resources Lock post-acquire hook that cleans
         # repository caches.
@@ -894,6 +891,23 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
                     const_debug_write(__name__, "Logger loaded")
 
         return self._real_logger
+
+    @property
+    def _enabled_repos(self):
+        if self._real_enabled_repos is None:
+            with self._real_enabled_repos_lock:
+
+                if self._real_enabled_repos is None:
+                    self._real_enabled_repos = []
+
+                    if self._repo_validation:
+                        self._validate_repositories(
+                            enabled_repos = self._real_enabled_repos)
+                    else:
+                        self._real_enabled_repos.extend(
+                            self._settings['repositories']['order'])
+
+        return self._real_enabled_repos
 
     def _resources_post_hook(self):
         """
