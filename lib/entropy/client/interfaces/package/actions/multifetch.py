@@ -410,7 +410,7 @@ class _PackageMultiFetchAction(_PackageFetchAction):
             (_hook_package_id, hook_repository_id, _hook_url,
              hook_download_path, hook_cksum, hook_signs) = path_data
 
-            if self._stat_path(path):
+            if self._stat_path(hook_download_path):
                 verify_st = self._match_checksum(
                     hook_download_path,
                     hook_repository_id,
