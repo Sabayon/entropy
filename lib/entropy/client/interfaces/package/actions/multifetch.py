@@ -435,6 +435,9 @@ class _PackageMultiFetchAction(_PackageFetchAction):
                     # nothing to check, path already verified
                     return
 
+            if not self._stat_path(hook_download_path):
+                return
+
             verify_st = self._match_checksum(
                 hook_download_path,
                 hook_repository_id,
