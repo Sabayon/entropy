@@ -101,8 +101,8 @@ class _PackageFetchAction(PackageAction):
                 self._package_match)
 
         repo = self._entropy.open_repository(self._repository_id)
-        cl_id = etpConst['system_settings_plugins_ids']['client_plugin']
-        edelta_support = self._settings[cl_id]['misc']['edelta_support']
+        edelta_support = self._entropy.ClientSettings(
+            )['misc']['edelta_support']
         metadata['edelta_support'] = edelta_support
         metadata['checksum'] = repo.retrieveDigest(self._package_id)
         sha1, sha256, sha512, gpg = repo.retrieveSignatures(

@@ -228,8 +228,7 @@ class _PackageInstallRemoveAction(PackageAction):
         Data returned by this method is expected to be used only by internal
         functions.
         """
-        cl_id = etpConst['system_settings_plugins_ids']['client_plugin']
-        misc_data = self._settings[cl_id]['misc']
+        misc_data = self._entropy.ClientSettings()['misc']
 
         if mask:
             paths = entropy_repository.retrieveProtectMask(package_id).split()

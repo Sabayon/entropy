@@ -1471,9 +1471,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
 
         # support for unit testing settings
         sys_root = self._get_system_root(metadata)
-        sys_set_plg_id = \
-            etpConst['system_settings_plugins_ids']['client_plugin']
-        misc_data = self._settings[sys_set_plg_id]['misc']
+        misc_data = self._entropy.ClientSettings()['misc']
         col_protect = misc_data['collisionprotect']
         splitdebug, splitdebug_dirs = metadata['splitdebug'], \
             metadata['splitdebug_dirs']
