@@ -757,16 +757,18 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
         self._indexing = indexing
         self._repo_validation = repo_validation
 
+        self._real_cacher = None
+        self._real_cacher_lock = threading.Lock()
+
         # setup package settings (masking and other stuff)
-        self._settings = SystemSettings()
-        const_debug_write(__name__, "SystemSettings loaded")
+        self._real_settings = None
+        self._real_settings_lock = threading.Lock()
+
+        self._real_logger = None
+        self._real_logger_lock = threading.Lock()
 
         # class init
         LoadersMixin.__init__(self)
-
-        self.logger = LogFile(
-            level = self._settings['system']['log_level'],
-            filename = etpConst['entropylogfile'], header = "[client]")
 
         self._multiple_url_fetcher = multiple_url_fetcher
         self._url_fetcher = url_fetcher
@@ -774,8 +776,6 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
             self._url_fetcher = UrlFetcher
         if multiple_url_fetcher is None:
             self._multiple_url_fetcher = MultipleUrlFetcher
-
-        self._cacher = EntropyCacher()
 
         self._do_open_installed_repo = True
         self._installed_repo_enable = True
@@ -809,14 +809,6 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
         self.sys_settings_client_plugin = ClientSystemSettingsPlugin(
             self.sys_settings_client_plugin_id, self)
 
-        # needs to be started here otherwise repository cache will be
-        # always dropped
-        if self.xcache:
-            self._cacher.start()
-        else:
-            # disable STASHING_CACHE or we leak
-            EntropyCacher.STASHING_CACHE = False
-
         if do_validate_repo_cache:
             self._validate_repositories_cache()
 
@@ -824,10 +816,6 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
             self._validate_repositories()
         else:
             self._enabled_repos.extend(self._settings['repositories']['order'])
-
-        # add our SystemSettings plugin
-        # Make sure we connect Entropy Client plugin AFTER client db init
-        self._settings.add_plugin(self.sys_settings_client_plugin)
 
         # Add Entropy Resources Lock post-acquire hook that cleans
         # repository caches.
@@ -838,6 +826,68 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
         # enable System Settings hooks
         self._can_run_sys_set_hooks = True
         const_debug_write(__name__, "singleton loaded")
+
+    @property
+    def _settings(self):
+        """
+        Return a SystemSettings object instance.
+        """
+        if self._real_settings is None:
+            # once != None, will be always != None
+            with self._real_settings_lock:
+
+                if self._real_settings is None:
+                    self._real_settings = SystemSettings()
+                    const_debug_write(__name__, "SystemSettings loaded")
+
+                    # add our SystemSettings plugin
+                    # Make sure we connect Entropy Client plugin
+                    # AFTER client db init
+                    self._real_settings.add_plugin(
+                        self.sys_settings_client_plugin)
+
+        return self._real_settings
+
+    @property
+    def _cacher(self):
+        """
+        Return an EntropyCacher object instance.
+        """
+        if self._real_cacher is None:
+            # once != None, will be always != None
+            with self._real_cacher_lock:
+
+                if self._real_cacher is None:
+                    self._real_cacher = EntropyCacher()
+                    const_debug_write(__name__, "EntropyCacher loaded")
+
+                    # needs to be started here otherwise repository
+                    # cache will be always dropped
+                    if self.xcache:
+                        self._real_cacher.start()
+                    else:
+                        # disable STASHING_CACHE or we leak
+                        EntropyCacher.STASHING_CACHE = False
+
+        return self._real_cacher
+
+    @property
+    def logger(self):
+        """
+        Return the Entropy Client Logger instance.
+        """
+        if self._real_logger is None:
+            # once != None, will be always != None
+            with self._real_logger_lock:
+
+                if self._real_logger is None:
+                    self._real_logger = LogFile(
+                        level = self._settings['system']['log_level'],
+                        filename = etpConst['entropylogfile'],
+                        header = "[client]")
+                    const_debug_write(__name__, "Logger loaded")
+
+        return self._real_logger
 
     def _resources_post_hook(self):
         """
@@ -871,21 +921,25 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
             if inst_repo is not None:
                 inst_repo.close(_token = InstalledPackagesRepository.NAME)
 
-        if hasattr(self, 'logger'):
-            self.logger.close()
-        if hasattr(self, '_settings') and \
-            hasattr(self, 'sys_settings_client_plugin_id') and \
-            hasattr(self._settings, 'remove_plugin'):
+        if hasattr(self, '_real_logger_lock'):
+            with self._real_logger_lock:
+                if self._real_logger is not None:
+                    self._real_logger.close()
 
-            if not _from_shutdown:
+        if not _from_shutdown:
+            if hasattr(self, '_real_settings') and \
+                    hasattr(self, 'sys_settings_client_plugin_id') and \
+                    hasattr(self._real_settings, 'remove_plugin'):
+
                 # shutdown() will terminate the whole process
                 # so there is no need to remove plugins from
                 # SystemSettings, it wouldn't make any diff.
-                try:
-                    self._settings.remove_plugin(
-                        self.sys_settings_client_plugin_id)
-                except KeyError:
-                    pass
+                if self._real_settings is not None:
+                    try:
+                        self._real_settings.remove_plugin(
+                            self.sys_settings_client_plugin_id)
+                    except KeyError:
+                        pass
 
         self.close_repositories(mask_clear = False)
 

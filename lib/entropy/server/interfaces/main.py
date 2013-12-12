@@ -21,6 +21,7 @@ import stat
 import subprocess
 import sys
 import time
+import threading
 
 from entropy.exceptions import OnlineMirrorError, PermissionDenied, \
     SystemDatabaseError, RepositoryError
@@ -1730,12 +1731,10 @@ class Server(Client):
             fake_default_repo_desc = 'this is a fake repository'
         self.__instance_destroyed = False
 
-        self._cacher = EntropyCacher()
         # settings
         self._memory_db_srv_instances = {}
         self._treeupdates_repos = set()
         self._server_dbcache = {}
-        self._settings = SystemSettings()
         etpSys['serverside'] = True
         self.fake_default_repo = fake_default_repo
         self.fake_default_repo_id = fake_default_repo_id
@@ -1847,6 +1846,20 @@ class Server(Client):
                 self._settings.remove_plugin(plug)
 
         self.close_repositories()
+
+    @property
+    def _settings(self):
+        """
+        Return a SystemSettings object instance.
+        """
+        return SystemSettings()
+
+    @property
+    def _cacher(self):
+        """
+        Return an EntropyCacher object instance.
+        """
+        return EntropyCacher()
 
     def is_destroyed(self):
         """
