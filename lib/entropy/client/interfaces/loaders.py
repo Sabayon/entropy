@@ -92,8 +92,7 @@ class LoadersMixin:
         @return: Repository instance object
         @rtype: entropy.client.interfaces.repository.Repository
         """
-        cl_id = self.sys_settings_client_plugin_id
-        client_data = self._settings[cl_id]['misc']
+        client_data = self.ClientSettings()['misc']
         kwargs['gpg'] = client_data['gpg']
         return self.__repository_loader(self, *args, **kwargs)
 
@@ -168,7 +167,8 @@ class LoadersMixin:
         """
         Return SystemSettings Entropy Client plugin metadata dictionary
         """
-        return self._settings[self.sys_settings_client_plugin_id]
+        p_id = etpConst['system_settings_plugins_ids']['client_plugin']
+        return self._settings[p_id]
 
     def Cacher(self):
         """

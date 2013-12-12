@@ -64,8 +64,10 @@ class RepositoryMixin:
         self._repo_error_messages_cache.clear()
 
         # clear live masking validation cache, if exists
-        cl_id = self.sys_settings_client_plugin_id
-        client_metadata = self._settings.get(cl_id, {})
+        try:
+            client_metadata = self.ClientSettings()
+        except KeyError:
+            client_metadata = {}
         if "masking_validation" in client_metadata:
             client_metadata['masking_validation']['cache'].clear()
 
@@ -1331,7 +1333,7 @@ class RepositoryMixin:
         @raise AttributeError: if days_override or client.conf setting is
             invalid (the latter cannot really happen).
         """
-        client_settings = self._settings[self.sys_settings_client_plugin_id]
+        client_settings = self.ClientSettings()
         misc_settings = client_settings['misc']
         autoprune_days = misc_settings.get('autoprune_days', days_override)
         if autoprune_days is None:
@@ -1741,8 +1743,7 @@ class MiscMixin:
         @return: True, if given entropy package is free (as in freedom)
         @rtype: bool
         """
-        cl_id = self.sys_settings_client_plugin_id
-        repo_sys_data = self._settings[cl_id]['repositories']
+        repo_sys_data = self.ClientSettings()['repositories']
 
         dbconn = self.open_repository(repository_id)
 
@@ -1767,8 +1768,7 @@ class MiscMixin:
             matches as value.
         @rtype: dict
         """
-        cl_id = self.sys_settings_client_plugin_id
-        repo_sys_data = self._settings[cl_id]['repositories']
+        repo_sys_data = self.ClientSettings()['repositories']
         lic_accepted = self._settings['license_accept']
 
         licenses = {}
@@ -2388,8 +2388,7 @@ class MatchMixin:
         if done and not dry_run:
             self._settings.clear()
 
-        cl_id = self.sys_settings_client_plugin_id
-        self._settings[cl_id]['masking_validation']['cache'].clear()
+        self.ClientSettings()['masking_validation']['cache'].clear()
         return done
 
     def _unmask_package_by_atom(self, package_match, dry_run = False):

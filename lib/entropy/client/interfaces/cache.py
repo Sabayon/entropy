@@ -149,8 +149,7 @@ class CacheMixin:
         """
         Get available updates on-disk cache, if available, otherwise return None
         """
-        cl_id = self.sys_settings_client_plugin_id
-        misc_settings = self._settings[cl_id]['misc']
+        misc_settings = self.ClientSettings()['misc']
         ignore_spm_downgrades = misc_settings['ignore_spm_downgrades']
 
         if self.xcache:

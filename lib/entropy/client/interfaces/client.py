@@ -39,8 +39,11 @@ import entropy.tools
 
 class ClientSystemSettingsPlugin(SystemSettingsPlugin):
 
-    def __init__(self, plugin_id, helper_interface):
-        SystemSettingsPlugin.__init__(self, plugin_id, helper_interface)
+    ID = etpConst['system_settings_plugins_ids']['client_plugin']
+
+    def __init__(self, helper_interface):
+        SystemSettingsPlugin.__init__(
+            self, ClientSystemSettingsPlugin.ID, helper_interface)
         self.__repos_files = {}
         self.__repos_mtime = {}
         self._mtime_cache = {}
@@ -749,8 +752,6 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
         self._treeupdates_repos = set()
         self._can_run_sys_set_hooks = False
         const_debug_write(__name__, "debug enabled")
-        self.sys_settings_client_plugin_id = \
-            etpConst['system_settings_plugins_ids']['client_plugin']
 
         self._enabled_repos = []
         self.safe_mode = 0
@@ -806,8 +807,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
             self.clear_cache()
 
         # create our SystemSettings plugin
-        self.sys_settings_client_plugin = ClientSystemSettingsPlugin(
-            self.sys_settings_client_plugin_id, self)
+        self.sys_settings_client_plugin = ClientSystemSettingsPlugin(self)
 
         if do_validate_repo_cache:
             self._validate_repositories_cache()
@@ -928,7 +928,6 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
 
         if not _from_shutdown:
             if hasattr(self, '_real_settings') and \
-                    hasattr(self, 'sys_settings_client_plugin_id') and \
                     hasattr(self._real_settings, 'remove_plugin'):
 
                 # shutdown() will terminate the whole process
@@ -937,7 +936,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
                 if self._real_settings is not None:
                     try:
                         self._real_settings.remove_plugin(
-                            self.sys_settings_client_plugin_id)
+                            ClientSystemSettingsPlugin.ID)
                     except KeyError:
                         pass
 

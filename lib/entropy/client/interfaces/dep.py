@@ -630,7 +630,7 @@ class CalculatorsMixin:
                                       match_repo = None):
 
         inst_repo = self.installed_repository()
-        cl_settings = self._settings[self.sys_settings_client_plugin_id]
+        cl_settings = self.ClientSettings()
         misc_settings = cl_settings['misc']
         ignore_spm_downgrades = misc_settings['ignore_spm_downgrades']
 
@@ -1530,7 +1530,7 @@ class CalculatorsMixin:
 
     def _lookup_system_mask_repository_deps(self):
 
-        client_settings = self._settings[self.sys_settings_client_plugin_id]
+        client_settings = self.ClientSettings()
         data = client_settings['repositories']['system_mask']
 
         if not data:
@@ -2326,8 +2326,7 @@ class CalculatorsMixin:
         return depends
 
     def _is_installed_package_id_in_system_mask(self, package_id):
-        cl_id = self.sys_settings_client_plugin_id
-        cl_set = self._settings[cl_id]
+        cl_set = self.ClientSettings()
         mask_installed = cl_set['system_mask']['repos_installed']
         if package_id in mask_installed:
             return True
@@ -2885,7 +2884,7 @@ class CalculatorsMixin:
             if cached is not None:
                 return cached
 
-        client_settings = self._settings[self.sys_settings_client_plugin_id]
+        client_settings = self.ClientSettings()
         critical_data = client_settings['repositories']['critical_updates']
 
         # do not match package repositories, never consider them in updates!
@@ -2984,7 +2983,7 @@ class CalculatorsMixin:
             must be enforced.
         @rtype: tuple
         """
-        cl_settings = self._settings[self.sys_settings_client_plugin_id]
+        cl_settings = self.ClientSettings()
         misc_settings = cl_settings['misc']
 
         # critical updates hook, if enabled
@@ -3453,8 +3452,7 @@ class CalculatorsMixin:
 
         pkgatom = dbconn.retrieveAtom(package_id)
         pkgkey = entropy.dep.dep_getkey(pkgatom)
-        cl_set_plg = self.sys_settings_client_plugin_id
-        mask_data = self._settings[cl_set_plg]['system_mask']
+        mask_data = self.ClientSettings()['system_mask']
         mask_installed_keys = mask_data['repos_installed_keys']
 
         # cannot check this for pkgs not coming from installed pkgs repo
@@ -3633,7 +3631,7 @@ class CalculatorsMixin:
             found. The encapsulated .value object attribute contains a list of
             not found dependencies.
         """
-        cl_settings = self._settings[self.sys_settings_client_plugin_id]
+        cl_settings = self.ClientSettings()
         misc_settings = cl_settings['misc']
         install = []
         removal = []
