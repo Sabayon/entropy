@@ -66,8 +66,7 @@ class ConfigurationFiles(dict):
         Get CONFIG_PROTECT or CONFIG_PROTECT_MASK values from
         _repository_ids.
         """
-        cl_id = etpConst['system_settings_plugins_ids']['client_plugin']
-        misc_data = self._settings[cl_id]['misc']
+        misc_data = self._entropy.ClientSettings()['misc']
         config_protect = set()
         # also ask to Source Package Manager
         spm = self._entropy.Spm()
