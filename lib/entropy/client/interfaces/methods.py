@@ -466,7 +466,7 @@ class RepositoryMixin:
 
             # drop from SystemSettings Client plugin, if there
             try:
-                self.sys_settings_client_plugin._drop_package_repository(
+                self._settings_client_plugin._drop_package_repository(
                     repository_id)
             except KeyError:
                 pass
@@ -929,7 +929,7 @@ class RepositoryMixin:
             raise EntropyPackageException("error while adding repository (2)")
 
         # add to SystemSettings
-        self.sys_settings_client_plugin._add_package_repository(
+        self._settings_client_plugin._add_package_repository(
             repodata['repoid'], repodata)
         repo.close()
         return package_matches

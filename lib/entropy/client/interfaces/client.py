@@ -765,6 +765,9 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
         self._real_settings = None
         self._real_settings_lock = threading.Lock()
 
+        self._real_settings_client_plg = None
+        self._real_settings_client_plg_lock = threading.Lock()
+
         self._real_logger = None
         self._real_logger_lock = threading.Lock()
 
@@ -806,9 +809,6 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
         if not self.xcache and (entropy.tools.is_user_in_entropy_group()):
             self.clear_cache()
 
-        # create our SystemSettings plugin
-        self.sys_settings_client_plugin = ClientSystemSettingsPlugin(self)
-
         if do_validate_repo_cache:
             self._validate_repositories_cache()
 
@@ -844,9 +844,24 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
                     # Make sure we connect Entropy Client plugin
                     # AFTER client db init
                     self._real_settings.add_plugin(
-                        self.sys_settings_client_plugin)
+                        self._settings_client_plugin)
 
         return self._real_settings
+
+    @property
+    def _settings_client_plugin(self):
+        """
+        Return the SystemSettings Entropy Client plugin.
+        """
+        if self._real_settings_client_plg is None:
+            # once != None, will be always != None
+            with self._real_settings_client_plg_lock:
+
+                if self._real_settings_client_plg is None:
+                    plugin = ClientSystemSettingsPlugin(self)
+                    self._real_settings_client_plg = plugin
+
+        return self._real_settings_client_plg
 
     @property
     def _cacher(self):
