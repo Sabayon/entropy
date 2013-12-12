@@ -12,7 +12,7 @@
 from entropy.const import etpConst, const_convert_to_unicode
 from entropy.i18n import _
 from entropy.output import darkgreen, purple, blue, \
-    brown, bold, red, darkred, teal, decolorize
+    brown, bold, red, darkred, teal, decolorize, MESSAGE_HEADER
 from entropy.graph import Graph
 from entropy.misc import Lifo
 
@@ -381,7 +381,7 @@ def print_table(entropy_server, lines_data,
     if col_n > 0:
         column_sizes[col_n - 1] = 0
     for cols in lines_data:
-        txt = side_color(">>") + "  "
+        txt = side_color(MESSAGE_HEADER) + "  "
 
         if isinstance(cols, (list, tuple)):
             col_n = 0
