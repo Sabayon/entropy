@@ -218,7 +218,7 @@ class PackageAction(object):
         exit_st = self._run()
         if exit_st != 0:
             self._entropy.output(
-                blue(_("An error occured. Action aborted.")),
+                blue(_("An error occurred. Action aborted.")),
                 importance = 2,
                 level = "error",
                 header = darkred("   ## ")

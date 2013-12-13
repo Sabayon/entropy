@@ -1290,7 +1290,7 @@ class AvailablePackagesRepositoryUpdater(object):
                 header = "\t"
             )
             mytxt = "%s. %s" % (
-                red(_("An error occured while checking repository integrity")),
+                red(_("An error occurred while checking repository integrity")),
                 red(_("Giving up")),
             )
             self._entropy.output(

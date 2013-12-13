@@ -190,7 +190,7 @@ class ServerRepositoryStatus(Singleton):
     def get_updates_log(self, db):
         """
         Return dict() object containing metadata related to package
-        updates occured in a server-side repository.
+        updates occurred in a server-side repository.
         """
         if db not in self.__updates_log:
             self.__updates_log[db] = {}

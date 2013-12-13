@@ -692,7 +692,7 @@ class SpmPlugin(Singleton):
         @param package_path: path to Entropy package
         @type package_path: string
         @return: tuple composed by error status and error message (if any).
-            Error status is an int with != 0 values if error occured.
+            Error status is an int with != 0 values if error occurred.
         @rtype: tuple
         """
         raise NotImplementedError()
@@ -710,7 +710,7 @@ class SpmPlugin(Singleton):
         @param entropy_output: a valid text output interface
         @type entropy_output: TextInterface object
         @return: tuple composed by error status and error message (if any).
-            Error status is an int with != 0 values if error occured.
+            Error status is an int with != 0 values if error occurred.
         @rtype: tuple
         """
         raise NotImplementedError()

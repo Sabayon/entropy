@@ -5467,7 +5467,7 @@ class EntropySQLRepository(EntropyRepositoryBase):
             except SPMError as err:
                 mytxt = "%s: %s: %s" % (
                     bold(_("ATTENTION")),
-                    red(_("Spm error occured")),
+                    red(_("Spm error occurred")),
                     str(err),
                 )
                 self.output(

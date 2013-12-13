@@ -138,7 +138,7 @@ class _PackageConfigAction(PackageAction):
             exit_st = self._config_phase_unlocked(inst_repo)
 
         if exit_st == 1:
-            txt = _("An error occured while trying to configure the package")
+            txt = _("An error occurred while trying to configure the package")
             txt2 = "%s. %s: %s" % (
                 red(_("Make sure that your system is healthy")),
                 blue(_("Error")),
@@ -158,7 +158,7 @@ class _PackageConfigAction(PackageAction):
             )
 
         elif exit_st == 2:
-            txt = _("An error occured while trying to configure the package")
+            txt = _("An error occurred while trying to configure the package")
             txt2 = "%s. %s: %s" % (
                 red(_("It seems that Source Package Manager entry is missing")),
                 blue(_("Error")),

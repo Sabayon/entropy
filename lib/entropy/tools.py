@@ -256,7 +256,7 @@ def get_remote_data(url, timeout = 5):
     @type url: string
     @keyword timeout: fetch timeout in seconds
     @type timeout: int
-    @return: fetched data or False (when error occured)
+    @return: fetched data or False (when error occurred)
     @rtype: string or bool
     """
     import socket

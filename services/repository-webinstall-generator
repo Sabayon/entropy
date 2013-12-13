@@ -39,7 +39,7 @@ exit ${?}
 """+ etpConst['databasestarttag'])
 
     class CalculationError(EntropyException):
-        """Raised when an error occured while calculating the work queue"""
+        """Raised when an error occurred while calculating the work queue"""
 
     def __init__(self, repository_id, entropy_repository, package_dirs,
         mirror_urls, regenerate = False):

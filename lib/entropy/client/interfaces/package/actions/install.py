@@ -562,7 +562,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         self._entropy.set_title(xterm_title)
 
         def _unpack_error(exit_st):
-            msg = _("An error occured while trying to unpack the package")
+            msg = _("An error occurred while trying to unpack the package")
             errormsg = "%s. %s. %s: %s" % (
                 red(msg),
                 red(_("Check if your system is healthy")),
@@ -1258,7 +1258,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
 
         if exit_st != 0:
             txt = "%s. %s. %s: %s" % (
-                red(_("An error occured while trying to install the package")),
+                red(_("An error occurred while trying to install the package")),
                 red(_("Check if your system is healthy")),
                 blue(_("Error")),
                 exit_st,

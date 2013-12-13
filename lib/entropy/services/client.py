@@ -873,7 +873,7 @@ class WebService(object):
         @raise WebService.UnsupportedParameters: if input parameters are invalid
         @raise WebService.RequestError: if request cannot be satisfied
         @raise WebService.MethodNotAvailable: if API method is not available
-            remotely and an error occured (error code passed as exception
+            remotely and an error occurred (error code passed as exception
             argument)
         @raise WebService.AuthenticationRequired: if require_credentials is True
             and credentials are required.
@@ -974,7 +974,7 @@ class WebService(object):
         @raise WebService.UnsupportedParameters: if input parameters are invalid
         @raise WebService.RequestError: if request cannot be satisfied
         @raise WebService.MethodNotAvailable: if API method is not available
-            remotely and an error occured (error code passed as exception
+            remotely and an error occurred (error code passed as exception
             argument)
         @raise WebService.AuthenticationRequired: if require_credentials is True
             and credentials are required.
