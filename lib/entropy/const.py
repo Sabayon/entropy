@@ -576,7 +576,7 @@ def const_default_settings(rootdir):
         # files at the end of the processes
         'configprotectcounter': 0,
         # default Entropy release version
-        'entropyversion': "1.0",
+        'entropyversion': "1",
         # default system name (overidden by entropy.conf settings)
         'systemname': "Sabayon Linux",
         # Product identificator (standard, professional...)
