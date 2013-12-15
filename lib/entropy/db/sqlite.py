@@ -244,10 +244,9 @@ class EntropySQLiteRepository(EntropySQLRepository):
             return os.path.join(
                 etpConst['entropyrundir'],
                 "repository",
-                "%s_%s_%s.lock" % (
+                "%s_%s.lock" % (
                     self.name,
                     os.getpid(),
-                    id(self)
                 )
             )
         return super(EntropySQLiteRepository, self).lock_path()
