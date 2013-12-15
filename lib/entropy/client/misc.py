@@ -22,6 +22,41 @@ from entropy.output import darkred, darkgreen, brown
 from entropy.tools import getstatusoutput, rename_keep_permissions
 from entropy.i18n import _
 
+
+def sharedinstlock(method):
+    """
+    Decorator that acquires the Installed Packages Repository lock in
+    shared mode and calls the wrapped function with an extra argument
+    (the Installed Packages Repository object instance).
+
+    This decorator expects that "self" has an installed_repository() method
+    that returns the Installed Packages Repository instance.
+    """
+    def wrapped(self, *args, **kwargs):
+        inst_repo = self.installed_repository()
+        with inst_repo.shared():
+            return method(self, *args, **kwargs)
+
+    return wrapped
+
+
+def exclusiveinstlock(method):
+    """
+    Decorator that acquires the Installed Packages Repository lock in
+    exclusive mode and calls the wrapped function with an extra
+    argument (the Installed Packages Repository object instance).
+
+    This decorator expects that "self" has an installed_repository() method
+    that returns the Installed Packages Repository instance.
+    """
+    def wrapped(self, *args, **kwargs):
+        inst_repo = self.installed_repository()
+        with inst_repo.exclusive():
+            return method(self, *args, **kwargs)
+
+    return wrapped
+
+
 class ConfigurationFiles(dict):
 
     """
