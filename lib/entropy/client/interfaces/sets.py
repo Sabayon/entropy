@@ -25,7 +25,7 @@ from entropy.core.settings.base import SystemSettings
 import entropy.dep
 
 
-class Sets:
+class Sets(object):
 
     """
     Entropy Client Package Sets interface.
