@@ -43,9 +43,6 @@ class SystemResourcesLock(ResourceLock):
     or shared access to the System data.
     """
 
-    _FILE_LOCK_MUTEX = threading.Lock()
-    _FILE_LOCK_MAP = {}
-
     def __init__(self, output=None):
         """
         Object constructor.
@@ -54,8 +51,6 @@ class SystemResourcesLock(ResourceLock):
         @type output: entropy.output.TextInterface or None
         """
         super(SystemResourcesLock, self).__init__(
-            SystemResourcesLock._FILE_LOCK_MAP,
-            SystemResourcesLock._FILE_LOCK_MUTEX,
             output=output)
 
     def path(self):

@@ -37,9 +37,6 @@ class RepositoriesUpdateResourcesLock(ResourceLock):
     access to the repositories update process.
     """
 
-    _FILE_LOCK_MUTEX = threading.Lock()
-    _FILE_LOCK_MAP = {}
-
     def __init__(self, output=None):
         """
         Object constructor.
@@ -48,8 +45,6 @@ class RepositoriesUpdateResourcesLock(ResourceLock):
         @type output: entropy.output.TextInterface or None
         """
         super(RepositoriesUpdateResourcesLock, self).__init__(
-            RepositoriesUpdateResourcesLock._FILE_LOCK_MAP,
-            RepositoriesUpdateResourcesLock._FILE_LOCK_MUTEX,
             output=output)
 
     def path(self):

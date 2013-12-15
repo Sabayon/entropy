@@ -512,9 +512,6 @@ class EntropySQLiteRepository(EntropySQLRepository):
             self._discardLiveCache()
         return self._live_cacher.get(self._getLiveCacheKey() + key)
 
-    _FLOCK_LOCK_MAP = {}
-    _FLOCK_LOCK_MUTEX = threading.Lock()
-
     def _get_reslock(self, mode):
         """
         Get the lock object used for locking.
@@ -524,8 +521,6 @@ class EntropySQLiteRepository(EntropySQLRepository):
 
             def __init__(self, repo, mode, path):
                 super(RepositoryResourceLock, self).__init__(
-                    EntropySQLiteRepository._FLOCK_LOCK_MAP,
-                    EntropySQLiteRepository._FLOCK_LOCK_MUTEX,
                     output = repo)
                 self._path = path
                 self._mode = mode

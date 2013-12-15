@@ -1035,24 +1035,25 @@ class EntropyRepositoryTest(unittest.TestCase):
         opaque_exclusive2 = test_db.try_acquire_exclusive()
         self.assert_(opaque_exclusive2 is not None)
 
-        self.assert_(opaque_exclusive._lock_map is opaque_exclusive2._lock_map)
+        self.assert_(opaque_exclusive._file_lock_setup() is
+                     opaque_exclusive2._file_lock_setup())
 
         # test reference counting
         self.assertEquals(
             2,
-            opaque_exclusive._lock_map[test_db.lock_path()]['count'])
+            opaque_exclusive._file_lock_setup()['count'])
 
         test_db.release_exclusive(opaque_exclusive)
 
         self.assertEquals(
             1,
-            opaque_exclusive._lock_map[test_db.lock_path()]['count'])
+            opaque_exclusive._file_lock_setup()['count'])
 
         test_db.release_exclusive(opaque_exclusive2)
 
         self.assertEquals(
             0,
-            opaque_exclusive._lock_map[test_db.lock_path()]['count'])
+            opaque_exclusive._file_lock_setup()['count'])
 
         # test that refcount doesn't go below zero
         self.assertRaises(
@@ -1060,7 +1061,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
         self.assertEquals(
             0,
-            opaque_exclusive._lock_map[test_db.lock_path()]['count'])
+            opaque_exclusive._file_lock_setup()['count'])
 
         opaque_exclusive = test_db.try_acquire_exclusive()
         self.assert_(opaque_exclusive is not None)
