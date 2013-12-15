@@ -342,7 +342,7 @@ def _sync_tree(args):
     acquired = False
     try:
 
-        acquired = SimpleFileLock.acquire_lock(lock_file, lock_map)
+        acquired = SimpleFileLock.acquire(lock_file, lock_map)
 
         if not acquired:
             print_error(brown(_("Another instance is running.")))
@@ -377,7 +377,7 @@ def _sync_tree(args):
 
     finally:
         if acquired:
-            SimpleFileLock.release_lock(lock_file, lock_map)
+            SimpleFileLock.release(lock_file, lock_map)
 
 
 if __name__ == "__main__":

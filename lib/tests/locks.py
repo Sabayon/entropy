@@ -22,22 +22,22 @@ class EntropyLocksTest(unittest.TestCase):
             tmp_fd, tmp_path = const_mkstemp(prefix="test_simple_lock")
 
             lock_map = {}
-            self.assertEquals(True, sfl.acquire_lock(tmp_path, lock_map))
+            self.assertEquals(True, sfl.acquire(tmp_path, lock_map))
             self.assertIn(tmp_path, lock_map)
             self.assertTrue(lock_map[tmp_path] is not None)
 
             lock_map_new = {}
-            self.assertEquals(False, sfl.acquire_lock(tmp_path, lock_map_new))
+            self.assertEquals(False, sfl.acquire(tmp_path, lock_map_new))
             self.assertNotIn(tmp_path, lock_map_new)
             self.assertIn(tmp_path, lock_map)
 
-            sfl.release_lock(tmp_path, lock_map)
+            sfl.release(tmp_path, lock_map)
 
-            self.assertEquals(True, sfl.acquire_lock(tmp_path, lock_map_new))
+            self.assertEquals(True, sfl.acquire(tmp_path, lock_map_new))
             self.assertIn(tmp_path, lock_map_new)
             self.assertTrue(lock_map_new[tmp_path] is not None)
 
-            sfl.release_lock(tmp_path, lock_map_new)
+            sfl.release(tmp_path, lock_map_new)
 
         finally:
             if tmp_fd is not None:

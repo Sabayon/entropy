@@ -29,7 +29,7 @@ class SimpleFileLock(object):
     """
 
     @classmethod
-    def acquire_lock(cls, lock_file, lock_map):
+    def acquire(cls, lock_file, lock_map):
         """
         Make possible to protect a code region using an EXCLUSIVE, non-blocking
         file lock. A lock map (dict) is required in order to register the lock
@@ -62,7 +62,7 @@ class SimpleFileLock(object):
             raise
 
     @classmethod
-    def release_lock(cls, lock_file, lock_map):
+    def release(cls, lock_file, lock_map):
         """
         Release a previously acquired lock through acquire_lock().
 

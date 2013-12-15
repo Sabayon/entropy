@@ -104,9 +104,9 @@ if __name__ == "__main__":
     from entropy.locks import SimpleFileLock
     lock_map = {}
     magneto_lock = os.path.join(magneto_lock_dir, magneto_lock_file)
-    acquired = SimpleFileLock.acquire_lock(magneto_lock, lock_map)
+    acquired = SimpleFileLock.acquire(magneto_lock, lock_map)
     def _unlock_func():
-        SimpleFileLock.release_lock(magneto_lock, lock_map)
+        SimpleFileLock.release(magneto_lock, lock_map)
 
     try:
         if acquired:

@@ -277,7 +277,7 @@ if __name__ == "__main__":
         lock_map = {}
         acquired = False
         if lock_file:
-            acquired = SimpleFileLock.acquire_lock(lock_file, lock_map)
+            acquired = SimpleFileLock.acquire(lock_file, lock_map)
             if not acquired:
                 sys.stdout.write("cannot acquire lock on " + lock_file + "\n")
                 raise SystemExit(5)
@@ -285,7 +285,7 @@ if __name__ == "__main__":
             rc = func(argv, quiet)
         finally:
             if acquired:
-                SimpleFileLock.release_lock(lock_file, lock_map)
+                SimpleFileLock.release(lock_file, lock_map)
     else:
         _print_help()
         rc = 1
