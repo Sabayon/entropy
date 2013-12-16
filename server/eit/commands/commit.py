@@ -245,7 +245,7 @@ If you would like to selectively add certain packages, please see
 
         if self._ask:
             rc = entropy_server.ask_question(
-                ">>   %s" % (_("Do it now ?"),))
+                _("Do it now ?"))
             if rc == _("No"):
                 return
 
@@ -277,7 +277,7 @@ If you would like to selectively add certain packages, please see
                 darkred(spm_name),
                 header=brown("    # "))
             rc = entropy_server.ask_question(
-                ">>   %s" % (_("Add this package?"),))
+                _("Add this package?"))
             return rc == _("Yes")
 
         if self._interactive:
@@ -331,7 +331,7 @@ If you would like to selectively add certain packages, please see
             entropy_server.output(spm_name_txt, header=brown("  # "))
 
         if self._ask:
-            rc = entropy_server.ask_question(">>   %s (%s %s)" % (
+            rc = entropy_server.ask_question("%s (%s %s)" % (
                     _("Would you like to package them now ?"),
                     _("inside"),
                     repository_id,
@@ -390,7 +390,7 @@ If you would like to selectively add certain packages, please see
             pkg_id, pkg_repo = package_match
             show_rm(pkg_id, pkg_repo)
             rc = entropy_server.ask_question(
-                ">>   %s" % (_("Remove this package?"),))
+                _("Remove this package?"))
             return rc == _("Yes")
 
         if self._interactive:
@@ -410,8 +410,8 @@ If you would like to selectively add certain packages, please see
 
         if self._ask:
             rc = entropy_server.ask_question(
-                ">>   %s" % (
-                    _("Would you like to remove them now ?"),) )
+                _("Would you like to remove them now ?")
+            )
             if rc == _("No"):
                 return
 
