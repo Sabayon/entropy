@@ -391,7 +391,7 @@ Manage package file updates.
         )
         if cmd == -3:
             rc = entropy_client.ask_question(
-                ">>   %s" % (_("Overwrite ?"),) )
+                _("Overwrite ?"))
             if rc == _("No"):
                 return
 
@@ -446,7 +446,7 @@ Manage package file updates.
         )
         if cmd == -7:
             rc = entropy_client.ask_question(
-                ">>   %s" % (_("Discard ?"),) )
+                _("Discard ?"))
             if rc == _("No"):
                 return
 
