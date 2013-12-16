@@ -152,7 +152,12 @@ Copy packages from source repository to destination repository.
                 level="error")
             return 1
 
-        # match
+        # make sure to open the repository in read/write in
+        # order to trigger treeupdates, or the package ids
+        # collected below may become stale and make entropy crash.
+        entropy_server.open_server_repository(
+            self._source, read_only=False)
+
         packages = entropy_server.packages_expand(self._packages)
         for package in packages:
             p_matches, p_rc = entropy_server.atom_match(package,
