@@ -282,6 +282,12 @@ class _PackageInstallRemoveAction(PackageAction):
         do_continue = False
         in_mask = False
 
+        tofile_os = tofile
+        fromfile_os = fromfile
+        if not const_is_python3():
+            tofile_os = const_convert_to_rawstring(tofile)
+            fromfile_os = const_convert_to_rawstring(fromfile)
+
         if tofile in protect:
             protected = True
             in_mask = True
@@ -322,7 +328,7 @@ class _PackageInstallRemoveAction(PackageAction):
                     old_tofile_testdir = tofile_testdir
                     tofile_testdir = os.path.dirname(tofile_testdir)
 
-        if not os.path.lexists(tofile):
+        if not os.path.lexists(tofile_os):
             protected = False # file doesn't exist
 
         # check if it's a text file
@@ -331,8 +337,9 @@ class _PackageInstallRemoveAction(PackageAction):
             in_mask = protected
 
         if fromfile is not None:
-            if protected and os.path.lexists(fromfile) and \
-                (not os.path.exists(fromfile)) and os.path.islink(fromfile):
+            if protected and os.path.lexists(fromfile_os) and (
+                    not os.path.exists(fromfile_os)) and (
+                        os.path.islink(fromfile_os)):
                 # broken symlink, don't protect
                 self._entropy.logger.log(
                     "[Package]",
