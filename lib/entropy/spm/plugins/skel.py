@@ -12,7 +12,8 @@
 """
 import os
 
-from entropy.const import etpConst, etpSys
+from entropy.const import etpConst, etpSys, const_is_python3, \
+    const_convert_to_rawstring
 from entropy.exceptions import SPMError
 from entropy.core import Singleton
 from entropy.misc import LogFile
@@ -843,8 +844,14 @@ class SpmPlugin(Singleton):
             in order to provide a valid new destination_file_path in any case.
         @rtype tuple
         """
-        if os.path.isfile(destination_file_path) and \
-            os.path.isfile(package_file_path):
+        pkg_path_os = package_file_path
+        dest_path_os = destination_file_path
+        if not const_is_python3():
+            pkg_path_os = const_convert_to_rawstring(package_file_path)
+            dest_path_os = const_convert_to_rawstring(destination_file_path)
+
+        if os.path.isfile(dest_path_os) and \
+            os.path.isfile(pkg_path_os):
             old = entropy.tools.md5sum(package_file_path)
             new = entropy.tools.md5sum(destination_file_path)
             if old == new:
@@ -855,7 +862,9 @@ class SpmPlugin(Singleton):
 
         counter = -1
         newfile = ""
+        newfile_os = newfile
         previousfile = ""
+        previousfile_os = previousfile
         while True:
 
             counter += 1
@@ -878,7 +887,15 @@ class SpmPlugin(Singleton):
                 previousfile = os.path.join(dest_dirname,
                     "._cfg0000_%s" % (dest_basename,))
 
-            if not os.path.lexists(newfile):
+            newfile_os = newfile
+            if not const_is_python3():
+                newfile_os = const_convert_to_rawstring(newfile)
+
+            previousfile_os = previousfile
+            if not const_is_python3():
+                previousfile_os = const_convert_to_rawstring(previousfile)
+
+            if not os.path.lexists(newfile_os):
                 break
 
         if not newfile:
@@ -886,7 +903,7 @@ class SpmPlugin(Singleton):
                 "._cfg0000_%s" % (dest_basename,))
         else:
 
-            if os.path.exists(previousfile):
+            if os.path.exists(previousfile_os):
 
                 # compare package_file_path with previousfile
                 new = entropy.tools.md5sum(package_file_path)
