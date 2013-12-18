@@ -872,6 +872,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                 filtered_actions[action_key] = (action, cmd, args)
 
         new_actions = []
+        pkg_id_slotmove_actions = {}
         for action_key in filtered_actions:
 
             action, cmd, args = filtered_actions[action_key]
@@ -886,11 +887,46 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                 category = atom_key.split("/")[0]
                 matches, sm_rc = self.atomMatch(atom, matchSlot = from_slot,
                     multiMatch = True, maskFilter = False)
+
+                if sm_rc == 1:
+                    # before giving up, check if we scheduled another
+                    # slotmove that undoes it, use to_slot.
+                    # This is a PMS violation, but on 2013-12-18 it was found
+                    # that somebody managed to commit this.
+                    # 2Q-2013: profiles/updates/2Q-2013?r1=1.1&r2=1.2
+                    # 4Q-2013: profiles/updates/4Q-2013?r1=1.1&r2=1.2
+                    matches, sm_rc = self.atomMatch(
+                        atom, matchSlot = to_slot,
+                        multiMatch = True, maskFilter = False)
+
+                    for package_id in matches:
+                        pkg_slotmove = pkg_id_slotmove_actions.get(package_id)
+                        if pkg_slotmove is None:
+                            continue
+                        (old_from_slot, old_to_slot, old_action) = pkg_slotmove
+                        if (to_slot, from_slot) == (old_from_slot, old_to_slot):
+                            # bingo, this is a PMS violation we need to deal
+                            # with.
+                            self.output(
+                                "QA: '%s' overrides an old slotmove (%s)" % (
+                                    action, old_action),
+                                importance = 1,
+                                level = "error",
+                                header = darkred(" !!! ")
+                            )
+                            try:
+                                new_actions.remove(old_action)
+                            except ValueError:
+                                pass
+
+                    continue
+
                 if sm_rc == 1:
                     # nothing found in repo that matches atom
                     # this means that no packages can effectively
                     # reference to it
                     continue
+
                 found = False
                 # found atoms, check category
                 for package_id in matches:
@@ -899,6 +935,9 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                     if mycategory == category:
                         if  (myslot != to_slot) and \
                         (action not in new_actions):
+                            pkg_id_slotmove_actions[package_id] = (
+                                from_slot, to_slot, action)
+
                             new_actions.append(action)
                             found = True
                             break
