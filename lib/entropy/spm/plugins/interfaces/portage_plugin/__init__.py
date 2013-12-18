@@ -2696,7 +2696,7 @@ class PortagePlugin(SpmPlugin):
 
         return mdigest
 
-    def __get_portage_update_actions(self, repo_updates_file):
+    def _get_portage_update_actions(self, repo_updates_file):
 
         root = etpConst['systemroot'] + os.path.sep
 
@@ -2780,7 +2780,7 @@ class PortagePlugin(SpmPlugin):
 
             # reset database tables
             entropy_repository.clearTreeupdatesEntries(entropy_repository_id)
-            update_actions = self.__get_portage_update_actions(
+            update_actions = self._get_portage_update_actions(
                 repo_updates_file)
 
             # now filter the required actions
