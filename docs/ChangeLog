@@ -1,3 +1,98 @@
+commit 24b5b8c66143a2368efdca8ac8337d9ba72eecf1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 18 11:00:10 2013 +0100
+
+    Release Entropy 255
+
+commit 304f57434f4a78590ca7f78d60c934b83e7116e3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 18 10:57:17 2013 +0100
+
+    [entropy.db.skel] filterTreeUpdatesActions: warn and fix illegal circular slotmoves
+    
+    See gentoo-dev ML thread called "Doing and then undoing slotmoves"
+
+commit 5bafa6e755cbe5601d4680c2de5206a37fab3c4d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 18 09:50:28 2013 +0100
+
+    [entropy.spm] PortagePlugin: make __get_portage_update_actions protected
+
+commit c9629b9457e93665698a062d0285175b88fc5aa1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 17 22:09:55 2013 +0100
+
+    [entropy.spm.skel] allocate_protected_file: python2 os is not unicode friendly
+
+commit ea52b8630bb20140246c16b3b0b07ae72b5531b7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 17 21:56:24 2013 +0100
+
+    [entropy.client.package] _handle_config_protect: python2 os module is not unicode friendly
+
+commit 1e16119560e657ac1a3f40177b33c1b49d18af19
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Dec 16 19:53:36 2013 +0100
+
+    [eit.commands] remove leading ">>" string from ask_question() message.
+
+commit beff483d19ab82faf373cbbde43decc4e864aa74
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Dec 16 19:53:11 2013 +0100
+
+    [solo.commands] remove leading ">>" string from ask_question() message.
+
+commit 53cbf979c5a11103769523c7c6ef2fea9a23a6fd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Dec 16 16:26:27 2013 +0100
+
+    [eit.commands.cp] make sure to open the source repository in rw
+    
+    This will trigger treeupdates and the collected package identifiers
+    will not become stale.
+
+commit 9b78a9b6a021b1ffdfc566fe1209dc5996eb7105
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 15 10:50:13 2013 +0100
+
+    [entropy.db.sqlite] lock_path() should not use id(self) for memory repositories
+
+commit ae8b91ac0c3184267cda4a930a0ab49d0aa46ac9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 13 10:57:19 2013 +0100
+
+    [entropy.*] s:occured:occurred:
+
+commit fe807526125932d512e0a59284e8b1a3977beadd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 13 07:25:10 2013 +0100
+
+    [entropy.output] use nice unicode chars for warning and error messages
+
+commit e23396625b62c4c6894e521f3f77236b9d3be8e3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 13 07:24:49 2013 +0100
+
+    [entropy.const] set entropy git version to 1
+
+commit a8e902b0a57c9c5b5f67d8864e054acb0b4544ab
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 22:17:36 2013 +0100
+
+    [eit.commands] rename call_unlocked to call_shared, call_locked to call_exclusive
+
+commit 3e528ae1ae36750f7913622dc7e5b70c791acb3d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 22:15:47 2013 +0100
+
+    [solo.commands.*] rename call_unlocked to call_shared, call_locked to call_exclusive
+
+commit bf724d9b39a2471f1bd4be29353111c80e6428d8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 12 21:24:25 2013 +0100
+
+    Tagging Entropy version 254
+
 commit c60cee8082aeea5cc3db65545b7f903ebb91718d
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Dec 12 21:24:24 2013 +0100
