@@ -20,6 +20,8 @@ from entropy.const import etpConst, etpSys, const_convert_to_rawstring, \
 from entropy.output import brown, bold, darkred, red, teal, purple
 from entropy.i18n import _
 
+from .action import synchronized, PackageAction
+
 import entropy.dep
 import entropy.tools
 
@@ -73,6 +75,14 @@ class Trigger(object):
         if self._phase not in Trigger.VALID_PHASES:
             mytxt = "Valid phases: %s" % (Trigger.VALID_PHASES,)
             raise AttributeError(mytxt)
+
+    @synchronized(PackageAction.OUTPUT_LOCK)
+    def output(self, *args, **kwargs):
+        """
+        Proxy output calls to TextInterface, making sure that the access
+        is synchronized to avoid writing garbled text.
+        """
+        return self._entropy.output(*args, **kwargs)
 
     @property
     def _spm(self):
@@ -272,7 +282,7 @@ class Trigger(object):
         except Exception as err:
             mykey = self._pkgdata['category']+"/"+self._pkgdata['name']
             tback = entropy.tools.get_traceback()
-            self._entropy.output(tback, importance = 0, level = "error")
+            self.output(tback, importance = 0, level = "error")
             self._entropy.logger.write(tback)
             self._entropy.logger.log(
                 "[Trigger]",
@@ -286,7 +296,7 @@ class Trigger(object):
                 bold(mykey),
                 brown(_("Please report it")),
             )
-            self._entropy.output(
+            self.output(
                 mytxt,
                 importance = 0,
                 header = red("   ## ")
@@ -494,7 +504,7 @@ class Trigger(object):
 
         env = os.environ.copy()
         for info_file in self._pkgdata['affected_infofiles']:
-            self._entropy.output(
+            self.output(
                 "%s: %s" % (
                     teal(_("Installing info")),
                     info_file,),
@@ -518,7 +528,7 @@ class Trigger(object):
         Wrapper against Source Package Manager's execute_package_phase.
         This method handles both fatal and non-fatal exceptions.
         """
-        self._entropy.output(
+        self.output(
             "%s: %s" % (brown(_("Package phase")), teal(phase_name),),
             importance = 0,
             header = red("   ## "))
@@ -538,7 +548,7 @@ class Trigger(object):
                 err.message,
                 brown(_("Please report it")),
                 )
-            self._entropy.output(
+            self.output(
                 txt,
                 importance = 1,
                 header = red("   ## "),
@@ -550,7 +560,7 @@ class Trigger(object):
                 brown(_("Source Package Manager is too old, "
                         "please update it")),
                 err)
-            self._entropy.output(
+            self.output(
                 err_msg,
                 importance = 1,
                 header = darkred("   ## "),
@@ -562,7 +572,7 @@ class Trigger(object):
             err_msg = "%s: %s" % (
                 brown(_("Source Package Manager phase error")),
                 err)
-            self._entropy.output(
+            self.output(
                 err_msg,
                 importance = 1,
                 header = darkred("   ## "),

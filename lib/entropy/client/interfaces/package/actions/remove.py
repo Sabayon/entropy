@@ -111,7 +111,7 @@ class _PackageRemoveAction(_PackageInstallRemoveAction):
         with inst_repo.exclusive():
 
             if not inst_repo.isPackageIdAvailable(self._package_id):
-                self._entropy.output(
+                self.output(
                     darkred(_("The requested package is no longer available")),
                     importance = 1,
                     level = "warning",
@@ -131,7 +131,7 @@ class _PackageRemoveAction(_PackageInstallRemoveAction):
             )
             self._entropy.set_title(xterm_title)
 
-            self._entropy.output(
+            self.output(
                 "%s: %s" % (
                     blue(_("Removing")),
                     red(atom),
@@ -149,7 +149,7 @@ class _PackageRemoveAction(_PackageInstallRemoveAction):
                 blue(_("Removing from Entropy")),
                 red(atom),
             )
-            self._entropy.output(
+            self.output(
                 txt,
                 importance = 1,
                 level = "info",

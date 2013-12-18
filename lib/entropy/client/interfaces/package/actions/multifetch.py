@@ -590,7 +590,7 @@ class _PackageMultiFetchAction(_PackageFetchAction):
                 red(self._get_url_name(best_mirror)),
                 _("maximum failure threshold reached"),
             )
-            self._entropy.output(
+            self.output(
                 txt,
                 importance = 1,
                 level = "warning",
@@ -623,7 +623,7 @@ class _PackageMultiFetchAction(_PackageFetchAction):
                     blue("@"),
                     red(self._get_url_name(best_mirror)),
                 )
-                self._entropy.output(
+                self.output(
                     txt,
                     importance = 1,
                     level = "info",
@@ -643,7 +643,7 @@ class _PackageMultiFetchAction(_PackageFetchAction):
                     blue("@"),
                     red(self._get_url_name(best_mirror)),
                 )
-                self._entropy.output(
+                self.output(
                     txt,
                     importance = 1,
                     level = "info",
@@ -657,7 +657,7 @@ class _PackageMultiFetchAction(_PackageFetchAction):
                     darkred("/"),
                     darkblue(_("second")),
                 )
-                self._entropy.output(
+                self.output(
                     txt,
                     importance = 1,
                     level = "info",
@@ -694,7 +694,7 @@ class _PackageMultiFetchAction(_PackageFetchAction):
                     mirror_status.add_failing_mirror(best_mirror, 5)
                     txt += " - %s." % (_("unknown reason"),)
 
-                self._entropy.output(
+                self.output(
                     txt,
                     importance = 1,
                     level = "warning",
@@ -812,7 +812,7 @@ class _PackageMultiFetchAction(_PackageFetchAction):
             darkred("%s" % (m_fetch_len,)),
             ngettext("package", "packages", m_fetch_len),
         )
-        self._entropy.output(
+        self.output(
             txt,
             importance = 1,
             level = "info",
@@ -827,7 +827,7 @@ class _PackageMultiFetchAction(_PackageFetchAction):
         txt = _("Some packages cannot be fetched")
         txt2 = _("Try to update your repositories and retry")
         for txt in (txt, txt2,):
-            self._entropy.output(
+            self.output(
                 "%s." % (
                     darkred(txt),
                 ),
@@ -836,7 +836,7 @@ class _PackageMultiFetchAction(_PackageFetchAction):
                 header = red("   ## ")
             )
 
-        self._entropy.output(
+        self.output(
             "%s: %s" % (
                 brown(_("Error")),
                 exit_st,
@@ -847,7 +847,7 @@ class _PackageMultiFetchAction(_PackageFetchAction):
         )
 
         for _pkg_id, repo, fname, cksum, _signatures in err_list:
-            self._entropy.output(
+            self.output(
                 "[%s|%s] %s" % (
                     blue(repo),
                     darkgreen(cksum),

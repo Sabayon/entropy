@@ -74,7 +74,7 @@ class _PackageInstallRemoveAction(PackageAction):
 
         if paths:
 
-            self._entropy.output(
+            self.output(
                 "%s: %s, %s" % (
                     darkgreen(_("Protecting")),
                     teal(path),
@@ -93,7 +93,7 @@ class _PackageInstallRemoveAction(PackageAction):
 
             for installed_package_id in installed_package_ids:
                 atom = installed_repository.retrieveAtom(installed_package_id)
-                self._entropy.output(
+                self.output(
                     brown(atom),
                     importance = 0,
                     level = "warning",
@@ -133,7 +133,7 @@ class _PackageInstallRemoveAction(PackageAction):
                 msg = _("Unregistering library")
                 log_msg = const_convert_to_unicode("Unregistering library")
 
-            self._entropy.output(
+            self.output(
                 "%s: %s [%s, %s]" % (
                     brown(msg),
                     darkgreen(path),
@@ -155,7 +155,7 @@ class _PackageInstallRemoveAction(PackageAction):
             if remove:
                 remove_failed = preserved_mgr.remove(path)
                 for failed_path, err in remove_failed:
-                    self._entropy.output(
+                    self.output(
                         "%s: %s, %s" % (
                             purple(_("Failed to remove the library")),
                             darkred(failed_path),
@@ -353,13 +353,13 @@ class _PackageInstallRemoveAction(PackageAction):
                 mytxt = "%s:" % (
                     purple(msg),
                 )
-                self._entropy.output(
+                self.output(
                     mytxt,
                     importance = 1,
                     level = "warning",
                     header = brown("   ## ")
                 )
-                self._entropy.output(
+                self.output(
                     tofile,
                     level = "warning",
                     header = brown("   ## ")
@@ -386,7 +386,7 @@ class _PackageInstallRemoveAction(PackageAction):
                     _("Skipping file installation/removal"),
                     tofile,
                 )
-                self._entropy.output(
+                self.output(
                     mytxt,
                     importance = 1,
                     level = "warning",
@@ -428,7 +428,7 @@ class _PackageInstallRemoveAction(PackageAction):
                 "Protecting config file: %s" % (oldtofile,)
             )
             mytxt = red("%s: %s") % (_("Protecting config file"), oldtofile,)
-            self._entropy.output(
+            self.output(
                 mytxt,
                 importance = 1,
                 level = "warning",
@@ -527,7 +527,7 @@ class _PackageInstallRemoveAction(PackageAction):
                             darkgreen(prot_msg),
                             blue(item),
                         )
-                        self._entropy.output(
+                        self.output(
                             mytxt,
                             importance = 1,
                             level = "info",
@@ -548,7 +548,7 @@ class _PackageInstallRemoveAction(PackageAction):
                     brown(_("Protecting config file")),
                     sys_root_item,
                 )
-                self._entropy.output(
+                self.output(
                     mytxt,
                     importance = 1,
                     level = "warning",
@@ -566,7 +566,7 @@ class _PackageInstallRemoveAction(PackageAction):
             except UnicodeEncodeError:
                 msg = _("This package contains a badly encoded file !!!")
                 mytxt = brown(msg)
-                self._entropy.output(
+                self.output(
                     red("QA: ")+mytxt,
                     importance = 1,
                     level = "warning",
@@ -692,7 +692,7 @@ class _PackageInstallRemoveAction(PackageAction):
                 remove_content.close()
 
         if colliding_path_messages:
-            self._entropy.output(
+            self.output(
                 "%s:" % (_("Collision found during removal of"),),
                 importance = 1,
                 level = "warning",
@@ -700,7 +700,7 @@ class _PackageInstallRemoveAction(PackageAction):
             )
 
         for path in sorted(colliding_path_messages):
-            self._entropy.output(
+            self.output(
                 purple(path),
                 importance = 0,
                 level = "warning",
