@@ -16,6 +16,7 @@ import sys
 import errno
 import curses
 import subprocess
+import threading
 
 from entropy.const import const_convert_to_rawstring, \
     const_isstring, const_convert_to_unicode, const_isunicode, \
@@ -695,6 +696,8 @@ class TextInterface(object):
     with the user, channel is bi-directional.
     """
 
+    OUTPUT_LOCK = threading.RLock()
+
     @classmethod
     def output(cls, text, header = "", footer = "", back = False,
         importance = 0, level = "info", count = None, percent = False):
@@ -751,8 +754,9 @@ class TextInterface(object):
                     count_str = " (%s/%s) " % (red(str(count[0])),
                         blue(str(count[1])),)
 
-        myfunc(header+count_str+text+footer, back = back, flush = False)
-        _flush_stdouterr()
+        with TextInterface.OUTPUT_LOCK:
+            myfunc(header+count_str+text+footer, back = back, flush = False)
+            _flush_stdouterr()
 
     @classmethod
     def ask_question(cls, question, importance = 0, responses = None):
