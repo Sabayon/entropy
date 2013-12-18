@@ -112,7 +112,7 @@ class _PackageSourceAction(_PackageFetchAction):
                 const_setup_directory(unpack_dir)
             except (OSError, IOError) as err:
                 if err.errno != errno.EEXIST:
-                    self.output(
+                    self._entropy.output(
                         "%s: %s" % (
                             blue(_("Fetch path setup error")),
                             err,
@@ -134,7 +134,7 @@ class _PackageSourceAction(_PackageFetchAction):
         """
         Execute the fetch not available phase.
         """
-        self.output(
+        self._entropy.output(
             blue(_("Source code not available.")),
             importance = 1,
             level = "info",
@@ -146,7 +146,7 @@ class _PackageSourceAction(_PackageFetchAction):
         """
         Fetch the source code tarball(s).
         """
-        self.output(
+        self._entropy.output(
             "%s: %s" % (
                 blue(_("Downloading")),
                 brown(url),
@@ -175,14 +175,14 @@ class _PackageSourceAction(_PackageFetchAction):
                 human_bytes,
                 _("second"),
             )
-            self.output(
+            self._entropy.output(
                 txt,
                 importance = 1,
                 level = "info",
                 header = red("   ## ")
             )
 
-            self.output(
+            self._entropy.output(
                 "%s: %s" % (
                     blue(_("Local path")),
                     brown(download_path),
@@ -210,7 +210,7 @@ class _PackageSourceAction(_PackageFetchAction):
                 _("unknown reason"), exit_st,
             )
 
-        self.output(
+        self._entropy.output(
             error_message,
             importance = 1,
             level = "warning",

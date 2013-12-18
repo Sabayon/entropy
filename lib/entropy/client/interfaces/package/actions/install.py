@@ -344,7 +344,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             blue(_("Unpacking")),
             red(os.path.basename(package_path)),
         )
-        self.output(
+        self._entropy.output(
             txt,
             importance = 1,
             level = "info",
@@ -380,7 +380,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                     "Unable to mkdir: %s, error: %s" % (
                         image_dir, repr(err),)
                 )
-                self.output(
+                self._entropy.output(
                     "%s: %s" % (brown(_("Unpack error")), err.errno,),
                     importance = 1,
                     level = "error",
@@ -412,7 +412,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                     "[Package]", etpConst['logging']['normal_loglevel_id'],
                     "Unable to dump edb for: " + pkg_dbpath
                 )
-                self.output(
+                self._entropy.output(
                     brown(_("Unable to find Entropy metadata in package")),
                     importance = 1,
                     level = "error",
@@ -451,7 +451,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                 "[Package]", etpConst['logging']['normal_loglevel_id'],
                 "Unable to unpack: %s" % (package_path,)
             )
-            self.output(
+            self._entropy.output(
                 brown(_("Unable to unpack package")),
                 importance = 1,
                 level = "error",
@@ -532,7 +532,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             blue(_("Merging package")),
             red(self._meta['atom']),
         )
-        self.output(
+        self._entropy.output(
             txt,
             importance = 1,
             level = "info",
@@ -569,7 +569,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                 blue(_("Error")),
                 exit_st,
             )
-            self.output(
+            self._entropy.output(
                 errormsg,
                 importance = 1,
                 level = "error",
@@ -725,7 +725,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                             "_tarball_ownership_fixup_phase: %s vanished" % (
                                 package_path,))
 
-                        self.output(
+                        self._entropy.output(
                             "%s: vanished" % (
                                 brown(_("Error during package files "
                                         "permissions setup"))
@@ -745,7 +745,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                                     "permissions setup")),
                             err,)
 
-                        self.output(
+                        self._entropy.output(
                             msg,
                             importance = 1,
                             level = "error",
@@ -833,7 +833,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             removed_libs, root = sys_root)
 
         if clean_content:
-            self.output(
+            self._entropy.output(
                 blue(_("Cleaning previously installed application data.")),
                 importance = 1,
                 level = "info",
@@ -956,7 +956,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             blue(_("Cleaning")),
             red(self._meta['atom']),
         )
-        self.output(
+        self._entropy.output(
             txt,
             importance = 1,
             level = "info",
@@ -1263,7 +1263,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                 blue(_("Error")),
                 exit_st,
             )
-            self.output(
+            self._entropy.output(
                 txt,
                 importance = 1,
                 level = "error",
@@ -1275,7 +1275,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             blue(_("Updating installed packages repository")),
             teal(self._meta['atom']),
         )
-        self.output(
+        self._entropy.output(
             txt,
             importance = 1,
             level = "info",
@@ -1313,14 +1313,14 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             blue(_("Installing package")),
             red(self._meta['atom']),
         )
-        self.output(
+        self._entropy.output(
             txt,
             importance = 1,
             level = "info",
             header = red("   ## ")
         )
 
-        self.output(
+        self._entropy.output(
             "[%s]" % (
                 purple(self._meta['description']),
             ),
@@ -1338,7 +1338,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                 txt = "[%s]" % (
                     teal(_("<3 debug files installation enabled <3")),)
                 level = "info"
-            self.output(
+            self._entropy.output(
                 txt,
                 importance = 1,
                 level = level,
@@ -1440,7 +1440,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                 blue(tofile),
                 darkred(_("cannot overwrite")),
             )
-            self.output(
+            self._entropy.output(
                 mytxt,
                 importance = 1,
                 level = "warning",
@@ -1525,7 +1525,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                 mytxt = darkred(_("QA: %s is a file when it should "
                                   "be a directory") % (rootdir,))
 
-                self.output(
+                self._entropy.output(
                     mytxt,
                     importance = 1,
                     level = "warning",
@@ -1545,7 +1545,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                         except OSError:
                             pass
 
-                self.output(
+                self._entropy.output(
                     "%s: %s -> %s" % (
                         darkred(_("File moved")),
                         blue(rootdir),
@@ -1572,7 +1572,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                         _("QA: symlink expected, directory found"),
                         rootdir,
                     )
-                    self.output(
+                    self._entropy.output(
                         darkred(txt),
                         importance = 1,
                         level = "warning",
@@ -1609,7 +1609,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                                 blue(rootdir),
                                 repr(err),
                             )
-                            self.output(
+                            self._entropy.output(
                                 mytxt,
                                 importance = 1,
                                 level = "warning",
@@ -1658,7 +1658,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                             purple(rootdir), err,
                             err.errno
                         )
-                        self.output(
+                        self._entropy.output(
                             mytxt,
                             importance = 1,
                             level = "error",
@@ -1776,7 +1776,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                             darkgreen(msg),
                             blue(pre_tofile),
                         )
-                        self.output(
+                        self._entropy.output(
                             mytxt,
                             importance = 1,
                             level = "info",
@@ -1803,7 +1803,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                     _("QA: circular symlink issue"),
                     const_convert_to_unicode(fromfile),
                 )
-                self.output(
+                self._entropy.output(
                     darkred(txt),
                     importance = 1,
                     level = "warning",
@@ -1825,7 +1825,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                     _("QA: circular symlink issue"),
                     const_convert_to_unicode(tofile),
                 )
-                self.output(
+                self._entropy.output(
                     darkred(mytxt),
                     importance = 1,
                     level = "warning",
@@ -1865,7 +1865,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                     _("Fatal: file expected, directory found"),
                     const_convert_to_unicode(tofile),
                 )
-                self.output(
+                self._entropy.output(
                     darkred(txt),
                     importance = 1,
                     level = "error",
@@ -1907,7 +1907,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                     const_convert_to_unicode(tofile),
                     _("please report"),
                 )
-                self.output(
+                self._entropy.output(
                     darkred(mytxt),
                     importance = 1,
                     level = "warning",

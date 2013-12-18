@@ -10,11 +10,9 @@
 
 """
 import errno
-import functools
 import os
 import stat
 import sys
-import threading
 
 from entropy.const import etpConst, const_convert_to_unicode, \
     const_setup_directory
@@ -25,21 +23,6 @@ from entropy.output import darkred, blue, darkgreen
 import entropy.dep
 
 from .. import _content as Content
-
-
-class synchronized(object):
-
-    def __init__(self, lock):
-        self._lock = lock
-
-    def __call__(self, method):
-
-        @functools.wraps(method)
-        def wrapped(*args, **kwargs):
-            with self._lock:
-                return method(*args, **kwargs)
-
-        return wrapped
 
 
 class PackageAction(object):
@@ -57,9 +40,6 @@ class PackageAction(object):
     # Set a valid action name in subclasses
     NAME = None
 
-    # lock used to synchronize Entropy Client output calls.
-    OUTPUT_LOCK = threading.Lock()
-
     def __init__(self, entropy_client, package_match, opts = None):
         self._entropy = entropy_client
         self._settings = self._entropy.Settings()
@@ -70,14 +50,6 @@ class PackageAction(object):
         self._opts = opts
         self._xterm_header = ""
         self._content_files = []
-
-    @synchronized(OUTPUT_LOCK)
-    def output(self, *args, **kwargs):
-        """
-        Proxy output calls to TextInterface, making sure that the access
-        is synchronized to avoid writing garbled text.
-        """
-        return self._entropy.output(*args, **kwargs)
 
     def package_id(self):
         """
@@ -127,7 +99,7 @@ class PackageAction(object):
             else:
                 msg = _("Acquiring shared lock on")
 
-            self.output(
+            self._entropy.output(
                 "%s %s ..." % (
                     darkred(msg),
                     darkgreen(obj.get_path()),
@@ -141,7 +113,7 @@ class PackageAction(object):
                 msg = _("Acquired exclusive lock on")
             else:
                 msg = _("Acquired shared lock on")
-            self.output(
+            self._entropy.output(
                 "%s %s" % (
                     darkred(msg),
                     darkgreen(obj.get_path()),
@@ -245,7 +217,7 @@ class PackageAction(object):
         acquired = False
         exit_st = self._run()
         if exit_st != 0:
-            self.output(
+            self._entropy.output(
                 blue(_("An error occurred. Action aborted.")),
                 importance = 2,
                 level = "error",

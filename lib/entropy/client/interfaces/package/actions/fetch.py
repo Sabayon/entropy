@@ -577,7 +577,7 @@ class _PackageFetchAction(PackageAction):
 
         except:
             if const_debug_enabled():
-                self.output(
+                self._entropy.output(
                     "fetch_file:",
                     importance = 1,
                     level = "warning",
@@ -670,7 +670,7 @@ class _PackageFetchAction(PackageAction):
                 mytxt += blue(" %s: ") % (_("Mirror"),)
                 mytxt += red(self._get_url_name(uri))
                 mytxt += " - %s." % (_("maximum failure threshold reached"),)
-                self.output(
+                self._entropy.output(
                     mytxt,
                     importance = 1,
                     level = "warning",
@@ -700,7 +700,7 @@ class _PackageFetchAction(PackageAction):
                 txt = mirror_count_txt
                 txt += blue("%s: ") % (_("Downloading from"),)
                 txt += red(self._get_url_name(uri))
-                self.output(
+                self._entropy.output(
                     txt,
                     importance = 1,
                     level = "warning",
@@ -731,7 +731,7 @@ class _PackageFetchAction(PackageAction):
                         data_transfer)
                     txt += " %s %s/%s" % (_("at"),
                         human_bytes, _("second"),)
-                    self.output(
+                    self._entropy.output(
                         txt,
                         importance = 1,
                         level = "info",
@@ -788,7 +788,7 @@ class _PackageFetchAction(PackageAction):
                     mirror_status.add_failing_mirror(uri, 5)
                     error_message += " - %s." % (_("unknown reason"),)
 
-                self.output(
+                self._entropy.output(
                     error_message,
                     importance = 1,
                     level = "warning",
@@ -832,7 +832,7 @@ class _PackageFetchAction(PackageAction):
                 blue(_("Error")),
                 exit_st,
             )
-            self.output(
+            self._entropy.output(
                 txt,
                 importance = 1,
                 level = "error",
@@ -843,7 +843,7 @@ class _PackageFetchAction(PackageAction):
             txt = "%s: %s" % (
                 blue(_("Downloading")),
                 red(os.path.basename(download)),)
-            self.output(
+            self._entropy.output(
                 txt,
                 importance = 1,
                 level = "info",
@@ -1012,7 +1012,7 @@ class _PackageFetchAction(PackageAction):
                 return True
 
             if err_msg:
-                self.output(
+                self._entropy.output(
                     "%s: %s, %s" % (
                         darkred(_("Package signature verification error for")),
                         purple("GPG"),
@@ -1044,7 +1044,7 @@ class _PackageFetchAction(PackageAction):
                     if hash_val is None:
                         continue
                     if hash_type not in enabled_hashes:
-                        self.output(
+                        self._entropy.output(
                             "%s %s" % (
                                 purple(hash_type.upper()),
                                 darkgreen(_("disabled")),
@@ -1063,7 +1063,7 @@ class _PackageFetchAction(PackageAction):
 
                     valid = cmp_func(download_path, hash_val)
                     if valid is None:
-                        self.output(
+                        self._entropy.output(
                             "[%s] %s '%s' %s" % (
                                 brown(down_name),
                                 darkred(_("Package signature verification")),
@@ -1077,7 +1077,7 @@ class _PackageFetchAction(PackageAction):
                         continue
 
                     if not valid:
-                        self.output(
+                        self._entropy.output(
                             "[%s] %s: %s %s" % (
                                 brown(down_name),
                                 darkred(_("Package signature")),
@@ -1090,7 +1090,7 @@ class _PackageFetchAction(PackageAction):
                         )
                         return 1
 
-                    self.output(
+                    self._entropy.output(
                         "[%s] %s %s" % (
                             brown(down_name),
                             purple(hash_type.upper()),
@@ -1103,7 +1103,7 @@ class _PackageFetchAction(PackageAction):
 
             return 0
 
-        self.output(
+        self._entropy.output(
             blue(_("Checking package checksum...")),
             importance = 0,
             level = "info",
@@ -1126,7 +1126,7 @@ class _PackageFetchAction(PackageAction):
                 blue(download_name),
                 err,
             )
-            self.output(
+            self._entropy.output(
                 txt,
                 importance = 1,
                 level = "error",
@@ -1139,7 +1139,7 @@ class _PackageFetchAction(PackageAction):
                 red(_("Invalid checksum")),
                 blue(download_name),
             )
-            self.output(
+            self._entropy.output(
                 txt,
                 importance = 1,
                 level = "warning",
@@ -1157,7 +1157,7 @@ class _PackageFetchAction(PackageAction):
                 red(_("Invalid signatures")),
                 blue(download_name),
             )
-            self.output(
+            self._entropy.output(
                 txt,
                 importance = 1,
                 level = "warning",

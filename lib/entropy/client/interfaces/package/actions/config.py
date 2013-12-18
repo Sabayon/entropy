@@ -80,7 +80,7 @@ class _PackageConfigAction(PackageAction):
         """
         spm = self._entropy.Spm()
 
-        self.output(
+        self._entropy.output(
             "SPM: %s" % (
                 brown(_("configuration phase")),
             ),
@@ -111,7 +111,7 @@ class _PackageConfigAction(PackageAction):
             err_msg = "%s: %s" % (
                 brown(_("Source Package Manager is too old, please update it")),
                 err)
-            self.output(
+            self._entropy.output(
                 err_msg,
                 importance = 1,
                 header = darkred("   ## "),
@@ -144,13 +144,13 @@ class _PackageConfigAction(PackageAction):
                 blue(_("Error")),
                 exit_st,
             )
-            self.output(
+            self._entropy.output(
                 darkred(txt),
                 importance = 1,
                 level = "error",
                 header = red("   ## ")
             )
-            self.output(
+            self._entropy.output(
                 txt2,
                 importance = 1,
                 level = "error",
@@ -164,13 +164,13 @@ class _PackageConfigAction(PackageAction):
                 blue(_("Error")),
                 exit_st,
             )
-            self.output(
+            self._entropy.output(
                 darkred(txt),
                 importance = 1,
                 level = "error",
                 header = red("   ## ")
             )
-            self.output(
+            self._entropy.output(
                 txt2,
                 importance = 1,
                 level = "error",
@@ -186,7 +186,7 @@ class _PackageConfigAction(PackageAction):
         is held.
         """
         if not inst_repo.isPackageIdAvailable(self._package_id):
-            self.output(
+            self._entropy.output(
                 darkred(_("The requested package is no longer available.")),
                 importance = 1,
                 level = "error",
@@ -218,7 +218,7 @@ class _PackageConfigAction(PackageAction):
             blue(_("Configuring package")),
             red(metadata['atom']),
         )
-        self.output(
+        self._entropy.output(
             txt,
             importance = 1,
             level = "info",
