@@ -489,7 +489,7 @@ class UpdatesNotificationResourceLock(ResourceLock):
 
     If you want to run an install queue, acquire this in shared mode,
     if you want to notify available updates, try to acquire this in
-    exclusive non blocking mode.
+    exclusive mode.
     """
 
     def __init__(self, output=None):
