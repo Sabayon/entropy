@@ -1225,19 +1225,7 @@ class RigoDaemonService(dbus.service.Object):
         Attention: this method is called with serializer acquired.
         """
         try:
-            # The probability that two subsequent calls to Equo or
-            # other clients are issued is usually high in the first
-            # seconds after the exclusive lock is released, so delay
-            # the execution by 20 seconds to avoid this.
-            # Note however that this is a one-time sleep, the wait
-            # timer doesn't restart from the beginning each time
-            # the exclusive lock is acquired by external sources.
-            sleep_t = 20.0
-            write_output("_installed_repository_updated: "
-                         "acquiring locks in 20 seconds...",
-                         debug=True)
 
-            time.sleep(sleep_t)
             with self._activity_mutex:
                 self._acquire_shared()
                 try:
