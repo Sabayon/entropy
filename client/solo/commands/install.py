@@ -592,7 +592,19 @@ Install or update packages or package files.
         package_set = set(packages)
         total = len(run_queue)
 
-        with notification_lock.shared():
+        notif_acquired = False
+        try:
+            # this is a best effort, we will not sleep if the lock
+            # is not acquired because we may get blocked for an eternity
+            # (well, for a very long time) in this scenario:
+            # 1. RigoDaemon is running some action queue
+            # 2. Another thread in RigoDaemon is stuck on the activity
+            #    mutex with the notification lock held.
+            # 3. We cannot move on here because of 2.
+            # Nothing bad will happen if we just ignore the acquisition
+            # state.
+            notif_acquired = notification_lock.try_acquire_shared()
+
             for count, pkg_match in enumerate(run_queue, 1):
 
                 metaopts = {
@@ -638,6 +650,10 @@ Install or update packages or package files.
                 finally:
                     if pkg is not None:
                         pkg.finalize()
+
+        finally:
+            if notif_acquired:
+                notification_lock.release()
 
         if ugc_thread is not None:
             ugc_thread.join()

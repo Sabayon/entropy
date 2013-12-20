@@ -1232,6 +1232,9 @@ class RigoDaemonService(dbus.service.Object):
         # installing packages.
         # Internally, we use the activity mutex so there is no
         # need to deal with this lock in our own action queue.
+        # We should sleep here rather than using non blocking
+        # locking because we want to eventually notify the user
+        # of the available updates.
         notification_lock = UpdatesNotificationResourceLock(
             output=self._entropy)
 
