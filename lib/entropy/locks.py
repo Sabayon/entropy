@@ -475,3 +475,36 @@ class EntropyResourcesLock(ResourceLock):
         if acquired:
             self._clear_resources_after_lock()
         return acquired
+
+
+class UpdatesNotificationResourceLock(ResourceLock):
+    """
+    This lock can be used to temporarily stop updates availability
+    notifications (like those sent by RigoDaemon) from taking
+    place. For instance, it is possible to acquire this lock in shared
+    mode in order to stop RigoDaemon from signaling the availability
+    of updates during an upgrade performed by Equo.  RigoDaemon
+    acquires the lock in exclusive NB mode for a short period of time
+    in order to ensure that it can signal updates availability.
+
+    If you want to run an install queue, acquire this in shared mode,
+    if you want to notify available updates, try to acquire this in
+    exclusive non blocking mode.
+    """
+
+    def __init__(self, output=None):
+        """
+        Object constructor.
+
+        @keyword output: a TextInterface interface
+        @type output: entropy.output.TextInterface or None
+        """
+        super(UpdatesNotificationResourceLock, self).__init__(
+            output=output)
+
+    def path(self):
+        """
+        Return the path to the lock file.
+        """
+        return os.path.join(etpConst['entropyrundir'],
+                            '.entropy.locks.SystemNotifications.lock')
