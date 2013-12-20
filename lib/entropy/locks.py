@@ -247,21 +247,33 @@ class ResourceLock(object):
                 else:
                     flock_f.acquire_exclusive()
                 acquired = True
+                return True, flock_f
+
+            # non blocking
+            if shared:
+                acquired = flock_f.try_acquire_shared()
             else:
-                if shared:
-                    acquired = flock_f.try_acquire_shared()
-                else:
-                    acquired = flock_f.try_acquire_exclusive()
-                if not acquired:
-                    return False, None
+                acquired = flock_f.try_acquire_exclusive()
+            if not acquired:
+                return False, None
+            return True, flock_f
+
+        except Exception:
+            if flock_f is not None:
+                try:
+                    flock_f.close()
+                except (OSError, IOError):
+                    pass
+                flock_f = None
+            raise
+
         finally:
             if not acquired and flock_f is not None:
                 try:
                     flock_f.close()
                 except (OSError, IOError):
                     pass
-
-        return True, flock_f
+                flock_f = None
 
     def _wait_resource(self, shared):
         """
