@@ -15,6 +15,7 @@ import sys
 
 from entropy.i18n import _
 from entropy.const import etpConst, const_convert_to_unicode
+from entropy.locks import UpdatesNotificationResourceLock
 from entropy.misc import ParallelTask
 from entropy.output import brown, purple, darkred, red, \
     blue, darkblue, darkgreen, bold
@@ -586,53 +587,57 @@ Install or update packages or package files.
                 header=darkred(" @@ "))
             return 0, False
 
+        notification_lock = UpdatesNotificationResourceLock(
+            output=entropy_client)
         package_set = set(packages)
         total = len(run_queue)
-        for count, pkg_match in enumerate(run_queue, 1):
 
-            metaopts = {
-                'removeconfig': config_files,
-            }
+        with notification_lock.shared():
+            for count, pkg_match in enumerate(run_queue, 1):
 
-            if onlydeps:
-                metaopts['install_source'] = \
-                    etpConst['install_sources']['automatic_dependency']
-            elif pkg_match in package_set:
-                metaopts['install_source'] = \
-                    etpConst['install_sources']['user']
-            else:
-                metaopts['install_source'] = \
-                    etpConst['install_sources']['automatic_dependency']
+                metaopts = {
+                    'removeconfig': config_files,
+                }
 
-            package_id, repository_id = pkg_match
-            atom = entropy_client.open_repository(
-                repository_id).retrieveAtom(package_id)
+                if onlydeps:
+                    metaopts['install_source'] = \
+                        etpConst['install_sources']['automatic_dependency']
+                elif pkg_match in package_set:
+                    metaopts['install_source'] = \
+                        etpConst['install_sources']['user']
+                else:
+                    metaopts['install_source'] = \
+                        etpConst['install_sources']['automatic_dependency']
 
-            pkg = None
-            try:
-                pkg = action_factory.get(
-                    action_factory.INSTALL_ACTION,
-                    pkg_match, opts=metaopts)
+                package_id, repository_id = pkg_match
+                atom = entropy_client.open_repository(
+                    repository_id).retrieveAtom(package_id)
 
-                xterm_header = "equo (%s) :: %d of %d ::" % (
-                    _("install"), count, total)
+                pkg = None
+                try:
+                    pkg = action_factory.get(
+                        action_factory.INSTALL_ACTION,
+                        pkg_match, opts=metaopts)
 
-                pkg.set_xterm_header(xterm_header)
+                    xterm_header = "equo (%s) :: %d of %d ::" % (
+                        _("install"), count, total)
 
-                entropy_client.output(
-                    purple(atom),
-                    count=(count, total),
-                    header=darkgreen(" +++ ") + ">>> ")
+                    pkg.set_xterm_header(xterm_header)
 
-                exit_st = pkg.start()
-                if exit_st != 0:
-                    if ugc_thread is not None:
-                        ugc_thread.join()
-                    return 1, True
+                    entropy_client.output(
+                        purple(atom),
+                        count=(count, total),
+                        header=darkgreen(" +++ ") + ">>> ")
 
-            finally:
-                if pkg is not None:
-                    pkg.finalize()
+                    exit_st = pkg.start()
+                    if exit_st != 0:
+                        if ugc_thread is not None:
+                            ugc_thread.join()
+                        return 1, True
+
+                finally:
+                    if pkg is not None:
+                        pkg.finalize()
 
         if ugc_thread is not None:
             ugc_thread.join()
