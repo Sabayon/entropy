@@ -1235,9 +1235,9 @@ class RigoDaemonService(dbus.service.Object):
         notification_lock = UpdatesNotificationResourceLock(
             output=self._entropy)
 
-        with notification_lock.exclusive():
+        try:
+            with notification_lock.exclusive():
 
-            try:
                 with self._activity_mutex:
 
                     self._acquire_shared()
@@ -1250,13 +1250,13 @@ class RigoDaemonService(dbus.service.Object):
                     finally:
                         self._release_shared()
 
-            finally:
-                write_output("_installed_repository_updated: "
-                             "releasing serializer (baton)",
-                             debug=True)
-                # release the serializer object that our parent gave
-                # us.
-                serializer.release()
+        finally:
+            write_output("_installed_repository_updated: "
+                         "releasing serializer (baton)",
+                         debug=True)
+            # release the serializer object that our parent gave
+            # us.
+            serializer.release()
 
     def _installed_repository_updated_unlocked(self):
         """
