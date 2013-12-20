@@ -237,20 +237,29 @@ class ResourceLock(object):
         except OSError:
             pass
 
-        flock_f = FlockFile(lock_path, fd=fd)
-        if blocking:
-            if shared:
-                flock_f.acquire_shared()
+        acquired = False
+        flock_f = None
+        try:
+            flock_f = FlockFile(lock_path, fd=fd)
+            if blocking:
+                if shared:
+                    flock_f.acquire_shared()
+                else:
+                    flock_f.acquire_exclusive()
+                acquired = True
             else:
-                flock_f.acquire_exclusive()
-        else:
-            acquired = False
-            if shared:
-                acquired = flock_f.try_acquire_shared()
-            else:
-                acquired = flock_f.try_acquire_exclusive()
-            if not acquired:
-                return False, None
+                if shared:
+                    acquired = flock_f.try_acquire_shared()
+                else:
+                    acquired = flock_f.try_acquire_exclusive()
+                if not acquired:
+                    return False, None
+        finally:
+            if not acquired and flock_f is not None:
+                try:
+                    flock_f.close()
+                except (OSError, IOError):
+                    pass
 
         return True, flock_f
 
