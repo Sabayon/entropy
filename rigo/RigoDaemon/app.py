@@ -65,7 +65,7 @@ EntropyCacher.WRITEBACK_TIMEOUT = 120
 from entropy.const import etpConst, const_convert_to_rawstring, \
     initconfig_entropy_constants, const_debug_write, dump_signal, \
     const_mkstemp
-from entropy.locks import EntropyResourcesLock
+from entropy.locks import EntropyResourcesLock, UpdatesNotificationResourceLock
 from entropy.exceptions import DependenciesNotFound, \
     DependenciesCollision, DependenciesNotRemovable, SystemDatabaseError, \
     EntropyPackageException, InterruptError
@@ -815,6 +815,7 @@ class RigoDaemonService(dbus.service.Object):
         acquired = False
         started = False
         try:
+
             # cannot block in this thread (it's the MainThread)
             acquired = serializer.acquire(False)
             if not acquired:
@@ -1224,25 +1225,38 @@ class RigoDaemonService(dbus.service.Object):
         changes.
         Attention: this method is called with serializer acquired.
         """
-        try:
 
-            with self._activity_mutex:
-                self._acquire_shared()
-                try:
-                    self._close_local_resources()
-                    self._entropy_setup()
+        # check whether we are allowed to send notifications
+        # to the user. Also, this is a best effort to stop
+        # nagging the user when Equo or other tools are
+        # installing packages.
+        # Internally, we use the activity mutex so there is no
+        # need to deal with this lock in our own action queue.
+        notification_lock = UpdatesNotificationResourceLock(
+            output=self._entropy)
 
-                    with self._rwsem.reader():
-                        self._installed_repository_updated_unlocked()
-                finally:
-                    self._release_shared()
-        finally:
-            write_output("_installed_repository_updated: "
-                         "releasing serializer (baton)",
-                         debug=True)
-            # release the serializer object that our parent gave
-            # us.
-            serializer.release()
+        with notification_lock.exclusive():
+
+            try:
+                with self._activity_mutex:
+
+                    self._acquire_shared()
+                    try:
+                        self._close_local_resources()
+                        self._entropy_setup()
+
+                        with self._rwsem.reader():
+                            self._installed_repository_updated_unlocked()
+                    finally:
+                        self._release_shared()
+
+            finally:
+                write_output("_installed_repository_updated: "
+                             "releasing serializer (baton)",
+                             debug=True)
+                # release the serializer object that our parent gave
+                # us.
+                serializer.release()
 
     def _installed_repository_updated_unlocked(self):
         """
