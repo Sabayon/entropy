@@ -1025,6 +1025,19 @@ class RSS:
             entropy.tools.get_year(),
         )
 
+        self.__title = self.__feed_title
+        self.__description = self.__feed_description
+        self.__language = self.__feed_language
+        self.__cright = self.__feed_copyright
+        self.__editor = self.__feed_editor
+
+        sys_set = self.__system_settings.get(self.__srv_settings_plugin_id)
+        if sys_set is None:
+            self.__link = etpConst['rss-website-url']
+        else:
+            srv_set = sys_set['server']
+            self.__link = srv_set['rss']['website_url']
+
         self.__file = filename
         self.__items = {}
         self.__itemscounter = 0
@@ -1032,96 +1045,97 @@ class RSS:
         from xml.dom import minidom
         self.minidom = minidom
 
-        # sanity check
-        broken = False
-        if os.path.isfile(self.__file):
-            try:
-                self.xmldoc = self.minidom.parse(self.__file)
-            except:
-                broken = True
+        if not os.path.isfile(self.__file):
+            return
 
-        if not os.path.isfile(self.__file) or broken:
+        try:
+            self.xmldoc = self.minidom.parse(self.__file)
+        except Exception:
+            entropy.tools.print_traceback()
+            return
 
-            self.__title = self.__feed_title
-            self.__description = self.__feed_description
-            self.__language = self.__feed_language
-            self.__cright = self.__feed_copyright
-            self.__editor = self.__feed_editor
-            sys_set = self.__system_settings.get(self.__srv_settings_plugin_id)
-            if sys_set is None:
-                self.__link = etpConst['rss-website-url']
-            else:
-                srv_set = sys_set['server']
-                self.__link = srv_set['rss']['website_url']
+        rssdocs = self.xmldoc.getElementsByTagName("rss")
+        if not rssdocs:
+            return
 
+        channels = rssdocs[0].getElementsByTagName("channel")
+        if not channels:
+            return
+
+        channel = channels[0]
+
+        title_obj = channel.getElementsByTagName("title")[0]
+        self.__title = title_obj.firstChild.data.strip()
+
+        link_obj = channel.getElementsByTagName("link")[0]
+        self.__link = link_obj.firstChild.data.strip()
+
+        desc_obj = channel.getElementsByTagName("description")[0]
+        description = desc_obj.firstChild
+
+        if hasattr(description, "data"):
+            self.__description = description.data.strip()
         else:
+            self.__description = ''
 
-            self.__rssdoc = self.xmldoc.getElementsByTagName("rss")[0]
-            self.__channel = self.__rssdoc.getElementsByTagName("channel")[0]
-            title_obj = self.__channel.getElementsByTagName("title")[0]
-            self.__title = title_obj.firstChild.data.strip()
-            link_obj = self.__channel.getElementsByTagName("link")[0]
-            self.__link = link_obj.firstChild.data.strip()
-            desc_obj = self.__channel.getElementsByTagName("description")[0]
-            description = desc_obj.firstChild
-            if hasattr(description, "data"):
-                self.__description = description.data.strip()
+        try:
+            lang_obj = channel.getElementsByTagName("language")[0]
+            self.__language = lang_obj.firstChild.data.strip()
+        except IndexError:
+            self.__language = 'en'
+
+        try:
+            cright_obj = channel.getElementsByTagName("copyright")[0]
+            self.__cright = cright_obj.firstChild.data.strip()
+        except IndexError:
+            self.__cright = ''
+
+        try:
+            e_obj = channel.getElementsByTagName("managingEditor")[0]
+            self.__editor = e_obj.firstChild.data.strip()
+        except IndexError:
+            self.__editor = ''
+
+        entries = channel.getElementsByTagName("item")
+        self.__itemscounter = len(entries)
+        if self.__itemscounter > self.__maxentries:
+            self.__itemscounter = self.__maxentries
+        mycounter = self.__itemscounter
+
+        for item in entries:
+            if mycounter == 0: # max entries reached
+                break
+            mycounter -= 1
+            self.__items[mycounter] = {}
+            title_obj = item.getElementsByTagName("title")[0]
+            self.__items[mycounter]['title'] = \
+                title_obj.firstChild.data.strip()
+            desc_obj = item.getElementsByTagName("description")
+            description = None
+            if desc_obj:
+                description = desc_obj[0].firstChild
+            if description:
+                self.__items[mycounter]['description'] = \
+                    description.data.strip()
             else:
-                self.__description = ''
-            try:
-                lang_obj = self.__channel.getElementsByTagName("language")[0]
-                self.__language = lang_obj.firstChild.data.strip()
-            except IndexError:
-                self.__language = 'en'
-            try:
-                cright_obj = self.__channel.getElementsByTagName("copyright")[0]
-                self.__cright = cright_obj.firstChild.data.strip()
-            except IndexError:
-                self.__cright = ''
-            try:
-                e_obj = self.__channel.getElementsByTagName("managingEditor")[0]
-                self.__editor = e_obj.firstChild.data.strip()
-            except IndexError:
-                self.__editor = ''
-            entries = self.__channel.getElementsByTagName("item")
-            self.__itemscounter = len(entries)
-            if self.__itemscounter > self.__maxentries:
-                self.__itemscounter = self.__maxentries
-            mycounter = self.__itemscounter
-            for item in entries:
-                if mycounter == 0: # max entries reached
-                    break
-                mycounter -= 1
-                self.__items[mycounter] = {}
-                title_obj = item.getElementsByTagName("title")[0]
-                self.__items[mycounter]['title'] = \
-                    title_obj.firstChild.data.strip()
-                desc_obj = item.getElementsByTagName("description")
-                description = None
-                if desc_obj:
-                    description = desc_obj[0].firstChild
-                if description:
-                    self.__items[mycounter]['description'] = \
-                        description.data.strip()
-                else:
-                    self.__items[mycounter]['description'] = ""
+                self.__items[mycounter]['description'] = ""
 
-                link = item.getElementsByTagName("link")[0].firstChild
-                if link:
-                    self.__items[mycounter]['link'] = link.data.strip()
-                else:
-                    self.__items[mycounter]['link'] = ""
+            link = item.getElementsByTagName("link")[0].firstChild
+            if link:
+                self.__items[mycounter]['link'] = link.data.strip()
+            else:
+                self.__items[mycounter]['link'] = ""
 
-                guid_obj = item.getElementsByTagName("guid")[0]
-                self.__items[mycounter]['guid'] = \
-                    guid_obj.firstChild.data.strip()
-                pub_date_obj = item.getElementsByTagName("pubDate")[0]
-                self.__items[mycounter]['pubDate'] = \
-                    pub_date_obj.firstChild.data.strip()
-                dcs = item.getElementsByTagName("dc:creator")
-                if dcs:
-                    self.__items[mycounter]['dc:creator'] = \
-                        dcs[0].firstChild.data.strip()
+            guid_obj = item.getElementsByTagName("guid")[0]
+            self.__items[mycounter]['guid'] = \
+                guid_obj.firstChild.data.strip()
+            pub_date_obj = item.getElementsByTagName("pubDate")[0]
+            self.__items[mycounter]['pubDate'] = \
+                pub_date_obj.firstChild.data.strip()
+            dcs = item.getElementsByTagName("dc:creator")
+            if dcs:
+                self.__items[mycounter]['dc:creator'] = \
+                    dcs[0].firstChild.data.strip()
 
 
     def add_item(self, title, link = '', description = '', pubDate = ''):
