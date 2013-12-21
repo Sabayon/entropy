@@ -1238,11 +1238,18 @@ class RigoDaemonService(dbus.service.Object):
         notification_lock = UpdatesNotificationResourceLock(
             output=self._entropy)
 
+        notif_acquired = False
+        schedule_new = False
         try:
-            with notification_lock.exclusive():
+            with self._activity_mutex:
 
-                with self._activity_mutex:
+                notif_acquired = notification_lock.try_acquire_exclusive()
+                if not notif_acquired:
+                    # then give up and schedule a new signal callback as soon
+                    # as the notification lock is acquired
+                    schedule_new = True
 
+                else:
                     self._acquire_shared()
                     try:
                         self._close_local_resources()
@@ -1257,9 +1264,37 @@ class RigoDaemonService(dbus.service.Object):
             write_output("_installed_repository_updated: "
                          "releasing serializer (baton)",
                          debug=True)
-            # release the serializer object that our parent gave
-            # us.
-            serializer.release()
+            if notif_acquired:
+                notification_lock.release()
+
+            if not schedule_new:
+                # release the serializer object that our parent gave us.
+                # Note that if schedule_new is True, we're going to be
+                # called again. For this reason, we do not release the
+                # serializer lock in this case.
+                serializer.release()
+
+        if schedule_new:
+            write_output("_installed_repository_updated: "
+                         "notification lock held, scheduling a new "
+                         "check as soon as the lock is acquired.",
+                         debug=True)
+
+            def lock_sleep():
+                nlock = UpdatesNotificationResourceLock(
+                    output=self._entropy)
+                with nlock.exclusive():  # blocks
+                    task = ParallelTask(
+                        self._installed_repository_updated,
+                        serializer)
+                    task.name = "RescheduledInstalledRepositoryCheckHandler"
+                    task.daemon = True
+                    task.start()
+
+            stask = ParallelTask(lock_sleep)
+            stask.name = "SleepingOnUpdatesNotificationResourceLock"
+            stask.daemon = True
+            stask.start()
 
     def _installed_repository_updated_unlocked(self):
         """
