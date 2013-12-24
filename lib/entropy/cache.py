@@ -42,7 +42,6 @@ class EntropyCacher(Singleton):
             'atom_search': 'atom_search/atom_search_',
             'world_update': 'world_update/world_cache_',
             'critical_update': 'critical_update/critical_cache_',
-            'world_masked': 'world_available/masked_cache_',
             'check_package_update': 'check_update/package_update_',
             'depends_tree': 'depends/depends_tree_',
             'filter_satisfied_deps': 'depfilter/filter_satisfied_deps_',

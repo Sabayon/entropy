@@ -2822,9 +2822,9 @@ class CalculatorsMixin:
             [((package_id, repository_id), reason_id), ...]
         @rtype: list
         """
-        cache_key = "%s%s_v2" % (
-            EntropyCacher.CACHE_IDS['world_masked'],
-            self._get_available_packages_hash())
+        cache_key = "available/masked_v2" % (
+            self._get_available_packages_hash(),
+        )
 
         if use_cache and self.xcache:
             cached = self._cacher.pop(cache_key)
