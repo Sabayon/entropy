@@ -24,6 +24,7 @@ from entropy.client.interfaces.methods import RepositoryMixin, MiscMixin, \
     MatchMixin
 from entropy.client.interfaces.noticeboard import NoticeBoardMixin
 from entropy.client.interfaces.settings import ClientSystemSettingsPlugin
+from entropy.client.misc import sharedinstlock
 from entropy.const import etpConst, const_debug_write, \
     const_convert_to_unicode
 from entropy.core.settings.base import SystemSettings
@@ -301,6 +302,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
         self._cacher.stop()
         entropy.tools.kill_threads()
 
+    @sharedinstlock
     def repository_packages_spm_sync(self, repository_identifier, repo_db,
         force = False):
         """
