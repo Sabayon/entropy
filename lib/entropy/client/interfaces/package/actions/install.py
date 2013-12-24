@@ -196,7 +196,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         # craete an atomically safe unpack directory path
         unpack_dir = os.path.join(
             etpConst['entropyunpackdir'],
-            self._escape_path(metadata['download']).lstrip(os.path.sep))
+            self._escape_path(metadata['atom']).lstrip(os.path.sep))
         try:
             os.makedirs(unpack_dir, 0o755)
         except OSError as err:
