@@ -2872,9 +2872,10 @@ class CalculatorsMixin:
         @return: list of available package matches
         @rtype: list
         """
-        c_hash = self._get_available_packages_hash()
+        cache_key = "available_packages/%s" % (
+            self._get_available_packages_hash(),)
         if use_cache and self.xcache:
-            cached = self._get_available_packages_cache(c_hash)
+            cached = self._cacher.pop(cache_key)
             if cached is not None:
                 return cached
 
@@ -2909,8 +2910,8 @@ class CalculatorsMixin:
             available += myavailable[:]
 
         if self.xcache:
-            self._cacher.push("%s%s" % (
-                EntropyCacher.CACHE_IDS['world_available'], c_hash), available)
+            self._cacher.push(cache_key, available)
+
         return available
 
     @sharedinstlock

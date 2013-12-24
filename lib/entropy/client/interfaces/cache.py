@@ -104,18 +104,6 @@ class CacheMixin:
         """
         return self.__repositories_hash(self._enabled_repos)
 
-    def _get_available_packages_cache(self, chash):
-        """
-        Return the on-disk cached object for all the available packages.
-
-        @param chash: cache hash
-        @type chash: string
-        @return: list of available packages (if cache hit) otherwise None
-        @rtype: list or None
-        """
-        return self._cacher.pop("%s%s" % (
-            EntropyCacher.CACHE_IDS['world_available'], chash))
-
     def _get_updates_cache(self, empty_deps, repo_hash = None):
         """
         Get available updates on-disk cache, if available, otherwise return None
