@@ -41,6 +41,7 @@ from entropy.fetchers import UrlFetcher
 from entropy.client.interfaces.db import ClientEntropyRepositoryPlugin, \
     InstalledPackagesRepository, AvailablePackagesRepository, GenericRepository
 from entropy.client.mirrors import StatusInterface
+from entropy.client.misc import sharedinstlock
 from entropy.output import purple, bold, red, blue, darkgreen, darkred, brown, \
     teal
 from entropy.client.interfaces.package.actions.action import PackageAction
@@ -1729,10 +1730,12 @@ class MiscMixin:
         # above on reopen_installed_repository()
         self.close_repositories()
         if chroot:
-            try:
-                self.installed_repository().resetTreeupdatesDigests()
-            except EntropyRepositoryError:
-                pass
+            inst_repo = self.installed_repository()
+            with inst_repo.exclusive():
+                try:
+                    inst_repo.resetTreeupdatesDigests()
+                except EntropyRepositoryError:
+                    pass
 
     def is_entropy_package_free(self, package_id, repository_id):
         """
@@ -1760,6 +1763,7 @@ class MiscMixin:
             return False
         return True
 
+    @sharedinstlock
     def get_licenses_to_accept(self, package_matches):
         """
         Return, for given package matches, what licenses have to be accepted.
@@ -1773,6 +1777,7 @@ class MiscMixin:
         """
         repo_sys_data = self.ClientSettings()['repositories']
         lic_accepted = self._settings['license_accept']
+        inst_repo = self.installed_repository()
 
         licenses = {}
         for pkg_id, repo_id in package_matches:
@@ -1789,7 +1794,7 @@ class MiscMixin:
             for key in keys:
                 if key in wl:
                     continue
-                found = self.installed_repository().isLicenseAccepted(key)
+                found = inst_repo.isLicenseAccepted(key)
                 if found:
                     continue
                 obj = licenses.setdefault(key, set())
@@ -1969,7 +1974,10 @@ class MiscMixin:
 
         # reset treeupdatesactions
         self.reopen_installed_repository()
-        self.installed_repository().resetTreeupdatesDigests()
+        inst_repo = self.installed_repository()
+        with inst_repo.exclusive():
+            inst_repo.resetTreeupdatesDigests()
+
         self._validate_repositories(quiet = True)
         self.close_repositories()
         if cacher_started:
@@ -2001,8 +2009,9 @@ class MiscMixin:
         if "/" in search_term:
             atom_srch = True
 
+        inst_repo = None
         if from_installed:
-            if hasattr(self, '_installed_repository'):
+            if hasattr(self, 'installed_repository'):
                 inst_repo = self.installed_repository()
                 if inst_repo is not None:
                     valid_repos.append(inst_repo)
@@ -2017,8 +2026,16 @@ class MiscMixin:
                 dbconn = repo
             else:
                 continue
-            pkg_data.extend([(x, repo,) for x in \
-                dbconn.searchSimilarPackages(search_term, atom = atom_srch)])
+
+            if inst_repo is dbconn and inst_repo is not None:
+                with inst_repo.shared():
+                    similar = dbconn.searchSimilarPackages(
+                        search_term, atom = atom_srch)
+            else:
+                similar = dbconn.searchSimilarPackages(
+                    search_term, atom = atom_srch)
+
+            pkg_data.extend([(x, repo,) for x in similar])
 
         return pkg_data
 
@@ -2217,26 +2234,32 @@ class MatchMixin:
             installed_package_id = sorted(results)[-1]
 
         pkgver, pkgtag, pkgrev = dbconn.getVersioningData(pkg_id)
-        ver_data = inst_repo.getVersioningData(installed_package_id)
-        if ver_data is None:
-            # installed package_id is not available, race condition, probably
-            return 1
-        installed_ver, installed_tag, installed_rev = ver_data
-        pkgcmp = entropy.dep.entropy_compare_versions(
-            (pkgver, pkgtag, pkgrev),
-            (installed_ver, installed_tag, installed_rev))
-        if pkgcmp == 0:
-            # check digest, if it differs, we should mark pkg as update
-            # we don't want users to think that they are "reinstalling" stuff
-            # because it will just confuse them
-            inst_digest = inst_repo.retrieveDigest(installed_package_id)
-            repo_digest = dbconn.retrieveDigest(pkg_id)
-            if inst_digest != repo_digest:
+
+        with inst_repo.shared():
+            ver_data = inst_repo.getVersioningData(installed_package_id)
+            if ver_data is None:
+                # installed package_id is not available,
+                # race condition, probably
+                return 1
+
+            installed_ver, installed_tag, installed_rev = ver_data
+
+            pkgcmp = entropy.dep.entropy_compare_versions(
+                (pkgver, pkgtag, pkgrev),
+                (installed_ver, installed_tag, installed_rev))
+            if pkgcmp == 0:
+                # check digest, if it differs, we should mark pkg as update
+                # we don't want users to think that they are "reinstalling"
+                # stuff because it will just confuse them
+                inst_digest = inst_repo.retrieveDigest(installed_package_id)
+                repo_digest = dbconn.retrieveDigest(pkg_id)
+                if inst_digest != repo_digest:
+                    return 2
+                return 0
+            elif pkgcmp > 0:
                 return 2
-            return 0
-        elif pkgcmp > 0:
-            return 2
-        return -1
+
+            return -1
 
     def is_package_masked(self, package_match, live_check = True):
         """
@@ -2533,6 +2556,7 @@ class MatchMixin:
             entropy.tools.rename_keep_permissions(
                 tmp_path, mask_file)
 
+    @sharedinstlock
     def search_installed_mimetype(self, mimetype):
         """
         Given a mimetype, return list of installed package identifiers
