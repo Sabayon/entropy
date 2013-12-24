@@ -30,11 +30,14 @@ from entropy.db.exceptions import IntegrityError, OperationalError, \
     DatabaseError, InterfaceError
 from entropy.db.skel import EntropyRepositoryBase
 from entropy.client.interfaces.db import InstalledPackagesRepository
+from entropy.client.misc import sharedinstlock
 
 import entropy.dep
 
+
 class CalculatorsMixin:
 
+    @sharedinstlock
     def dependencies_test(self):
 
         # get all the installed packages
@@ -2806,6 +2809,7 @@ class CalculatorsMixin:
 
         return deptree
 
+    @sharedinstlock
     def calculate_masked_packages(self, use_cache = True):
         """
         Compute a list of masked packages. For masked packages it is meant
@@ -2857,6 +2861,7 @@ class CalculatorsMixin:
 
         return masked
 
+    @sharedinstlock
     def calculate_available_packages(self, use_cache = True):
         """
         Compute a list of available packages in repositories. For available
@@ -2908,6 +2913,7 @@ class CalculatorsMixin:
                 EntropyCacher.CACHE_IDS['world_available'], c_hash), available)
         return available
 
+    @sharedinstlock
     def calculate_critical_updates(self, use_cache = True):
 
         # check if we are branch migrating
@@ -2955,6 +2961,7 @@ class CalculatorsMixin:
 
         return data
 
+    @sharedinstlock
     def calculate_security_updates(self, use_cache = True):
         """
         Return a list of security updates available using Entropy Security
@@ -2994,6 +3001,7 @@ class CalculatorsMixin:
 
         return sec_updates
 
+    @sharedinstlock
     def calculate_updates(self, empty = False, use_cache = True,
         critical_updates = True, quiet = False):
         """
@@ -3270,6 +3278,7 @@ class CalculatorsMixin:
 
         return outcome
 
+    @sharedinstlock
     def calculate_orphaned_packages(self, use_cache = True):
         """
         Collect Installed Packages that are no longer available
@@ -3423,6 +3432,7 @@ class CalculatorsMixin:
 
         return maskedtree
 
+    @sharedinstlock
     def check_package_update(self, atom, deep = False):
 
         inst_repo = self.installed_repository()
@@ -3475,6 +3485,7 @@ class CalculatorsMixin:
 
         return found, matched
 
+    @sharedinstlock
     def validate_package_removal(self, package_id, repo_id = None):
         """
         Determine whether given package identifier is allowed to be removed.
@@ -3543,6 +3554,7 @@ class CalculatorsMixin:
             return False
         return True
 
+    @sharedinstlock
     def get_masked_packages(self, package_matches):
         """
         Return a list of masked packages which are dependencies of given package
@@ -3565,13 +3577,14 @@ class CalculatorsMixin:
             masks.update(mymasks)
         return masks
 
+    @sharedinstlock
     def get_removal_queue(self, package_identifiers, deep = False,
         recursive = True, empty = False, system_packages = True):
         """
         Return removal queue (list of installed packages identifiers).
 
         @param package_identifiers: list of package identifiers proposed
-            for removal (returned by Client.installed_repository().listAllPackageIds())
+            for removal (returned by inst_repo.listAllPackageIds())
         @type package_identifiers: list
         @keyword deep: deeply scan inverse dependencies to include unused
             packages
@@ -3602,6 +3615,7 @@ class CalculatorsMixin:
             queue.extend(treeview[x])
         return [x for x, y in queue]
 
+    @sharedinstlock
     def get_reverse_queue(self, package_matches, deep = False,
         recursive = True, empty = False, system_packages = True):
         """
@@ -3634,6 +3648,7 @@ class CalculatorsMixin:
             queue.extend(treeview[x])
         return queue
 
+    @sharedinstlock
     def get_install_queue(self, package_matches, empty, deep,
         relaxed = False, build = False, quiet = False, recursive = True,
         only_deps = False, critical_updates = True):
@@ -3757,10 +3772,11 @@ class CalculatorsMixin:
 
         # filter out packages that are in actionQueue comparing key + slot
         if install and removal:
+            inst_repo = self.installed_repository()
+
             myremmatch = {}
             for rm_package_id in removal:
-                keyslot = self.installed_repository().retrieveKeySlot(
-                    rm_package_id)
+                keyslot = inst_repo.retrieveKeySlot(rm_package_id)
                 # check if users removed package_id while this
                 # whole instance is running
                 if keyslot is None:
