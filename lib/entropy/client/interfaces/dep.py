@@ -2923,9 +2923,30 @@ class CalculatorsMixin:
         if const_file_readable(in_branch_upgrade):
             return set(), []
 
-        repo_hash = self._repositories_hash()
+        enabled_repos = self._filter_available_repositories()
+        repo_order = [x for x in self._settings['repositories']['order'] if
+            x in enabled_repos]
+
+        inst_repo = self.installed_repository()
+
+        cache_s = "%s|%s|%s|%s|%s|%s|%s|v2" % (
+            self._repositories_hash(),
+            enabled_repos,
+            inst_repo.checksum(),
+            self._all_repositories_hash(),
+            ";".join(sorted(self._settings['repositories']['available'])),
+            repo_order,
+            # needed when users do bogus things like editing config files
+            # manually (branch setting)
+            self._settings['repositories']['branch'],
+        )
+        sha = hashlib.sha1()
+        sha.update(const_convert_to_rawstring(cache_s))
+
+        cache_key = "critical/%s" % (sha.hexdigest(),)
+
         if use_cache and self.xcache:
-            cached = self._get_critical_updates_cache(repo_hash = repo_hash)
+            cached = self._cacher.pop(cache_key)
             if cached is not None:
                 return cached
 
@@ -2955,10 +2976,7 @@ class CalculatorsMixin:
         data = (atoms, matches)
 
         if self.xcache:
-            c_hash = self._get_critical_update_cache_hash(repo_hash)
-            self._cacher.push(
-                "%s%s" % (EntropyCacher.CACHE_IDS['critical_update'], c_hash,),
-                    data, async = False)
+            self._cacher.push(cache_key, data, async = False)
 
         return data
 

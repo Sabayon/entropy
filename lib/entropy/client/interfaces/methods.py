@@ -343,8 +343,6 @@ class RepositoryMixin:
                 self._cacher.discard()
                 EntropyCacher.clear_cache_item(
                     EntropyCacher.CACHE_IDS['world_update'])
-                EntropyCacher.clear_cache_item(
-                    EntropyCacher.CACHE_IDS['critical_update'])
         return conn
 
     def add_repository(self, repository_metadata):
