@@ -179,22 +179,18 @@ class Repository(object):
             if self.fetch_security:
                 self._update_security_advisories()
 
-            # do treeupdates
-            if isinstance(self._entropy.installed_repository(),
-                EntropyRepositoryBase):
-
-                for repo in self.repo_ids:
-                    try:
-                        dbc = self._entropy.open_repository(repo)
-                    except RepositoryError:
-                        # download failed and repo is not available, skip!
-                        continue
-                    try:
-                        self._entropy.repository_packages_spm_sync(repo, dbc)
-                    except Error:
-                        # EntropyRepository error, missing table?
-                        continue
-                self._entropy.close_repositories()
+            for repo in self.repo_ids:
+                try:
+                    dbc = self._entropy.open_repository(repo)
+                except RepositoryError:
+                    # download failed and repo is not available, skip!
+                    continue
+                try:
+                    self._entropy.repository_packages_spm_sync(repo, dbc)
+                except Error:
+                    # EntropyRepository error, missing table?
+                    continue
+            self._entropy.close_repositories()
 
         if self.sync_errors:
             self._entropy.output(
