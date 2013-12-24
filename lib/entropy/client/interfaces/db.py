@@ -860,11 +860,14 @@ class AvailablePackagesRepositoryUpdater(object):
         dbconn = self._entropy.open_repository(self._repository_id)
         dbconn.createAllIndexes()
         dbconn.commit(force = True)
-        if self._entropy.installed_repository() is not None:
-            try: # client db can be absent
-                self._entropy.installed_repository().createAllIndexes()
-            except (DatabaseError, OperationalError, IntegrityError,):
-                pass
+
+        inst_repo = self._entropy.installed_repository()
+        if inst_repo is not None:
+            with inst_repo.exclusive():
+                try: # client db can be absent
+                    inst_repo.createAllIndexes()
+                except (DatabaseError, OperationalError, IntegrityError,):
+                    pass
         const_set_nice_level(old_prio)
 
     def _construct_paths(self, uri, item, cmethod, get_signature = False):
