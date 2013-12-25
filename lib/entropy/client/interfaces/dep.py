@@ -1888,8 +1888,7 @@ class CalculatorsMixin:
             sha = hashlib.sha1()
             sha.update(const_convert_to_rawstring(cache_s))
 
-            cache_key = "%s%s" % (
-                EntropyCacher.CACHE_IDS['library_breakage'], sha.hexdigest(),)
+            cache_key = "library_breakage/%s" % (sha.hexdigest(),)
 
             cached = self._cacher.pop(cache_key)
             if cached is not None:

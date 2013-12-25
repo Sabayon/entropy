@@ -42,7 +42,6 @@ class EntropyCacher(Singleton):
             'atom_search': 'atom_search/atom_search_',
             'check_package_update': 'check_update/package_update_',
             'depends_tree': 'depends/depends_tree_',
-            'library_breakage': 'libs_break/library_breakage_',
             'mask_filter': 'match/mask_filter',
         }
 
