@@ -1,9 +1,5 @@
 Short term:
 
-- drop EntropyCacher.CACHE_IDS from entropy.client.interfaces.{dep,cache}
-- disable packagekit notifications (conflict with RigoDaemon)
-- settings -> fix repos_installed and repos_installed_keys, they could be stale
-
 - entropy.client.interfaces code refactoring
 - wrap available repositories usage around a ResourceLock, this will
   decrease the need for an exclusively held Entropy Resources Lock.
