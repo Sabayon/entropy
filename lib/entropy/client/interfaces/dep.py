@@ -2348,12 +2348,62 @@ class CalculatorsMixin:
         depends -= remove_depends
         return depends
 
-    def _is_installed_package_id_in_system_mask(self, package_id):
-        cl_set = self.ClientSettings()
-        mask_installed = cl_set['system_mask']['repos_installed']
-        if package_id in mask_installed:
-            return True
-        return False
+    def _get_installed_packages_system_mask(self):
+        """
+        Get the installed packages matches system mask metadata.
+        """
+        sha = hashlib.sha1()
+
+        inst_repo = self.installed_repository()
+        cache_s = "%s|%s|v1" % (
+            inst_repo.checksum(),
+            self._settings['repositories']['branch'])
+
+        sha.update(const_convert_to_rawstring(cache_s))
+        cache_key = "system_mask/mask_%s" % (sha.hexdigest(),)
+
+        if self.xcache:
+            cached = self._cacher.pop(cache_key)
+            if cached is not None:
+                return cached
+
+        settings = self.Settings()
+        cl_settings = self.ClientSettings()
+        repo_settings = cl_settings['repositories']
+        repos_mask_list = repo_settings['system_mask']
+        m_list = repos_mask_list + settings['system_mask']
+
+        mc_cache = set()
+        mask_installed = []
+        mask_installed_keys = {}
+
+        for atom in m_list:
+            try:
+                m_ids, m_r = inst_repo.atomMatch(
+                    atom, multiMatch = True)
+                if m_r != 0:
+                    continue
+            except EntropyRepositoryError:
+                continue
+
+            mykey = entropy.dep.dep_getkey(atom)
+            obj = mask_installed_keys.setdefault(mykey, set())
+            for m_id in m_ids:
+                if m_id in mc_cache:
+                    continue
+                mc_cache.add(m_id)
+                mask_installed.append(m_id)
+                obj.add(m_id)
+
+        data = {
+            'ids': mask_installed,
+            'keys': mask_installed_keys,
+        }
+
+        if self.xcache:
+            self._cacher.push(cache_key, data, async = False)
+
+        return data
 
     DISABLE_NEEDED_SCANNING = os.getenv("ETP_DISABLE_ELF_NEEDED_SCANNING")
 
@@ -2420,6 +2470,8 @@ class CalculatorsMixin:
         filter_multimatch_cache = {}
         needed_providers_left = {}
 
+        system_mask_data = self._get_installed_packages_system_mask()
+
         # post-dependencies won't be pulled in
         pdepend_id = etpConst['dependency_type_ids']['pdepend_id']
         bdepend_id = etpConst['dependency_type_ids']['bdepend_id']
@@ -2459,8 +2511,7 @@ class CalculatorsMixin:
                                 % ((mydep, m_repo_id),))
                         continue
                     if m_repo_db is self.installed_repository():
-                        if self._is_installed_package_id_in_system_mask(
-                            mydep):
+                        if mydep in system_mask_data['ids']:
                             if const_debug_enabled():
                                 const_debug_write(__name__,
                                 "\n_generate_reverse_dependency_tree [md:%s] "
@@ -3538,13 +3589,12 @@ class CalculatorsMixin:
 
         pkgatom = dbconn.retrieveAtom(package_id)
         pkgkey = entropy.dep.dep_getkey(pkgatom)
-        mask_data = self.ClientSettings()['system_mask']
-        mask_installed_keys = mask_data['repos_installed_keys']
+        system_mask_data = self._get_installed_packages_system_mask()
 
         # cannot check this for pkgs not coming from installed pkgs repo
         if dbconn is self.installed_repository():
-            if self._is_installed_package_id_in_system_mask(package_id):
-                package_ids = mask_installed_keys.get(pkgkey)
+            if package_id in system_mask_data['ids']:
+                package_ids = system_mask_data['keys'].get(pkgkey)
                 if not package_ids:
                     return False
                 if len(package_ids) > 1:

@@ -294,47 +294,6 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             self._helper._run_repository_post_branch_upgrade_hooks()
             delete_in_branch_upgrade()
 
-    def system_mask_parser(self, system_settings_instance):
-
-        parser_data = {}
-        # match installed packages of system_mask
-        mask_installed = []
-        mask_installed_keys = {}
-        inst_repo = self._helper.installed_repository()
-        mc_cache = set()
-        m_list = None
-
-        if inst_repo is not None:
-            repos_mask_list = self.__repositories_system_mask(
-                system_settings_instance)
-            m_list = repos_mask_list + system_settings_instance['system_mask']
-
-        if m_list:
-            with inst_repo.shared():
-                for atom in m_list:
-                    try:
-                        m_ids, m_r = inst_repo.atomMatch(
-                            atom, multiMatch = True)
-                        if m_r != 0:
-                            continue
-                    except EntropyRepositoryError:
-                        continue
-
-                    mykey = entropy.dep.dep_getkey(atom)
-                    obj = mask_installed_keys.setdefault(mykey, set())
-                    for m_id in m_ids:
-                        if m_id in mc_cache:
-                            continue
-                        mc_cache.add(m_id)
-                        mask_installed.append(m_id)
-                        obj.add(m_id)
-
-        parser_data.update({
-            'repos_installed': mask_installed,
-            'repos_installed_keys': mask_installed_keys,
-        })
-        return parser_data
-
     def masking_validation_parser(self, system_settings_instance):
         data = {
             'cache': {}, # package masking validation cache
