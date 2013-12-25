@@ -2822,7 +2822,7 @@ class CalculatorsMixin:
             [((package_id, repository_id), reason_id), ...]
         @rtype: list
         """
-        cache_key = "available/masked_v2" % (
+        cache_key = "available/masked_%s_v2" % (
             self._get_available_packages_hash(),
         )
 
