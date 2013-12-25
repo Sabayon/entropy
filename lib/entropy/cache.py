@@ -40,7 +40,6 @@ class EntropyCacher(Singleton):
             'dep_tree': 'deptree/dep_tree_',
             'atom_match': 'atom_match/atom_match_',
             'atom_search': 'atom_search/atom_search_',
-            'check_package_update': 'check_update/package_update_',
             'mask_filter': 'match/mask_filter',
         }
 

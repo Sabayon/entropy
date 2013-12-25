@@ -3485,9 +3485,7 @@ class CalculatorsMixin:
                 )
             sha.update(const_convert_to_rawstring(cache_s))
 
-            cache_key = "%s%s" % (
-                EntropyCacher.CACHE_IDS['check_package_update'],
-                sha.hexdigest(),)
+            cache_key = "check_update/package_update_%s" % (sha.hexdigest(),)
 
             cached = self._cacher.pop(cache_key)
             if cached is not None:
