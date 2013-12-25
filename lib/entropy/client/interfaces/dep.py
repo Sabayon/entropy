@@ -380,9 +380,7 @@ class CalculatorsMixin:
                 )
             sha.update(const_convert_to_rawstring(cache_s))
 
-            cache_key = "%s%s" % (
-                EntropyCacher.CACHE_IDS['atom_search'],
-                sha.hexdigest(),)
+            cache_key = "atom_search/s_%s" % (sha.hexdigest(),)
 
             cached = self._cacher.pop(cache_key)
             if cached is not None:
