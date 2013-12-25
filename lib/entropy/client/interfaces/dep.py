@@ -11,23 +11,19 @@
 """
 import os
 import collections
-import copy
 import hashlib
-import multiprocessing
-import threading
 
-from entropy.const import etpConst, const_debug_write, const_isstring, \
+from entropy.const import etpConst, const_debug_write, \
     const_isnumber, const_convert_to_rawstring, const_convert_to_unicode, \
     const_debug_enabled, const_file_readable
 from entropy.exceptions import RepositoryError, SystemDatabaseError, \
     DependenciesNotFound, DependenciesNotRemovable, DependenciesCollision
 from entropy.graph import Graph
 from entropy.misc import Lifo
-from entropy.cache import EntropyCacher
 from entropy.output import bold, darkgreen, darkred, blue, purple, teal, brown
 from entropy.i18n import _
 from entropy.db.exceptions import IntegrityError, OperationalError, \
-    DatabaseError, InterfaceError
+    DatabaseError, InterfaceError, Error as EntropyRepositoryError
 from entropy.db.skel import EntropyRepositoryBase
 from entropy.client.interfaces.db import InstalledPackagesRepository
 from entropy.client.misc import sharedinstlock
