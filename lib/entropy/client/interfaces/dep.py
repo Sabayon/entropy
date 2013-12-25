@@ -3087,9 +3087,7 @@ class CalculatorsMixin:
 
         sha = hashlib.sha1()
         sha.update(const_convert_to_rawstring(cache_s))
-        cache_key = "%s%s" % (
-            EntropyCacher.CACHE_IDS['world_update'],
-            sha.hexdigest(),)
+        cache_key = "updates/%s_v1" % (sha.hexdigest(),)
 
         if use_cache and self.xcache:
             cached = self._cacher.pop(cache_key)

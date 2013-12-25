@@ -341,8 +341,6 @@ class RepositoryMixin:
                 updated = False
             if updated:
                 self._cacher.discard()
-                EntropyCacher.clear_cache_item(
-                    EntropyCacher.CACHE_IDS['world_update'])
         return conn
 
     def add_repository(self, repository_metadata):
@@ -446,7 +444,7 @@ class RepositoryMixin:
         # also early remove from _enabled_repos to avoid
         # issues when reloading SystemSettings which is bound to
         # Entropy Client SystemSettings plugin, which
-        # triggers calculate_world_updates,
+        # triggers calculate_updates,
         # which triggers _all_repositories_hash, which triggers
         # open_repository, which triggers _load_repository,
         # which triggers an unwanted
