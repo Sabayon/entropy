@@ -659,8 +659,7 @@ class CalculatorsMixin:
                 match_repo)
             sha.update(const_convert_to_rawstring(cache_s))
 
-            cache_key = "%s_%s" % (
-                EntropyCacher.CACHE_IDS['filter_satisfied_deps'],
+            cache_key = "unsat_deps/%s" % (
                 sha.hexdigest())
 
             cached = self._cacher.pop(cache_key)
