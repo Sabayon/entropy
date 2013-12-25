@@ -204,7 +204,8 @@ class CalculatorsMixin:
             sha.update(const_convert_to_rawstring(cache_s))
 
             cache_key = "%s%s" % (
-                EntropyCacher.CACHE_IDS['atom_match'], sha.hexdigest(),)
+                EntropyCacher.CACHE_IDS['atom_match'],
+                sha.hexdigest(),)
 
             cached = self._cacher.pop(cache_key)
             if cached is not None:
@@ -380,7 +381,8 @@ class CalculatorsMixin:
             sha.update(const_convert_to_rawstring(cache_s))
 
             cache_key = "%s%s" % (
-                EntropyCacher.CACHE_IDS['atom_search'], sha.hexdigest(),)
+                EntropyCacher.CACHE_IDS['atom_search'],
+                sha.hexdigest(),)
 
             cached = self._cacher.pop(cache_key)
             if cached is not None:
@@ -2177,9 +2179,7 @@ class CalculatorsMixin:
                 self._settings['repositories']['branch'])
 
             sha.update(const_convert_to_rawstring(cache_s))
-            cache_key = "%s%s" % (
-                EntropyCacher.CACHE_IDS['dep_tree'],
-                sha.hexdigest())
+            cache_key = "deptree/dep_tree_%s" % (sha.hexdigest(),)
 
             cached = self._cacher.pop(cache_key)
             if cached is not None:
