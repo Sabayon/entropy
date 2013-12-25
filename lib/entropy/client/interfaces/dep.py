@@ -3065,10 +3065,34 @@ class CalculatorsMixin:
                     'critical_found': True,
                     }
 
-        repo_hash = self._repositories_hash()
+        inst_repo = self.installed_repository()
+        ignore_spm_downgrades = misc_settings['ignore_spm_downgrades']
+        enabled_repos = self._filter_available_repositories()
+        repo_order = [x for x in self._settings['repositories']['order'] if
+                      x in enabled_repos]
+
+        cache_s = "%s|%s|%s|%s|%s|%s|%s|%s|%s|v4" % (
+            self._repositories_hash(),
+            empty,
+            enabled_repos,
+            inst_repo.checksum(),
+            self._all_repositories_hash(),
+            ";".join(sorted(self._settings['repositories']['available'])),
+            repo_order,
+            ignore_spm_downgrades,
+            # needed when users do bogus things like editing config files
+            # manually (branch setting)
+            self._settings['repositories']['branch'],
+        )
+
+        sha = hashlib.sha1()
+        sha.update(const_convert_to_rawstring(cache_s))
+        cache_key = "%s%s" % (
+            EntropyCacher.CACHE_IDS['world_update'],
+            sha.hexdigest(),)
+
         if use_cache and self.xcache:
-            cached = self._get_updates_cache(empty_deps = empty,
-                repo_hash = repo_hash)
+            cached = self._cacher.pop(cache_key)
             if cached is not None:
                 return cached
 
@@ -3077,8 +3101,6 @@ class CalculatorsMixin:
         enabled_repos = self._filter_available_repositories()
         match_repos = tuple([x for x in \
             self._settings['repositories']['order'] if x in enabled_repos])
-
-        ignore_spm_downgrades = misc_settings['ignore_spm_downgrades']
 
         # get all the installed packages
         try:
@@ -3281,9 +3303,7 @@ class CalculatorsMixin:
             }
 
         if self.xcache:
-            c_hash = self._get_updates_cache_hash(repo_hash, empty,
-                ignore_spm_downgrades)
-            self._cacher.push(c_hash, outcome, async = False)
+            self._cacher.push(cache_key, outcome, async = False)
             self._cacher.sync()
 
         if not update:

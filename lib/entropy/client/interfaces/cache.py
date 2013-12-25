@@ -104,25 +104,6 @@ class CacheMixin:
         """
         return self.__repositories_hash(self._enabled_repos)
 
-    def _get_updates_cache(self, empty_deps, repo_hash = None):
-        """
-        Get available updates on-disk cache, if available, otherwise return None
-        """
-        misc_settings = self.ClientSettings()['misc']
-        ignore_spm_downgrades = misc_settings['ignore_spm_downgrades']
-
-        if self.xcache:
-
-            if repo_hash is None:
-                repo_hash = self._repositories_hash()
-
-            c_hash = self._get_updates_cache_hash(repo_hash, empty_deps,
-                ignore_spm_downgrades)
-
-            disk_cache = self._cacher.pop(c_hash)
-            if isinstance(disk_cache, tuple):
-                return disk_cache
-
     def _filter_available_repositories(self, _enabled_repos = None):
         """
         Filter out package repositories from the list of available,
@@ -139,34 +120,3 @@ class CacheMixin:
         enabled_repos = [x for x in enabled_repos if not \
             x.endswith(etpConst['packagesext'])]
         return enabled_repos
-
-    def _get_updates_cache_hash(self, repo_hash, empty_deps,
-        ignore_spm_downgrades):
-        """
-        Get package updates cache hash that can be used to retrieve the on-disk
-        cached object.
-        """
-        enabled_repos = self._filter_available_repositories()
-        repo_order = [x for x in self._settings['repositories']['order'] if
-            x in enabled_repos]
-
-        inst_repo = self.installed_repository()
-
-        cache_s = "%s|%s|%s|%s|%s|%s|%s|%s|%s|v3" % (
-            repo_hash,
-            empty_deps,
-            enabled_repos,
-            inst_repo.checksum(),
-            self._all_repositories_hash(),
-            ";".join(sorted(self._settings['repositories']['available'])),
-            repo_order,
-            ignore_spm_downgrades,
-            # needed when users do bogus things like editing config files
-            # manually (branch setting)
-            self._settings['repositories']['branch'],
-        )
-        sha = hashlib.sha1()
-        sha.update(const_convert_to_rawstring(cache_s))
-        return "%s%s" % (
-            EntropyCacher.CACHE_IDS['world_update'],
-            sha.hexdigest(),)
