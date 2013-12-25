@@ -37,7 +37,6 @@ class EntropyCacher(Singleton):
 
     CACHE_IDS = {
             'db_match': 'match/db',
-            'atom_match': 'atom_match/atom_match_',
             'mask_filter': 'match/mask_filter',
         }
 
