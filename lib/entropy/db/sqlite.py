@@ -563,11 +563,13 @@ class EntropySQLiteRepository(EntropySQLRepository):
         if lock.directed():
             return lock
 
+        already_acquired = lock.is_already_acquired()
         lock.acquire_shared()
 
-        # in-RAM cached data may have become stale
-        if not self._is_memory():
-            self.clearCache()
+        if not already_acquired:
+            # in-RAM cached data may have become stale
+            if not self._is_memory():
+                self.clearCache()
 
         return lock
 
@@ -579,11 +581,13 @@ class EntropySQLiteRepository(EntropySQLRepository):
         if lock.directed():
             return lock
 
+        already_acquired = lock.is_already_acquired()
         acquired = lock.try_acquire_shared()
         if acquired:
-            # in-RAM cached data may have become stale
-            if not self._is_memory():
-                self.clearCache()
+            if not already_acquired:
+                # in-RAM cached data may have become stale
+                if not self._is_memory():
+                    self.clearCache()
             return lock
         else:
             return None
@@ -596,11 +600,13 @@ class EntropySQLiteRepository(EntropySQLRepository):
         if lock.directed():
             return lock
 
+        already_acquired = lock.is_already_acquired()
         lock.acquire_exclusive()
 
-        # in-RAM cached data may have become stale
-        if not self._is_memory():
-            self.clearCache()
+        if not already_acquired:
+            # in-RAM cached data may have become stale
+            if not self._is_memory():
+                self.clearCache()
         return lock
 
     def try_acquire_exclusive(self):
@@ -611,11 +617,13 @@ class EntropySQLiteRepository(EntropySQLRepository):
         if lock.directed():
             return lock
 
+        already_acquired = lock.is_already_acquired()
         acquired = lock.try_acquire_exclusive()
         if acquired:
-            # in-RAM cached data may have become stale
-            if not self._is_memory():
-                self.clearCache()
+            if not already_acquired:
+                # in-RAM cached data may have become stale
+                if not self._is_memory():
+                    self.clearCache()
             return lock
 
     def _release_reslock(self, lock, mode):
