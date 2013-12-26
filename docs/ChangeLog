@@ -1,3 +1,391 @@
+commit 6c9ffc0e59b71722d615c657a21145a3ba199b91
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 26 23:05:39 2013 +0100
+
+    Release Entropy 256
+
+commit ccf10bb416aa1fb182dd901acfe6640160a56ffd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 26 22:56:30 2013 +0100
+
+    [todo] update TODO
+
+commit cc9c66395464d548065d88ddc3915aa455525ab2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 26 22:55:25 2013 +0100
+
+    [Rigo] update translations
+
+commit 57b672043c1396433dae2a00a665c33456d29a33
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 26 22:54:59 2013 +0100
+
+    [Rigo] update rigo.pot
+
+commit 08c635623d443718e4d9f883e071039760792d31
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 26 22:54:42 2013 +0100
+
+    [server] update translations
+
+commit 84fb3a948ddffa75dc37be4efdc68aeff13c7d56
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 26 22:54:11 2013 +0100
+
+    [server] update entropy-server.pot
+
+commit d4af59b609c8760716903144fb627d01eb691879
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 26 22:53:40 2013 +0100
+
+    [client] update translations
+
+commit 6048d06fca1625b5c30c052f1e1f3d0270d256b5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 26 22:52:48 2013 +0100
+
+    [client] update entropy.pot
+
+commit 2a034e4a05000bb9391941583fead2cf6a11a88e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 26 16:08:52 2013 +0100
+
+    [entropy.client.methods] add an "unlocked" version of get_package_action()
+
+commit 11e6d596b80421d5eba5614f33d963e934c87f7e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 26 16:08:16 2013 +0100
+
+    [entropy.db.sqlite] do not clear the cache if locks are already acquired
+
+commit 603c96fc059d39510623299785eb18447e6eed29
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 26 16:07:07 2013 +0100
+
+    [entropy.locks] add is_already_acquired()
+    
+    This method returns whether the lock has been already acquired.
+    It is useful in cases where the reentrancy property is leveraged.
+
+commit 0dcfc0f5bc90ef3ead29acf3c0850f9654d108e8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 26 07:23:50 2013 +0100
+
+    [todo] update TODO
+
+commit d0d4b45e738ace3093dc28808af4065c54ddf239
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 25 15:08:52 2013 +0100
+
+    [todo] update TODO
+
+commit 528d4ff116c4207003c11aa10d4840fc07cfb1d5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 25 15:08:25 2013 +0100
+
+    [entropy.client.dep] drop unused imports
+
+commit 6b3e5810fc85e2cf9437258ac64854f6c659cf96
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 25 15:07:04 2013 +0100
+
+    [entropy.client.settings] drop repos_installed{_keys,} settings metadata
+    
+    Load the related data ondemand whenever it is needed, save SystemSettings
+    load time and avoid problems with stale information.
+
+commit 4da9953a716e529ac8f08e27ddcfe1731c200158
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 25 14:18:24 2013 +0100
+
+    [entropy.cache] drop EntropyCacher.CACHE_IDS['atom_match']
+
+commit be311e70458e80a311795f2957e3ce45eba5fcb9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 25 14:17:08 2013 +0100
+
+    [entropy.cache] drop EntropyCacher.CACHE_IDS['atom_search']
+
+commit 0f59b909c9b27bfca0d25ee8a595cb04d4f975ff
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 25 14:15:43 2013 +0100
+
+    [entropy.cache] drop EntropyCacher.CACHE_IDS['dep_tree']
+
+commit 55faf98b59ad41e37305492e93749f5bb4336822
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 25 14:13:58 2013 +0100
+
+    [entropy.cache] drop EntropyCacher.CACHE_IDS['check_package_update']
+
+commit 6121ab63bc28ce6a4bb96f31e2f2bad4e27dca86
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 25 14:12:08 2013 +0100
+
+    [entropy.cache] drop EntropyCacher.CACHE_IDS['depends_tree']
+
+commit 3bb2abc102cffdf35c8f3f3959f1c28ad3728f76
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 25 14:10:37 2013 +0100
+
+    [entropy.cache] drop EntropyCacher.CACHE_IDS['library_breakage']
+
+commit cbe52e67cef86de786328d408c67c24ededb0dd0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 25 14:09:17 2013 +0100
+
+    [entropy.cache] drop EntropyCacher.CACHE_IDS['filter_satisfied_deps']
+
+commit 3fb69053878925186c2a6feb3dd58748d59bee2b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 25 14:05:09 2013 +0100
+
+    [entropy.cache] drop EntropyCacher.CACHE_IDS['world_update']
+
+commit 57e2ab5ec80deaa05f7d3aee6e713821e25df41f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 25 14:01:51 2013 +0100
+
+    [entropy.core] when clearing repository cache, don't clear the whole cache
+    
+    This is no longer needed since cache keys are now properly generated
+
+commit 4c0bbd07892f83445d4b985026a43340feeee2ba
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 25 13:58:25 2013 +0100
+
+    [entropy.client.cache] drop methods used by the dep module only
+
+commit cd199b0496bf0bb8dffbdebffebe3a027f45df3e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 25 13:57:43 2013 +0100
+
+    [entropy.client.dep] fix format string typo
+
+commit a8bdb9a4ea365de05e0008499f370b7a230587a6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 24 22:57:27 2013 +0100
+
+    [entropy.cache] drop EntropyCacher.CACHE_IDS['critical_update']
+
+commit 034061620cab415b72bb6458c0cb12d04924cf19
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 24 22:44:09 2013 +0100
+
+    [entropy.cache] drop EntropyCacher.CACHE_IDS['world_masked']
+
+commit 01e54a75b914f6705cd9052625383f742ae5cbcb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 24 08:17:24 2013 +0100
+
+    [entropy.cache] drop EntropyCacher.CACHE_IDS['world_available']
+
+commit 55f5d892aa3f65aafb9a53ecf0aeae0483e9674f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 24 07:15:48 2013 +0100
+
+    [entropy.client.settings] add installed packages repository locking support
+
+commit e976ea337cd7c8cbf95aca9453959474520466a0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 24 07:15:27 2013 +0100
+
+    [entropy.client.methods] add installed packages repository locking support
+
+commit b4f445a61b0b7ab7e11ab392792ea3fd724bccea
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 24 06:32:47 2013 +0100
+
+    [entropy.client.repository] drop entropy_updates_alert argument
+    
+    This is no longer useful for the implemented use cases
+
+commit cf3305ed43f2e144f8245d9277d1065f891c349b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 24 06:29:15 2013 +0100
+
+    [entropy.client.repository] do not check the instance type of installed_repository
+    
+    This check is no longer needed
+
+commit d2c47cc3ba31419622a3621b9ce33b2bc1849814
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 24 06:21:43 2013 +0100
+
+    [entropy.client.db] add installed packages repository locking support
+
+commit 12c34ab8d4ff7ba18f4f37a5d371c8c037d28385
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 24 06:21:30 2013 +0100
+
+    [entropy.client.dep] add installed packages repository locking support
+
+commit f143614555075a3fde48ac00a2cb7b69de290f80
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 24 06:20:42 2013 +0100
+
+    [entropy.client.client] add installed packages repository locking support
+
+commit f5efd44cc21c1fab10054176c735d195c21fd387
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 21 17:11:13 2013 +0100
+
+    [RigoDaemon] acquire UpdatesNotificationResourceLock in non blocking mode
+    
+    We cannot sleep with the activity mutex held without affecting
+    parallelism so badly. Otoh, we cannot wleep on UpdatesNotificationResourceLock
+    without affecting 3rd party clients in a way that we would starve them
+    for a while. So, try to acquire the file lock in non blocking mode
+    and if it fails, reschedule a new call as soon as the same lock is
+    freed (exclusive acquire succeeds). This assumes that if the lock
+    is held back, we will just re-do the whole trick again and again.
+
+commit f1a925c2203bb65bab2544743a1600ccc365e482
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 20 20:24:29 2013 +0100
+
+    [solo.commands.install] acquire the notification lock in shared NB mode
+    
+    This should avoid starvation in the scenario outlined in code comments.
+
+commit ec198d632b7e22b4072a5cff9934527675fe63d0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 20 14:40:40 2013 +0100
+
+    [RigoDaemon] make sure that the serializer is always released
+    
+    Even in case of exceptions.
+
+commit bccbce4a34fb18461a5a0fe7177493beecea7369
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 20 14:34:58 2013 +0100
+
+    [RigoDaemon] use UpdatesNotificationResourceLock to avoid signal spam
+    
+    If this resource lock is acquired, block until the lock is released
+    so that we will not keep sending status updates to the connected clients
+
+commit 00f43b043cb06e3997b1db5ee0937ab0d2c58196
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 20 14:34:24 2013 +0100
+
+    [solo.commands.install] acquire the UpdatesNotificationResourceLock in shared mode
+    
+    This will temporarily disable available updates notifications from
+    RigoDaemon
+
+commit 6f44f5c40a81b3afccda8f64a18423ffbad22dce
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 20 14:22:53 2013 +0100
+
+    [entropy.locks] UpdatesNotificationResourceLock: do not dictate any particular lock mode
+
+commit 934a7ce14b6ad1f7e952a43a26a311cf841cbf3d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 20 14:16:26 2013 +0100
+
+    [RigoDaemon] drop sleep()
+    
+    With the new locking strategy, this is no longer necessary
+
+commit 69d44732494cfb46477f5ba72ca0e3ee9c051267
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 20 14:04:56 2013 +0100
+
+    [entropy.locks] introduce UpdatesNotificationResourceLock
+    
+    This will make possible to stop available updates notifications
+    from being issued while an install/upgrade is in progress
+
+commit 8049f88c5641ffee0231f836352c6b90aa0e1dd6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 20 13:52:12 2013 +0100
+
+    [entropy.locks] make sure not to leak fds when using non-blocking calls
+
+commit ca862463d444c2914b76531c8910e2759abd38af
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 20 13:52:12 2013 +0100
+
+    [entropy.locks] make sure not to leak fds when using non-blocking calls
+
+commit cf8984982ad02cd1446ea22ba3631dc48e9cef40
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 18 21:56:49 2013 +0100
+
+    [entropy.output] sychronize writes to stdout/stderr to avoid garbled output
+    
+    In a multithreaded scenario, text may get garbled if there is no
+    synchronization between threads wrt the shared resources (std{out,err}).
+    This happens even when stdio buffering is enabled, of course.
+
+commit 8ed4bff872327e53b86e28cb08fd7797dbaaf124
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 18 20:59:41 2013 +0100
+
+    Revert "[entropy.client.package] synchronize text output calls to avoid garbled output"
+    
+    This reverts commit e722455432317516235e56fb386a60f05d237804.
+
+commit a0ec911e681c964af800b7f36db6c302fa6c2d4a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 18 19:16:21 2013 +0100
+
+    [entropy.client.package] synchronize text output calls to avoid garbled output
+    
+    Some parts of the package actions code are now multithreaded and some
+    other will likely become that in the near future.
+    For this reason, all the TextInterface.output calls are now wrapped and
+    synchronized by a mutex.
+    
+    Ideally, this synchronization could have gone directly into entropy.output
+    but I am reluctant about placing expensive locking so deep into the code at
+    this time.
+
+commit ca3b960dca4b1d618435c4119489f2def4663564
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 15 19:22:38 2013 +0100
+
+    [entropy.client.sets] make Sets a new-style class
+
+commit c2d15ddd23379958c9748c95e7fb960bbb467770
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 15 19:22:03 2013 +0100
+
+    [entropy.client.misc] add sharedinstlock and exclusiveinstlock decorators
+
+commit 0df7092e052ebee38c8958761eaafa8e68ff63f1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 15 12:10:19 2013 +0100
+
+    [entropy.locks] drop "_lock", just "acquire" or "release", it's cleaner
+
+commit 1f2575204ea69edcbda6cdcc3d6a8f6b2fa79d90
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 15 11:45:23 2013 +0100
+
+    [entropy.locks] make ResourceLock reentrant wrt to individual threads only
+
+commit 3a448a3b194eb5b5c44eb3e1b610779b7b42f9ab
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 24 15:57:40 2013 +0100
+
+    [entropy.client.package] use atom as part of the unpack directory
+    
+    This greatly reduce the size of the path, mitigating the issue at bug #4078
+
+commit 0cb12a0dae23961df82fdee3321ea391a0b95b07
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 20 13:03:32 2013 +0100
+
+    [entropy.misc] RSS: be more tolerant against xml file corruptions
+
+commit f6dd07cb0d10455d57122e6ce5c3616c194eaaa0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 18 11:00:10 2013 +0100
+
+    Tagging Entropy version 255
+
 commit 24b5b8c66143a2368efdca8ac8337d9ba72eecf1
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Dec 18 11:00:10 2013 +0100
