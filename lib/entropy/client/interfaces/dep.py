@@ -1555,7 +1555,7 @@ class CalculatorsMixin:
                 continue
             if mymatch not in mydata:
                 # check if not found
-                myaction = self.get_package_action(mymatch)
+                myaction = self._get_package_action(mymatch)
                 # only if the package is not installed
                 if myaction == 1:
                     mydata.append(mymatch)
@@ -1575,7 +1575,7 @@ class CalculatorsMixin:
         if (conflict_match == new_match) or (new_match[1] == 1):
             return
 
-        action = self.get_package_action(
+        action = self._get_package_action(
             new_match, installed_package_id = client_package_id)
         if (action == 0) and (not deep_deps):
             return
@@ -1588,7 +1588,7 @@ class CalculatorsMixin:
         Lookup inverse dependencies and return them as a list of package
         matches.
         """
-        cmpstat = self.get_package_action(
+        cmpstat = self._get_package_action(
             match, installed_package_id = installed_package_id)
         if cmpstat == 0:
             return set()
@@ -1635,7 +1635,7 @@ class CalculatorsMixin:
                 mymatch = self.atom_match(key_slot)
                 if mymatch[0] == -1:
                     continue
-                cmpstat = self.get_package_action(
+                cmpstat = self._get_package_action(
                     mymatch, installed_package_id = inst_package_id)
                 if cmpstat == 0:
                     continue
@@ -1738,7 +1738,7 @@ class CalculatorsMixin:
                 continue
 
             # do we already have the latest version installed?
-            cmpstat = self.get_package_action(
+            cmpstat = self._get_package_action(
                 (package_id, repository_id),
                 installed_package_id = inst_package_id)
             if cmpstat == 0:
@@ -2005,7 +2005,7 @@ class CalculatorsMixin:
         for _package_id, _repository_id in found_matches:
             _match = _package_id, _repository_id
 
-            cmpstat = self.get_package_action(_match)
+            cmpstat = self._get_package_action(_match)
             if cmpstat == 0:
                 continue
 
@@ -2060,7 +2060,7 @@ class CalculatorsMixin:
                 continue
             pkg_match = package_id, repository_id
 
-            cmpstat = self.get_package_action(
+            cmpstat = self._get_package_action(
                 pkg_match, installed_package_id = inst_package_id)
             if cmpstat == 0:
                 continue

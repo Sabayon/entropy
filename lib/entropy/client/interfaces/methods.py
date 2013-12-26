@@ -2202,6 +2202,7 @@ class MiscMixin:
 
 class MatchMixin:
 
+    @sharedinstlock
     def get_package_action(self, package_match, installed_package_id = None):
         """
         For given package match, return an action value representing the
@@ -2218,6 +2219,15 @@ class MatchMixin:
         @return: package status
         @rtype: int
         """
+        return self._get_package_action(
+            package_match, installed_package_id = installed_package_id)
+
+    def _get_package_action(self, package_match,
+                           installed_package_id = None):
+        """
+        See get_package_action(), this internal method runs assuming that
+        repositories lock are already acquired.
+        """
         inst_repo = self.installed_repository()
         pkg_id, pkg_repo = package_match
         dbconn = self.open_repository(pkg_repo)
@@ -2231,31 +2241,30 @@ class MatchMixin:
 
         pkgver, pkgtag, pkgrev = dbconn.getVersioningData(pkg_id)
 
-        with inst_repo.shared():
-            ver_data = inst_repo.getVersioningData(installed_package_id)
-            if ver_data is None:
-                # installed package_id is not available,
-                # race condition, probably
-                return 1
+        ver_data = inst_repo.getVersioningData(installed_package_id)
+        if ver_data is None:
+            # installed package_id is not available,
+            # race condition, probably
+            return 1
 
-            installed_ver, installed_tag, installed_rev = ver_data
+        installed_ver, installed_tag, installed_rev = ver_data
 
-            pkgcmp = entropy.dep.entropy_compare_versions(
-                (pkgver, pkgtag, pkgrev),
-                (installed_ver, installed_tag, installed_rev))
-            if pkgcmp == 0:
-                # check digest, if it differs, we should mark pkg as update
-                # we don't want users to think that they are "reinstalling"
-                # stuff because it will just confuse them
-                inst_digest = inst_repo.retrieveDigest(installed_package_id)
-                repo_digest = dbconn.retrieveDigest(pkg_id)
-                if inst_digest != repo_digest:
-                    return 2
-                return 0
-            elif pkgcmp > 0:
+        pkgcmp = entropy.dep.entropy_compare_versions(
+            (pkgver, pkgtag, pkgrev),
+            (installed_ver, installed_tag, installed_rev))
+        if pkgcmp == 0:
+            # check digest, if it differs, we should mark pkg as update
+            # we don't want users to think that they are "reinstalling"
+            # stuff because it will just confuse them
+            inst_digest = inst_repo.retrieveDigest(installed_package_id)
+            repo_digest = dbconn.retrieveDigest(pkg_id)
+            if inst_digest != repo_digest:
                 return 2
+            return 0
+        elif pkgcmp > 0:
+            return 2
 
-            return -1
+        return -1
 
     def is_package_masked(self, package_match, live_check = True):
         """
