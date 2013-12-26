@@ -46,7 +46,6 @@
 ../server/eit/__init__.py
 ../server/eit/colorful.py
 ../server/eit/main.py
-../matter/test.py
 ../matter/matter_app.py
 ../matter/antimatter.py
 ../matter/matter/utils.py
