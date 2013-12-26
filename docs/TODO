@@ -1,6 +1,7 @@
 Short term:
 
 - drop all the EntropyCacher.CACHE_IDS
+- add repository dependencies and conflicts metadata
 
 - entropy.client.interfaces code refactoring
 - wrap available repositories usage around a ResourceLock, this will
