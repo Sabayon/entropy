@@ -68,38 +68,62 @@ class EntropyLocksTest(unittest.TestCase):
 
             self.assertEquals(tmp_path, erl.path())
 
+            self.assertFalse(erl.is_already_acquired())
+
             self.assertEquals(True, erl.try_acquire_exclusive())
             self.assertEquals(1, counter_l[0])
 
+            self.assertTrue(erl.is_already_acquired())
+
             erl.release()
+
+            self.assertFalse(erl.is_already_acquired())
 
             self.assertEquals(True, erl.try_acquire_exclusive())
             self.assertEquals(2, counter_l[0])
 
             erl.release()
 
+            self.assertFalse(erl.is_already_acquired())
+
             self.assertEquals(True, erl.try_acquire_shared())
             self.assertEquals(3, counter_l[0])
 
+            self.assertTrue(erl.is_already_acquired())
+
             erl.release()
+
+            self.assertFalse(erl.is_already_acquired())
 
             erl.acquire_exclusive()
             erl.release()
 
+            self.assertFalse(erl.is_already_acquired())
+
             erl.acquire_shared()
             erl.release()
+
+            self.assertFalse(erl.is_already_acquired())
 
             self.assertEquals(True, erl.try_acquire_shared())
             self.assertEquals(6, counter_l[0])
 
+            self.assertTrue(erl.is_already_acquired())
+
             self.assertRaises(RuntimeError, erl.try_acquire_exclusive)
+
+            self.assertTrue(erl.is_already_acquired())
 
             self.assertEquals(True, erl.try_acquire_shared())
             self.assertEquals(7, counter_l[0])
 
             erl.release()
 
+            self.assertTrue(erl.is_already_acquired())
+
             self.assertRaises(RuntimeError, erl.try_acquire_exclusive)
+
+            self.assertTrue(erl.is_already_acquired())
 
             erl.release()
 
@@ -107,14 +131,23 @@ class EntropyLocksTest(unittest.TestCase):
 
             erl.release()
 
+            self.assertFalse(erl.is_already_acquired())
+
             self.assertEquals(True, erl.wait_exclusive())
 
+            self.assertTrue(erl.is_already_acquired())
+
             erl.release()
+
+            self.assertFalse(erl.is_already_acquired())
 
             self.assertEquals(True, erl.wait_shared())
 
+            self.assertTrue(erl.is_already_acquired())
+
             erl.release()
 
+            self.assertFalse(erl.is_already_acquired())
 
         finally:
             if tmp_fd is not None:

@@ -114,6 +114,14 @@ class ResourceLock(object):
         """
         raise NotImplementedError()
 
+    def is_already_acquired(self):
+        """
+        Return whether the current thread has already acquired the
+        lock (which is reentrant).
+        """
+        mapped = self._file_lock_setup()
+        return mapped['recursed']
+
     def _file_lock_setup(self):
         """
         Setup the locking status dict for self.path().
