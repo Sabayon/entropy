@@ -2260,16 +2260,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
         return data
 
-    def _clear_repository_cache(self, repoid = None):
-        """
-        Internal method, go away!
-        """
-        self.__cacher.discard()
-
-        if repoid is not None:
-            EntropyCacher.clear_cache_item("%s/%s/" % (
-                EntropyCacher.CACHE_IDS['mask_filter'], repoid,))
-
     def __generic_parser(self, filepath, comment_tag = "#"):
         """
         Internal method. This is the generic file parser here.
@@ -2330,11 +2320,9 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @rtype: None
         """
         if os.path.isdir(etpConst['dumpstoragedir']):
+            self.__cacher.discard()
             if repoid:
-                self._clear_repository_cache(repoid = repoid)
                 return
-            for repoid in self['repositories']['order']:
-                self._clear_repository_cache(repoid = repoid)
         else:
             try:
                 os.makedirs(etpConst['dumpstoragedir'])
