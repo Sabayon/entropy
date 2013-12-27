@@ -186,7 +186,9 @@ class CalculatorsMixin:
         if self.xcache and use_cache:
             sha = hashlib.sha1()
 
-            cache_s = "a{%s}mr{%s}ms{%s}rh{%s}mf{%s}er{%s}ar{%s}s{%s;%s;%s}" % (
+            cache_fmt = "a{%s}mr{%s}ms{%s}rh{%s}mf{%s}"
+            cache_fmt += "er{%s}ar{%s}m{%s}s{%s;%s;%s}"
+            cache_s = cache_fmt % (
                 atom,
                 ";".join(match_repo),
                 match_slot,
@@ -194,6 +196,7 @@ class CalculatorsMixin:
                 mask_filter,
                 ";".join(self._enabled_repos),
                 ";".join(sorted(self._settings['repositories']['available'])),
+                self._settings.packages_configuration_hash(),
                 multi_match,
                 multi_repo,
                 extended_results)
@@ -364,11 +367,12 @@ class CalculatorsMixin:
         if self.xcache and use_cache:
             sha = hashlib.sha1()
 
-            cache_s = "k{%s}re{%s}de{%s}rh{%s}er{%s}ar{%s}" % (
+            cache_s = "k{%s}re{%s}de{%s}rh{%s}m{%s}er{%s}ar{%s}" % (
                 keyword,
                 ";".join(repositories),
                 description,
                 self._all_repositories_hash(),
+                self._settings.packages_configuration_hash(),
                 ";".join(self._enabled_repos),
                 ";".join(sorted(self._settings['repositories']['available'])),
                 )
@@ -641,11 +645,12 @@ class CalculatorsMixin:
         if self.xcache:
             sha = hashlib.sha1()
 
-            cache_s = "%s|%s|%s|%s|%s|%s|%s|%s|%s|v4" % (
+            cache_s = "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|v5" % (
                 ";".join(sorted(dependencies)),
                 deep_deps,
                 inst_repo.checksum(),
                 self._all_repositories_hash(),
+                self._settings.packages_configuration_hash(),
                 ";".join(self._enabled_repos),
                 ";".join(sorted(self._settings['repositories']['available'])),
                 relaxed_deps,
@@ -1871,11 +1876,12 @@ class CalculatorsMixin:
         cache_key = None
 
         if self.xcache:
-            cache_s = "%s|%s|%s|%s|%s|%s|r4" % (
+            cache_s = "%s|%s|%s|%s|%s|%s|%s|r5" % (
                 match,
                 installed_package_id,
                 inst_repo.checksum(),
                 self._all_repositories_hash(),
+                self._settings.packages_configuration_hash(),
                 ";".join(self._enabled_repos),
                 ";".join(sorted(self._settings['repositories']['available'])),
             )
@@ -2155,7 +2161,7 @@ class CalculatorsMixin:
         if self.xcache:
             sha = hashlib.sha1()
 
-            cache_s = "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|v4" % (
+            cache_s = "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|v5" % (
                 ";".join(["%s" % (x,) for x in sorted(package_matches)]),
                 empty_deps,
                 deep_deps,
@@ -2165,6 +2171,7 @@ class CalculatorsMixin:
                 recursive,
                 inst_repo.checksum(),
                 self._all_repositories_hash(),
+                self._settings.packages_configuration_hash(),
                 ";".join(sorted(self._settings['repositories']['available'])),
                 # needed when users do bogus things like editing config files
                 # manually (branch setting)
@@ -2432,7 +2439,7 @@ class CalculatorsMixin:
         if self.xcache:
             sha = hashlib.sha1()
 
-            cache_s = "ma{%s}s{%s;%s;%s;%s;%s;%s;%s;%s;%s}v2" % (
+            cache_s = "ma{%s}s{%s;%s;%s;%s;%s;%s;%s;%s;%s;%s}v3" % (
                 ";".join(["%s" % (x,) for x in sorted(matched_atoms)]),
                 deep,
                 recursive,
@@ -2441,6 +2448,7 @@ class CalculatorsMixin:
                 elf_needed_scanning,
                 inst_repo.checksum(),
                 self._all_repositories_hash(),
+                self._settings.packages_configuration_hash(),
                 ";".join(self._enabled_repos),
                 ";".join(sorted(self._settings['repositories']['available'])),
                 )
@@ -2969,11 +2977,12 @@ class CalculatorsMixin:
 
         inst_repo = self.installed_repository()
 
-        cache_s = "%s|%s|%s|%s|%s|%s|%s|v2" % (
+        cache_s = "%s|%s|%s|%s|%s|%s|%s|%s|v3" % (
             self._repositories_hash(),
             enabled_repos,
             inst_repo.checksum(),
             self._all_repositories_hash(),
+            self._settings.packages_configuration_hash(),
             ";".join(sorted(self._settings['repositories']['available'])),
             repo_order,
             # needed when users do bogus things like editing config files
@@ -3111,12 +3120,13 @@ class CalculatorsMixin:
         repo_order = [x for x in self._settings['repositories']['order'] if
                       x in enabled_repos]
 
-        cache_s = "%s|%s|%s|%s|%s|%s|%s|%s|%s|v4" % (
+        cache_s = "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|v5" % (
             self._repositories_hash(),
             empty,
             enabled_repos,
             inst_repo.checksum(),
             self._all_repositories_hash(),
+            self._settings.packages_configuration_hash(),
             ";".join(sorted(self._settings['repositories']['available'])),
             repo_order,
             ignore_spm_downgrades,
@@ -3518,11 +3528,12 @@ class CalculatorsMixin:
         if self.xcache:
             sha = hashlib.sha1()
 
-            cache_s = "{%s;%s;%s;%s;%s;%s}v2" % (
+            cache_s = "{%s;%s;%s;%s;%s;%s;%s}v3" % (
                 atom,
                 deep,
                 inst_repo.checksum(),
                 self._all_repositories_hash(),
+                self._settings.packages_configuration_hash(),
                 ";".join(self._enabled_repos),
                 ";".join(sorted(self._settings['repositories']['available'])),
                 )
