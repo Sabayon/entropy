@@ -420,7 +420,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         self.reponame = name
         self._settings = SystemSettings()
         self._cacher = EntropyCacher()
-        self.__db_match_cache_key = EntropyCacher.CACHE_IDS['db_match']
+        self.__db_match_cache_key = "match/db"
 
         EntropyRepositoryPluginStore.__init__(self)
 

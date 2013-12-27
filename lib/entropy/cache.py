@@ -36,7 +36,6 @@ import entropy.tools
 class EntropyCacher(Singleton):
 
     CACHE_IDS = {
-            'db_match': 'match/db',
             'mask_filter': 'match/mask_filter',
         }
 

@@ -2102,8 +2102,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
         if tx_limit is not None:
             data['transfer_limit'] = tx_limit
 
-        # validate using mtime
-        dmp_path = etpConst['dumpstoragedir']
         for repoid in repoids:
 
             found_into = 'available'
@@ -2115,23 +2113,11 @@ class SystemSettings(Singleton, EntropyPluginStore):
             else:
                 continue
 
-            # validate repository settings
+            # fixup repository settings
             if not repo_data['plain_database'].strip():
                 data[found_into].pop(repoid)
                 if repoid in data['order']:
                     data['order'].remove(repoid)
-
-            repo_db_path = os.path.join(repo_data['dbpath'],
-                etpConst['etpdatabasefile'])
-            repo_mtime_fn = "%s_%s_%s.mtime" % (repoid, data['branch'],
-                data['product'],)
-
-            repo_db_path_mtime = os.path.join(dmp_path, repo_mtime_fn)
-            if os.path.isfile(repo_db_path):
-                valid = self.validate_entropy_cache(repo_db_path,
-                    repo_db_path_mtime, repoid = repoid)
-                if not valid:
-                    EntropyCacher.clear_cache(excluded_items = ["db_match"])
 
         # insert extra packages mirrors directly from repository dirs
         # if they actually exist. use data['order'] because it reflects
@@ -2243,8 +2229,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
         self.__cacher.discard()
 
         if repoid is not None:
-            EntropyCacher.clear_cache_item("%s/%s/" % (
-                EntropyCacher.CACHE_IDS['db_match'], repoid,))
             EntropyCacher.clear_cache_item("%s/%s/" % (
                 EntropyCacher.CACHE_IDS['mask_filter'], repoid,))
 
