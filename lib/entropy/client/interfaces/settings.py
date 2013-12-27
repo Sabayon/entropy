@@ -10,10 +10,11 @@
 
 """
 import codecs
+import hashlib
 import os
 
 from entropy.const import etpConst, const_file_readable, \
-    const_convert_to_unicode
+    const_convert_to_unicode, const_convert_to_rawstring
 from entropy.core.settings.plugins.skel import SystemSettingsPlugin
 from entropy.core.settings.base import SystemSettings
 
@@ -656,3 +657,54 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             # run post-branch upgrade migration scripts if the function
             # above created migration files to handle
             self.__run_post_branch_upgrade_hooks(system_settings_instance)
+
+    def packages_configuration_hash(self):
+        """
+        Return a SHA1 hash of the current packages configuration.
+        This includes masking, unmasking, keywording of all the
+        configured repositories.
+        """
+        sha = hashlib.sha1()
+        sha.update(const_convert_to_rawstring("-begin-"))
+
+        settings = self._helper.ClientSettings()
+        repo_settings = settings['repositories']
+
+        cache_key = "__packages_configuration_hash__"
+        cached = repo_settings.get(cache_key)
+        if cached is not None:
+            return cached
+
+        sha.update(const_convert_to_rawstring("-begin-mask-"))
+
+        for repository_id in sorted(repo_settings['mask'].keys()):
+            packages = repo_settings['mask'][repository_id]
+            cache_s = "mask:%s:{%s}|" % (
+                repository_id, ",".join(sorted(packages)),
+                )
+
+            sha.update(const_convert_to_rawstring(cache_s))
+
+        sha.update(const_convert_to_rawstring("-end-mask-"))
+
+        sha.update(const_convert_to_rawstring("-begin-keywords-"))
+        for repository_id in sorted(repo_settings['repos_keywords'].keys()):
+            data = repo_settings['repos_keywords'][repository_id]
+            packages = data['packages']
+
+            for package in sorted(packages.keys()):
+                keywords = packages[package]
+                cache_s = "repos_keywords:%s:%s:{%s}|" % (
+                    repository_id,
+                    package,
+                    sorted(keywords),
+                    )
+                sha.update(const_convert_to_rawstring(cache_s))
+
+        sha.update(const_convert_to_rawstring("-end-keywords-"))
+
+        sha.update(const_convert_to_rawstring("-end-"))
+
+        outcome = sha.hexdigest()
+        repo_settings[cache_key] = outcome
+        return outcome
