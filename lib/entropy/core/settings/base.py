@@ -1083,6 +1083,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
             ("unmask", self['unmask']),
             ("keyword_mask", self['keywords']),
             ("license_mask", self['license_mask']),
+            ("license_accept", self['license_accept']),
+            ("system_mask", self['system_mask']),
             ("live_unmask", self['live_packagemasking']['unmask_matches']),
             ("live_mask", self['live_packagemasking']['mask_matches']),
             )
