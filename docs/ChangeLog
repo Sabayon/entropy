@@ -1,3 +1,114 @@
+commit c5adbc0b200f541b7dfd56ec9c9c15ed34fe0566
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 27 19:21:09 2013 +0100
+
+    Release Entropy 257
+
+commit 86c264a60d15a81ba12d15017e925d4867123174
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 27 19:16:00 2013 +0100
+
+    [todo] update TODO
+
+commit b088df88bd1afbae643d9276dd23b134ef1cf8bd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 27 19:15:20 2013 +0100
+
+    [entropy.cache] EntropyCacher: drop CACHE_IDS (\o/) and clear_cache()
+
+commit 4fc40101ec6d539be76d88ec759c948c1e8b8ab1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 27 19:12:05 2013 +0100
+
+    [entropy.core.settings.base] drop any explicit clear_cache() call
+    
+    clear_cache() is no longer required since cache keys are now
+    correctly generated.
+
+commit f7bebcba0f81b6979072cb907c75f646284a6af8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 27 19:03:53 2013 +0100
+
+    [entropy.core.settings.base] drop _clear_repository_cache(), no longer needed
+
+commit 1d42427eb176055a65c6e97531099b7667e5a66a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 27 19:02:40 2013 +0100
+
+    [entropy.core.settings.base] add license_accept and system_mask to packages_configuration_hash()
+
+commit 29af5160468c5295fa7e46a43e85fe7217cb3129
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 27 18:51:39 2013 +0100
+
+    [entropy.client.methods] drop _clear_repository_cache() usage
+    
+    This is no longer needed because cache keys are now properly generated
+
+commit df6d28f58f76085357278e1fa40253e600c898b6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 27 18:50:41 2013 +0100
+
+    [entropy.client.db] stop using EntropyCacher.CACHE_IDS['mask_filter']
+    
+    Use atomMatchCacheKey() instead
+
+commit 6d1f2ab77f84415d0b892d464102a98bb4d4bf19
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 27 18:49:21 2013 +0100
+
+    [entropy.db.skel] expose atomMatch cache key generation hook
+    
+    This method adds atomMatchCacheKey() that can be reimplemented
+    by subclasses in order to cooperatively generate a cache key for
+    atomMatch calls.
+
+commit b2fe272ebfd1444c354e90e54667b8d35b28f08e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 27 18:05:29 2013 +0100
+
+    [entropy.client.dep] use ClientSettings.packages_configuration_hash() as part of cache keys
+
+commit f31cdb59ff4b8dd339625940c24a5db94ad77e11
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 27 17:56:02 2013 +0100
+
+    [entropy.client.settings] add packages_configuration_hash()
+    
+    This method serves the purpose of returning a hash of the current
+    packages configuration (masking, unmasking, keywording, etc).
+    This will be used by upper layers as part of cache keys generation.
+
+commit 68e664c94756026bd031e5a85691d4215cea9ac4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 27 17:34:23 2013 +0100
+
+    [entropy.client.dep] use SystemSettings.packages_configuration_hash() for cache validation
+
+commit d461ffa02ff07c41cd8b627d7e872f9be94ce267
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 27 17:22:49 2013 +0100
+
+    [entropy.core.settings.base] introduce packages_configuration_hash()
+    
+    This method serves the purpose of returning a hash of the current
+    packages configuration (masking, unmasking, keywording, etc).
+    This will be used by upper layers as part of cache keys generation.
+
+commit 1f75376b8eff5bbea6437c9d0665cccd6b2243ec
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 27 16:44:19 2013 +0100
+
+    [entropy.cache] drop EntropyCacher.CACHE_IDS['db_match']
+    
+    This is no longer needed.
+
+commit dabdb9dff9c3050ff8e2caf40f37737b9b5ad0f0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 26 23:05:39 2013 +0100
+
+    Tagging Entropy version 256
+
 commit 6c9ffc0e59b71722d615c657a21145a3ba199b91
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Dec 26 23:05:39 2013 +0100
