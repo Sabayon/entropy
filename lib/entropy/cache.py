@@ -35,10 +35,6 @@ import entropy.tools
 
 class EntropyCacher(Singleton):
 
-    CACHE_IDS = {
-            'mask_filter': 'match/mask_filter',
-        }
-
     # Max number of cache objects written at once
     _OBJS_WRITTEN_AT_ONCE = 250
 
@@ -436,22 +432,6 @@ class EntropyCacher(Singleton):
             except (OSError, IOError,):
                 pass
 
-    @classmethod
-    def clear_cache(cls, excluded_items = None, cache_dir = None):
-        """
-        Clear all the on-disk cache items included in EntropyCacher.CACHE_IDS.
-
-        @keyword excluded_items: list of items to exclude from cleaning
-        @type excluded_items: list
-        @keyword cache_dir: alternative cache directory
-        @type cache_dir: string
-        """
-        if excluded_items is None:
-            excluded_items = []
-        for key, value in EntropyCacher.CACHE_IDS.items():
-            if key in excluded_items:
-                continue
-            cls.clear_cache_item(value, cache_dir = cache_dir)
 
 class MtimePingus(object):
 
