@@ -367,9 +367,6 @@ class RepositoryMixin:
         if self._is_package_repository(repoid) or is_temp:
             # package repository
 
-            # remove cache, if any
-            self._settings._clear_repository_cache(repoid = repoid)
-
             avail_data[repoid]['plain_packages'] = \
                 repository_metadata.get('plain_packages', [])[:]
             avail_data[repoid]['packages'] = \
@@ -407,7 +404,6 @@ class RepositoryMixin:
 
             added = self._conf_add_repository(
                 repoid, repository_metadata)
-            self._settings._clear_repository_cache(repoid = repoid)
             self.close_repositories()
             self.clear_cache()
             self._settings.clear()
@@ -473,7 +469,6 @@ class RepositoryMixin:
 
             # if it's a package repository, don't remove cache here
             if not self._is_package_repository(repository_id):
-                self._settings._clear_repository_cache(repoid = repository_id)
                 # save new self._settings['repositories']['available'] to file
                 # -- nothing to do anyway if repository is a package repository
                 if disable:
@@ -752,7 +747,6 @@ class RepositoryMixin:
             self._settings['repositories']['order'])
         self._settings.clear()
         self.close_repositories()
-        self._settings._clear_repository_cache(repoid = repository_id)
         self._validate_repositories()
 
     def enable_repository(self, repository_id):
@@ -767,7 +761,6 @@ class RepositoryMixin:
         @return: True, if repository has been enabled
         @rtype: bool
         """
-        self._settings._clear_repository_cache(repoid = repository_id)
         # save new self._settings['repositories']['available'] to file
         enabled = self._conf_enable_disable_repository(repository_id, True)
         if enabled:
@@ -809,7 +802,6 @@ class RepositoryMixin:
         # it's not vital to reset
         # self._settings['repositories']['order'] counters
 
-        self._settings._clear_repository_cache(repoid = repository_id)
         # save new self._settings['repositories']['available'] to file
         disabled = self._conf_enable_disable_repository(repository_id, False)
         self._settings.clear()
@@ -2414,7 +2406,6 @@ class MatchMixin:
                 _("not a valid method"), method,) )
 
         self._cacher.discard()
-        self._settings._clear_repository_cache(package_match[1])
         done = f(package_match, dry_run)
         if done and not dry_run:
             self._settings.clear()
