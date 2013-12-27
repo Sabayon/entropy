@@ -4929,6 +4929,16 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         return package_id, 0
 
+    def atomMatchCacheKey(self):
+        """
+        Return a string that shall be used as part of the atomMatch cache key
+        string generation.
+
+        This method is intended to be used by subclasses. The base
+        implementation returns an empty string.
+        """
+        return ""
+
     def atomMatch(self, atom, matchSlot = None, multiMatch = False,
         maskFilter = True, extendedResults = False, useCache = True):
         """
@@ -5443,8 +5453,15 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         if self._caching:
             ck_sum = self.checksum(strict = False)
             hash_str = self.__atomMatch_gen_hash_str(args)
-            cached = entropy.dump.loadobj("%s/%s/%s_%s" % (
-                self.__db_match_cache_key, self.name, ck_sum, hash_str,))
+            cached = entropy.dump.loadobj(
+                "%s/%s/%s_%s_%s" % (
+                    self.__db_match_cache_key,
+                    self.name,
+                    self.atomMatchCacheKey(),
+                    ck_sum,
+                    hash_str,
+                    )
+                )
             return cached
 
     def __atomMatch_gen_hash_str(self, args):
@@ -5460,9 +5477,16 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         if self._caching:
             ck_sum = self.checksum(strict = False)
             hash_str = self.__atomMatch_gen_hash_str(args)
-            self._cacher.push("%s/%s/%s_%s" % (
-                self.__db_match_cache_key, self.name, ck_sum, hash_str,),
-                kwargs.get('result'), async = False)
+            self._cacher.push(
+                "%s/%s/%s_%s_%s" % (
+                    self.__db_match_cache_key,
+                    self.name,
+                    self.atomMatchCacheKey(),
+                    ck_sum,
+                    hash_str,
+                    ),
+                kwargs.get('result'),
+                async = False)
 
     def __filterSlot(self, package_id, slot):
         if slot is None:
