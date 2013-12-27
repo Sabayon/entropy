@@ -19,6 +19,7 @@
 """
 import codecs
 import errno
+import hashlib
 import os
 import sys
 import threading
@@ -1063,6 +1064,41 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @rtype: dict
         """
         return self.__setting_dirs.copy()
+
+    def packages_configuration_hash(self):
+        """
+        Return a SHA1 hash of the current packages configuration.
+        This includes masking, unmasking, keywording, system masking
+        settings.
+        """
+        cache_key = "__packages_configuration_hash__"
+        cached = self.get(cache_key)
+        if cached is not None:
+            return cached
+
+        sha = hashlib.sha1()
+
+        configs = (
+            ("mask", self['mask']),
+            ("unmask", self['unmask']),
+            ("keyword_mask", self['keywords']),
+            ("license_mask", self['license_mask']),
+            ("live_unmask", self['live_packagemasking']['unmask_matches']),
+            ("live_mask", self['live_packagemasking']['mask_matches']),
+            )
+
+        sha.update(const_convert_to_rawstring("-begin-"))
+        for name, config in configs:
+            cache_s = "%s:{%s}|" % (
+                name, ",".join(sorted(config)),
+                )
+            sha.update(const_convert_to_rawstring(cache_s))
+
+        sha.update(const_convert_to_rawstring("-end-"))
+
+        outcome = sha.hexdigest()
+        self[cache_key] = outcome
+        return outcome
 
     def _keywords_parser(self):
         """
