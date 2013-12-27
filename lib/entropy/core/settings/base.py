@@ -478,7 +478,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
         self.__cacher = EntropyCacher()
         self.__data = {}
         self.__is_destroyed = False
-        self.__cache_cleared = False
         self.__inside_with_stmt = 0
         self.__pkg_comment_tag = "##"
 
@@ -646,7 +645,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
         self.__mtime_files.clear()
         if not SystemSettings.DISK_DATA_CACHE:
             self.__mtime_cache.clear()
-        self.__cache_cleared = False
 
         packages_dir = SystemSettings.packages_config_directory()
         self.__setting_files.update({
@@ -1212,13 +1210,9 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: parsed metadata
         @rtype: dict
         """
-        valid = self.validate_entropy_cache(self.__setting_files['unmask'],
+        self.validate_entropy_cache(
+            self.__setting_files['unmask'],
             self.__mtime_files['unmask_mtime'])
-        if (not valid) and (not self.__cache_cleared):
-            # all the cache must be cleared (including upgrade and
-            # repository match cache
-            self.__cache_cleared = True
-            EntropyCacher.clear_cache()
         return self.__generic_parser(self.__setting_files['unmask'],
             comment_tag = self.__pkg_comment_tag)
 
@@ -1232,13 +1226,9 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: parsed metadata
         @rtype: dict
         """
-        valid = self.validate_entropy_cache(self.__setting_files['mask'],
+        self.validate_entropy_cache(
+            self.__setting_files['mask'],
             self.__mtime_files['mask_mtime'])
-        if (not valid) and (not self.__cache_cleared):
-            # all the cache must be cleared (including upgrade and
-            # repository match cache
-            self.__cache_cleared = True
-            EntropyCacher.clear_cache()
         return self.__generic_parser(self.__setting_files['mask'],
             comment_tag = self.__pkg_comment_tag)
 
@@ -1283,7 +1273,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
         return self.__generic_d_parser("license_accept_d", "license_accept")
 
     def __generic_d_parser(self, setting_dirs_id, setting_id,
-                           validate = True, parse_skipped = False):
+                           parse_skipped = False):
         """
         Generic parser used by _*_d_parser() functions.
         """
@@ -1293,26 +1283,17 @@ class SystemSettings(Singleton, EntropyPluginStore):
         dmp_mtime_dir_file = os.path.join(
             dmp_dir, os.path.basename(conf_dir) + ".mtime")
 
-        if validate:
-            valid = self.validate_entropy_cache(
-                conf_dir, dmp_mtime_dir_file)
-            if (not valid) and (not self.__cache_cleared):
-                self.__cache_cleared = True
-                EntropyCacher.clear_cache()
+        self.validate_entropy_cache(conf_dir, dmp_mtime_dir_file)
 
         content = []
         files = setting_files
         if parse_skipped:
             files = skipped_files
         for sett_file, mtime_sett_file in files:
-            if validate:
-                valid = self.validate_entropy_cache(
-                    sett_file, mtime_sett_file)
-                if (not valid) and (not self.__cache_cleared):
-                    self.__cache_cleared = True
-                    EntropyCacher.clear_cache()
+            self.validate_entropy_cache(sett_file, mtime_sett_file)
             content += self.__generic_parser(sett_file,
                 comment_tag = self.__pkg_comment_tag)
+
         if setting_id is not None:
             # Always push out CachingList objects if
             # metadata is not available in self.__data
@@ -1337,13 +1318,9 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: parsed metadata
         @rtype: dict
         """
-        valid = self.validate_entropy_cache(self.__setting_files['system_mask'],
+        self.validate_entropy_cache(
+            self.__setting_files['system_mask'],
             self.__mtime_files['system_mask_mtime'])
-        if (not valid) and (not self.__cache_cleared):
-            # all the cache must be cleared (including upgrade and
-            # repository match cache
-            self.__cache_cleared = True
-            EntropyCacher.clear_cache()
         return self.__generic_parser(self.__setting_files['system_mask'],
             comment_tag = self.__pkg_comment_tag)
 
@@ -1385,14 +1362,9 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: parsed metadata
         @rtype: dict
         """
-        valid = self.validate_entropy_cache(
+        self.validate_entropy_cache(
             self.__setting_files['license_mask'],
-                self.__mtime_files['license_mask_mtime'])
-        if (not valid) and (not self.__cache_cleared):
-            # all the cache must be cleared (including upgrade and
-            # repository match cache
-            self.__cache_cleared = True
-            EntropyCacher.clear_cache()
+            self.__mtime_files['license_mask_mtime'])
         return self.__generic_parser(self.__setting_files['license_mask'])
 
     def _license_accept_parser(self):
@@ -1404,14 +1376,9 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: parsed metadata
         @rtype: dict
         """
-        valid = self.validate_entropy_cache(
+        self.validate_entropy_cache(
             self.__setting_files['license_accept'],
             self.__mtime_files['license_accept_mtime'])
-        if (not valid) and (not self.__cache_cleared):
-            # all the cache must be cleared (including upgrade and
-            # repository match cache
-            self.__cache_cleared = True
-            EntropyCacher.clear_cache()
         return self.__generic_parser(self.__setting_files['license_accept'])
 
     def _extract_packages_from_set_file(self, filepath):
@@ -1930,13 +1897,12 @@ class SystemSettings(Singleton, EntropyPluginStore):
             return data
 
         repositories_d_conf = self.__generic_d_parser(
-            "repositories_conf_d", None, validate=False)
+            "repositories_conf_d", None)
 
         # add content of skipped (disabled) files as commented
         # out stuff
         skipped_conf = ["#" + x for x in self.__generic_d_parser(
-            "repositories_conf_d", None,
-            validate=False, parse_skipped=True)]
+            "repositories_conf_d", None, parse_skipped=True)]
         repositories_d_conf += skipped_conf
 
         repoids = set()
