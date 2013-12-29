@@ -18,7 +18,6 @@ from entropy.locks import EntropyResourcesLock
 from entropy.fetchers import UrlFetcher, MultipleUrlFetcher
 from entropy.output import TextInterface, bold, red, darkred, blue
 from entropy.client.interfaces.loaders import LoadersMixin
-from entropy.client.interfaces.cache import CacheMixin
 from entropy.client.interfaces.db import InstalledPackagesRepository
 from entropy.client.interfaces.dep import CalculatorsMixin
 from entropy.client.interfaces.methods import RepositoryMixin, MiscMixin, \
@@ -38,7 +37,7 @@ import entropy.dep
 import entropy.tools
 
 
-class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
+class Client(Singleton, TextInterface, LoadersMixin,
              CalculatorsMixin, RepositoryMixin, MiscMixin,
              MatchMixin, NoticeBoardMixin):
 
