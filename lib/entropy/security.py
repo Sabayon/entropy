@@ -584,7 +584,7 @@ class System(object):
             inst_pkgs_cksum = inst_repo.checksum(
                 do_order=True, strict=False)
 
-        repo_cksum = self._entropy._repositories_hash()
+        repo_cksum = self._entropy.repositories_checksum()
 
         cache_s = "rc{%s}irc{%s}b{%s}dp{%s}dt{%s}r{%s}" % (
             repo_cksum,
