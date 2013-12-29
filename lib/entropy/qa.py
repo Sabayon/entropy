@@ -14,7 +14,7 @@
     and Entropy Client such as binary packages health check, dependency
     test, broken or missing library tes.
 
-    B{ErrorReportInterface} is the HTTP POST based class for Entropy Client
+    B{ErrorReport} is the HTTP POST based class for Entropy Client
     exceptions (errors) submission.
 
 """
@@ -1624,7 +1624,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
         return True
 
 
-class ErrorReportInterface:
+class ErrorReport(object):
 
     """
 
@@ -1640,8 +1640,8 @@ class ErrorReportInterface:
 
     Sample code:
 
-        >>> from entropy.qa import ErrorReportInterface
-        >>> error = ErrorReportInterface('http://url_for_http_post')
+        >>> from entropy.qa import ErrorReport
+        >>> error = ErrorReport('http://url_for_http_post')
         >>> error.prepare('traceback_text', 'John Foo', 'john@foo.com',
                 report_data = 'extra traceback info',
                 description = 'I was installing foo!')
@@ -1651,7 +1651,7 @@ class ErrorReportInterface:
 
     def __init__(self, post_url):
         """
-        ErrorReportInterface constructor.
+        ErrorReport constructor.
 
         @param post_url: HTTP post url where to submit data
         @type post_url: string

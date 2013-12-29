@@ -187,11 +187,11 @@ def handle_exception(exc_class, exc_instance, exc_tb):
         os._exit(2)
 
     try:
-        from entropy.client.interfaces.qa import UGCErrorReportInterface
+        from entropy.client.interfaces.qa import UGCErrorReport
         from entropy.core.settings.base import SystemSettings
         _settings = SystemSettings()
         repository_id = _settings['repositories']['default_repository']
-        error = UGCErrorReportInterface(repository_id)
+        error = UGCErrorReport(repository_id)
     except (OnlineMirrorError, AttributeError, ImportError,):
         error = None
 

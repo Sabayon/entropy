@@ -9,14 +9,14 @@
     B{Entropy Package Manager Client QA Interface}.
 
 """
-from entropy.qa import ErrorReportInterface
+from entropy.qa import ErrorReport
 from entropy.client.interfaces import Client
 from entropy.core.settings.base import SystemSettings
 from entropy.const import etpConst
 from entropy.exceptions import PermissionDenied
 from entropy.services.client import WebService
 
-class UGCErrorReportInterface(ErrorReportInterface):
+class UGCErrorReport(ErrorReport):
 
     """
     Entropy Errors Reporting Interface that works over User Generated
@@ -28,7 +28,7 @@ class UGCErrorReportInterface(ErrorReportInterface):
     critical errors happened during normal operation.
     Here is an example on how to use this:
 
-        error_interface = UGCErrorReportInterface('sabayonlinux.org')
+        error_interface = UGCErrorReport('sabayonlinux.org')
         error_interface.prepare()
         reported = error_interface.submit()
         if reported:
@@ -45,7 +45,8 @@ class UGCErrorReportInterface(ErrorReportInterface):
         @param repository_id: valid repository identifier
         @type repository_id: string
         """
-        ErrorReportInterface.__init__(self, '#fake#')
+        super(UGCErrorReport, self).__init__("#fake#")
+
         self.__system_settings = SystemSettings()
         self._entropy = Client()
         if repository_id not in self.__system_settings['repositories']['order']:
@@ -70,7 +71,7 @@ class UGCErrorReportInterface(ErrorReportInterface):
 
     def submit(self):
         """
-        Overloaded method from ErrorReportInterface.
+        Overridden method from ErrorReport.
         Does the actual error submission. You must call it after prepare().
 
         @return submission status -- bool
