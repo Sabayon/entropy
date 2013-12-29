@@ -396,3 +396,34 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
 
     def is_destroyed(self):
         return self.__instance_destroyed
+
+    def clear_cache(self):
+        """
+        Clear all the Entropy default cache directory. This function is
+        fault tolerant and will never return any exception.
+        """
+        with self._cacher:
+            # no data is written while holding self._cacher by the balls
+            # drop all the buffers then remove on-disk data
+            self._cacher.discard()
+            # clear repositories live cache
+            inst_repo = self.installed_repository()
+            if inst_repo is not None:
+                inst_repo.clearCache()
+            with self._repodb_cache_mutex:
+                for repo in self._repodb_cache.values():
+                    repo.clearCache()
+
+            cache_dir = self._cacher.current_directory()
+            try:
+                shutil.rmtree(cache_dir, True)
+            except (shutil.Error, IOError, OSError):
+                return
+            try:
+                os.makedirs(cache_dir, 0o775)
+            except (IOError, OSError):
+                return
+            try:
+                const_setup_perms(cache_dir, etpConst['entropygid'])
+            except (IOError, OSError):
+                return
