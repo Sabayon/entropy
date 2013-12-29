@@ -2871,9 +2871,16 @@ class CalculatorsMixin:
             [((package_id, repository_id), reason_id), ...]
         @rtype: list
         """
-        cache_key = "available/masked_%s_v2" % (
-            self._get_available_packages_hash(),
-        )
+        sha = hashlib.sha1()
+
+        cache_s = "{%s;%s}v2" % (
+            self.repositories_checksum(),
+            # needed when users do bogus things like editing config files
+            # manually (branch setting)
+            self._settings['repositories']['branch'])
+        sha.update(const_convert_to_rawstring(cache_s))
+
+        cache_key = "available/masked_%s" % (sha.hexdigest(),)
 
         if use_cache and self.xcache:
             cached = self._cacher.pop(cache_key)
@@ -2921,8 +2928,17 @@ class CalculatorsMixin:
         @return: list of available package matches
         @rtype: list
         """
-        cache_key = "available_packages/%s" % (
-            self._get_available_packages_hash(),)
+        sha = hashlib.sha1()
+
+        cache_s = "{%s;%s}v2" % (
+            self.repositories_checksum(),
+            # needed when users do bogus things like editing config files
+            # manually (branch setting)
+            self._settings['repositories']['branch'])
+        sha.update(const_convert_to_rawstring(cache_s))
+
+        cache_key = "available/packages_%s" % (sha.hexdigest(),)
+
         if use_cache and self.xcache:
             cached = self._cacher.pop(cache_key)
             if cached is not None:

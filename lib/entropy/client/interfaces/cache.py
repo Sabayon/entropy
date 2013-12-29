@@ -25,17 +25,4 @@ from entropy.db.exceptions import OperationalError, DatabaseError, \
 
 class CacheMixin:
 
-    def _get_available_packages_hash(self):
-        """
-        Get available packages cache hash.
-        """
-        # client digest not needed, cache is kept updated
-        c_hash = "%s|%s|%s|v1" % (
-            self.repositories_checksum(),
-            self.filter_repositories(self.repositories()),
-            # needed when users do bogus things like editing config files
-            # manually (branch setting)
-            self._settings['repositories']['branch'])
-        sha = hashlib.sha1()
-        sha.update(const_convert_to_rawstring(repr(c_hash)))
-        return sha.hexdigest()
+    pass
