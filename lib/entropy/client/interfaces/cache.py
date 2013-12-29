@@ -19,7 +19,8 @@ from entropy.const import etpConst, const_setup_perms, \
     const_convert_to_unicode, const_convert_to_rawstring
 from entropy.exceptions import RepositoryError
 from entropy.cache import EntropyCacher
-from entropy.db.exceptions import OperationalError, DatabaseError
+from entropy.db.exceptions import OperationalError, DatabaseError, \
+    Error as EntropyRepositoryError
 
 
 class CacheMixin:
@@ -44,23 +45,36 @@ class CacheMixin:
         Return the checksum of all the available repositories, including
         package repos.
         """
+        repository_ids = self.repositories()
         sha = hashlib.sha1()
-        sha.update(const_convert_to_rawstring("0"))
 
-        for repo in self.repositories():
+        sha.update(const_convert_to_rawstring(",".join(repository_ids)))
+        sha.update(const_convert_to_rawstring("-begin-"))
+
+        for repository_id in repository_ids:
+
+            mtime = None
+            checksum = None
+
             try:
-                dbconn = self.open_repository(repo)
-            except (RepositoryError):
-                continue # repo not available
-            try:
-                sha.update(const_convert_to_rawstring(repr(dbconn.mtime())))
-            except (OperationalError, DatabaseError, OSError, IOError):
-                txt = _("Repository") + " " + const_convert_to_unicode(repo) \
-                    + " " + _("is corrupted") + ". " + \
-                    _("Cannot calculate the checksum")
-                self.output(
-                    purple(txt),
-                    importance = 1,
-                    level = "warning"
-                )
+                repo = self.open_repository(repository_id)
+            except RepositoryError:
+                repo = None
+
+            if repo is not None:
+                try:
+                    mtime = repo.mtime()
+                except (EntropyRepositoryError, OSError, IOError):
+                    pass
+
+                try:
+                    checksum = repo.checksum()
+                except EntropyRepositoryError:
+                    pass
+
+            cache_s = "{%s:{%r;%s}}" % (repository_id, mtime, checksum)
+            sha.update(const_convert_to_unicode(cache_s))
+
+        sha.update(const_convert_to_rawstring("-end-"))
+
         return sha.hexdigest()
