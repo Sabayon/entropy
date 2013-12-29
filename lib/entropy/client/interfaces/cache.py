@@ -31,7 +31,7 @@ class CacheMixin:
         # client digest not needed, cache is kept updated
         c_hash = "%s|%s|%s" % (
             self._repositories_hash(),
-            self._filter_available_repositories(),
+            self.filter_repositories(self.repositories()),
             # needed when users do bogus things like editing config files
             # manually (branch setting)
             self._settings['repositories']['branch'])
@@ -43,10 +43,10 @@ class CacheMixin:
         """
         Return the checksum of available repositories, excluding package ones.
         """
-        enabled_repos = self._filter_available_repositories()
-        return self.__repositories_hash(enabled_repos)
+        enabled_repos = self.filter_repositories(self.repositories())
+        return self._selective_repositories_hash(enabled_repos)
 
-    def __repositories_hash(self, repositories):
+    def _selective_repositories_hash(self, repositories):
         sha = hashlib.sha1()
         sha.update(const_convert_to_rawstring("0"))
         for repo in repositories:
@@ -72,21 +72,4 @@ class CacheMixin:
         Return the checksum of all the available repositories, including
         package repos.
         """
-        return self.__repositories_hash(self._enabled_repos)
-
-    def _filter_available_repositories(self, _enabled_repos = None):
-        """
-        Filter out package repositories from the list of available,
-        enabled ones
-
-        @keyword _enabled_repos: an alternative list of enabled repository
-            identifiers
-        @type _enabled_repos: list
-        """
-        if _enabled_repos is None:
-            _enabled_repos = self._enabled_repos
-        enabled_repos = [x for x in _enabled_repos if not \
-            x.endswith(etpConst['packagesext_webinstall'])]
-        enabled_repos = [x for x in enabled_repos if not \
-            x.endswith(etpConst['packagesext'])]
-        return enabled_repos
+        return self._selective_repositories_hash(self._enabled_repos)

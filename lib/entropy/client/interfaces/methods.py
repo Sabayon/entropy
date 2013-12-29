@@ -970,6 +970,20 @@ class RepositoryMixin:
         unavailable = all_repositories - repositories
         return sorted(unavailable)
 
+    def filter_repositories(self, repository_ids):
+        """
+        Filter out package repositories from a given list.
+
+        @param repository_ids: an alternative list of enabled repository
+            identifiers
+        @type repository_ids: list
+        """
+        enabled_repos = [x for x in repository_ids if not \
+            x.endswith(etpConst['packagesext_webinstall'])]
+        enabled_repos = [x for x in enabled_repos if not \
+            x.endswith(etpConst['packagesext'])]
+        return enabled_repos
+
     def installed_repository(self):
         """
         Return Entropy Client installed packages repository.
@@ -2013,7 +2027,8 @@ class MiscMixin:
                     valid_repos.append(inst_repo)
 
         elif not valid_repos:
-            valid_repos.extend(self._filter_available_repositories())
+            valid_repos.extend(
+                self.filter_repositories(self.repositories()))
 
         for repo in valid_repos:
             if const_isstring(repo):

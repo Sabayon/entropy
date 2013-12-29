@@ -149,7 +149,8 @@ class Sets(object):
         if (match_repo is None) and (repos is not None):
             match_repo = repos
 
-        valid_repos = self._entropy._filter_available_repositories()
+        valid_repos = self._entropy.filter_repositories(
+            self._entropy.repositories())
 
         if match_repo and (type(match_repo) in (list, tuple, set)):
             valid_repos = list(match_repo)

@@ -99,8 +99,7 @@ class Repository(object):
             avail_repos = self._settings['repositories']['available'].keys()
             repo_ids.extend(list(avail_repos))
         # filter out package repositories
-        self.repo_ids = self._entropy._filter_available_repositories(
-                _enabled_repos = repo_ids)
+        self.repo_ids = self._entropy.filter_repositories(repo_ids)
 
     def _run_post_update_repository_hook(self, repository_id):
 

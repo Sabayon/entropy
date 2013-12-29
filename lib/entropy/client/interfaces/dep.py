@@ -2886,7 +2886,7 @@ class CalculatorsMixin:
                 return cached
 
         masked = []
-        for repository_id in self._filter_available_repositories():
+        for repository_id in self.filter_repositories(self.repositories()):
             repo = self.open_repository(repository_id)
             try:
                 # db may be corrupted, we cannot deal with it here
@@ -2934,7 +2934,7 @@ class CalculatorsMixin:
                 return cached
 
         available = []
-        for repository_id in self._filter_available_repositories():
+        for repository_id in self.filter_repositories(self.repositories()):
             repo = self.open_repository(repository_id)
             try:
                 # db may be corrupted, we cannot deal with it here
@@ -2977,7 +2977,7 @@ class CalculatorsMixin:
         if const_file_readable(in_branch_upgrade):
             return set(), []
 
-        enabled_repos = self._filter_available_repositories()
+        enabled_repos = self.filter_repositories(self.repositories())
         repo_order = [x for x in self._settings['repositories']['order'] if
             x in enabled_repos]
 
@@ -3011,7 +3011,7 @@ class CalculatorsMixin:
 
         # do not match package repositories, never consider them in updates!
         # that would be a nonsense, since package repos are temporary.
-        enabled_repos = self._filter_available_repositories()
+        enabled_repos = self.filter_repositories(self.repositories())
         match_repos = tuple([x for x in \
             self._settings['repositories']['order'] if x in enabled_repos])
 
@@ -3123,7 +3123,7 @@ class CalculatorsMixin:
 
         inst_repo = self.installed_repository()
         ignore_spm_downgrades = misc_settings['ignore_spm_downgrades']
-        enabled_repos = self._filter_available_repositories()
+        enabled_repos = self.filter_repositories(self.repositories())
         repo_order = [x for x in self._settings['repositories']['order'] if
                       x in enabled_repos]
 
@@ -3154,7 +3154,7 @@ class CalculatorsMixin:
 
         # do not match package repositories, never consider them in updates!
         # that would be a nonsense, since package repos are temporary.
-        enabled_repos = self._filter_available_repositories()
+        enabled_repos = self.filter_repositories(self.repositories())
         match_repos = tuple([x for x in \
             self._settings['repositories']['order'] if x in enabled_repos])
 
