@@ -39,13 +39,6 @@ class CacheMixin:
         sha.update(const_convert_to_rawstring(repr(c_hash)))
         return sha.hexdigest()
 
-    def _repositories_hash(self):
-        """
-        Return the checksum of available repositories, excluding package ones.
-        """
-        enabled_repos = self.filter_repositories(self.repositories())
-        return self._selective_repositories_hash(enabled_repos)
-
     def _selective_repositories_hash(self, repositories):
         sha = hashlib.sha1()
         sha.update(const_convert_to_rawstring("0"))
@@ -67,9 +60,9 @@ class CacheMixin:
                 )
         return sha.hexdigest()
 
-    def _all_repositories_hash(self):
+    def _repositories_hash(self):
         """
         Return the checksum of all the available repositories, including
         package repos.
         """
-        return self._selective_repositories_hash(self._enabled_repos)
+        return self._selective_repositories_hash(self.repositories())
