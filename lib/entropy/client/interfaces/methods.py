@@ -14,6 +14,7 @@ import bz2
 import stat
 import fcntl
 import glob
+import hashlib
 import errno
 import sys
 import shutil

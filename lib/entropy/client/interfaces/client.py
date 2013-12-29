@@ -10,6 +10,7 @@
 
 """
 import os
+import shutil
 import threading
 
 from entropy.core import Singleton
@@ -26,7 +27,7 @@ from entropy.client.interfaces.noticeboard import NoticeBoardMixin
 from entropy.client.interfaces.settings import ClientSystemSettingsPlugin
 from entropy.client.misc import sharedinstlock
 from entropy.const import etpConst, const_debug_write, \
-    const_convert_to_unicode
+    const_convert_to_unicode, const_setup_perms
 from entropy.core.settings.base import SystemSettings
 from entropy.misc import LogFile
 from entropy.cache import EntropyCacher
