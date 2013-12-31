@@ -23,6 +23,7 @@ import tarfile
 import time
 import codecs
 import warnings
+import gc
 
 from entropy.const import etpConst, const_get_stringtype, \
     const_convert_to_unicode, const_convert_to_rawstring, \
@@ -628,6 +629,8 @@ class PortagePlugin(SpmPlugin):
             header = red("   ## ")
         )
 
+        self.clear()
+
         for obj in tuple(PortagePlugin.CACHE.values()):
             obj.clear()
 
@@ -653,6 +656,26 @@ class PortagePlugin(SpmPlugin):
         import portage.util
         # reassign portage variable, pointing to a fresh object
         self._portage = portage
+
+    def clear(self):
+        """
+        Reimplemented from SpmPlugin class.
+        """
+        for root, tree in list(PortagePlugin.CACHE['portagetree'].items()):
+            dbapi = tree.dbapi
+
+            dbapi.melt()
+            dbapi._aux_cache.clear()
+            dbapi.clear_caches()
+            tree.dbapi = portage.dbapi.porttree.portdbapi(
+                mysettings=dbapi.settings)
+
+        for root, tree in list(PortagePlugin.CACHE['vartree'].items()):
+            dbapi = tree.dbapi
+            if hasattr(dbapi, "_clear_cache"):
+                dbapi._clear_cache()
+
+        gc.collect()
 
     @staticmethod
     def get_package_groups():

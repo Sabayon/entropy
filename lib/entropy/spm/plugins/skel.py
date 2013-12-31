@@ -1023,3 +1023,9 @@ class SpmPlugin(Singleton):
         @rtype: float
         """
         raise NotImplementedError()
+
+    def clear(self):
+        """
+        Clear any allocated resources or caches.
+        """
+        return
