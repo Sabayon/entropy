@@ -18,6 +18,7 @@ import stat
 from entropy.const import etpConst, const_debug_write, const_debug_enabled, \
     const_mkstemp
 from entropy.client.mirrors import StatusInterface
+from entropy.exceptions import InterruptError
 from entropy.fetchers import UrlFetcher
 from entropy.i18n import _
 from entropy.output import red, darkred, blue, purple, darkgreen, brown
@@ -470,7 +471,7 @@ class _PackageFetchAction(PackageAction):
                 delta_checksum = delta_fetcher.download()
                 data_transfer = delta_fetcher.get_transfer_rate()
                 del delta_fetcher
-            except KeyboardInterrupt:
+            except (KeyboardInterrupt, InterruptError):
                 return -100, data_transfer
 
             except NameError:
@@ -569,7 +570,7 @@ class _PackageFetchAction(PackageAction):
             fetch_checksum = fetch_intf.download()
             data_transfer = fetch_intf.get_transfer_rate()
             resumed = fetch_intf.is_resumed()
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, InterruptError):
             return -100, data_transfer, resumed
 
         except NameError:

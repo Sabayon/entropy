@@ -16,6 +16,7 @@ import threading
 
 from entropy.const import etpConst, const_setup_perms, const_mkstemp
 from entropy.client.mirrors import StatusInterface
+from entropy.exceptions import InterruptError
 from entropy.fetchers import UrlFetcher
 from entropy.output import blue, darkblue, bold, red, darkred, brown, darkgreen
 from entropy.i18n import _, ngettext
@@ -301,7 +302,7 @@ class _PackageMultiFetchAction(_PackageFetchAction):
                 fetch_abort_function()
 
             data = fetch_intf.download()
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, InterruptError):
             return [], 0.0, -100
         data_transfer = fetch_intf.get_transfer_rate()
 
@@ -481,7 +482,7 @@ class _PackageMultiFetchAction(_PackageFetchAction):
                 fetch_abort_function()
 
             data = fetch_intf.download()
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, InterruptError):
             return -100, {}, 0
 
         failed_map = {}
