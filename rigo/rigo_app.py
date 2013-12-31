@@ -804,6 +804,7 @@ class Rigo(Gtk.Application):
             return
 
         lock = EntropyResourcesLock(output=self._entropy)
+        # always execute this from the MainThread, since the lock uses TLS
         acquired = lock.try_acquire_shared()
         is_exclusive = False
         if not acquired:
