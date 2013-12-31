@@ -1,3 +1,51 @@
+commit cf9fc1b9471d0bf62e5094d1623208a597318837
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 31 15:17:41 2013 +0100
+
+    Release Entropy 258
+
+commit 0c09a2f7ca80b0b6c4da9ab3669c7ad0e38b37e6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 31 15:16:56 2013 +0100
+
+    [RigoDaemon] wrap TextInterface.output in order to catch all the messages
+
+commit f4591d642f93a51a4c057063785eaeb89f4c8b63
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 31 15:11:52 2013 +0100
+
+    [Rigo] use nice unicode headers
+
+commit f30efd3a8d0c6085cee59eda99d201dbe4d8dc05
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 31 15:01:57 2013 +0100
+
+    [Rigo] MANAGING_APPLICATIONS, UPGRADING_SYSTEM no longer use the exclusive lock
+
+commit 7ec49e5c991bfd49c6bc12d57785556025d6fc79
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 31 15:01:24 2013 +0100
+
+    [Rigo] make sure to operate on EntropyResourcesLock from the main thread
+
+commit d6aa5795229dc6d868f214ff72803cdb7a485b1a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 31 14:59:11 2013 +0100
+
+    [Rigo] add comment about EntropyResourcesLock requirements
+
+commit 0346f74c1a033b4a57d4b4e856fb8d348e6e5abd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 31 12:28:29 2013 +0100
+
+    [entropy.client.package] catch InterruptError raised by fetch_abort functions
+
+commit 61f11deef942e0bcb666e3e7e117357e0bea4ec0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 27 19:21:10 2013 +0100
+
+    Tagging Entropy version 257
+
 commit c5adbc0b200f541b7dfd56ec9c9c15ed34fe0566
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Dec 27 19:21:09 2013 +0100
