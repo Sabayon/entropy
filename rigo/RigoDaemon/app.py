@@ -101,6 +101,8 @@ if DAEMON_LOGGING:
     sys.stderr = DAEMON_LOG
     sys.stdout = DAEMON_LOG
 
+_MAIN_THREAD = threading.current_thread()
+
 
 def get_entropy_webservice(entropy_client, repository_id, tx_cb = False):
     """
@@ -167,6 +169,7 @@ install_exception_handler()
 class Entropy(Client):
 
     _DAEMON = None
+    _ACTION_QUEUE_THREAD = None
 
     def init_singleton(self):
         Client.init_singleton(
@@ -180,11 +183,12 @@ class Entropy(Client):
             )
 
     @staticmethod
-    def set_daemon(daem):
+    def set_daemon(daem, worker):
         """
         Bind the Entropy Singleton instance to the DBUS Daemon.
         """
         Entropy._DAEMON = daem
+        Entropy._ACTION_QUEUE_THREAD = worker
         DaemonUrlFetcher.set_daemon(daem)
         DaemonMultipleUrlFetcher.set_daemon(daem)
 
@@ -201,6 +205,29 @@ class Entropy(Client):
                 cls._DAEMON.output,
                 text, header, footer, back, importance,
                 level, count_c, count_t, percent, _raw)
+
+    @classmethod
+    def isMainThread(cls, thread_obj):
+        if thread_obj is Entropy._ACTION_QUEUE_THREAD:
+            return True
+        if thread_obj is _MAIN_THREAD:
+            return True
+        return False
+
+    @classmethod
+    def get_repository(cls, repository_id):
+        """
+        Monkey patch repository class objects with an appropriate
+        version of isMainThread.
+
+        This avoids EntropySQLRepository instances to start multiple
+        cleanup monitors for the ActionQueueWorkerThread, which can
+        be considered a second "MainThread" for repository instances.
+        """
+        repo_class = super(Entropy, cls).get_repository(repository_id)
+        repo_class.isMainThread = Entropy.isMainThread
+        return repo_class
+
 
 Client.__singleton_class__ = Entropy
 TextInterface.output = Entropy.output
@@ -699,7 +726,7 @@ class RigoDaemonService(dbus.service.Object):
             'path': None
         }
 
-        Entropy.set_daemon(self)
+        Entropy.set_daemon(self, self._action_queue_task)
         self._entropy = Entropy()
         # keep all the resources closed
         self._close_local_resources()
