@@ -1,3 +1,27 @@
+commit 0a9fbaf0df000b7424f205cfb03b12ac03c3a1e9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 31 16:02:38 2013 +0100
+
+    Release Entropy 259
+
+commit 711db81d41a258b70d470dc3d58ac5542fc7a6db
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 31 16:02:09 2013 +0100
+
+    [Rigo] disable recent searches for now, since the feature doesn't respect the use cases
+
+commit be063dca578dd6f851d8bffe3b94dc241c8472ab
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 31 15:59:13 2013 +0100
+
+    [Rigo] emit application-abort when Application action is cancelled by the user
+
+commit 2ff820f683d21e6f7f6957a0d31fdf7600f00765
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 31 15:17:41 2013 +0100
+
+    Tagging Entropy version 258
+
 commit cf9fc1b9471d0bf62e5094d1623208a597318837
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Dec 31 15:17:41 2013 +0100
