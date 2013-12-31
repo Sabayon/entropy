@@ -203,7 +203,7 @@ class Entropy(Client):
                 level, count_c, count_t, percent, _raw)
 
 Client.__singleton_class__ = Entropy
-
+TextInterface.output = Entropy.output
 
 class DaemonUrlFetcher(UrlFetcher):
 
