@@ -55,7 +55,8 @@ from entropy.misc import ParallelTask
 from entropy.exceptions import EntropyPackageException
 
 from entropy.i18n import _, ngettext
-from entropy.output import darkgreen, brown, darkred, red, blue
+from entropy.output import darkgreen, brown, darkred, red, blue, \
+    MESSAGE_HEADER, ERROR_MESSAGE_HEADER, WARNING_MESSAGE_HEADER
 
 import entropy.tools
 
@@ -1197,10 +1198,13 @@ class RigoServiceController(GObject.Object):
             return
 
         color_func = darkgreen
+        hdr = MESSAGE_HEADER
         if level == "warning":
             color_func = brown
+            hdr = WARNING_MESSAGE_HEADER
         elif level == "error":
             color_func = darkred
+            hdr = ERROR_MESSAGE_HEADER
 
         count_str = ""
         if count:
@@ -1216,10 +1220,10 @@ class RigoServiceController(GObject.Object):
         # reset cursor
         self._terminal.feed_child(chr(27) + '[2K')
         if back:
-            msg = "\r" + color_func(">>") + " " + header + count_str + text \
+            msg = "\r" + color_func(hdr) + " " + header + count_str + text \
                 + footer
         else:
-            msg = "\r" + color_func(">>") + " " + header + count_str + text \
+            msg = "\r" + color_func(hdr) + " " + header + count_str + text \
                 + footer + "\r\n"
 
         self._terminal.feed_child(msg)
