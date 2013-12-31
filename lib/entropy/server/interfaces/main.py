@@ -3400,7 +3400,8 @@ class Server(Client):
             orig_fd, tmp_repo_orig_path = const_mkstemp(
                 prefix="entropy.server._inject")
 
-            empty_repo = GenericRepository(
+            repo_class = self.get_repository(None)
+            empty_repo = repo_class(
                 readOnly = False,
                 dbFile = tmp_repo_orig_path,
                 name = None,
@@ -5760,8 +5761,12 @@ class Server(Client):
         """
         Reimplemented from entropy.client.interfaces.client.Client class
         """
+        if repository_id is None:
+            return GenericRepository
+
         if repository_id == InstalledPackagesRepository.NAME:
             return InstalledPackagesRepository
+
         return ServerPackagesRepository
 
     def open_repository(self, repository_id):

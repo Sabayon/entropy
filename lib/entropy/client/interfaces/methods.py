@@ -243,14 +243,19 @@ class RepositoryMixin:
         this method will start making more sense.
         WARNING: do not use this to open a repository. Please use
         Client.open_repository() instead.
+        If repository_id is None, a generic repository class is returned.
 
         @param repository_id: repository identifier
         @type repository_id: string
         @return: EntropyRepositoryBase based class
         @rtype: class object
         """
+        if repository_id is None:
+            return GenericRepository
+
         if repository_id == InstalledPackagesRepository.NAME:
             return InstalledPackagesRepository
+
         return AvailablePackagesRepository
 
     def _is_package_repository(self, repository_id):
@@ -1109,7 +1114,8 @@ class RepositoryMixin:
         if dbname is not None:
             # backward compatibility
             name = dbname
-        conn = GenericRepository(
+        repo_class = self.get_repository(None)
+        conn = repo_class(
             readOnly = read_only,
             dbFile = repository_path,
             name = name,
@@ -1145,7 +1151,9 @@ class RepositoryMixin:
         if dbname is not None:
             # backward compatibility
             name = dbname
-        dbc = GenericRepository(
+        repo_class = self.get_repository(None)
+
+        dbc = repo_class(
             readOnly = False,
             dbFile = temp_file,
             name = name,
