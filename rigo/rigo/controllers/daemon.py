@@ -1273,7 +1273,8 @@ class RigoServiceController(GObject.Object):
                 "_resources_lock_request_signal._resources_lock: "
                 "enter (sleep)")
 
-            self._shared_locker.lock()
+            # always execute this from the MainThread, since the lock uses TLS
+            self._execute_mainloop(self._shared_locker.lock)
             clear_avc = True
             if activity in (
                 DaemonActivityStates.MANAGING_APPLICATIONS,
@@ -1317,7 +1318,9 @@ class RigoServiceController(GObject.Object):
                             __name__,
                             "_resources_unlock_request_signal: "
                             "_update_repositories accepted, unlocking")
-                        self._shared_locker.unlock()
+                        # always execute this from the MainThread,
+                        # since the lock uses TLS
+                        self._execute_mainloop(self._shared_locker.unlock)
 
                 # another client, bend over XD
                 # LocalActivityStates value will be atomically
@@ -1337,7 +1340,10 @@ class RigoServiceController(GObject.Object):
 
                 def _unlocker():
                     self._release_local_resources() # CANBLOCK
-                    self._shared_locker.unlock()
+                    # always execute this from the MainThread,
+                    # since the lock uses TLS
+                    self._execute_mainloop(self._shared_locker.unlock)
+
                 task = ParallelTask(_unlocker)
                 task.daemon = True
                 task.name = "UpdateRepositoriesInternal"
