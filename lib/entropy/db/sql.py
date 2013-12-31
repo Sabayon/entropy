@@ -36,12 +36,6 @@ from entropy.db.exceptions import Warning, Error, InterfaceError, \
     DatabaseError, DataError, OperationalError, IntegrityError, \
     InternalError, ProgrammingError, NotSupportedError
 
-def _get_main_thread():
-    for _thread in threading.enumerate():
-        if _thread.name == "MainThread":
-            return _thread
-    raise AssertionError("Where the fuck is the MainThread?")
-
 
 class SQLConnectionWrapper(object):
 
@@ -614,7 +608,7 @@ class EntropySQLRepository(EntropyRepositoryBase):
     # "UPDATE OR REPLACE" dialect
     _UPDATE_OR_REPLACE = None
 
-    _MAIN_THREAD = _get_main_thread()
+    _MAIN_THREAD = threading.current_thread()
 
     @classmethod
     def isMainThread(cls, thread_obj):
