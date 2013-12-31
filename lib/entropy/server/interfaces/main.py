@@ -5755,8 +5755,8 @@ class Server(Client):
             conn.initializeRepository()
         return conn
 
-    @staticmethod
-    def get_repository(repository_id):
+    @classmethod
+    def get_repository(cls, repository_id):
         """
         Reimplemented from entropy.client.interfaces.client.Client class
         """

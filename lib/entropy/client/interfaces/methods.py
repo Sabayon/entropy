@@ -234,8 +234,8 @@ class RepositoryMixin:
         """
         return self._open_repository(repository_id)
 
-    @staticmethod
-    def get_repository(repository_id):
+    @classmethod
+    def get_repository(cls, repository_id):
         """
         Given a repository identifier, returns the repository class associated
         with it.
