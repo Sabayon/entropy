@@ -1,3 +1,95 @@
+commit f0d437a090235c43946e834b4851e4fe2e1140ef
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 31 18:01:25 2013 +0100
+
+    Release Entropy 260
+
+commit 2f713f73d5907091c7fe51b9730cd0d95e93f27c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 31 18:00:35 2013 +0100
+
+    [entropy.db.sqlite] raise timeout to 300 seconds
+    
+    This will better fit slow disks.
+
+commit f446b8d05b09c5f7d645ccf25bdcd39771defb12
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 31 17:53:22 2013 +0100
+
+    [RigoDaemon] reimplement Entropy.get_repository()
+    
+    We need to monkey patch isMainThread in order to return True for
+    the ActionQueueWorkerThread as well. This avoids EntropySQLRepository
+    to initialize an infinite number of cleanup monitor threads for a
+    thread that will never go away (the ActionQueueWorkerThread one).
+
+commit 1598f5e50164d9962f3b8c537f27b8a39a4db044
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 31 17:50:31 2013 +0100
+
+    [entropy.*] use get_repository() to return a GenericRepository as well
+    
+    All the repository classes must go through get_repository() to allow
+    further monkey patching and other external, API consumer related features.
+
+commit 4edaf614f44bef071ac96e728aee3f8da8699b33
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 31 17:38:57 2013 +0100
+
+    [entropy.db.sql] in global context, the current thread is always MainThread
+
+commit 72aa0a07d14a4aebd59d85dc2f64a9aaf4057227
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 31 17:30:29 2013 +0100
+
+    [entropy.*] turn get_repository() into a classmethod
+
+commit 956b31d05e9303ffa954eb996db8c275010afcba
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 31 17:24:24 2013 +0100
+
+    [entropy.db.sql] add overridable isMainThread method
+    
+    a MainThread may be a "liquid" concept. A dedicated worker thread
+    may be considered a "MainThread" from the point of view of EntropySQLRepository.
+    
+    _start_cleanup_monitor checks whether the calling thread is the MainThread
+    in order to determine if a cleanup thread should be started joining
+    the current thread. The problem with this approach is that if our
+    worker thread is a long lasting thread, we will end up with hundreds
+    of cleanup monitor threads waiting for the worker thread to terminate.
+    This will never happen though.
+    
+    We can now reimplement isMainThread in order to tell the internal
+    function not to start the cleanup monitor thread also for arbitrary
+    threads (like the worker thread in RigoDaemon).
+
+commit 88ea4c74275d6ec9f141e2f16a6247996c169d2d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 31 17:04:36 2013 +0100
+
+    [entropy.client.services] fix typo in HTTP arguments for get_documents()
+    
+    s/revision/rev/
+
+commit 5ccde22103c3aa477168a7c0ea9f3364db5ec09a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 31 16:53:19 2013 +0100
+
+    [RigoDaemon] clear resources at the end of the action queue
+
+commit af6fa0d32f44cde10bcf5c24b2b8d6c0294ffd12
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 31 16:52:52 2013 +0100
+
+    [entropy.spm] PortagePlugin: add clear() to API, see documentation
+
+commit e943b0fe0534b9df4e911f0a2b26bd8daf82b51e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 31 16:02:39 2013 +0100
+
+    Tagging Entropy version 259
+
 commit 0a9fbaf0df000b7424f205cfb03b12ac03c3a1e9
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Dec 31 16:02:38 2013 +0100
