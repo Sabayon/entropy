@@ -68,7 +68,7 @@ from entropy.const import etpConst, const_convert_to_rawstring, \
 from entropy.locks import EntropyResourcesLock, UpdatesNotificationResourceLock
 from entropy.exceptions import DependenciesNotFound, \
     DependenciesCollision, DependenciesNotRemovable, SystemDatabaseError, \
-    EntropyPackageException, InterruptError
+    EntropyPackageException, InterruptError, RepositoryError
 from entropy.i18n import _
 from entropy.misc import LogFile, ParallelTask, TimeScheduled, \
     ReadersWritersSemaphore
@@ -1642,6 +1642,30 @@ class RigoDaemonService(dbus.service.Object):
                 else:
                     self._maybe_signal_preserved_libraries()
 
+                    # Clear Source Package Manager resources, do
+                    # it before releasing any locks here or
+                    # we may trigger an unlikely but possible race
+                    try:
+                        spm = self._entropy.Spm()
+                        spm.clear()
+                    except Exception as err:
+                        write_output("_action_queue_worker_thread: "
+                                     "unexpected error clearing SPM resources: "
+                                     "%s" % (repr(err),))
+
+                    # Also make sure to clear local Entropy repository caches
+                    for repository_id in self._entropy.repositories():
+                        try:
+                            repo = self._entropy.open_repository(repository_id)
+                        except RepositoryError:
+                            continue
+                        repo.clearCache()
+
+                    # Clear installed packages repository cache as well
+                    inst_repo = self._entropy.installed_repository()
+                    with inst_repo.shared():
+                        inst_repo.clearCache()
+
                     try:
                         app_log_path = self._read_app_management_notes()
                     except Exception as err:
@@ -1656,6 +1680,7 @@ class RigoDaemonService(dbus.service.Object):
                                      "._unbusy: already "
                                      "available, wtf !?!?")
                             # wtf??
+
                     self._release_shared()
                     success = outcome == AppTransactionOutcome.SUCCESS
                     write_output("_action_queue_worker_thread"
