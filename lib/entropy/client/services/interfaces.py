@@ -1178,7 +1178,7 @@ class ClientWebService(WebService):
             "filter": " ".join([str(x) for x in document_type_filter]),
             "offset": offset,
             "latest": latest_str,
-            "revision": "1",
+            "rev": "1",
         }
         if service_cache:
             params["cache"] = "1"
