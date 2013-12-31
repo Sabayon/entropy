@@ -866,7 +866,8 @@ class QueueActionNotificationBox(NotificationBox):
 
     TIMER_SECONDS = 10.0
 
-    def __init__(self, app, daemon_action, callback, undo_outcome):
+    def __init__(self, app, daemon_action, callback, undo_callback,
+                 undo_outcome):
         self._app = app
         self._action = daemon_action
         self._undo_outcome = undo_outcome
@@ -876,6 +877,7 @@ class QueueActionNotificationBox(NotificationBox):
         self._callback_sync_sem = Semaphore(0)
         self._callback_outcome = None
         self._callback = callback
+        self._undo_callback = undo_callback
 
         self._update_timer_elapsed = 0.0
         self._update_timer_refresh = 0.5
@@ -993,8 +995,13 @@ class QueueActionNotificationBox(NotificationBox):
             if self._callback_called:
                 return
             self._callback_outcome = self._undo_outcome
+
+            if self._undo_callback is not None:
+                self._undo_callback()
+
             self._callback_called = True
             GLib.idle_add(self.destroy)
+
         self._callback_sync_sem.release()
 
     def is_managed(self):

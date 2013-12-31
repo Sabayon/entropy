@@ -2448,12 +2448,18 @@ class RigoServiceController(GObject.Object):
                         package_id, repository_id,
                         package_path, daemon_action,
                         simulate)
+
             def _enqueue_callback():
                 return self._execute_mainloop(_enqueue)
 
+            def _undo_callback():
+                def _emit():
+                    self.emit("application-abort", app, daemon_action)
+                GLib.idle_add(_emit)
+
             box = QueueActionNotificationBox(
                 app, daemon_action,
-                _enqueue_callback, None)
+                _enqueue_callback, _undo_callback, None)
             self._nc.append_safe(box)
             const_debug_write(
                 __name__,
