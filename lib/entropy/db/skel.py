@@ -579,6 +579,9 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
 
         If direct mode is enabled, this method is a no-op.
 
+        This method can raise entropy.db.exceptions.LockAcquireError in
+        case of lock acquisition errors.
+
         @return: an opaque that must be used to release the lock.
         @rtype: object
         """
@@ -601,6 +604,9 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         avoid locking.
 
         If direct mode is enabled, this method is a no-op.
+
+        This method can raise entropy.db.exceptions.LockAcquireError in
+        case of lock acquisition errors.
 
         @return: an opaque that must be used to release the lock.
         @rtype: object
@@ -625,6 +631,9 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
 
         If direct mode is enabled, this method is a no-op.
 
+        This method can raise entropy.db.exceptions.LockAcquireError in
+        case of lock acquisition errors.
+
         @return: an opaque object that must be used to release the lock, None
             otherwise.
         @rtype: object or None
@@ -648,6 +657,9 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         avoid locking.
 
         If direct mode is enabled, this method is a no-op.
+
+        This method can raise entropy.db.exceptions.LockAcquireError in
+        case of lock acquisition errors.
 
         @return: an opaque object that must be used to release the lock, None
             otherwise.
@@ -689,6 +701,9 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         avoid locking.
 
         If direct mode is enabled, this method is a no-op.
+
+        This method can raise entropy.db.exceptions.LockAcquireError in
+        case of lock acquisition errors.
 
         @param opaque: the opaque object returned by *acquire_exclusive methods.
         @type opaque: object

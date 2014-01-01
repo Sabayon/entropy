@@ -73,3 +73,7 @@ class RestartTransaction(Error):
     """ Exception raised in case the whole transaction has
         been aborted by the database and caller is kindly
         required to restart it from the beginning. """
+
+class LockAcquireError(Exception):
+    """ Raised when the repository lock, either shared or exclusive,
+        cannot be acquired. """
