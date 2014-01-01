@@ -281,9 +281,15 @@ class EntropySQLiteRepository(EntropySQLRepository):
                 raise
 
         if update:
-            with self.exclusive(), self._schema_update_lock:
-                self._schema_update_run = True
-                self._databaseSchemaUpdates()
+            try:
+                with self.exclusive(), self._schema_update_lock:
+                    self._schema_update_run = True
+                    self._databaseSchemaUpdates()
+            except LockAcquireError as err:
+                const_debug_write(
+                    __name__,
+                    "_maybeDatabaseSchemaUpdates error: %s" % (err,)
+                )
 
     def _concatOperator(self, fields):
         """
