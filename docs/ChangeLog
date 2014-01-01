@@ -1,3 +1,30 @@
+commit 2d2241408667b34cea7d3a45fe49acb0dbfb1011
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 1 11:03:52 2014 +0100
+
+    Release Entropy 261
+
+commit e16ad0a82869ae7e187e6680648cdf8bda19885b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 1 10:58:54 2014 +0100
+
+    [entropy.db.sqlite] catch LockAcquireError in _maybeDatabaseSchemaUpdates
+    
+    User may not have the privileges to acquire the lock, but we should
+    not fail here.
+
+commit 999f0509dda2775d920a478730413e4b4650ec85
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 1 10:58:17 2014 +0100
+
+    [entropy.db] raise LockAcquireError in case of lock acquire error failures
+
+commit eda8a7bafbe6dd58de5480812c347402aeb68741
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 31 18:01:26 2013 +0100
+
+    Tagging Entropy version 260
+
 commit f0d437a090235c43946e834b4851e4fe2e1140ef
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Dec 31 18:01:25 2013 +0100
