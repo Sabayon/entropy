@@ -31,6 +31,7 @@ from entropy.exceptions import RepositoryPluginError
 from entropy.spm.plugins.factory import get_default_instance as get_spm, \
     get_default_class as get_spm_class
 from entropy.db.exceptions import OperationalError
+from entropy.db.cache import EntropyRepositoryCachePolicies
 
 import entropy.dep
 import entropy.tools
@@ -393,7 +394,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             raise NotImplementedError()
 
 
-    def __init__(self, readonly, xcache, temporary, name, direct=False):
+    def __init__(self, readonly, xcache, temporary, name, direct=False,
+                 cache_policy=None):
         """
         EntropyRepositoryBase constructor.
 
@@ -410,6 +412,9 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         self._tls = threading.local()
         self._direct_enabled = direct
+        if cache_policy is None:
+            cache_policy = EntropyRepositoryCachePolicies.DEFAULT_CACHE_POLICY
+        self._cache_policy = cache_policy
 
         TextInterface.__init__(self)
         self._readonly = readonly
@@ -461,6 +466,24 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             yield
         finally:
             self._tls._EntropyRepositoryCacheCounter -= 1
+
+    def cache_policy(self):
+        """
+        Return the currently set in-RAM cache policy.
+        """
+        return self._cache_policy
+
+    def cache_policy_all(self):
+        """
+        Return whether the cache policy is EntropyRepositoryCachePolicies.ALL.
+        """
+        return self.cache_policy() == EntropyRepositoryCachePolicies.ALL
+
+    def cache_policy_none(self):
+        """
+        Return whether the cache policy is EntropyRepositoryCachePolicies.NONE.
+        """
+        return self.cache_policy() == EntropyRepositoryCachePolicies.NONE
 
     def directed(self):
         """
