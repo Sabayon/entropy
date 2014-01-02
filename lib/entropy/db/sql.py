@@ -618,7 +618,7 @@ class EntropySQLRepository(EntropyRepositoryBase):
     GENERIC_NAME = "__generic__"
 
     def __init__(self, db, read_only, skip_checks, indexing,
-                 xcache, temporary, name, direct=False):
+                 xcache, temporary, name, direct=False, cache_policy=None):
         # connection and cursor automatic cleanup support
         self._cleanup_monitor_cache_mutex = threading.Lock()
         self._cleanup_monitor_cache = {}
@@ -636,7 +636,8 @@ class EntropySQLRepository(EntropyRepositoryBase):
         self._live_cacher = EntropyRepositoryCacher()
 
         EntropyRepositoryBase.__init__(self, read_only, xcache,
-                                       temporary, name, direct=direct)
+                                       temporary, name, direct=direct,
+                                       cache_policy=cache_policy)
 
     def _cursor_connection_pool_key(self):
         """
