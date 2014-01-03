@@ -284,15 +284,9 @@ class EntropySQLiteRepository(EntropySQLRepository):
                 raise
 
         if update:
-            try:
-                with self.exclusive(), self._schema_update_lock:
-                    self._schema_update_run = True
-                    self._databaseSchemaUpdates()
-            except LockAcquireError as err:
-                const_debug_write(
-                    __name__,
-                    "_maybeDatabaseSchemaUpdates error: %s" % (err,)
-                )
+            with self._schema_update_lock:
+                self._schema_update_run = True
+                self._databaseSchemaUpdates()
 
     def _concatOperator(self, fields):
         """
@@ -1892,15 +1886,36 @@ class EntropySQLiteRepository(EntropySQLRepository):
         """
         Do not forget to bump _SCHEMA_REVISION whenever you add more tables
         """
-        try:
-            current_schema_rev = int(self.getSetting("schema_revision"))
-        except (KeyError, ValueError):
-            current_schema_rev = -1
 
-        if current_schema_rev == EntropySQLiteRepository._SCHEMA_REVISION \
-                and not os.getenv("ETP_REPO_SCHEMA_UPDATE"):
+        def must_run():
+            try:
+                current_schema_rev = int(self.getSetting("schema_revision"))
+            except (KeyError, ValueError):
+                current_schema_rev = -1
+
+            if current_schema_rev == EntropySQLiteRepository._SCHEMA_REVISION \
+                    and not os.getenv("ETP_REPO_SCHEMA_UPDATE"):
+                return False
+            return True
+
+        if not must_run():
             return
 
+        try:
+            with self.exclusive():
+                if not must_run():
+                    return
+                self._databaseSchemaUpdatesUnlocked()
+        except LockAcquireError as err:
+            const_debug_write(
+                __name__,
+                "_maybeDatabaseSchemaUpdates error: %s" % (err,))
+
+    def _databaseSchemaUpdatesUnlocked(self):
+        """
+        Internal version of _databaseSchemaUpdates. This method assumes that
+        the Repository lock is acquired in exclusive mode.
+        """
         old_readonly = self._readonly
         self._readonly = False
 
