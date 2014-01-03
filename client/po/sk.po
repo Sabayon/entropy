@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-12-26 22:52+0100\n"
-"PO-Revision-Date: 2013-12-26 21:53+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
+"PO-Revision-Date: 2014-01-02 21:56+0000\n"
+"Last-Translator: Dušan Kazik <prescott66@gmail.com>\n"
 "Language-Team: Slovak (http://www.transifex.com/projects/p/sabayon-entropy/language/sk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -56,12 +56,12 @@ msgstr "môže to chvíľu trvať"
 #: ../../lib/entropy/db/skel.py:2485 ../../lib/entropy/db/skel.py:2510
 #: ../../lib/entropy/db/skel.py:2521
 msgid "Entropy"
-msgstr ""
+msgstr "Entropy"
 
 #: ../../lib/entropy/db/skel.py:2486
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:965
 msgid "action"
-msgstr "operácia"
+msgstr "akcia"
 
 #: ../../lib/entropy/db/skel.py:2511
 msgid "package move actions complete"
@@ -73,28 +73,28 @@ msgstr "presuny balíčkov úspešne dokončené"
 
 #: ../../lib/entropy/db/skel.py:4544
 msgid "Syncing current database"
-msgstr "Synchronizácia aktuálnej databázy"
+msgstr "Synchronizuje sa aktuálna databáza"
 
 #: ../../lib/entropy/db/skel.py:4545
 #: ../../lib/entropy/client/interfaces/db.py:311
 msgid "please wait"
-msgstr "prosím čakajte"
+msgstr "prosím, čakajte"
 
 #: ../../lib/entropy/db/skel.py:4560
 msgid "Removing entry"
-msgstr "Odstraňovanie položky"
+msgstr "Odstraňuje sa položka"
 
 #: ../../lib/entropy/db/skel.py:4579
 msgid "Adding entry"
-msgstr "Pridávanie položky"
+msgstr "Pridáva sa položka"
 
 #: ../../lib/entropy/db/sqlite.py:2009
 msgid "Exporting database table"
-msgstr "Exportovanie tabuľky databázy"
+msgstr "Exportuje sa tabuľka databázy"
 
 #: ../../lib/entropy/db/sqlite.py:2049
 msgid "Database Export complete."
-msgstr "Export datábazy dokončený."
+msgstr "Export databázy bol dokončený."
 
 #: ../../lib/entropy/db/sqlite.py:2415 ../../lib/entropy/db/sqlite.py:2519
 #: ../../lib/entropy/db/sqlite.py:2627 ../../lib/entropy/db/sqlite.py:2640
@@ -162,19 +162,19 @@ msgstr ""
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:254
 msgid "Office"
-msgstr ""
+msgstr "Kancelária"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:255
 msgid "Applications used in office environments"
-msgstr ""
+msgstr "Aplikácie použité v kancelárskom prostredí"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:261
 msgid "Development"
-msgstr ""
+msgstr "Vývoj"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:262
 msgid "Applications or system libraries"
-msgstr ""
+msgstr "Knižnice aplikácií alebo systému"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:266
 msgid "System"
@@ -182,71 +182,71 @@ msgstr "Systém"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:267
 msgid "System applications or libraries"
-msgstr ""
+msgstr "Systémové aplikácie alebo knižnice"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:271
 msgid "Games"
-msgstr ""
+msgstr "Hry"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:272
 msgid "Games, enjoy your spare time"
-msgstr ""
+msgstr "Hry na váš voľný čas"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:276
 msgid "GNOME Desktop"
-msgstr ""
+msgstr "Prostredie GNOME"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:278
 msgid "Applications and libraries for the GNOME Desktop"
-msgstr ""
+msgstr "Aplikácie a knižnice prostredia GNOME"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:282
 msgid "KDE Desktop"
-msgstr ""
+msgstr "Prostredie KDE"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:284
 msgid "Applications and libraries for the KDE Desktop"
-msgstr ""
+msgstr "Aplikácie a knižnice prostredia KDE"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:288
 msgid "XFCE Desktop"
-msgstr ""
+msgstr "Prostredie XFCE"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:290
 msgid "Applications and libraries for the XFCE Desktop"
-msgstr ""
+msgstr "Aplikácie a knižnice prostredia XFCE"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:294
 msgid "LXDE Desktop"
-msgstr ""
+msgstr "Prostredie LXDE"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:296
 msgid "Applications and libraries for the LXDE Desktop"
-msgstr ""
+msgstr "Aplikácie a knižnice prostredia LXDE"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:300
 msgid "Multimedia"
-msgstr ""
+msgstr "Multimédiá"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:302
 msgid "Applications and libraries for Multimedia"
-msgstr ""
+msgstr "Aplikácie a knižnice multimédií"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:306
 msgid "Networking"
-msgstr "Pripojenie do siete"
+msgstr "Sieť"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:308
 msgid "Applications and libraries for Networking"
-msgstr ""
+msgstr "Aplikácie a knižnice pre sieť"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:312
 msgid "Science"
-msgstr ""
+msgstr "Veda"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:314
 msgid "Scientific applications and libraries"
-msgstr ""
+msgstr "Vedecké aplikácie a knižnice"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:318
 msgid "Security"
@@ -254,15 +254,15 @@ msgstr "Bezpečnosť"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:320
 msgid "Security oriented applications"
-msgstr ""
+msgstr "Aplikácie zamerané na bezpečnosť"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:324
 msgid "X11"
-msgstr ""
+msgstr "X11"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:326
 msgid "Applications and libraries for X11"
-msgstr ""
+msgstr "Aplikácie a knižnice pre X11"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:623
 msgid "Reloading Portage modules"
@@ -270,7 +270,7 @@ msgstr ""
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:991
 msgid "updating metadata"
-msgstr ""
+msgstr "aktualizujú sa metaúdaje"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:1157
 msgid "error"
@@ -291,7 +291,7 @@ msgstr ""
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2635
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2829
 msgid "WARNING"
-msgstr "VAROVANIE"
+msgstr "UPOZORNENIE"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2636
 msgid "Cannot complete quickpkg for atom"
@@ -564,15 +564,15 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/package/actions/remove.py:129
 #: ../../lib/entropy/client/interfaces/package/actions/remove.py:136
 msgid "Removing"
-msgstr ""
+msgstr "Odstraňuje sa"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1831
 msgid "Checking speed of"
-msgstr ""
+msgstr "Kontroluje sa rýchlosť zrkadla"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1862
 msgid "Mirror speed"
-msgstr ""
+msgstr "Rýchlosť zrkadla"
 
 #: ../../lib/entropy/client/interfaces/methods.py:2414
 msgid "not a valid method"
@@ -625,28 +625,28 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:587
 msgid "Downloading repository"
-msgstr ""
+msgstr "Preberá sa repozitár"
 
 #: ../../lib/entropy/client/interfaces/db.py:637
 msgid "unable to download the repository"
-msgstr ""
+msgstr "nie je možné prevziať repozitár"
 
 #: ../../lib/entropy/client/interfaces/db.py:658
 msgid "Downloading checksum"
-msgstr ""
+msgstr "Preberá sa kontrolný medzisúčet"
 
 #: ../../lib/entropy/client/interfaces/db.py:685
 msgid "Cannot fetch checksum"
-msgstr ""
+msgstr "Nedá sa získať kontrolný medzisúčet"
 
 #: ../../lib/entropy/client/interfaces/db.py:686
 #: ../../lib/entropy/client/interfaces/db.py:1265
 msgid "Cannot verify repository integrity"
-msgstr ""
+msgstr "Nedá sa overiť integrita repozitára"
 
 #: ../../lib/entropy/client/interfaces/db.py:783
 msgid "Unpacking database to"
-msgstr ""
+msgstr "Extrahuje sa databáza do"
 
 #: ../../lib/entropy/client/interfaces/db.py:800
 msgid "Cannot unpack compressed package"
@@ -654,11 +654,11 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:801
 msgid "Skipping repository"
-msgstr ""
+msgstr "Vynecháva sa repozitár"
 
 #: ../../lib/entropy/client/interfaces/db.py:829
 msgid "Repository is invalid"
-msgstr ""
+msgstr "Repozitár je neplatná"
 
 #: ../../lib/entropy/client/interfaces/db.py:853
 msgid "Indexing Repository metadata"
@@ -929,7 +929,7 @@ msgstr "Synchronizácia repozitárov"
 #: ../../lib/entropy/client/interfaces/dep.py:53
 #, python-format
 msgid "Checking %s"
-msgstr ""
+msgstr "Kontroluje sa %s"
 
 #: ../../lib/entropy/client/interfaces/dep.py:2201
 msgid "Sorting dependencies"
@@ -941,12 +941,12 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/dep.py:3176
 msgid "Calculating updates"
-msgstr "Výpočet aktualizácií"
+msgstr "Vypočítavajú sa aktualizácie"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:589
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:670
 msgid "Mirror"
-msgstr ""
+msgstr "Zrkadlo"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:591
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:672
@@ -955,7 +955,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:642
 msgid "success"
-msgstr ""
+msgstr "úspech"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:655
 msgid "Aggregated transfer rate"
@@ -1056,11 +1056,11 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/_triggers.py:522
 msgid "Package phase"
-msgstr ""
+msgstr "Fáza balíku"
 
 #: ../../lib/entropy/client/interfaces/package/actions/_triggers.py:536
 msgid "Cannot run phase"
-msgstr ""
+msgstr "Nedá sa spustiť fáza"
 
 #: ../../lib/entropy/client/interfaces/package/actions/_triggers.py:550
 #: ../../lib/entropy/client/interfaces/package/actions/config.py:112
@@ -1134,7 +1134,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1050
 msgid "disabled"
-msgstr "vypnuté"
+msgstr "zakázané"
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1069
 msgid "Package signature verification"
@@ -1146,31 +1146,31 @@ msgstr "dočasne nedostupný"
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1083
 msgid "Package signature"
-msgstr "Podpis balíčka"
+msgstr "Podpis balíka"
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1085
 msgid "does not match the recorded one"
-msgstr ""
+msgstr "nesúhlasí so zaznamenaným"
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1097
 msgid "validated"
-msgstr ""
+msgstr "overené"
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1107
 msgid "Checking package checksum..."
-msgstr ""
+msgstr "Kontroluje sa kontrolný medzisúčet balíka..."
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1125
 msgid "Checksum validation error"
-msgstr ""
+msgstr "Chyba pri overovaní kontrolného medzisúčtu"
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1139
 msgid "Invalid checksum"
-msgstr ""
+msgstr "Neplatný medzisúčet"
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1157
 msgid "Invalid signatures"
-msgstr ""
+msgstr "Neplatné podpisy"
 
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:117
 msgid "Fetch path setup error"
@@ -1178,7 +1178,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:138
 msgid "Source code not available."
-msgstr ""
+msgstr "Zdrojový kód nie je dostupný."
 
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:187
 msgid "Local path"
@@ -1286,7 +1286,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:837
 msgid "Cleaning previously installed application data."
-msgstr ""
+msgstr "Vymazávajú sa predošle nainštalované údaje aplikácie."
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:923
 msgid "Post-install"
@@ -1296,23 +1296,23 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:956
 #: ../../client/solo/utils.py:67
 msgid "Cleaning"
-msgstr "Čistenie"
+msgstr "Čistí sa"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1261
 msgid "An error occurred while trying to install the package"
-msgstr ""
+msgstr "Vyskytla sa chyba pri inštalácii balíku"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1275
 msgid "Updating installed packages repository"
-msgstr ""
+msgstr "Aktualizuje sa repozitár nainštalovaných balíkov"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1307
 msgid "Installing"
-msgstr "Inštalovanie"
+msgstr "Inštaluje sa"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1313
 msgid "Installing package"
-msgstr "Inštalácia balíčka"
+msgstr "Inštaluje sa balík"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1335
 msgid "unsupported splitdebug usage (package files)"
@@ -1872,7 +1872,7 @@ msgstr "Slot"
 
 #: ../../client/solo/utils.py:470
 msgid "Size"
-msgstr ""
+msgstr "Veľkosť"
 
 #: ../../client/solo/utils.py:472 ../../client/solo/commands/ugc.py:382
 msgid "Download"
@@ -1884,15 +1884,15 @@ msgstr ""
 
 #: ../../client/solo/utils.py:482
 msgid "SHA1"
-msgstr ""
+msgstr "SHA1"
 
 #: ../../client/solo/utils.py:484
 msgid "SHA256"
-msgstr ""
+msgstr "SHA256"
 
 #: ../../client/solo/utils.py:490 ../../client/solo/commands/status.py:133
 msgid "GPG"
-msgstr ""
+msgstr "GPG"
 
 #: ../../client/solo/utils.py:495
 msgid "Dependencies"
@@ -2665,16 +2665,16 @@ msgstr ""
 
 #: ../../client/solo/commands/update.py:200
 msgid "Have a nice day"
-msgstr ""
+msgstr "Želáme pekný deň"
 
 #: ../../client/solo/commands/update.py:205
 msgid "Repositories update not allowed"
-msgstr ""
+msgstr "Aktualizácia repozitárov nie je umožnená"
 
 #: ../../client/solo/commands/update.py:230
 #: ../../client/solo/commands/hop.py:116
 msgid "No repositories specified in"
-msgstr ""
+msgstr "Žiadne určené repozitáre v"
 
 #: ../../client/solo/commands/update.py:251
 #: ../../client/solo/commands/notice.py:123
@@ -2860,11 +2860,11 @@ msgstr ""
 
 #: ../../client/solo/commands/security.py:618
 msgid "Calculating security updates"
-msgstr ""
+msgstr "Vypočítavajú sa bezpečnostné aktualizácie"
 
 #: ../../client/solo/commands/security.py:643
 msgid "All the available updates have been already installed"
-msgstr ""
+msgstr "Všetky dostupné aktualizácie už boli nainštalované"
 
 #: ../../client/solo/commands/conf.py:75
 msgid "manage configuration file updates"
@@ -2876,7 +2876,7 @@ msgstr ""
 
 #: ../../client/solo/commands/conf.py:144
 msgid "Scanning filesystem"
-msgstr "Prehľadávanie systému súborov"
+msgstr "Prezerá sa súborový systém"
 
 #: ../../client/solo/commands/conf.py:150
 #: ../../client/solo/commands/conf.py:176
@@ -2890,7 +2890,7 @@ msgstr "súbor"
 #: ../../client/solo/commands/conf.py:187
 #: ../../client/solo/commands/conf.py:633
 msgid "Type a number"
-msgstr ""
+msgstr "Zadajte číslo"
 
 #: ../../client/solo/commands/conf.py:217
 msgid "Please choose a file to update by typing its identification number."
@@ -2953,12 +2953,12 @@ msgstr "Zobraziť rozdiely znovu"
 #: ../../client/solo/commands/conf.py:384
 #: ../../client/solo/commands/conf.py:439
 msgid "Source file"
-msgstr ""
+msgstr "Zdrojový súbor"
 
 #: ../../client/solo/commands/conf.py:389
 #: ../../client/solo/commands/conf.py:444
 msgid "Destination file"
-msgstr ""
+msgstr "Cieľový súbor"
 
 #: ../../client/solo/commands/conf.py:394
 msgid "Overwrite ?"
@@ -2975,11 +2975,11 @@ msgstr "Zahodiť?"
 #: ../../client/solo/commands/conf.py:455
 #: ../../client/solo/commands/conf.py:590
 msgid "Discarding"
-msgstr "Zahadzovanie"
+msgstr "Zahadzuje sa"
 
 #: ../../client/solo/commands/conf.py:464
 msgid "Cannot remove"
-msgstr ""
+msgstr "Nedá sa odstrániť"
 
 #: ../../client/solo/commands/conf.py:480
 msgid "Editing file"
@@ -3022,22 +3022,22 @@ msgstr "Vybraný súbor"
 #: ../../client/solo/commands/conf.py:643
 #, python-format
 msgid "Replacing %s with %s"
-msgstr ""
+msgstr "Nahrádza sa %s s %s"
 
 #: ../../client/solo/commands/conf.py:650
 #, python-format
 msgid "Cannot merge %s"
-msgstr ""
+msgstr "Nedá sa zlúčiť %s"
 
 #: ../../client/solo/commands/conf.py:658
 #, python-format
 msgid "Deleting %s"
-msgstr ""
+msgstr "Odstraňuje sa %s"
 
 #: ../../client/solo/commands/conf.py:664
 #, python-format
 msgid "Cannot remove %s"
-msgstr ""
+msgstr "Nedá sa odstrániť %s"
 
 #: ../../client/solo/commands/conf.py:702
 msgid "manage package file updates"
@@ -3133,7 +3133,7 @@ msgstr ""
 #: ../../client/solo/commands/source.py:182
 #: ../../client/solo/commands/download.py:182
 msgid "All done"
-msgstr "Všetko hotovo"
+msgstr "Všetko je dokončené"
 
 #: ../../client/solo/commands/remove.py:216
 msgid "These are the packages that should be MANUALLY removed"
@@ -3356,22 +3356,22 @@ msgstr ""
 
 #: ../../client/solo/commands/ugc.py:200 ../../client/solo/commands/ugc.py:304
 msgid "Invalid repository"
-msgstr ""
+msgstr "Neplatný repozitár"
 
 #: ../../client/solo/commands/ugc.py:211 ../../client/solo/commands/ugc.py:315
 #: ../../client/solo/commands/ugc.py:439 ../../client/solo/commands/ugc.py:521
 #: ../../client/solo/commands/ugc.py:737 ../../client/solo/commands/ugc.py:854
 #: ../../client/solo/commands/ugc.py:892
 msgid "Repository does not support Entropy Services."
-msgstr ""
+msgstr "Repozitár nepodporuje služby Entropy."
 
 #: ../../client/solo/commands/ugc.py:221
 msgid "Already logged in as"
-msgstr ""
+msgstr "Už ste prihlásený ako"
 
 #: ../../client/solo/commands/ugc.py:223
 msgid "Please logout first"
-msgstr ""
+msgstr "Prosím, najskôr sa odhláste"
 
 #: ../../client/solo/commands/ugc.py:235
 msgid "Username"
@@ -3399,7 +3399,7 @@ msgstr ""
 
 #: ../../client/solo/commands/ugc.py:281
 msgid "Successfully logged in as"
-msgstr ""
+msgstr "Úspešne prihlásený ako"
 
 #: ../../client/solo/commands/ugc.py:288
 msgid "From now on, any UGC action will be committed as this user"
@@ -3407,7 +3407,7 @@ msgstr ""
 
 #: ../../client/solo/commands/ugc.py:325
 msgid "Not logged in."
-msgstr ""
+msgstr "Neprihlásený."
 
 #: ../../client/solo/commands/ugc.py:334
 msgid "User"
@@ -3415,11 +3415,11 @@ msgstr "Používateľ"
 
 #: ../../client/solo/commands/ugc.py:336
 msgid "has been logged out."
-msgstr ""
+msgstr "bol odhlásený."
 
 #: ../../client/solo/commands/ugc.py:345
 msgid "No title"
-msgstr ""
+msgstr "Bez názvu"
 
 #: ../../client/solo/commands/ugc.py:372
 #: ../../client/solo/commands/notice.py:189
@@ -3428,7 +3428,7 @@ msgstr "Obsah"
 
 #: ../../client/solo/commands/ugc.py:389
 msgid "no votes"
-msgstr ""
+msgstr "žiadne hlasy"
 
 #: ../../client/solo/commands/ugc.py:395
 msgid "current package vote"
@@ -4102,15 +4102,15 @@ msgstr ""
 
 #: ../../client/solo/commands/rescue.py:335
 msgid "Really ?"
-msgstr ""
+msgstr "Skutočne?"
 
 #: ../../client/solo/commands/rescue.py:340
 msgid "This is your last chance"
-msgstr ""
+msgstr "Toto je vaša posledná šanca"
 
 #: ../../client/solo/commands/rescue.py:341
 msgid "Ok?"
-msgstr ""
+msgstr "Ok?"
 
 #: ../../client/solo/commands/rescue.py:358
 #: ../../client/solo/commands/rescue.py:381
@@ -4161,7 +4161,7 @@ msgstr ""
 
 #: ../../client/solo/commands/rescue.py:569
 msgid "Cannot find package"
-msgstr ""
+msgstr "Nedá sa nájsť balík"
 
 #: ../../client/solo/commands/rescue.py:581
 msgid "Scanning Entropy repository"
@@ -4174,19 +4174,19 @@ msgstr ""
 #: ../../client/solo/commands/rescue.py:674
 #: ../../client/solo/commands/rescue.py:713
 msgid "Continue ?"
-msgstr ""
+msgstr "Pokračovať?"
 
 #: ../../client/solo/commands/rescue.py:693
 msgid "Removal complete"
-msgstr ""
+msgstr "Odstraňovanie dokončené"
 
 #: ../../client/solo/commands/rescue.py:700
 msgid "These packages were added"
-msgstr ""
+msgstr "Tieto balíky boli pridané"
 
 #: ../../client/solo/commands/rescue.py:796
 msgid "Update complete"
-msgstr ""
+msgstr "Aktualizácia dokončená"
 
 #: ../../client/solo/commands/rescue.py:808
 msgid "Re-generating packages mapping"
@@ -4391,19 +4391,19 @@ msgstr "Chcete ich odstrániť?"
 
 #: ../../client/solo/commands/upgrade.py:335
 msgid "Remove this?"
-msgstr "Odstrániť?"
+msgstr "Odstrániť toto?"
 
 #: ../../client/solo/commands/upgrade.py:350
 msgid "Nothing to remove"
-msgstr "Nie je nič na odstránenie"
+msgstr "Nič na odstránenie"
 
 #: ../../client/solo/commands/upgrade.py:380
 msgid "There are more updates to install, reloading Entropy"
-msgstr ""
+msgstr "Je dostupných viacero aktualizácií na nainštalovanie, znovu načítava sa služba Entropy"
 
 #: ../../client/solo/commands/upgrade.py:400
 msgid "upgrade the system"
-msgstr ""
+msgstr "aktualizovať systém"
 
 #: ../../client/solo/commands/pkg.py:86
 msgid "generate packages from the installed system"
@@ -4599,21 +4599,21 @@ msgstr ""
 
 #: ../../client/solo/commands/preservedlibs.py:219
 msgid "Tools to manage the preserved libraries on the system"
-msgstr ""
+msgstr "Nástroj na správu zachovaných knižníc v systéme"
 
 #: ../../magneto/src/magneto/kde/interfaces.py:74
 msgid "Magneto Entropy Updates Applet"
-msgstr "Magneto Aktualizačný Applet"
+msgstr "Aplet Magneto pre aktualizácie služby Entropy"
 
 #: ../../magneto/src/magneto/kde/interfaces.py:248
 #: ../../magneto/src/magneto/gtk/interfaces.py:220
 msgid "Your system currently has an outdated version of"
-msgstr "Váš systém má momentálne zastaralú verziu"
+msgstr "Váš systém momentálne obsahuje nainštalovanú zastaranú verziu služby"
 
 #: ../../magneto/src/magneto/kde/interfaces.py:249
 #: ../../magneto/src/magneto/gtk/interfaces.py:221
 msgid "installed"
-msgstr ""
+msgstr " "
 
 #: ../../magneto/src/magneto/kde/interfaces.py:250
 #: ../../magneto/src/magneto/gtk/interfaces.py:222
@@ -4625,7 +4625,7 @@ msgstr "najnovšia dostupná verzia je"
 msgid ""
 "It is recommended that you upgrade to the latest before updating any other "
 "packages"
-msgstr "Je doporučované aktualizovať na najnovšiu verziu pred aktualizáciou iných balíčkov"
+msgstr "Pred aktualizáciou iných balíkov sa odporúča aktualizovať na najnovšiu verziu"
 
 #: ../../magneto/src/magneto/kde/components.py:48
 msgid "Close"
@@ -4633,7 +4633,7 @@ msgstr "Zavrieť"
 
 #: ../../magneto/src/magneto/kde/components.py:49
 msgid "Launch Application Browser"
-msgstr ""
+msgstr "Spustiť prehliadač aplikácií"
 
 #: ../../magneto/src/magneto/kde/components.py:59
 msgid "Application updates"
@@ -4641,11 +4641,11 @@ msgstr "Aktualizácie aplikácií"
 
 #: ../../magneto/src/magneto/gtk/interfaces.py:147
 msgid "System Updates"
-msgstr ""
+msgstr "Aktualizácie systému"
 
 #: ../../magneto/src/magneto/gtk/components.py:52
 msgid "Application"
-msgstr "Aplikácie"
+msgstr "Aplikácia"
 
 #: ../../magneto/src/magneto/gtk/components.py:54
 msgid "Latest version"
@@ -4653,71 +4653,71 @@ msgstr "Najnovšia verzia"
 
 #: ../../magneto/src/magneto/gtk/components.py:96
 msgid "Critical Information"
-msgstr "Kritická Informácia"
+msgstr "Kritická informácia"
 
 #: ../../magneto/src/magneto/core/interfaces.py:183
 msgid "_Disable Notification Applet"
-msgstr "_Vypnúť Oznamovací Applet"
+msgstr "_Zakázať aplet upozornení"
 
 #: ../../magneto/src/magneto/core/interfaces.py:184
 msgid "Disable Notification Applet"
-msgstr "Vypnúť Oznamovací Applet"
+msgstr "Zakáže aplet upozornení"
 
 #: ../../magneto/src/magneto/core/interfaces.py:185
 msgid "_Enable Notification Applet"
-msgstr "_Zapnúť Oznamovací Applet"
+msgstr "_Povoliť aplet upozornení"
 
 #: ../../magneto/src/magneto/core/interfaces.py:186
 msgid "Enable Notification Applet"
-msgstr "Zapnúť Oznamovací Applet"
+msgstr "Povolí aplet upozornení"
 
 #: ../../magneto/src/magneto/core/interfaces.py:187
 msgid "_Check for updates"
-msgstr "_Skontrovať aktualizácie"
+msgstr "_Skontrolovať aktualizácie"
 
 #: ../../magneto/src/magneto/core/interfaces.py:188
 msgid "Check for updates"
-msgstr "Skontrovať aktualizácie"
+msgstr "Skontroluje aktualizácie"
 
 #: ../../magneto/src/magneto/core/interfaces.py:189
 msgid "_Launch Package Manager"
-msgstr "_Spustiť Správcu Balíčkov"
+msgstr "Sp_ustiť správcu balíkov"
 
 #: ../../magneto/src/magneto/core/interfaces.py:190
 msgid "Launch Package Manager"
-msgstr "Spustiť Správcu Balíčkov"
+msgstr "Spustí správcu balíkov"
 
 #: ../../magneto/src/magneto/core/interfaces.py:191
 msgid "_Packages Website"
-msgstr "_Webová stránka s balíčkami"
+msgstr "_Webová stránka s balíkmi"
 
 #: ../../magneto/src/magneto/core/interfaces.py:192
 msgid "Use Packages web interface"
-msgstr "Použiť webové rozhranie pre balíčky"
+msgstr "Použije webové rozhranie na správu balíkov"
 
 #: ../../magneto/src/magneto/core/interfaces.py:193
 msgid "_Sabayon Linux Website"
-msgstr "Webová stránka _Sabayon Linux-u"
+msgstr "Webová stránka linuxu _Sabayon"
 
 #: ../../magneto/src/magneto/core/interfaces.py:194
 msgid "Launch Sabayon Linux Website"
-msgstr "Spustiť Webovú stránku Sabayon Linux-u"
+msgstr "Spustí webovú stránku linuxu Sabayon"
 
 #: ../../magneto/src/magneto/core/interfaces.py:196
 msgid "_Exit"
-msgstr "_Koniec"
+msgstr "Sko_nčiť"
 
 #: ../../magneto/src/magneto/core/interfaces.py:335
 msgid "System restart needed"
-msgstr ""
+msgstr "Je potrebný reštart systému"
 
 #: ../../magneto/src/magneto/core/interfaces.py:336
 msgid "This system should be restarted at your earliest convenience"
-msgstr ""
+msgstr "Tento systém by mal byť reštartovaný pri najbližšej príležitosti"
 
 #: ../../magneto/src/magneto/core/interfaces.py:343
 msgid "Cannot monitor Sabayon updates"
-msgstr "Nie je možné kontrolovať Sabayon aktualizácie"
+msgstr "Nedajú sa sledovať aktualizácie systému Sabayon"
 
 #: ../../magneto/src/magneto/core/interfaces.py:345
 msgid "Entropy DBus service not available"
@@ -4725,108 +4725,108 @@ msgstr "služba Entropy DBus nie je dostupná"
 
 #: ../../magneto/src/magneto/core/interfaces.py:346
 msgid "unable to communicate with the updates service"
-msgstr "Nie je možné komunikovať so službou aktualizácií"
+msgstr "nie je možné komunikovať so službou aktualizácií"
 
 #: ../../magneto/src/magneto/core/interfaces.py:364
 #, python-format
 msgid "There is %s update available"
 msgid_plural "There are %s updates available"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Je dostupných %s aktualizácií"
+msgstr[1] "Je dostupná %s aktualizácia"
+msgstr[2] "Sú dostupné %s aktualizácie"
 
 #: ../../magneto/src/magneto/core/interfaces.py:370
 msgid "Sabayon updates available"
-msgstr "Sú dostupné aktualizácie"
+msgstr "Sú dostupné aktualizácie systému Sabayon"
 
 #: ../../magneto/src/magneto/core/interfaces.py:371
 #, python-format
 msgid "There is <b>%s</b> update available"
 msgid_plural "There are <b>%s</b> updates available"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Je dostupných <b>%s</b> aktualizácií"
+msgstr[1] "Je dostupná <b>%s</b> aktualizácia"
+msgstr[2] "Sú dostupné <b>%s</b> aktualizácie"
 
 #: ../../magneto/src/magneto/core/interfaces.py:376
 msgid "Upgrade now"
-msgstr ""
+msgstr "Aktualizovať teraz"
 
 #. all fine, no updates
 #: ../../magneto/src/magneto/core/interfaces.py:380
 #: ../../magneto/src/magneto/core/interfaces.py:382
 msgid "Your Sabayon is up-to-date"
-msgstr "Váš Sabayon je aktuálny"
+msgstr "Váš systém Sabayon je aktuálny"
 
 #: ../../magneto/src/magneto/core/interfaces.py:383
 msgid "No updates available at this time, cool!"
-msgstr "Žiadne aktualizácie nie su dostupné, super!"
+msgstr "Momentálne nie sú dostupné žiadne aktualizácie, super!"
 
 #. all fine, no updates
 #: ../../magneto/src/magneto/core/interfaces.py:394
 msgid "Repositories are being updated"
-msgstr "Aktualizujú sa repozitáre"
+msgstr "Repozitáre budú aktualizované"
 
 #: ../../magneto/src/magneto/core/interfaces.py:395
 msgid "Sabayon repositories status"
-msgstr "Stav Sabayon repozitárov"
+msgstr "Stav repozitárov systému Sabayon"
 
 #: ../../magneto/src/magneto/core/interfaces.py:396
 msgid "Repositories are being updated automatically"
-msgstr "Repozitáre sú aktualizované automaticky"
+msgstr "Repozitáre budú automaticky aktualizované"
 
 #. all fine, no updates
 #: ../../magneto/src/magneto/core/interfaces.py:404
 #: ../../magneto/src/magneto/core/interfaces.py:405
 msgid "System upgrade started"
-msgstr ""
+msgstr "Bola spustená aktualizácia systému"
 
 #: ../../magneto/src/magneto/core/interfaces.py:406
 msgid "Do not shutdown nor reboot the computer!"
-msgstr ""
+msgstr "Nevypínajte ani nereštartujte počítač!"
 
 #: ../../magneto/src/magneto/core/interfaces.py:499
 msgid "Updates Notification Applet Disabled"
-msgstr "Applet oznamovania aktualizácií je vypnutý"
+msgstr "Aplet upozornení na aktualizácie je zakázaný"
 
 #: ../../magneto/src/magneto/core/interfaces.py:509
 msgid "Updates Notification Applet Enabled"
-msgstr "Applet oznamovania aktualizácií je zapnutý"
+msgstr "Aplet upozornení na aktualizácie je povolený"
 
 #: ../kernel-switcher:28
 msgid "Sabayon Kernel Switcher"
-msgstr ""
+msgstr "Prepínač jadier systému Sabayon"
 
 #: ../kernel-switcher:35
 msgid "quiet mode"
-msgstr ""
+msgstr "tichý režim"
 
 #: ../kernel-switcher:38
 msgid "verbose mode"
-msgstr ""
+msgstr "podrobný režim"
 
 #: ../kernel-switcher:42
 msgid "ask confirmation"
-msgstr ""
+msgstr "opýtať sa na potvrdenie"
 
 #: ../kernel-switcher:92
 msgid "Package does not exist"
-msgstr ""
+msgstr "Balík neexistuje"
 
 #: ../kernel-switcher:100
 msgid "Not a kernel"
-msgstr ""
+msgstr "Nie je jadrom"
 
 #: ../kernel-switcher:110
 msgid "Cannot find your currently running kernel."
-msgstr ""
+msgstr "Nedá sa nájsť aktuálne spustené jadro."
 
 #: ../kernel-switcher:112
 msgid "Try without --from-running."
-msgstr ""
+msgstr "Skúste bez argumentu --from-running."
 
 #: ../kernel-switcher:127
 msgid "No kernel packages found"
-msgstr ""
+msgstr "Nenašli sa žiadne balíky s jadrami"
 
 #: ../kernel-switcher:145
 msgid "install a new or just another kernel"
@@ -4842,7 +4842,7 @@ msgstr ""
 
 #: ../kernel-switcher:157
 msgid "list kernels"
-msgstr ""
+msgstr "zoznam jadier"
 
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:1
 msgid "Magneto Application Updates Notifier"
@@ -4850,4 +4850,4 @@ msgstr "Magneto oznamovač aktualizácií"
 
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:3
 msgid "_Load Package Manager"
-msgstr "Spustiť Správcu _Balíčkov"
+msgstr "_Načítať správcu balíkov"
