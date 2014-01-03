@@ -642,8 +642,9 @@ class SystemSettings(Singleton, EntropyPluginStore):
             return
 
         if key in self.__parsables:
-            const_debug_write(__name__, "%s was lazy loaded" % (key,))
-            self.__data[key] = self.__parsables[key]()
+            if key not in self.__data:
+                const_debug_write(__name__, "%s was lazy loaded" % (key,))
+                self.__data[key] = self.__parsables[key]()
 
     def __setup_const(self):
 
