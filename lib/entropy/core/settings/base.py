@@ -845,11 +845,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
         dict method. See Python dict API reference.
         """
         with self.__lock:
-            try:
-                return self.__data[key]
-            except KeyError:
-                self.__maybe_lazy_load(key)
-                return self.__data[key]
+            self.__maybe_lazy_load(key)
+            return self.__data[key]
 
     def __delitem__(self, key):
         """
