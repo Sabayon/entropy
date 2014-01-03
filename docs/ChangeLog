@@ -1,3 +1,62 @@
+commit f1de6accefbf47d21e75217a0a2098aba09567d7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 3 15:50:06 2014 +0100
+
+    Release Entropy 262
+
+commit 74f8bb63f5bc7db6e7112dd126326af6d930f6be
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 3 15:45:39 2014 +0100
+
+    [entropy.spm] PortagePlugin: update portage.doebuild() call, remove deprecated root argument
+
+commit c65d713c913a25d0917ef2905eb2d3875ecfa407
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 3 15:12:12 2014 +0100
+
+    [Rigo] fix NotificationBox message_type keyword argument
+
+commit d03466ea102285814e8e5f151e0f87e6b6b0c541
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 3 14:54:04 2014 +0100
+
+    [entropy.db.cache] disable in-RAM cache if total memory is less than 4G
+
+commit ee48b812ed56031ae70960132a2f0825d5081438
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 3 14:53:42 2014 +0100
+
+    [entropy.tools] add total_memory() function
+
+commit cbe42edee9c792dc4a5322db8bd4db86ac29eb80
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 3 07:36:44 2014 +0100
+
+    [RigoDaemon] set the cache policy to EntropyRepositoryCachePolicies.NONE
+    
+    This greatly reduces the memory consumption of RigoDaemon
+
+commit 338b3f6cc59240431921188c2601429a02f718d0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 2 23:00:00 2014 +0100
+
+    [entropy.db] expose and use the currently set cache policy
+
+commit b6ed5f9948f77df8dc59b2a2421fdd6c5a6e6323
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 2 22:58:54 2014 +0100
+
+    [entropy.db.cache] introduce EntropyRepositoryCachePolicies
+    
+    It is now possible to define a policy for the in-RAM cache through
+    EntropyRepository constructor or EntropyRepositoryCachePolicies.
+
+commit ba70572e17b8ab64296854af0b56bb5da48d3faf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 1 11:03:52 2014 +0100
+
+    Tagging Entropy version 261
+
 commit 2d2241408667b34cea7d3a45fe49acb0dbfb1011
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Jan 1 11:03:52 2014 +0100
