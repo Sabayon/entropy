@@ -3134,3 +3134,29 @@ def codecs_fdopen(fd, mode, encoding, errors='strict'):
     # Add attributes to simplify introspection
     srw.encoding = encoding
     return srw
+
+def total_memory():
+    """
+    Return the amount of total system memory in megabytes.
+
+    @return: the total system memory available
+    @rtype: int
+    """
+    try:
+        with open("/proc/meminfo", "r") as mem_f:
+            line = mem_f.readline()
+            while line:
+                if line.startswith("MemTotal"):
+                    args = line.split()
+                    try:
+                        return int(args[1]) / 1000
+                    except ValueError:
+                        pass
+                line = mem_f.readline()
+
+    except (OSError, IOError) as err:
+        if err.errno == errno.ENOENT:
+            return 0
+        raise
+
+    return 0
