@@ -1,3 +1,25 @@
+commit 7877126107ff05dc36c57bc05d7c7c66635a3524
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 3 16:12:21 2014 +0100
+
+    Release Entropy 263
+
+commit b0bd765b50573195e853c303746a1a54b9fbd885
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 3 16:10:33 2014 +0100
+
+    [entropy.db.sqlite] do not acquire the repo lock if it's not strictly needed
+    
+    Try to avoid to acquire the repository lock in exclusive mode if
+    it's not strictly needed. We were acquiring the lock in exclusive mode
+    even when there was nothing to update due to schema changes.
+
+commit d7d75b4ad9e8cd8a6167ac15346d9ccf8319762b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 3 15:50:06 2014 +0100
+
+    Tagging Entropy version 262
+
 commit f1de6accefbf47d21e75217a0a2098aba09567d7
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Jan 3 15:50:06 2014 +0100
