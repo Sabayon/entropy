@@ -477,6 +477,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
         self.__lock = RLock()
         self.__cacher = EntropyCacher()
         self.__data = {}
+        self.__parsables = {}
         self.__is_destroyed = False
         self.__inside_with_stmt = 0
         self.__pkg_comment_tag = "##"
@@ -628,6 +629,21 @@ class SystemSettings(Singleton, EntropyPluginStore):
         return os.path.join(
             SystemSettings.packages_config_directory(),
             etpConst['confsetsdirname'])
+
+    def __maybe_lazy_load(self, key):
+        """
+        Lazy load a dict item if it's in the parsable dict.
+        """
+        if key is None:
+            for item, func in self.__parsables.items():
+                const_debug_write(
+                    __name__, "%s was lazy loaded (slow path!!)" % (item,))
+                self.__data[item] = func()
+            return
+
+        if key in self.__parsables:
+            const_debug_write(__name__, "%s was lazy loaded" % (key,))
+            self.__data[key] = self.__parsables[key]()
 
     def __setup_const(self):
 
@@ -823,114 +839,137 @@ class SystemSettings(Singleton, EntropyPluginStore):
             self.__persistent_settings[mykey] = myvalue
         self.__data[mykey] = myvalue
 
-    def __getitem__(self, mykey):
+    def __getitem__(self, key):
         """
         dict method. See Python dict API reference.
         """
         with self.__lock:
-            return self.__data[mykey]
+            try:
+                return self.__data[key]
+            except KeyError:
+                self.__maybe_lazy_load(key)
+                return self.__data[key]
 
-    def __delitem__(self, mykey):
+    def __delitem__(self, key):
         """
         dict method. See Python dict API reference.
         """
         with self.__lock:
-            del self.__data[mykey]
+            try:
+                del self.__data[key]
+            except KeyError:
+                if key not in self.__parsables:
+                    raise
 
     def __iter__(self):
         """
         dict method. See Python dict API reference.
         """
+        self.__maybe_lazy_load(None)
         return iter(self.__data)
 
     def __contains__(self, item):
         """
         dict method. See Python dict API reference.
         """
-        return item in self.__data
+        return item in self.__data or item in self.__parsables
 
     def __hash__(self):
         """
         dict method. See Python dict API reference.
         """
+        self.__maybe_lazy_load(None)
         return hash(self.__data)
 
     def __len__(self):
         """
         dict method. See Python dict API reference.
         """
+        self.__maybe_lazy_load(None)
         return len(self.__data)
 
-    def get(self, *args, **kwargs):
+    def get(self, key, *args, **kwargs):
         """
         dict method. See Python dict API reference.
         """
-        return self.__data.get(*args, **kwargs)
+        self.__maybe_lazy_load(key)
+        return self.__data.get(key, *args, **kwargs)
 
     def copy(self):
         """
         dict method. See Python dict API reference.
         """
+        self.__maybe_lazy_load(None)
         return self.__data.copy()
 
     def fromkeys(self, *args, **kwargs):
         """
         dict method. See Python dict API reference.
         """
+        self.__maybe_lazy_load(None)
         return self.__data.fromkeys(*args, **kwargs)
 
     def items(self):
         """
         dict method. See Python dict API reference.
         """
+        self.__maybe_lazy_load(None)
         return self.__data.items()
 
     def iteritems(self):
         """
         dict method. See Python dict API reference.
         """
+        self.__maybe_lazy_load(None)
         return self.__data.iteritems()
 
     def iterkeys(self):
         """
         dict method. See Python dict API reference.
         """
+        self.__maybe_lazy_load(None)
         return self.__data.iterkeys()
 
     def keys(self):
         """
         dict method. See Python dict API reference.
         """
+        self.__maybe_lazy_load(None)
         return self.__data.keys()
 
-    def pop(self, *args, **kwargs):
+    def pop(self, key, *args, **kwargs):
         """
         dict method. See Python dict API reference.
         """
-        return self.__data.pop(*args, **kwargs)
+        self.__maybe_lazy_load(key)
+        return self.__data.pop(key, *args, **kwargs)
 
     def popitem(self):
         """
         dict method. See Python dict API reference.
         """
+        self.__maybe_lazy_load(None)
         return self.__data.popitem()
 
-    def setdefault(self, *args, **kwargs):
+    def setdefault(self, key, *args, **kwargs):
         """
         dict method. See Python dict API reference.
         """
-        return self.__data.setdefault(*args, **kwargs)
+        self.__maybe_lazy_load(key)
+        return self.__data.setdefault(key, *args, **kwargs)
 
     def update(self, kwargs):
         """
         dict method. See Python dict API reference.
         """
+        self.__maybe_lazy_load(None)
         return self.__data.update(kwargs)
 
     def values(self):
         """
         dict method. See Python dict API reference.
         """
+        self.__maybe_lazy_load(None)
         return self.__data.values()
 
     def clear(self):
@@ -1024,13 +1063,15 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: None
         @rtype: None
         """
+        self.__parsables.clear()
+
         # some parsers must be run BEFORE everything:
         for item in self.__setting_files_pre_run:
             myattr = '_%s_parser' % (item,)
             if not hasattr(self, myattr):
                 continue
             func = getattr(self, myattr)
-            self.__data[item] = func()
+            self.__parsables[item] = func
 
         # parse main settings
         self.__setup_package_sets_vars()
@@ -1040,7 +1081,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
             if not hasattr(self, myattr):
                 continue
             func = getattr(self, myattr)
-            self.__data[item] = func()
+            self.__parsables[item] = func
 
     def get_setting_files_data(self):
         """
