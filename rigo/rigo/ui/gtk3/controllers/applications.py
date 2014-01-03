@@ -272,7 +272,8 @@ class ApplicationsViewController(GObject.Object):
                 msg = _("Application <b>%s</b> not found")
                 msg = msg % (dependency,)
                 box = NotificationBox(
-                    prepare_markup(msg), Gtk.MessageType.ERROR,
+                    prepare_markup(msg),
+                    message_type=Gtk.MessageType.ERROR,
                     context_id="AppInstallNotFoundContextId")
                 self._nc.append(box, timeout=10)
             if self._nc is not None:
@@ -332,7 +333,8 @@ class ApplicationsViewController(GObject.Object):
                 msg = _("Application <b>%s</b> not found")
                 msg = msg % (dependency,)
                 box = NotificationBox(
-                    prepare_markup(msg), Gtk.MessageType.ERROR,
+                    prepare_markup(msg),
+                    message_type=Gtk.MessageType.ERROR,
                     context_id="AppRemoveNotFoundContextId")
                 self._nc.append(box, timeout=10)
             if self._nc is not None:
