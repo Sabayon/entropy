@@ -13,6 +13,8 @@ import weakref
 
 from entropy.core import Singleton
 
+import entropy.tools
+
 
 class EntropyRepositoryCacher(Singleton):
     """
@@ -88,4 +90,7 @@ class EntropyRepositoryCachePolicies(object):
         ALL,
     ) = range(2)
 
-    DEFAULT_CACHE_POLICY = ALL
+    if entropy.tools.total_memory() >= 4000:
+        DEFAULT_CACHE_POLICY = ALL
+    else:
+        DEFAULT_CACHE_POLICY = NONE
