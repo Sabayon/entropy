@@ -62,6 +62,12 @@ from entropy.cache import EntropyCacher
 # update default writeback timeout
 EntropyCacher.WRITEBACK_TIMEOUT = 120
 
+# Change the default in-RAM cache policy for repositories in order to
+# save a huge amount of RAM.
+from entropy.db.cache import EntropyRepositoryCachePolicies
+_NONE_POL = EntropyRepositoryCachePolicies.NONE
+EntropyRepositoryCachePolicies.DEFAULT_CACHE_POLICY = _NONE_POL
+
 from entropy.const import etpConst, const_convert_to_rawstring, \
     initconfig_entropy_constants, const_debug_write, dump_signal, \
     const_mkstemp
