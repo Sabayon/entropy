@@ -2253,13 +2253,13 @@ class PortagePlugin(SpmPlugin):
                 rc = self._portage.doebuild(
                     str(myebuild),
                     str(mydo),
-                    root,
-                    mysettings,
+                    settings = mysettings,
                     tree = tree,
                     mydbapi = mydbapi,
                     vartree = vartree,
                     debug = const_debug_enabled(),
-                    fd_pipes = fd_pipes
+                    fd_pipes = fd_pipes,
+                    use_cache = 0
                 )
 
             except self._portage.exception.UnsupportedAPIException as err:
@@ -3941,7 +3941,8 @@ class PortagePlugin(SpmPlugin):
             return cached
 
         try:
-            mytree = self._portage.vartree(root=root)
+            settings = self._get_portage_config(os.path.sep, root)
+            mytree = self._portage.vartree(root=root, settings=settings)
         except Exception as err:
             raise self.Error(err)
         PortagePlugin.CACHE['vartree'][root] = mytree
