@@ -4200,7 +4200,7 @@ class EntropySQLRepository(EntropyRepositoryBase):
         cur = self._cursor().execute("""
         SELECT idpackage FROM baseinfo
         WHERE %s = ? AND slot = ?
-        AND tag = ?
+        AND versiontag = ?
         """ % (concat,), (key, slot, tag))
         return self._cur2frozenset(cur)
 
