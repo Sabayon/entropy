@@ -453,15 +453,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
             """
             self.__cache = cache_obj
 
-    # If set to True, enable in-RAM cache usage if
-    # configuration files have the same mtime of
-    # the last time they were read, during the same
-    # process lifecycle. Any race condition between
-    # reading the mtime and actually reading the file
-    # content can be trascurable as long as the cache
-    # data is stored in ram and not on-disk.
-    DISK_DATA_CACHE = True
-
     def init_singleton(self):
 
         """
@@ -488,7 +479,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
         self.__setting_files_pre_run = []
         self.__setting_files = {}
         self.__setting_dirs = {}
-        self.__mtime_cache = {}
         self.__persistent_settings = {
             'pkg_masking_reasons': etpConst['pkg_masking_reasons'].copy(),
             'pkg_masking_reference': etpConst['pkg_masking_reference'].copy(),
@@ -659,8 +649,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
         del self.__setting_files_pre_run[:]
         self.__setting_files.clear()
         self.__setting_dirs.clear()
-        if not SystemSettings.DISK_DATA_CACHE:
-            self.__mtime_cache.clear()
 
         packages_dir = SystemSettings.packages_config_directory()
         self.__setting_files.update({
@@ -1138,19 +1126,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @rtype: dict
         """
         keywords_conf = self.__setting_files['keywords']
-        root = etpConst['systemroot']
-        try:
-            mtime = os.path.getmtime(keywords_conf)
-        except (OSError, IOError):
-            mtime = 0.0
-
-        cache_key = (root, keywords_conf)
-        cache_obj = self.__mtime_cache.get(cache_key)
-        if cache_obj is not None:
-            if cache_obj['mtime'] == mtime:
-                return cache_obj['data']
-
-        cache_obj = {'mtime': mtime,}
 
         # merge universal keywords
         data = {
@@ -1220,8 +1195,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
         for keyword in data['universal']:
             etpConst['keywords'].add(keyword)
 
-        cache_obj['data'] = data
-        self.__mtime_cache[cache_key] = cache_obj
         return data
 
 
@@ -1493,19 +1466,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @rtype: string
         """
         hw_hash_file = self.__setting_files['hw_hash']
-        root = etpConst['systemroot']
-        try:
-            mtime = os.path.getmtime(hw_hash_file)
-        except (OSError, IOError):
-            mtime = 0.0
-
-        cache_key = (root, hw_hash_file)
-        cache_obj = self.__mtime_cache.get(cache_key)
-        if cache_obj is not None:
-            if cache_obj['mtime'] == mtime:
-                return cache_obj['data']
-
-        cache_obj = {'mtime': mtime,}
 
         enc = etpConst['conf_encoding']
         hash_data = None
@@ -1518,8 +1478,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 raise
 
         if hash_data is not None:
-            cache_obj['data'] = hash_data
-            self.__mtime_cache[cache_key] = cache_obj
             return hash_data
 
         hash_file_dir = os.path.dirname(hw_hash_file)
@@ -1537,16 +1495,12 @@ class SystemSettings(Singleton, EntropyPluginStore):
             pipe = None
 
             if sts is not None:
-                cache_obj['data'] = None
-                self.__mtime_cache[cache_key] = cache_obj
                 return None
 
             # expecting ascii cruft, don't worry about hash_data type
             with codecs.open(hw_hash_file, "w", encoding=enc) as hash_f:
                 hash_f.write(hash_data)
 
-            cache_obj['data'] = hash_data
-            self.__mtime_cache[cache_key] = cache_obj
             return hash_data
 
         finally:
@@ -1586,19 +1540,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @rtype: dict
         """
         etp_conf = self.__setting_files['system']
-        root = etpConst['systemroot']
-        try:
-            mtime = os.path.getmtime(etp_conf)
-        except (OSError, IOError):
-            mtime = 0.0
-
-        cache_key = (root, etp_conf)
-        cache_obj = self.__mtime_cache.get(cache_key)
-        if cache_obj is not None:
-            if cache_obj['mtime'] == mtime:
-                return cache_obj['data']
-
-        cache_obj = {'mtime': mtime,}
 
         data = {
             'proxy': etpConst['proxy'].copy(),
@@ -1608,8 +1549,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
         }
 
         if const_file_readable(etp_conf):
-            cache_obj['data'] = data
-            self.__mtime_cache[cache_key] = cache_obj
             return data
 
         const_secure_config_file(etp_conf)
@@ -1695,8 +1634,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 continue
             func(value)
 
-        cache_obj['data'] = data
-        self.__mtime_cache[cache_key] = cache_obj
         return data
 
     def _analyze_client_repo_string(self, repostring, branch = None,
@@ -2241,20 +2178,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: raw text extracted from file
         @rtype: list
         """
-        root = etpConst['systemroot']
-        try:
-            mtime = os.path.getmtime(filepath)
-        except (OSError, IOError):
-            mtime = 0.0
-
-        cache_key = (root, filepath)
-        cache_obj = self.__mtime_cache.get(cache_key)
-        if cache_obj is not None:
-            if cache_obj['mtime'] == mtime:
-                return SystemSettings.CachingList(cache_obj['data'])
-
-        cache_obj = {'mtime': mtime,}
-
         enc = etpConst['conf_encoding']
         lines = []
         try:
@@ -2273,12 +2196,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
         except UnicodeDecodeError as err:
             const_debug_write(__name__, "UDE __generic_parser, %s: %s" % (
                     filepath, err,))
-        data = SystemSettings.CachingList(lines)
-        # do not cache CachingList, because it contains cache that
-        # shouldn't survive a clear()
-        cache_obj['data'] = lines
-        self.__mtime_cache[cache_key] = cache_obj
-        return data
+
+        return SystemSettings.CachingList(lines)
 
     def validate_entropy_cache(self, *args, **kwargs):
         """

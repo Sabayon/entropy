@@ -830,7 +830,6 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
     def __init__(self, plugin_id, helper_interface):
         SystemSettingsPlugin.__init__(self, plugin_id, helper_interface)
-        self._mtime_cache = {}
 
     @staticmethod
     def server_conf_path():
@@ -937,27 +936,10 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
         @return: raw text extracted from file
         @rtype: list
         """
-        root = etpConst['systemroot']
-        try:
-            mtime = os.path.getmtime(filepath)
-        except (OSError, IOError):
-            mtime = 0.0
-
-        cache_key = (root, filepath)
-        cache_obj = self._mtime_cache.get(cache_key)
-        if cache_obj is not None:
-            if cache_obj['mtime'] == mtime:
-                return cache_obj['data']
-
-        cache_obj = {'mtime': mtime,}
-
-        enc = etpConst['conf_encoding']
-        data = entropy.tools.generic_file_content_parser(filepath,
-            comment_tag = "##", encoding = enc)
-        if SystemSettings.DISK_DATA_CACHE:
-            cache_obj['data'] = data
-            self._mtime_cache[cache_key] = cache_obj
-        return data
+        return entropy.tools.generic_file_content_parser(
+            filepath,
+            comment_tag = "##",
+            encoding = etpConst['conf_encoding'])
 
     def get_updatable_configuration_files(self, repository_id):
         """
@@ -1076,41 +1058,22 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
         """
         srv_plugin_class = ServerSystemSettingsPlugin
         server_conf = srv_plugin_class.server_conf_path()
-        root = etpConst['systemroot']
-        try:
-            mtime = os.path.getmtime(server_conf)
-        except (OSError, IOError):
-            mtime = 0.0
-
         enc = etpConst['conf_encoding']
-        serverconf = None
-        cache_key = (root, server_conf)
-        cache_obj = self._mtime_cache.get(cache_key)
-        if cache_obj is not None:
-            if cache_obj['mtime'] == mtime:
-                serverconf = cache_obj['data']
-        else:
-            cache_obj = {'mtime': mtime,}
 
-        if serverconf is None:
-            try:
-                with codecs.open(server_conf, "r", encoding=enc) \
-                        as server_f:
-                    serverconf = [x.strip() for x in server_f.readlines() \
-                                      if x.strip()]
-            except IOError as err:
-                if err.errno != errno.ENOENT:
-                    raise
-                # if file doesn't exist, provide empty
-                # serverconf list. In this way, we make sure that
-                # any additional metadata gets added.
-                # see the for loop iterating through the
-                # repository identifiers
-                serverconf = []
-
-            if SystemSettings.DISK_DATA_CACHE:
-                cache_obj['data'] = serverconf
-                self._mtime_cache[cache_key] = cache_obj
+        try:
+            with codecs.open(server_conf, "r", encoding=enc) \
+                    as server_f:
+                serverconf = [x.strip() for x in server_f.readlines() \
+                                  if x.strip()]
+        except IOError as err:
+            if err.errno != errno.ENOENT:
+                raise
+            # if file doesn't exist, provide empty
+            # serverconf list. In this way, we make sure that
+            # any additional metadata gets added.
+            # see the for loop iterating through the
+            # repository identifiers
+            serverconf = []
 
         data = {
             'repositories': srv_plugin_class.REPOSITORIES.copy(),

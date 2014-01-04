@@ -16,7 +16,6 @@ import os
 from entropy.const import etpConst, const_file_readable, \
     const_convert_to_unicode, const_convert_to_rawstring
 from entropy.core.settings.plugins.skel import SystemSettingsPlugin
-from entropy.core.settings.base import SystemSettings
 
 from entropy.exceptions import SystemDatabaseError, RepositoryError
 
@@ -32,7 +31,6 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         SystemSettingsPlugin.__init__(
             self, self.ID, helper_interface)
         self.__repos_files = {}
-        self._mtime_cache = {}
         # Package repositories must be able to live across
         # SystemSettings.clear() calls, because they are very
         # special and 3rd-party (but even Sulfur) tools expect to always
@@ -160,27 +158,10 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         @return: raw text extracted from file
         @rtype: list
         """
-        root = etpConst['systemroot']
-        try:
-            mtime = os.path.getmtime(filepath)
-        except (OSError, IOError):
-            mtime = 0.0
-
-        cache_key = (root, filepath)
-        cache_obj = self._mtime_cache.get(cache_key)
-        if cache_obj is not None:
-            if cache_obj['mtime'] == mtime:
-                return cache_obj['data']
-
-        cache_obj = {'mtime': mtime,}
-
-        enc = etpConst['conf_encoding']
-        data = entropy.tools.generic_file_content_parser(filepath,
-            comment_tag = "##", encoding = enc)
-        if SystemSettings.DISK_DATA_CACHE:
-            cache_obj['data'] = data
-            self._mtime_cache[cache_key] = cache_obj
-        return data
+        return entropy.tools.generic_file_content_parser(
+            filepath,
+            comment_tag = "##",
+            encoding = etpConst['conf_encoding'])
 
     def __run_post_branch_migration_hooks(self, sys_settings_instance):
 
@@ -268,20 +249,6 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         This file contains maintainer supplied per-repository extra
         package keywords.
         """
-        root = etpConst['systemroot']
-        try:
-            mtime = os.path.getmtime(repo_keywords_path)
-        except (OSError, IOError):
-            mtime = 0.0
-
-        cache_key = (root, repo_keywords_path)
-        cache_obj = self._mtime_cache.get(cache_key)
-        if cache_obj is not None:
-            if cache_obj['mtime'] == mtime:
-                return cache_obj['data']
-
-        cache_obj = {'mtime': mtime,}
-
         data = {
             # universal keywords: keywords added repository-wide to all
             # the available packages (in repo).
@@ -313,9 +280,6 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                 obj = data['packages'].setdefault(pkg, set())
                 obj.update(keywords)
 
-        if SystemSettings.DISK_DATA_CACHE:
-            cache_obj['data'] = data
-            self._mtime_cache[cache_key] = cache_obj
         return data
 
     def __repositories_system_mask(self, sys_settings_instance):
@@ -327,7 +291,6 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         set of atoms.
         """
         system_mask = []
-        enc = etpConst['conf_encoding']
         for repoid in self.__repos_files['repos_system_mask']:
             filepath = self.__repos_files['repos_system_mask'][repoid]
 
@@ -414,7 +377,6 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
 
         @return dict data
         """
-
         data = {
             'filesbackup': etpConst['filesbackup'],
             'forcedupdates': etpConst['forcedupdates'],
@@ -433,24 +395,8 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         }
 
         cli_conf = ClientSystemSettingsPlugin.client_conf_path()
-        root = etpConst['systemroot']
-        try:
-            mtime = os.path.getmtime(cli_conf)
-        except (OSError, IOError):
-            mtime = 0.0
-
-        cache_key = (root, cli_conf)
-        cache_obj = self._mtime_cache.get(cache_key)
-        if cache_obj is not None:
-            if cache_obj['mtime'] == mtime:
-                return cache_obj['data']
-
-        cache_obj = {'mtime': mtime,}
 
         if not const_file_readable(cli_conf):
-            if SystemSettings.DISK_DATA_CACHE:
-                cache_obj['data'] = data
-                self._mtime_cache[cache_key] = cache_obj
             return data
 
         def _filesbackup(setting):
@@ -581,9 +527,6 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         if split_debug is not None:
             _splitdebug(split_debug)
 
-        if SystemSettings.DISK_DATA_CACHE:
-            cache_obj['data'] = data
-            self._mtime_cache[cache_key] = cache_obj
         return data
 
     def post_setup(self, system_settings_instance):
