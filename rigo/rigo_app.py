@@ -86,6 +86,12 @@ from entropy.misc import TimeScheduled, ParallelTask, ReadersWritersSemaphore
 from entropy.i18n import _
 from entropy.locks import EntropyResourcesLock
 
+# Change the default in-RAM cache policy for repositories in order to
+# save a huge amount of RAM.
+from entropy.db.cache import EntropyRepositoryCachePolicies
+_NONE_POL = EntropyRepositoryCachePolicies.NONE
+EntropyRepositoryCachePolicies.DEFAULT_CACHE_POLICY = _NONE_POL
+
 import entropy.tools
 
 
