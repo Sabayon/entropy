@@ -19,7 +19,6 @@ from entropy.core.settings.plugins.skel import SystemSettingsPlugin
 from entropy.core.settings.base import SystemSettings
 
 from entropy.exceptions import SystemDatabaseError, RepositoryError
-from entropy.db.exceptions import Error as EntropyRepositoryError
 
 import entropy.dep
 import entropy.tools
@@ -33,7 +32,6 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         SystemSettingsPlugin.__init__(
             self, self.ID, helper_interface)
         self.__repos_files = {}
-        self.__repos_mtime = {}
         self._mtime_cache = {}
         # Package repositories must be able to live across
         # SystemSettings.clear() calls, because they are very
@@ -85,21 +83,13 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
     def __setup_repos_files(self, system_settings):
         """
         This function collects available repositories configuration files
-        by filling internal dict() __repos_files and __repos_mtime.
+        by filling internal dict() __repos_files.
 
         @param system_settings: SystemSettings instance
         @type system_settings: instance of SystemSettings
         @return: None
         @rtype: None
         """
-
-        self.__repos_mtime = {
-            'repos_license_whitelist': {},
-            'repos_mask': {},
-            'repos_system_mask': {},
-            'repos_critical_updates': {},
-            'repos_keywords': {},
-        }
         self.__repos_files = {
             'repos_license_whitelist': {},
             'repos_mask': {},
@@ -108,7 +98,6 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             'repos_keywords': {},
         }
 
-        dmp_dir = etpConst['dumpstoragedir']
         avail_data = system_settings['repositories']['available']
         for repoid in system_settings['repositories']['order']:
 
@@ -117,16 +106,10 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                 continue
 
             repos_mask_setting = {}
-            repos_mask_mtime = {}
             repos_lic_wl_setting = {}
-            repos_lic_wl_mtime = {}
             repos_sm_mask_setting = {}
-            repos_sm_mask_mtime = {}
-            confl_tagged = {}
             repos_critical_updates_setting = {}
-            repos_critical_updates_mtime = {}
             repos_keywords_setting = {}
-            repos_keywords_mtime = {}
 
             maskpath = os.path.join(repo_data['dbpath'],
                 etpConst['etpdatabasemaskfile'])
@@ -141,55 +124,32 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
 
             if const_file_readable(maskpath):
                 repos_mask_setting[repoid] = maskpath
-                repos_mask_mtime[repoid] = dmp_dir + "/repo_" + \
-                    repoid + "_" + etpConst['etpdatabasemaskfile'] + ".mtime"
 
             if const_file_readable(wlpath):
                 repos_lic_wl_setting[repoid] = wlpath
-                repos_lic_wl_mtime[repoid] = dmp_dir + "/repo_" + \
-                    repoid + "_" + etpConst['etpdatabaselicwhitelistfile'] + \
-                    ".mtime"
 
             if const_file_readable(sm_path):
                 repos_sm_mask_setting[repoid] = sm_path
-                repos_sm_mask_mtime[repoid] = dmp_dir + "/repo_" + \
-                    repoid + "_" + etpConst['etpdatabasesytemmaskfile'] + \
-                    ".mtime"
 
             if const_file_readable(critical_path):
                 repos_critical_updates_setting[repoid] = critical_path
-                repos_critical_updates_mtime[repoid] = dmp_dir + "/repo_" + \
-                    repoid + "_" + etpConst['etpdatabasecriticalfile'] + \
-                    ".mtime"
 
             if const_file_readable(keywords_path):
                 repos_keywords_setting[repoid] = keywords_path
-                repos_keywords_mtime[repoid] = dmp_dir + "/repo_" + \
-                    repoid + "_" + etpConst['etpdatabasekeywordsfile'] + \
-                    ".mtime"
 
             self.__repos_files['repos_mask'].update(repos_mask_setting)
-            self.__repos_mtime['repos_mask'].update(repos_mask_mtime)
 
             self.__repos_files['repos_license_whitelist'].update(
                 repos_lic_wl_setting)
-            self.__repos_mtime['repos_license_whitelist'].update(
-                repos_lic_wl_mtime)
 
             self.__repos_files['repos_system_mask'].update(
                 repos_sm_mask_setting)
-            self.__repos_mtime['repos_system_mask'].update(
-                repos_sm_mask_mtime)
 
             self.__repos_files['repos_critical_updates'].update(
                 repos_critical_updates_setting)
-            self.__repos_mtime['repos_critical_updates'].update(
-                repos_critical_updates_mtime)
 
             self.__repos_files['repos_keywords'].update(
                 repos_keywords_setting)
-            self.__repos_mtime['repos_keywords'].update(
-                repos_keywords_mtime)
 
     def __generic_parser(self, filepath):
         """
@@ -370,9 +330,6 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         enc = etpConst['conf_encoding']
         for repoid in self.__repos_files['repos_system_mask']:
             filepath = self.__repos_files['repos_system_mask'][repoid]
-            mtimepath = self.__repos_mtime['repos_system_mask'][repoid]
-            sys_settings_instance.validate_entropy_cache(
-                filepath, mtimepath, repoid = repoid)
 
             entries = self.__generic_parser(filepath)
             system_mask += [x for x in entries if x not in system_mask]
@@ -415,10 +372,6 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         # Parser returning licenses considered accepted by default
         # (= GPL compatibles) read from package.lic_whitelist.
         for repoid in self.__repos_files['repos_license_whitelist']:
-            sys_settings_instance.validate_entropy_cache(
-                self.__repos_files['repos_license_whitelist'][repoid],
-                self.__repos_mtime['repos_license_whitelist'][repoid],
-                repoid = repoid)
 
             data['license_whitelist'][repoid] = self.__generic_parser(
                 self.__repos_files['repos_license_whitelist'][repoid])
@@ -427,10 +380,6 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         # Parser returning packages masked at repository level read from
         # packages.db.mask inside the repository database directory.
         for repoid in self.__repos_files['repos_mask']:
-            sys_settings_instance.validate_entropy_cache(
-                self.__repos_files['repos_mask'][repoid],
-                self.__repos_mtime['repos_mask'][repoid], repoid = repoid)
-
             data['mask'][repoid] = self.__generic_parser(
                 self.__repos_files['repos_mask'][repoid])
 
@@ -438,11 +387,6 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         # Parser returning packages masked at repository level read from
         # packages.db.keywords inside the repository database directory.
         for repoid in self.__repos_files['repos_keywords']:
-            sys_settings_instance.validate_entropy_cache(
-                self.__repos_files['repos_keywords'][repoid],
-                self.__repos_mtime['repos_keywords'][repoid],
-                repoid = repoid)
-
             data['repos_keywords'][repoid] = \
                 self.__repositories_repos_keywords(
                     self.__repos_files['repos_keywords'][repoid])
@@ -457,10 +401,6 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         # This file contains packages that should be always updated
         # before anything else.
         for repoid in self.__repos_files['repos_critical_updates']:
-            sys_settings_instance.validate_entropy_cache(
-                self.__repos_files['repos_critical_updates'][repoid],
-                self.__repos_mtime['repos_critical_updates'][repoid],
-                repoid = repoid)
 
             data['critical_updates'][repoid] = self.__generic_parser(
                 self.__repos_files['repos_critical_updates'][repoid])

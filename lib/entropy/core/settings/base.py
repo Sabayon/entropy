@@ -23,9 +23,10 @@ import hashlib
 import os
 import sys
 import threading
+import warnings
 
-from entropy.const import etpConst, etpSys, const_setup_perms, \
-    const_secure_config_file, const_set_nice_level, const_isunicode, \
+from entropy.const import etpConst, etpSys, \
+    const_secure_config_file, const_set_nice_level, \
     const_convert_to_unicode, const_convert_to_rawstring, \
     const_debug_write, const_is_python3, const_file_readable
 from entropy.core import Singleton, EntropyPluginStore, BaseConfigParser
@@ -487,7 +488,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
         self.__setting_files_pre_run = []
         self.__setting_files = {}
         self.__setting_dirs = {}
-        self.__mtime_files = {}
         self.__mtime_cache = {}
         self.__persistent_settings = {
             'pkg_masking_reasons': etpConst['pkg_masking_reasons'].copy(),
@@ -659,7 +659,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
         del self.__setting_files_pre_run[:]
         self.__setting_files.clear()
         self.__setting_dirs.clear()
-        self.__mtime_files.clear()
         if not SystemSettings.DISK_DATA_CACHE:
             self.__mtime_cache.clear()
 
@@ -715,17 +714,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
         self.__setting_files_pre_run.extend(['repositories'])
 
         dmp_dir = etpConst['dumpstoragedir']
-        self.__mtime_files.update({
-            'keywords_mtime': os.path.join(dmp_dir, "keywords.mtime"),
-            'unmask_mtime': os.path.join(dmp_dir, "unmask.mtime"),
-            'mask_mtime': os.path.join(dmp_dir, "mask.mtime"),
-            'license_mask_mtime': os.path.join(dmp_dir,
-                                               "license_mask.mtime"),
-            'license_accept_mtime': os.path.join(dmp_dir,
-                                                 "license_accept.mtime"),
-            'system_mask_mtime': os.path.join(dmp_dir,
-                                              "system_mask.mtime"),
-        })
 
         conf_d_descriptors = [
             ("mask_d", "package.mask.d",
@@ -1171,8 +1159,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 'repositories': {},
         }
 
-        self.validate_entropy_cache(keywords_conf,
-            self.__mtime_files['keywords_mtime'])
         content = [x.split() for x in \
             self.__generic_parser(keywords_conf,
                 comment_tag = self.__pkg_comment_tag) \
@@ -1249,9 +1235,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: parsed metadata
         @rtype: dict
         """
-        self.validate_entropy_cache(
-            self.__setting_files['unmask'],
-            self.__mtime_files['unmask_mtime'])
         return self.__generic_parser(self.__setting_files['unmask'],
             comment_tag = self.__pkg_comment_tag)
 
@@ -1265,9 +1248,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: parsed metadata
         @rtype: dict
         """
-        self.validate_entropy_cache(
-            self.__setting_files['mask'],
-            self.__mtime_files['mask_mtime'])
         return self.__generic_parser(self.__setting_files['mask'],
             comment_tag = self.__pkg_comment_tag)
 
@@ -1316,20 +1296,14 @@ class SystemSettings(Singleton, EntropyPluginStore):
         """
         Generic parser used by _*_d_parser() functions.
         """
-        conf_dir, setting_files, skipped_files, auto_upd = \
+        _conf_dir, setting_files, skipped_files, auto_upd = \
             self.__setting_dirs[setting_dirs_id]
-        dmp_dir = etpConst['dumpstoragedir']
-        dmp_mtime_dir_file = os.path.join(
-            dmp_dir, os.path.basename(conf_dir) + ".mtime")
-
-        self.validate_entropy_cache(conf_dir, dmp_mtime_dir_file)
 
         content = []
         files = setting_files
         if parse_skipped:
             files = skipped_files
-        for sett_file, mtime_sett_file in files:
-            self.validate_entropy_cache(sett_file, mtime_sett_file)
+        for sett_file, _mtime_sett_file in files:
             content += self.__generic_parser(sett_file,
                 comment_tag = self.__pkg_comment_tag)
 
@@ -1357,9 +1331,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: parsed metadata
         @rtype: dict
         """
-        self.validate_entropy_cache(
-            self.__setting_files['system_mask'],
-            self.__mtime_files['system_mask_mtime'])
         return self.__generic_parser(self.__setting_files['system_mask'],
             comment_tag = self.__pkg_comment_tag)
 
@@ -1401,9 +1372,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: parsed metadata
         @rtype: dict
         """
-        self.validate_entropy_cache(
-            self.__setting_files['license_mask'],
-            self.__mtime_files['license_mask_mtime'])
         return self.__generic_parser(self.__setting_files['license_mask'])
 
     def _license_accept_parser(self):
@@ -1415,9 +1383,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: parsed metadata
         @rtype: dict
         """
-        self.validate_entropy_cache(
-            self.__setting_files['license_accept'],
-            self.__mtime_files['license_accept_mtime'])
         return self.__generic_parser(self.__setting_files['license_accept'])
 
     def _extract_packages_from_set_file(self, filepath):
@@ -2315,104 +2280,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
         self.__mtime_cache[cache_key] = cache_obj
         return data
 
-    def __save_file_mtime(self, toread, tosaveinto):
+    def validate_entropy_cache(self, *args, **kwargs):
         """
-        Internal method. Save mtime of a file to another file.
-
-        @param toread: file path to read
-        @type toread: string
-        @param tosaveinto: path where to save retrieved mtime information
-        @type tosaveinto: string
-        @return: None
-        @rtype: None
+        A call to this method is no longer necessary.
         """
-        try:
-            currmtime = os.path.getmtime(toread)
-        except (OSError, IOError):
-            currmtime = 0.0
-
-        if not os.path.isdir(etpConst['dumpstoragedir']):
-            try:
-                os.makedirs(etpConst['dumpstoragedir'], 0o775)
-                const_setup_perms(etpConst['dumpstoragedir'],
-                    etpConst['entropygid'])
-            except IOError as e:
-                if e.errno == errno.EROFS: # readonly filesystem
-                    # readonly filesystem
-                    # placeholder for possible future activities
-                    pass
-                return
-            except (OSError,) as e:
-                # unable to create the storage directory
-                # useless to continue
-                return
-
-        enc = etpConst['conf_encoding']
-        mtime_f = None
-        try:
-            try:
-                mtime_f = codecs.open(tosaveinto, "w", encoding=enc)
-            except IOError as e: # unable to write?
-                if e.errno == errno.EROFS: # readonly filesystem
-                    # readonly filesystem
-                    # placeholder for possible future activities
-                    pass
-                return
-
-            mtime_f.write(str(currmtime))
-            os.chmod(tosaveinto, 0o664)
-            if etpConst['entropygid'] is not None:
-                os.chown(tosaveinto, 0, etpConst['entropygid'])
-
-        finally:
-            if mtime_f is not None:
-                mtime_f.close()
-
-
-    def validate_entropy_cache(self, settingfile, mtimefile, repoid = None):
-        """
-        Internal method. Validates Entropy Cache based on a setting file
-        and its stored (cache bound) mtime.
-
-        @param settingfile: path of the setting file
-        @type settingfile: string
-        @param mtimefile: path where to save retrieved mtime information
-        @type mtimefile: string
-        @keyword repoid: repository identifier or None
-        @type repoid: string or None
-        @return: None
-        @rtype: None
-        """
-
-        def revalidate():
-            try:
-                self.__save_file_mtime(settingfile, mtimefile)
-            except (OSError, IOError):
-                return
-
-        # handle on-disk cache validation
-        # in this case, repositories cache
-        # if file is changed, we must destroy cache
-        if not os.path.isfile(mtimefile):
-            # we can't know if it has been updated
-            # remove repositories caches
-            revalidate()
-            return
-
-        # check mtime
-        enc = etpConst['conf_encoding']
-        try:
-            with codecs.open(mtimefile, "r", encoding=enc) as mtime_f:
-                mtime = str(mtime_f.readline().strip())
-        except (OSError, IOError,):
-            mtime = "0.0"
-
-        try:
-            currmtime = str(os.path.getmtime(settingfile))
-        except (OSError, IOError,):
-            currmtime = "0.0"
-
-        if mtime != currmtime:
-            revalidate()
-            return False
-        return True
+        warnings.warn("A call to this method is no longer necessary")
