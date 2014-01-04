@@ -42,7 +42,7 @@
 # You can use any mirror listed for "sabayonlinux.org"
 
 [sabayon-limbo]
-desc = Sabayon Limbo Testing Repository
+desc = Sabayon Limbo Testing Repository, do not mix with sabayon-weekly, use with sabayonlinux.org
 repo = http://pkg.sabayon.org
 # This is used as fallback if pkg.sabayon.org is not available
 repo = http://pkg.repo.sabayon.org
