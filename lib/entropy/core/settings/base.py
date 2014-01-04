@@ -2315,31 +2315,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
         self.__mtime_cache[cache_key] = cache_obj
         return data
 
-    def __remove_repo_cache(self, repoid = None):
-        """
-        Internal method. Remove repository cache, because not valid anymore.
-
-        @keyword repoid: repository identifier or None
-        @type repoid: string or None
-        @return: None
-        @rtype: None
-        """
-        if os.path.isdir(etpConst['dumpstoragedir']):
-            self.__cacher.discard()
-            if repoid:
-                return
-        else:
-            try:
-                os.makedirs(etpConst['dumpstoragedir'])
-            except IOError as e:
-                if e.errno == errno.EROFS:
-                    # readonly filesystem
-                    # placeholder for possible future activities
-                    pass
-                return
-            except OSError:
-                return
-
     def __save_file_mtime(self, toread, tosaveinto):
         """
         Internal method. Save mtime of a file to another file.
@@ -2411,7 +2386,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
         def revalidate():
             try:
-                self.__remove_repo_cache(repoid = repoid)
                 self.__save_file_mtime(settingfile, mtimefile)
             except (OSError, IOError):
                 return
