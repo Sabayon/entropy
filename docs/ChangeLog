@@ -1,3 +1,89 @@
+commit 92a5f2fcc1e2ebf34add0a0bfe6fb15d1a29a824
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 4 11:16:46 2014 +0100
+
+    Release Entropy 264
+
+commit de156b083b612ca28336b87235466165f4b0b3ab
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 4 11:16:00 2014 +0100
+
+    [Rigo] change the EntropyRepository default cache policy to NONE
+    
+    This saves a huge quantity of RAM, as happened with RigoDaemon
+
+commit 3ebba8b14f2951610297b92b175005fe4dcefe5f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 4 11:15:27 2014 +0100
+
+    [entropy.db.sql] fix typo in SQL query, s/tag/versiontag/
+
+commit c48869bb31294c1b25ae61014a54f23b3b0e5b12
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 4 11:01:27 2014 +0100
+
+    [entropy.core] SystemSettings: drop mtime based in-RAM cache
+    
+    It does more harm than good and we have lazy loading now
+
+commit c98c39db062709af5b4815875e7b5512b39e2a72
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 4 10:31:09 2014 +0100
+
+    [entropy.core] SystemSettings: drop mtime based cache validation
+    
+    This is no longer necessary and error prone on filesystems with
+    coarse mtime granularity (like ext3). Individual methods are able
+    to validate their own caches.
+
+commit 5da276bfb6e08cda82f1145aa3daa61cd2a452ce
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 4 10:10:49 2014 +0100
+
+    [entropy.core] SystemSettings: __remove_repo_cache() is no longer necessary
+
+commit d20ce3c2cc745e3066c493362b49bb71cdc440ba
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 3 21:04:06 2014 +0100
+
+    [client] update translations
+
+commit 3238689ad4e807b1edb11f84bc218a33bb4e49bc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 3 21:03:41 2014 +0100
+
+    [client] update Slovak translation, thanks to Dušan Kazik
+
+commit 9af5689a130c32889306476318bc9836411743ff
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 3 20:57:10 2014 +0100
+
+    [entropy.core] SystemSettings: simplify __getitem__
+
+commit ab6d1f9fc4bc6e2e2b257226ddc5f79ae998834e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 3 20:55:36 2014 +0100
+
+    [entropy.core] SystemSettings: lazy load item only if it hasn't been loaded yet
+
+commit 2053989b2728b97bf5bb8022c64f930b509ffbb5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 3 20:25:52 2014 +0100
+
+    [entropy.core] SystemSettings: add lazy loading of metadata
+
+commit 289add075b1a10a47202aa04f50f21418eeea511
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 3 20:24:27 2014 +0100
+
+    [Rigo] Update the Slovak translation, thanks to Dušan Kazik
+
+commit 86f31f29483816c365238138d4f74addb5816303
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 3 16:12:21 2014 +0100
+
+    Tagging Entropy version 263
+
 commit 7877126107ff05dc36c57bc05d7c7c66635a3524
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Jan 3 16:12:21 2014 +0100
