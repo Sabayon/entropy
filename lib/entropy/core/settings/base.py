@@ -788,13 +788,23 @@ class SystemSettings(Singleton, EntropyPluginStore):
         # plugins support
         local_plugins = self.get_plugins()
         for plugin_id in sorted(local_plugins):
-            local_plugins[plugin_id].parse(self)
+
+            def parse_method():
+                local_plugins[plugin_id].parse(self)
+                return self.__data[plugin_id]
+
+            self.__parsables[plugin_id] = parse_method
 
         # external plugins support
         external_plugins = self.__get_external_plugins()
         for external_plugin_id in sorted(external_plugins):
             external_plugin = external_plugins[external_plugin_id]()
-            external_plugin.parse(self)
+
+            def parse_method():
+                external_plugin.parse(self)
+                return self.__data[external_plugin_id]
+
+            self.__parsables[external_plugin_id] = parse_method
             self.__external_plugins[external_plugin_id] = external_plugin
 
         enforce_persistent()
@@ -955,6 +965,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
         """
         with self.__lock:
             self.__data.clear()
+            self.__parsables.clear()
             self.__setup_const()
             self.__scan()
 
@@ -1037,8 +1048,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: None
         @rtype: None
         """
-        self.__parsables.clear()
-
         # some parsers must be run BEFORE everything:
         for item in self.__setting_files_pre_run:
             myattr = '_%s_parser' % (item,)

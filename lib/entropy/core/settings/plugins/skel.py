@@ -138,13 +138,19 @@ class SystemSettingsPlugin(object):
         @return: None
         @rtype: None
         """
+        metadata = {}
+
         plugin_id = self.get_id()
+        obj = metadata.setdefault(plugin_id, {})
+
         for parser_id, parser in self.__parsers:
             data = parser(system_settings_instance)
             if data is None:
                 continue
-            obj = system_settings_instance.setdefault(plugin_id, {})
             obj[parser_id] = data
+
+        for key, value in metadata.items():
+            system_settings_instance[key] = value
 
     def post_setup(self, system_settings_instance):
         """
