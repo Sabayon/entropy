@@ -88,14 +88,14 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
         self._repo_validation = repo_validation
 
         self._real_cacher = None
-        self._real_cacher_lock = threading.Lock()
+        self._real_cacher_lock = threading.RLock()
 
         # setup package settings (masking and other stuff)
         self._real_settings = None
-        self._real_settings_lock = threading.Lock()
+        self._real_settings_lock = threading.RLock()
 
         self._real_settings_client_plg = None
-        self._real_settings_client_plg_lock = threading.Lock()
+        self._real_settings_client_plg_lock = threading.RLock()
 
         self._real_logger = None
         self._real_logger_lock = threading.Lock()
@@ -150,20 +150,16 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
         """
         Return a SystemSettings object instance.
         """
-        if self._real_settings is None:
-            # once != None, will be always != None
-            with self._real_settings_lock:
+        with self._real_settings_lock:
+            if self._real_settings is None:
+                self._real_settings = SystemSettings()
+                const_debug_write(__name__, "SystemSettings loaded")
 
-                if self._real_settings is None:
-                    real_settings = SystemSettings()
-                    const_debug_write(__name__, "SystemSettings loaded")
-
-                    # add our SystemSettings plugin
-                    # Make sure we connect Entropy Client plugin
-                    # AFTER client db init
-                    real_settings.add_plugin(
-                        self._settings_client_plugin)
-                    self._real_settings = real_settings
+                # add our SystemSettings plugin
+                # Make sure we connect Entropy Client plugin
+                # AFTER client db init
+                self._real_settings.add_plugin(
+                    self._settings_client_plugin)
 
         return self._real_settings
 
@@ -172,13 +168,10 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
         """
         Return the SystemSettings Entropy Client plugin.
         """
-        if self._real_settings_client_plg is None:
-            # once != None, will be always != None
-            with self._real_settings_client_plg_lock:
-
-                if self._real_settings_client_plg is None:
-                    plugin = ClientSystemSettingsPlugin(self)
-                    self._real_settings_client_plg = plugin
+        with self._real_settings_client_plg_lock:
+            if self._real_settings_client_plg is None:
+                plugin = ClientSystemSettingsPlugin(self)
+                self._real_settings_client_plg = plugin
 
         return self._real_settings_client_plg
 
@@ -187,23 +180,21 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
         """
         Return an EntropyCacher object instance.
         """
-        if self._real_cacher is None:
-            # once != None, will be always != None
-            with self._real_cacher_lock:
+        with self._real_cacher_lock:
 
-                if self._real_cacher is None:
-                    real_cacher = EntropyCacher()
-                    const_debug_write(__name__, "EntropyCacher loaded")
+            if self._real_cacher is None:
+                real_cacher = EntropyCacher()
+                const_debug_write(__name__, "EntropyCacher loaded")
 
-                    # needs to be started here otherwise repository
-                    # cache will be always dropped
-                    if self.xcache:
-                        real_cacher.start()
-                    else:
-                        # disable STASHING_CACHE or we leak
-                        EntropyCacher.STASHING_CACHE = False
+                # needs to be started here otherwise repository
+                # cache will be always dropped
+                if self.xcache:
+                    real_cacher.start()
+                else:
+                    # disable STASHING_CACHE or we leak
+                    EntropyCacher.STASHING_CACHE = False
 
-                    self._real_cacher = real_cacher
+                self._real_cacher = real_cacher
 
         return self._real_cacher
 
@@ -212,36 +203,33 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
         """
         Return the Entropy Client Logger instance.
         """
-        if self._real_logger is None:
-            # once != None, will be always != None
-            with self._real_logger_lock:
+        with self._real_logger_lock:
+            if self._real_logger is None:
+                real_logger = LogFile(
+                    level = self._settings['system']['log_level'],
+                    filename = etpConst['entropylogfile'],
+                    header = "[client]")
 
-                if self._real_logger is None:
-                    real_logger = LogFile(
-                        level = self._settings['system']['log_level'],
-                        filename = etpConst['entropylogfile'],
-                        header = "[client]")
-                    const_debug_write(__name__, "Logger loaded")
-                    self._real_logger = real_logger
+                const_debug_write(__name__, "Logger loaded")
+                self._real_logger = real_logger
 
         return self._real_logger
 
     @property
     def _enabled_repos(self):
-        if self._real_enabled_repos is None:
-            with self._real_enabled_repos_lock:
+        with self._real_enabled_repos_lock:
 
-                if self._real_enabled_repos is None:
-                    real_enabled_repos = []
+            if self._real_enabled_repos is None:
+                real_enabled_repos = []
 
-                    if self._repo_validation:
-                        self._validate_repositories(
-                            enabled_repos = real_enabled_repos)
-                    else:
-                        real_enabled_repos.extend(
-                            self._settings['repositories']['order'])
+                if self._repo_validation:
+                    self._validate_repositories(
+                        enabled_repos = real_enabled_repos)
+                else:
+                    real_enabled_repos.extend(
+                        self._settings['repositories']['order'])
 
-                    self._real_enabled_repos = real_enabled_repos
+                self._real_enabled_repos = real_enabled_repos
 
         return self._real_enabled_repos
 
