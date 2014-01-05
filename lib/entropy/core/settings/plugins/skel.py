@@ -16,7 +16,7 @@
 
 class SystemSettingsPlugin(object):
 
-    BASE_PLUGIN_API_VERSION = 2
+    BASE_PLUGIN_API_VERSION = 3
 
     """
 
@@ -135,22 +135,18 @@ class SystemSettingsPlugin(object):
 
         @param system_settings_instance: SystemSettings instance
         @type system_settings_instance: SystemSettings instance
-        @return: None
-        @rtype: None
+        @return: the parsed metadata
+        @rtype: dict
         """
         metadata = {}
-
-        plugin_id = self.get_id()
-        obj = metadata.setdefault(plugin_id, {})
 
         for parser_id, parser in self.__parsers:
             data = parser(system_settings_instance)
             if data is None:
                 continue
-            obj[parser_id] = data
+            metadata[parser_id] = data
 
-        for key, value in metadata.items():
-            system_settings_instance[key] = value
+        return metadata
 
     def post_setup(self, system_settings_instance):
         """

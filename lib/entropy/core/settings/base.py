@@ -19,6 +19,7 @@
 """
 import codecs
 import errno
+import functools
 import hashlib
 import os
 import sys
@@ -789,22 +790,17 @@ class SystemSettings(Singleton, EntropyPluginStore):
         local_plugins = self.get_plugins()
         for plugin_id in sorted(local_plugins):
 
-            def parse_method():
-                local_plugins[plugin_id].parse(self)
-                return self.__data[plugin_id]
-
-            self.__parsables[plugin_id] = parse_method
+            self.__parsables[plugin_id] = functools.partial(
+                local_plugins[plugin_id].parse, self)
 
         # external plugins support
         external_plugins = self.__get_external_plugins()
         for external_plugin_id in sorted(external_plugins):
             external_plugin = external_plugins[external_plugin_id]()
 
-            def parse_method():
-                external_plugin.parse(self)
-                return self.__data[external_plugin_id]
+            self.__parsables[external_plugin_id] = functools.partial(
+                external_plugin.parse, self)
 
-            self.__parsables[external_plugin_id] = parse_method
             self.__external_plugins[external_plugin_id] = external_plugin
 
         enforce_persistent()
