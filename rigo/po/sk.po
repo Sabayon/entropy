@@ -141,7 +141,7 @@ msgstr "Poinštalačné závislosti"
 
 #: ../rigo/models/application.py:1544
 msgid "Staff dependencies"
-msgstr ""
+msgstr "Závislosti vývojárov"
 
 #: ../rigo/models/application.py:1566
 msgid "Click here for more details"
@@ -862,8 +862,8 @@ msgid ""
 msgstr ""
 "Vo vašom <b>systéme</b> bolo nájdených niekoľko <b>aplikácií</b>, ktoré už "
 "nie sú udržiavané touto distribúciou. Niektoré z nich môžu vyžadovať "
-"<b>ručné prezretie</b> pred ich odinštalovaním. Kliknutím na Aplikácie "
-"rozbalíte ponuku."
+"<b>ručné prezretie</b> pred ich odinštalovaním. Kliknutím na danú aplikáciu "
+"zobrazíte podrobnosti."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:677
 msgid "Manual review"
@@ -1107,7 +1107,7 @@ msgstr "Dôležité veci"
 
 #: ../rigo_app.py:171
 msgid "Breaking Stuff"
-msgstr ""
+msgstr "Voľby pre odborníkov"
 
 #: ../rigo_app.py:174
 msgid "Repository Stuff"
