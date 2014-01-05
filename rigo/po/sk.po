@@ -170,7 +170,7 @@ msgstr "Nastavenia repozitárov sa <b>nepodarilo</b> zmeniť. Prepáčte."
 #: ../rigo/controllers/daemon.py:669
 #, python-format
 msgid "<b>%s</b> action enqueued"
-msgstr "<b>%s</b> akcia zaradená do fronty"
+msgstr "Akcia aplikácie <b>%s</b> bola zaradená do fronty"
 
 #: ../rigo/controllers/daemon.py:673
 #, python-format
