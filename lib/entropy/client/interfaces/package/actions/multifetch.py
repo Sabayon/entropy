@@ -745,6 +745,8 @@ class _PackageMultiFetchAction(_PackageFetchAction):
                  exit_st) = self._try_edelta_multifetch(
                      fetch_files_list, do_resume)
 
+                failed_downloads = None
+
                 if exit_st == 0:
                     # O(nm) but both lists are very small...
                     updated_fetch_files_list = [
@@ -762,8 +764,9 @@ class _PackageMultiFetchAction(_PackageFetchAction):
                         d_list, data_transfer)
                     return 0, []
 
-                d_list = update_download_list(
-                    d_list, failed_downloads)
+                if failed_downloads:
+                    d_list = update_download_list(
+                        d_list, failed_downloads)
 
                 if exit_st not in (-3, -4, -100,) and failed_downloads and \
                     do_resume:
