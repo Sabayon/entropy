@@ -228,14 +228,16 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
             with self._real_enabled_repos_lock:
 
                 if self._real_enabled_repos is None:
-                    self._real_enabled_repos = []
+                    real_enabled_repos = []
 
                     if self._repo_validation:
                         self._validate_repositories(
-                            enabled_repos = self._real_enabled_repos)
+                            enabled_repos = real_enabled_repos)
                     else:
-                        self._real_enabled_repos.extend(
+                        real_enabled_repos.extend(
                             self._settings['repositories']['order'])
+
+                    self._real_enabled_repos = real_enabled_repos
 
         return self._real_enabled_repos
 
