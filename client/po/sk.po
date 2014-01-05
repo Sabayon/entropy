@@ -1,21 +1,23 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-12-26 22:52+0100\n"
-"PO-Revision-Date: 2014-01-02 21:56+0000\n"
+"PO-Revision-Date: 2014-01-04 22:20+0100\n"
 "Last-Translator: Dušan Kazik <prescott66@gmail.com>\n"
-"Language-Team: Slovak (http://www.transifex.com/projects/p/sabayon-entropy/language/sk/)\n"
+"Language-Team: Slovak (http://www.transifex.com/projects/p/sabayon-entropy/"
+"language/sk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: sk\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Generator: Poedit 1.5.5\n"
 
 #: ../../lib/entropy/db/skel.py:495
 #: ../../lib/entropy/client/interfaces/package/actions/action.py:100
@@ -123,7 +125,7 @@ msgstr ""
 
 #: ../../lib/entropy/core/settings/base.py:2086
 msgid "No description"
-msgstr ""
+msgstr "Žiadny popis"
 
 #: ../../lib/kswitch/__init__.py:122
 msgid "has been installed."
@@ -154,11 +156,11 @@ msgstr ""
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:248
 msgid "Accessibility"
-msgstr ""
+msgstr "Zjednodušenie prístupu"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:250
 msgid "Accessibility applications"
-msgstr ""
+msgstr "Aplikácie na zjednodušenie prístupu"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:254
 msgid "Office"
@@ -190,7 +192,7 @@ msgstr "Hry"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:272
 msgid "Games, enjoy your spare time"
-msgstr "Hry na váš voľný čas"
+msgstr "Hry pre váš voľný čas"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:276
 msgid "GNOME Desktop"
@@ -278,15 +280,15 @@ msgstr "chyba"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:1159
 msgid "not readable"
-msgstr ""
+msgstr "nečitateľné"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2614
 msgid "package not available on system"
-msgstr ""
+msgstr "balík nie je v systéme dostupný"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2623
 msgid "repackaging"
-msgstr ""
+msgstr "balík sa znovu vytvára"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2635
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2829
@@ -308,15 +310,15 @@ msgstr ""
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2657
 msgid "Please update packages manually"
-msgstr ""
+msgstr "Prosím, aktualizujte balíky ručne"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2793
 msgid "forcing package updates"
-msgstr ""
+msgstr "vynucuje sa aktualizácia balíkov"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2794
 msgid "Syncing with"
-msgstr ""
+msgstr "Synchronizuje sa s"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2830
 msgid "Cannot complete quickpkg for atoms"
@@ -352,11 +354,11 @@ msgstr ""
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3595
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3743
 msgid "does not exist"
-msgstr ""
+msgstr "neexistuje"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3595
 msgid "Overwriting"
-msgstr ""
+msgstr "Prepisuje sa"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3641
 msgid "variable differs"
@@ -365,7 +367,7 @@ msgstr ""
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3641
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3728
 msgid "Updating"
-msgstr ""
+msgstr "Aktualizuje sa"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3656
 msgid "updating critical variables"
@@ -377,7 +379,7 @@ msgstr ""
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3743
 msgid "Reverting"
-msgstr ""
+msgstr "Vracia sa do pôvodného stavu"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3758
 msgid "Skipping configuration files update, you are not root."
@@ -385,11 +387,11 @@ msgstr ""
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4040
 msgid "Error calculating dependencies"
-msgstr ""
+msgstr "Chyba pri vypočítavaní závislostí"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4599
 msgid "not supported"
-msgstr ""
+msgstr "nepodporované"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4600
 msgid "Probably Portage API has changed"
@@ -398,7 +400,7 @@ msgstr ""
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4663
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4756
 msgid "IOError while reading"
-msgstr ""
+msgstr "V/V chyba počas čítania"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4911
 msgid "illegal Entropy package tag in ebuild"
@@ -423,15 +425,15 @@ msgstr "Všeobecné súbory"
 
 #: ../../lib/entropy/client/services/interfaces.py:66
 msgid "Videos"
-msgstr ""
+msgstr "Videá"
 
 #: ../../lib/entropy/client/services/interfaces.py:67
 msgid "Icons"
-msgstr ""
+msgstr "Ikony"
 
 #: ../../lib/entropy/client/services/interfaces.py:70
 msgid "Unknown document"
-msgstr ""
+msgstr "Neznámy dokument"
 
 #: ../../lib/entropy/client/services/interfaces.py:71
 msgid "Comment"
@@ -448,11 +450,11 @@ msgstr "Všeobecný súbor"
 
 #: ../../lib/entropy/client/services/interfaces.py:75
 msgid "Video"
-msgstr ""
+msgstr "Video"
 
 #: ../../lib/entropy/client/services/interfaces.py:76
 msgid "Icon"
-msgstr ""
+msgstr "Ikona"
 
 #: ../../lib/entropy/client/misc.py:250
 msgid "Automerging file"
@@ -460,15 +462,15 @@ msgstr ""
 
 #: ../../lib/entropy/client/misc.py:284
 msgid "Found update"
-msgstr ""
+msgstr "Nájdená aktualizácia"
 
 #: ../../lib/entropy/client/interfaces/sets.py:239
 msgid "Name already taken"
-msgstr ""
+msgstr "Názov je už použitý"
 
 #: ../../lib/entropy/client/interfaces/sets.py:254
 msgid "Cannot create the element"
-msgstr ""
+msgstr "Nedá sa vytvoriť súčasť"
 
 #: ../../lib/entropy/client/interfaces/sets.py:274
 msgid "cannot start with"
@@ -480,7 +482,7 @@ msgstr "Už zmazané"
 
 #: ../../lib/entropy/client/interfaces/sets.py:283
 msgid "Not defined by user"
-msgstr ""
+msgstr "Nešpecifikované používateľom"
 
 #: ../../lib/entropy/client/interfaces/sets.py:291
 msgid "Set not found or unable to remove"
@@ -500,11 +502,11 @@ msgstr "je porušený"
 
 #: ../../lib/entropy/client/interfaces/cache.py:92
 msgid "Cannot calculate the checksum"
-msgstr ""
+msgstr "Nedá sa vypočítať kontrolný medzisúčet"
 
 #: ../../lib/entropy/client/interfaces/methods.py:91
 msgid "Please update your repositories now in order to remove this message!"
-msgstr ""
+msgstr "Na odstránenie tejto správy, aktualizuje teraz repozitáre!"
 
 #: ../../lib/entropy/client/interfaces/methods.py:111
 #: ../../client/solo/commands/pkg.py:189
@@ -515,7 +517,7 @@ msgstr "nie je dostupný"
 #: ../../lib/entropy/client/interfaces/methods.py:111
 #: ../../lib/entropy/client/interfaces/methods.py:136
 msgid "Cannot validate"
-msgstr ""
+msgstr "Nedá sa overiť"
 
 #: ../../lib/entropy/client/interfaces/methods.py:284
 msgid "bad repository id specified"
@@ -546,19 +548,19 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/methods.py:1286
 #: ../../lib/entropy/const.py:629
 msgid "All fine"
-msgstr ""
+msgstr "Všetko v poriadku"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1247
 msgid "Restoring backed up repository"
-msgstr ""
+msgstr "Obnovuje sa záložný repozitár"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1265
 msgid "Unable to unpack"
-msgstr ""
+msgstr "Nedá sa extrahovať"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1275
 msgid "Repository restored successfully"
-msgstr ""
+msgstr "Repozitár bol úspešne obnovený"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1417
 #: ../../lib/entropy/client/interfaces/package/actions/remove.py:129
@@ -584,11 +586,11 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:408
 msgid "Scanning URL"
-msgstr ""
+msgstr "Prezerá sa URL"
 
 #: ../../lib/entropy/client/interfaces/db.py:426
 msgid "Selected URL"
-msgstr ""
+msgstr "Vybraná URL"
 
 #: ../../lib/entropy/client/interfaces/db.py:450
 msgid "repository is not available at the database URLs"
@@ -613,11 +615,11 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/db.py:519
 #: ../../client/solo/commands/status.py:153
 msgid "Repository URL"
-msgstr ""
+msgstr "URL k repozitáru"
 
 #: ../../lib/entropy/client/interfaces/db.py:529
 msgid "Repository local path"
-msgstr ""
+msgstr "Miestna cesta k repozitáru"
 
 #: ../../lib/entropy/client/interfaces/db.py:537
 msgid "Repository API"
@@ -650,7 +652,7 @@ msgstr "Extrahuje sa databáza do"
 
 #: ../../lib/entropy/client/interfaces/db.py:800
 msgid "Cannot unpack compressed package"
-msgstr ""
+msgstr "Nedá sa extrahovať komprimovaný balík"
 
 #: ../../lib/entropy/client/interfaces/db.py:801
 msgid "Skipping repository"
@@ -706,7 +708,7 @@ msgstr "Revízia repozitáru"
 
 #: ../../lib/entropy/client/interfaces/db.py:1250
 msgid "Checking downloaded repository"
-msgstr ""
+msgstr "Kontroluje sa prevzatý repozitár"
 
 #: ../../lib/entropy/client/interfaces/db.py:1264
 msgid "Cannot open digest"
@@ -715,7 +717,7 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/db.py:1275
 #: ../../lib/entropy/client/interfaces/db.py:1286
 msgid "Downloaded repository status"
-msgstr ""
+msgstr "Stav  prevzatého repozitára"
 
 #: ../../lib/entropy/client/interfaces/db.py:1276
 msgid "OK"
@@ -727,7 +729,7 @@ msgstr "CHYBA"
 
 #: ../../lib/entropy/client/interfaces/db.py:1296
 msgid "An error occurred while checking repository integrity"
-msgstr ""
+msgstr "Vyskytla sa chyba pri kontrolovaní integrity repozitára"
 
 #: ../../lib/entropy/client/interfaces/db.py:1297
 msgid "Giving up"
@@ -735,13 +737,14 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:1319
 #: ../../lib/entropy/security.py:397
-msgid ""
-"Make sure to verify the imported key and set an appropriate trust level"
-msgstr "Uistite sa overením pridaného kľúča a nastavením vhodných úrovní dôveryhodnosti"
+msgid "Make sure to verify the imported key and set an appropriate trust level"
+msgstr ""
+"Uistite sa overením pridaného kľúča a nastavením vhodných úrovní "
+"dôveryhodnosti"
 
 #: ../../lib/entropy/client/interfaces/db.py:1339
 msgid "This repository suports GPG-signed packages"
-msgstr ""
+msgstr "Tento repozitár podporuje balíky podpísané kľúčom GPG"
 
 #: ../../lib/entropy/client/interfaces/db.py:1346
 msgid "you may want to install GnuPG to take advantage of this feature"
@@ -759,7 +762,7 @@ msgstr "GPG kľúč je už nainštalovaný pre"
 
 #: ../../lib/entropy/client/interfaces/db.py:1414
 msgid "GPG key EXPIRED for repository"
-msgstr ""
+msgstr "Platnosť kľúča GPG pre repozitár vypršala"
 
 #: ../../lib/entropy/client/interfaces/db.py:1426
 msgid "Installing GPG key for repository"
@@ -769,7 +772,7 @@ msgstr "Inštalácia GPG kľúča pre repozitár"
 #: ../../lib/entropy/client/interfaces/db.py:1477
 #: ../../lib/entropy/security.py:493
 msgid "Error during GPG key installation"
-msgstr ""
+msgstr "Chyba počas inštalácie kľúča GPG"
 
 #: ../../lib/entropy/client/interfaces/db.py:1454
 msgid "GPG key seems already installed but not properly recorded, resetting"
@@ -782,7 +785,7 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/db.py:1498
 #: ../../lib/entropy/security.py:513
 msgid "Fingerprint"
-msgstr ""
+msgstr "Odtlačok prsta"
 
 #: ../../lib/entropy/client/interfaces/db.py:1536
 msgid "Verifying GPG signature of"
@@ -903,20 +906,20 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/repository.py:214
 msgid "there is"
 msgid_plural "there are"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "je dostupný"
+msgstr[1] "sú dostupné"
+msgstr[2] "je dostupných"
 
 #: ../../lib/entropy/client/interfaces/repository.py:216
 msgid "package file that could be removed"
 msgid_plural "package files that could be removed"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "súbor balíka, ktorý môže byť odstránený"
+msgstr[1] "súbory balíka, ktoré môžu byť odstránené"
+msgstr[2] "súborov balíkov, ktoré môžu byť odstránené"
 
 #: ../../lib/entropy/client/interfaces/repository.py:229
 msgid "Packages are stored in"
-msgstr ""
+msgstr "Balíky sú uložené v"
 
 #: ../../lib/entropy/client/interfaces/repository.py:299
 msgid "Advisories fetch error"
@@ -1002,7 +1005,7 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:789
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:210
 msgid "unknown reason"
-msgstr ""
+msgstr "neznáma príčina"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:803
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:811
@@ -1011,7 +1014,7 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:151
 #: ../../client/solo/utils.py:276 ../../client/solo/commands/command.py:353
 msgid "Downloading"
-msgstr ""
+msgstr "Preberá sa"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:805
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:813
@@ -1019,17 +1022,17 @@ msgstr ""
 #: ../../client/solo/commands/_manage.py:558
 msgid "package"
 msgid_plural "packages"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "balík"
+msgstr[1] "balíky"
+msgstr[2] "balíkov"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:827
 msgid "Some packages cannot be fetched"
-msgstr ""
+msgstr "Niektoré balíky sa nedajú získať"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:828
 msgid "Try to update your repositories and retry"
-msgstr ""
+msgstr "Skúste aktualizovať vaše repozitáre a skúste to znovu"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:841
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:832
@@ -1399,11 +1402,11 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/package/actions/config.py:212
 #: ../../lib/entropy/client/interfaces/package/actions/config.py:218
 msgid "Configuring package"
-msgstr ""
+msgstr "Konfiguruje sa balík"
 
 #: ../../lib/entropy/fetchers.py:854
 msgid "infinite"
-msgstr ""
+msgstr "nekonečno"
 
 #: ../../lib/entropy/fetchers.py:926
 msgid "[F]"
@@ -1411,11 +1414,11 @@ msgstr ""
 
 #: ../../lib/entropy/fetchers.py:927 ../../lib/entropy/fetchers.py:1344
 msgid "ETA"
-msgstr ""
+msgstr "ČDK"
 
 #: ../../lib/entropy/fetchers.py:928 ../../lib/entropy/fetchers.py:1345
 msgid "sec"
-msgstr "s"
+msgstr "sek"
 
 #: ../../lib/entropy/fetchers.py:1208
 msgid "Aggregated download"
@@ -1424,13 +1427,13 @@ msgstr ""
 #: ../../lib/entropy/fetchers.py:1210
 msgid "item"
 msgid_plural "items"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "položka"
+msgstr[1] "položky"
+msgstr[2] "položiek"
 
 #: ../../lib/entropy/security.py:469
 msgid "GPG key EXPIRED for URL"
-msgstr ""
+msgstr "Platnosť kľúča GPG pre URL VYPRŠALA"
 
 #: ../../lib/entropy/security.py:479
 msgid "Installing GPG key for URL"
@@ -2035,7 +2038,8 @@ msgstr ""
 #: ../../client/solo/main.py:163
 msgid ""
 "Erm... Can I send the error, along with some other information\n"
-"about your hardware to my creators so they can fix me? (Your IP will be logged)"
+"about your hardware to my creators so they can fix me? (Your IP will be "
+"logged)"
 msgstr ""
 
 #: ../../client/solo/main.py:170
@@ -2068,8 +2072,7 @@ msgstr ""
 
 #: ../../client/solo/main.py:213
 msgid ""
-"Ugh. Cannot send the report. Please mail the file below to "
-"lxnay@sabayon.org."
+"Ugh. Cannot send the report. Please mail the file below to lxnay@sabayon.org."
 msgstr ""
 
 #: ../../client/solo/main.py:233
@@ -2282,7 +2285,7 @@ msgstr ""
 
 #: ../../client/solo/commands/query.py:312
 msgid "show the number of updates available"
-msgstr ""
+msgstr "zobraziť počet dostupných aktualizácií"
 
 #: ../../client/solo/commands/query.py:359
 msgid "Belong Search"
@@ -2301,9 +2304,9 @@ msgstr ""
 #: ../../client/solo/commands/match.py:240
 msgid "entry"
 msgid_plural "entries"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "položka"
+msgstr[1] "položky"
+msgstr[2] "položiek"
 
 #: ../../client/solo/commands/query.py:411
 #: ../../client/solo/commands/query.py:577
@@ -2315,7 +2318,7 @@ msgstr[2] ""
 #: ../../client/solo/commands/query.py:1465
 #: ../../client/solo/commands/query.py:1513
 msgid "Keyword"
-msgstr ""
+msgstr "Kľúčové slovo"
 
 #: ../../client/solo/commands/query.py:415
 #: ../../client/solo/commands/query.py:592
@@ -2894,7 +2897,8 @@ msgstr "Zadajte číslo"
 
 #: ../../client/solo/commands/conf.py:217
 msgid "Please choose a file to update by typing its identification number."
-msgstr "Prosím vyberte súbor k aktualizácii napísaním jeho identifikačného čísla."
+msgstr ""
+"Prosím vyberte súbor k aktualizácii napísaním jeho identifikačného čísla."
 
 #: ../../client/solo/commands/conf.py:221
 msgid "Other options are:"
@@ -3308,8 +3312,7 @@ msgstr ""
 
 #: ../../client/solo/commands/ugc.py:96
 msgid ""
-"manage package documents in the selected repository (comments, files, "
-"videos)"
+"manage package documents in the selected repository (comments, files, videos)"
 msgstr ""
 
 #: ../../client/solo/commands/ugc.py:104
@@ -3866,9 +3869,9 @@ msgstr ""
 #, python-format
 msgid "There is %s configuration file needing update"
 msgid_plural "There are %s configuration files needing update"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Je dostupný %s konfiguračný súbor, ktorý vyžaduje aktualizáciu"
+msgstr[1] "Sú dostupné %s konfiguračné súbory, ktoré vyžadujú aktualizáciu"
+msgstr[2] "Je dostupných %s konfiguračných súbor, ktoré vyžadujú aktualizáciu"
 
 #: ../../client/solo/commands/_manage.py:116
 msgid "Please run"
@@ -3878,14 +3881,14 @@ msgstr "Prosím spustite"
 #, python-format
 msgid "There is %s preserved library on the system"
 msgid_plural "There are %s preserved libraries on the system"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "V systéme je dostupná %s zachovaná knižnica"
+msgstr[1] "V systéme sú dostupné %s zachované knižnice"
+msgstr[2] "V systéme je dostupných %s zachovaných knižníc"
 
 #. every package matching app-foo is masked
 #: ../../client/solo/commands/_manage.py:245
 msgid "Every package matching"
-msgstr ""
+msgstr "Každý balík súhlasí"
 
 #: ../../client/solo/commands/_manage.py:247
 msgid "is masked"
@@ -4341,8 +4344,8 @@ msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:130
 msgid ""
-"remove unmaintained packages, if any. This will respect --ask, --pretend and"
-" other switches."
+"remove unmaintained packages, if any. This will respect --ask, --pretend and "
+"other switches."
 msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:201
@@ -4399,7 +4402,9 @@ msgstr "Nič na odstránenie"
 
 #: ../../client/solo/commands/upgrade.py:380
 msgid "There are more updates to install, reloading Entropy"
-msgstr "Je dostupných viacero aktualizácií na nainštalovanie, znovu načítava sa služba Entropy"
+msgstr ""
+"Je dostupných viacero aktualizácií na nainštalovanie, znovu načítava sa "
+"služba Entropy"
 
 #: ../../client/solo/commands/upgrade.py:400
 msgid "upgrade the system"
@@ -4625,7 +4630,8 @@ msgstr "najnovšia dostupná verzia je"
 msgid ""
 "It is recommended that you upgrade to the latest before updating any other "
 "packages"
-msgstr "Pred aktualizáciou iných balíkov sa odporúča aktualizovať na najnovšiu verziu"
+msgstr ""
+"Pred aktualizáciou iných balíkov sa odporúča aktualizovať na najnovšiu verziu"
 
 #: ../../magneto/src/magneto/kde/components.py:48
 msgid "Close"
@@ -4731,9 +4737,9 @@ msgstr "nie je možné komunikovať so službou aktualizácií"
 #, python-format
 msgid "There is %s update available"
 msgid_plural "There are %s updates available"
-msgstr[0] "Je dostupných %s aktualizácií"
-msgstr[1] "Je dostupná %s aktualizácia"
-msgstr[2] "Sú dostupné %s aktualizácie"
+msgstr[0] "Je dostupná %s aktualizácia"
+msgstr[1] "Sú dostupné %s aktualizácie"
+msgstr[2] "Je dostupných %s aktualizácií"
 
 #: ../../magneto/src/magneto/core/interfaces.py:370
 msgid "Sabayon updates available"
@@ -4743,9 +4749,9 @@ msgstr "Sú dostupné aktualizácie systému Sabayon"
 #, python-format
 msgid "There is <b>%s</b> update available"
 msgid_plural "There are <b>%s</b> updates available"
-msgstr[0] "Je dostupných <b>%s</b> aktualizácií"
-msgstr[1] "Je dostupná <b>%s</b> aktualizácia"
-msgstr[2] "Sú dostupné <b>%s</b> aktualizácie"
+msgstr[0] "Je dostupná <b>%s</b> aktualizácia"
+msgstr[1] "Sú dostupné <b>%s</b> aktualizácie"
+msgstr[2] "Je dostupných <b>%s</b> aktualizácií"
 
 #: ../../magneto/src/magneto/core/interfaces.py:376
 msgid "Upgrade now"
