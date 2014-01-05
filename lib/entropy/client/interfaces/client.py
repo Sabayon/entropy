@@ -155,14 +155,15 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
             with self._real_settings_lock:
 
                 if self._real_settings is None:
-                    self._real_settings = SystemSettings()
+                    real_settings = SystemSettings()
                     const_debug_write(__name__, "SystemSettings loaded")
 
                     # add our SystemSettings plugin
                     # Make sure we connect Entropy Client plugin
                     # AFTER client db init
-                    self._real_settings.add_plugin(
+                    real_settings.add_plugin(
                         self._settings_client_plugin)
+                    self._real_settings = real_settings
 
         return self._real_settings
 
@@ -191,16 +192,18 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
             with self._real_cacher_lock:
 
                 if self._real_cacher is None:
-                    self._real_cacher = EntropyCacher()
+                    real_cacher = EntropyCacher()
                     const_debug_write(__name__, "EntropyCacher loaded")
 
                     # needs to be started here otherwise repository
                     # cache will be always dropped
                     if self.xcache:
-                        self._real_cacher.start()
+                        real_cacher.start()
                     else:
                         # disable STASHING_CACHE or we leak
                         EntropyCacher.STASHING_CACHE = False
+
+                    self._real_cacher = real_cacher
 
         return self._real_cacher
 
@@ -214,11 +217,12 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
             with self._real_logger_lock:
 
                 if self._real_logger is None:
-                    self._real_logger = LogFile(
+                    real_logger = LogFile(
                         level = self._settings['system']['log_level'],
                         filename = etpConst['entropylogfile'],
                         header = "[client]")
                     const_debug_write(__name__, "Logger loaded")
+                    self._real_logger = real_logger
 
         return self._real_logger
 
