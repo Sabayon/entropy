@@ -17,7 +17,7 @@ from entropy.output import brown, purple, teal, darkred, bold, \
     red, darkgreen
 
 from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.command import SoloCommand
+from solo.commands.command import SoloCommand, exclusivelock
 
 class SoloHop(SoloCommand):
     """
@@ -79,12 +79,12 @@ Upgrade the System to a new branch.
         """
         return self._bashcomp(sys.stdout, last_arg, [])
 
-    def _hop(self, entropy_client):
+    @exclusivelock
+    def _hop(self, entropy_client, inst_repo):
         """
         Solo Hop command.
         """
         settings = entropy_client.Settings()
-        inst_repo = entropy_client.installed_repository()
 
         # set the new branch
         if self._branch == settings['repositories']['branch']:
@@ -144,6 +144,7 @@ Upgrade the System to a new branch.
             return 0
 
         entropy_client.set_branch(old_branch)
+
         mytxt = "%s: %s" % (
             darkred(_("Unable to switch to branch")),
             purple(self._branch),)
