@@ -593,6 +593,17 @@ class RigoServiceController(GObject.Object):
             self._execute_mainloop(_init)
             return self.__entropy_bus
 
+    def _action_to_daemon_action(self, app_action):
+        """
+        Convert an AppAction value to a DaemonAppAction one.
+        """
+        action_map = {
+            AppActions.INSTALL: DaemonAppActions.INSTALL,
+            AppActions.REMOVE: DaemonAppActions.REMOVE,
+            AppActions.UPGRADE: DaemonAppActions.UPGRADE,
+        }
+        return action_map[app_action]
+
     ### GOBJECT EVENTS
 
     def _on_application_request_action(self, apc, app, app_action):
@@ -2453,9 +2464,8 @@ class RigoServiceController(GObject.Object):
                 return self._execute_mainloop(_enqueue)
 
             def _undo_callback():
-                def _emit():
-                    self.emit("application-abort", app, daemon_action)
-                GLib.idle_add(_emit)
+                GLib.idle_add(
+                    self.emit, "application-abort", app, daemon_action)
 
             box = QueueActionNotificationBox(
                 app, daemon_action,
@@ -2583,6 +2593,9 @@ class RigoServiceController(GObject.Object):
                     const_debug_write(__name__, "_application_request: "
                                       "LocalActivityStates.BusyError!")
                     # doing other stuff, cannot go ahead
+                    GLib.idle_add(
+                        self.emit, "application-abort", app,
+                        self._action_to_daemon_action(app_action))
                     return False
                 except LocalActivityStates.SameError:
                     const_debug_write(__name__, "_application_request: "
