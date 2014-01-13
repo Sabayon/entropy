@@ -44,6 +44,7 @@ class Icons:
 class AppActions:
     INSTALL = "install"
     REMOVE = "remove"
+    IDLE = "idle"
     UPGRADE = "upgrade"
 
 from .version import VERSION, DISTRO, RELEASE, CODENAME
