@@ -211,7 +211,6 @@ class RigoServiceController(GObject.Object):
         self.__dbus_main_loop = None
         self.__system_bus = None
         self.__entropy_bus = None
-        self.__entropy_bus_mutex = Lock()
         self._registered_signals = {}
         self._registered_signals_mutex = Lock()
 
@@ -405,193 +404,197 @@ class RigoServiceController(GObject.Object):
 
     @property
     def _entropy_bus(self):
-        with self.__entropy_bus_mutex:
-            if self.__entropy_bus is not None:
-                # validate, and reconnect if needed
-                bus = self.__entropy_bus
-                reconnect_error = "org.freedesktop.DBus.Error.ServiceUnknown"
+        """
+        Return the Entropy D-Bus bus object.
 
-                def _get_dbus_method():
-                    self.__entropy_bus.get_dbus_method("__invalid")()
+        Always execute from the main thread to avoid races that could
+        lead to deadlock.
+        """
+        return self._execute_mainloop(self._entropy_bus_internal_mainloop)
 
-                try:
-                    self._execute_mainloop(_get_dbus_method)
-                except dbus.exceptions.DBusException as exc:
-                    dbus_error = exc.get_dbus_name()
-                    if dbus_error == reconnect_error:
-                        self.__entropy_bus = None
-                        const_debug_write(
-                            __name__,
-                            "_entropy_bus: reconnection required: %s" % (
-                                exc,))
+    def _entropy_bus_internal_mainloop(self):
 
-            if self.__entropy_bus is not None:
-                return self.__entropy_bus
+        if self.__entropy_bus is not None:
+            # validate, and reconnect if needed
+            bus = self.__entropy_bus
+            reconnect_error = "org.freedesktop.DBus.Error.ServiceUnknown"
 
-            def _init():
-                self.__entropy_bus = self._system_bus.get_object(
-                    self.DBUS_INTERFACE, self.DBUS_PATH
-                    )
-
-                # ping/pong signaling, used to let
-                # RigoDaemon release exclusive locks
-                # when no client is connected
-                self.__entropy_bus.connect_to_signal(
-                    self._PING_SIGNAL, self._ping_signal,
-                    dbus_interface=self.DBUS_INTERFACE)
-
-                # Entropy stdout/stderr messages
-                self.__entropy_bus.connect_to_signal(
-                    self._OUTPUT_SIGNAL, self._output_signal,
-                    dbus_interface=self.DBUS_INTERFACE)
-
-                # Entropy UrlFetchers messages
-                self.__entropy_bus.connect_to_signal(
-                    self._TRANSFER_OUTPUT_SIGNAL,
-                    self._transfer_output_signal,
-                    dbus_interface=self.DBUS_INTERFACE)
-
-                # RigoDaemon Entropy Resources unlock requests
-                self.__entropy_bus.connect_to_signal(
-                    self._RESOURCES_UNLOCK_REQUEST_SIGNAL,
-                    self._resources_unlock_request_signal,
-                    dbus_interface=self.DBUS_INTERFACE)
-
-                # RigoDaemon Entropy Resources lock requests
-                self.__entropy_bus.connect_to_signal(
-                    self._RESOURCES_LOCK_REQUEST_SIGNAL,
-                    self._resources_lock_request_signal,
-                    dbus_interface=self.DBUS_INTERFACE)
-
-                # RigoDaemon is telling us that a new activity
-                # has just begun
-                self.__entropy_bus.connect_to_signal(
-                    self._ACTIVITY_STARTED_SIGNAL,
-                    self._activity_started_signal,
-                    dbus_interface=self.DBUS_INTERFACE)
-
-                # RigoDaemon is telling us the activity
-                # progress
-                self.__entropy_bus.connect_to_signal(
-                    self._ACTIVITY_PROGRESS_SIGNAL,
-                    self._activity_progress_signal,
-                    dbus_interface=self.DBUS_INTERFACE)
-
-                # RigoDaemon is telling us that an activity
-                # has been completed
-                self.__entropy_bus.connect_to_signal(
-                    self._ACTIVITY_COMPLETED_SIGNAL,
-                    self._activity_completed_signal,
-                    dbus_interface=self.DBUS_INTERFACE)
-
-                # RigoDaemon tells us that a queue action
-                # is being processed as we cycle (lol)
-                self.__entropy_bus.connect_to_signal(
-                    self._PROCESSING_APPLICATION_SIGNAL,
-                    self._processing_application_signal,
-                    dbus_interface=self.DBUS_INTERFACE)
-
-                # RigoDaemon tells us about an Application
-                # processing status update
-                self.__entropy_bus.connect_to_signal(
-                    self._APPLICATION_PROCESSING_UPDATE,
-                    self._application_processing_update_signal,
-                    dbus_interface=self.DBUS_INTERFACE)
-
-                # RigoDaemon tells us that a queued app action
-                # is now complete
-                self.__entropy_bus.connect_to_signal(
-                    self._APPLICATION_PROCESSED_SIGNAL,
-                    self._application_processed_signal,
-                    dbus_interface=self.DBUS_INTERFACE)
-
-                # RigoDaemon tells us that there are unsupported
-                # applications currently installed
-                self.__entropy_bus.connect_to_signal(
-                    self._UNSUPPORTED_APPLICATIONS_SIGNAL,
-                    self._unsupported_applications_signal,
-                    dbus_interface=self.DBUS_INTERFACE)
-
-                # RigoDaemon tells us that the currently scheduled
-                # System Upgrade is being restarted due to further
-                # updates being available
-                self.__entropy_bus.connect_to_signal(
-                    self._RESTARTING_UPGRADE_SIGNAL,
-                    self._restarting_system_upgrade_signal,
-                    dbus_interface=self.DBUS_INTERFACE)
-
-                # RigoDaemon tells us that a requested
-                # Application action has been enqueued and
-                # authorized
-                self.__entropy_bus.connect_to_signal(
-                    self._APPLICATION_ENQUEUED_SIGNAL,
-                    self._application_enqueued_signal,
-                    dbus_interface=self.DBUS_INTERFACE)
-
-                # RigoDaemon tells us that there are configuration
-                # file updates available
-                self.__entropy_bus.connect_to_signal(
-                    self._CONFIGURATION_UPDATES_SIGNAL,
-                    self._configuration_updates_available_signal,
-                    dbus_interface=self.DBUS_INTERFACE)
-
-                # RigoDaemon tells us that there are app updates
-                # available
-                self.__entropy_bus.connect_to_signal(
-                    self._UPDATES_AVAILABLE_SIGNAL,
-                    self._updates_available_signal,
-                    dbus_interface=self.DBUS_INTERFACE)
-
-                # RigoDaemon tells us that there are unavailable
-                # repositories
-                self.__entropy_bus.connect_to_signal(
-                    self._UNAVAILABLE_REPOSITORIES_SIGNAL,
-                    self._unavailable_repositories_signal,
-                    dbus_interface=self.DBUS_INTERFACE)
-
-                # RigoDaemon tells us that there are old repositories
-                self.__entropy_bus.connect_to_signal(
-                    self._OLD_REPOSITORIES_SIGNAL,
-                    self._old_repositories_signal,
-                    dbus_interface=self.DBUS_INTERFACE)
-
-                # RigoDaemon tells us that noticeboards are available
-                self.__entropy_bus.connect_to_signal(
-                    self._NOTICEBOARDS_AVAILABLE_SIGNAL,
-                    self._noticeboards_available_signal,
-                    dbus_interface=self.DBUS_INTERFACE)
-
-                # RigoDaemon tells us that repositories settings
-                # have changed
-                self.__entropy_bus.connect_to_signal(
-                    self._REPOS_SETTINGS_CHANGED_SIGNAL,
-                    self._repositories_settings_changed_signal,
-                    dbus_interface=self.DBUS_INTERFACE)
-
-                # RigoDaemon tells us that mirros have been
-                # optimized
-                self.__entropy_bus.connect_to_signal(
-                    self._MIRRORS_OPTIMIZED_SIGNAL,
-                    self._mirrors_optimized_signal,
-                    dbus_interface=self.DBUS_INTERFACE)
-
-                # RigoDaemon talls us that there are preserved libraries
-                # on the system
-                try:
-                    self.__entropy_bus.connect_to_signal(
-                        self._PRESERVED_LIBS_AVAILABLE_SIGNAL,
-                        self._preserved_libraries_signal,
-                        dbus_interface=self.DBUS_INTERFACE)
-                except dbus.exceptions.DBusException as exc:
-                    # signal may not be available, ignore.
+            try:
+                bus.get_dbus_method("__invalid")()
+            except dbus.exceptions.DBusException as exc:
+                dbus_error = exc.get_dbus_name()
+                if dbus_error == reconnect_error:
+                    self.__entropy_bus = None
                     const_debug_write(
                         __name__,
-                        "_entropy_bus: %s signal not available: %s" % (
-                            self._PRESERVED_LIBS_AVAILABLE_SIGNAL,
+                        "_entropy_bus: reconnection required: %s" % (
                             exc,))
 
-            self._execute_mainloop(_init)
+        if self.__entropy_bus is not None:
             return self.__entropy_bus
+
+        self.__entropy_bus = self._system_bus.get_object(
+            self.DBUS_INTERFACE, self.DBUS_PATH
+            )
+
+        # ping/pong signaling, used to let
+        # RigoDaemon release exclusive locks
+        # when no client is connected
+        self.__entropy_bus.connect_to_signal(
+            self._PING_SIGNAL, self._ping_signal,
+            dbus_interface=self.DBUS_INTERFACE)
+
+        # Entropy stdout/stderr messages
+        self.__entropy_bus.connect_to_signal(
+            self._OUTPUT_SIGNAL, self._output_signal,
+            dbus_interface=self.DBUS_INTERFACE)
+
+        # Entropy UrlFetchers messages
+        self.__entropy_bus.connect_to_signal(
+            self._TRANSFER_OUTPUT_SIGNAL,
+            self._transfer_output_signal,
+            dbus_interface=self.DBUS_INTERFACE)
+
+        # RigoDaemon Entropy Resources unlock requests
+        self.__entropy_bus.connect_to_signal(
+            self._RESOURCES_UNLOCK_REQUEST_SIGNAL,
+            self._resources_unlock_request_signal,
+            dbus_interface=self.DBUS_INTERFACE)
+
+        # RigoDaemon Entropy Resources lock requests
+        self.__entropy_bus.connect_to_signal(
+            self._RESOURCES_LOCK_REQUEST_SIGNAL,
+            self._resources_lock_request_signal,
+            dbus_interface=self.DBUS_INTERFACE)
+
+        # RigoDaemon is telling us that a new activity
+        # has just begun
+        self.__entropy_bus.connect_to_signal(
+            self._ACTIVITY_STARTED_SIGNAL,
+            self._activity_started_signal,
+            dbus_interface=self.DBUS_INTERFACE)
+
+        # RigoDaemon is telling us the activity
+        # progress
+        self.__entropy_bus.connect_to_signal(
+            self._ACTIVITY_PROGRESS_SIGNAL,
+            self._activity_progress_signal,
+            dbus_interface=self.DBUS_INTERFACE)
+
+        # RigoDaemon is telling us that an activity
+        # has been completed
+        self.__entropy_bus.connect_to_signal(
+            self._ACTIVITY_COMPLETED_SIGNAL,
+            self._activity_completed_signal,
+            dbus_interface=self.DBUS_INTERFACE)
+
+        # RigoDaemon tells us that a queue action
+        # is being processed as we cycle (lol)
+        self.__entropy_bus.connect_to_signal(
+            self._PROCESSING_APPLICATION_SIGNAL,
+            self._processing_application_signal,
+            dbus_interface=self.DBUS_INTERFACE)
+
+        # RigoDaemon tells us about an Application
+        # processing status update
+        self.__entropy_bus.connect_to_signal(
+            self._APPLICATION_PROCESSING_UPDATE,
+            self._application_processing_update_signal,
+            dbus_interface=self.DBUS_INTERFACE)
+
+        # RigoDaemon tells us that a queued app action
+        # is now complete
+        self.__entropy_bus.connect_to_signal(
+            self._APPLICATION_PROCESSED_SIGNAL,
+            self._application_processed_signal,
+            dbus_interface=self.DBUS_INTERFACE)
+
+        # RigoDaemon tells us that there are unsupported
+        # applications currently installed
+        self.__entropy_bus.connect_to_signal(
+            self._UNSUPPORTED_APPLICATIONS_SIGNAL,
+            self._unsupported_applications_signal,
+            dbus_interface=self.DBUS_INTERFACE)
+
+        # RigoDaemon tells us that the currently scheduled
+        # System Upgrade is being restarted due to further
+        # updates being available
+        self.__entropy_bus.connect_to_signal(
+            self._RESTARTING_UPGRADE_SIGNAL,
+            self._restarting_system_upgrade_signal,
+            dbus_interface=self.DBUS_INTERFACE)
+
+        # RigoDaemon tells us that a requested
+        # Application action has been enqueued and
+        # authorized
+        self.__entropy_bus.connect_to_signal(
+            self._APPLICATION_ENQUEUED_SIGNAL,
+            self._application_enqueued_signal,
+            dbus_interface=self.DBUS_INTERFACE)
+
+        # RigoDaemon tells us that there are configuration
+        # file updates available
+        self.__entropy_bus.connect_to_signal(
+            self._CONFIGURATION_UPDATES_SIGNAL,
+            self._configuration_updates_available_signal,
+            dbus_interface=self.DBUS_INTERFACE)
+
+        # RigoDaemon tells us that there are app updates
+        # available
+        self.__entropy_bus.connect_to_signal(
+            self._UPDATES_AVAILABLE_SIGNAL,
+            self._updates_available_signal,
+            dbus_interface=self.DBUS_INTERFACE)
+
+        # RigoDaemon tells us that there are unavailable
+        # repositories
+        self.__entropy_bus.connect_to_signal(
+            self._UNAVAILABLE_REPOSITORIES_SIGNAL,
+            self._unavailable_repositories_signal,
+            dbus_interface=self.DBUS_INTERFACE)
+
+        # RigoDaemon tells us that there are old repositories
+        self.__entropy_bus.connect_to_signal(
+            self._OLD_REPOSITORIES_SIGNAL,
+            self._old_repositories_signal,
+            dbus_interface=self.DBUS_INTERFACE)
+
+        # RigoDaemon tells us that noticeboards are available
+        self.__entropy_bus.connect_to_signal(
+            self._NOTICEBOARDS_AVAILABLE_SIGNAL,
+            self._noticeboards_available_signal,
+            dbus_interface=self.DBUS_INTERFACE)
+
+        # RigoDaemon tells us that repositories settings
+        # have changed
+        self.__entropy_bus.connect_to_signal(
+            self._REPOS_SETTINGS_CHANGED_SIGNAL,
+            self._repositories_settings_changed_signal,
+            dbus_interface=self.DBUS_INTERFACE)
+
+        # RigoDaemon tells us that mirros have been
+        # optimized
+        self.__entropy_bus.connect_to_signal(
+            self._MIRRORS_OPTIMIZED_SIGNAL,
+            self._mirrors_optimized_signal,
+            dbus_interface=self.DBUS_INTERFACE)
+
+        # RigoDaemon talls us that there are preserved libraries
+        # on the system
+        try:
+            self.__entropy_bus.connect_to_signal(
+                self._PRESERVED_LIBS_AVAILABLE_SIGNAL,
+                self._preserved_libraries_signal,
+                dbus_interface=self.DBUS_INTERFACE)
+        except dbus.exceptions.DBusException as exc:
+            # signal may not be available, ignore.
+            const_debug_write(
+                __name__,
+                "_entropy_bus: %s signal not available: %s" % (
+                    self._PRESERVED_LIBS_AVAILABLE_SIGNAL,
+                    exc,))
+
+        return self.__entropy_bus
 
     def _action_to_daemon_action(self, app_action):
         """
