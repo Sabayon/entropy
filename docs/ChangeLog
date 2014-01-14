@@ -1,3 +1,182 @@
+commit 0b881e238fbac3093e6d20e0e3eceda0d037682d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 14 09:10:34 2014 +0100
+
+    Release Entropy 265
+
+commit eb64e4156a24f018bd9004c68414c46f84c10163
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 14 09:09:19 2014 +0100
+
+    [Rigo] do not show app management buttons during upgrade
+
+commit 0b1b213730d4c04ca48f8265b2169c6a5df32b17
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 14 01:01:21 2014 +0100
+
+    [Rigo] translate IDLE DaemonAppAction as well
+
+commit 14cff214c6e0a2c4d4a6f49c838ab5c7dffdac29
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 14 01:00:18 2014 +0100
+
+    [Rigo] Always execute _entropy_bus() from the main thread, avoids deadlocks
+
+commit f9a80d7bd02d1e5a171b4ab74d17c16b04651411
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 14 00:58:45 2014 +0100
+
+    [Rigo] add IDLE to AppActions enum
+
+commit 7c8bfe830370211c40bdd6f14d29784be4d00907
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 14 00:14:09 2014 +0100
+
+    [Rigo] emit application-abort when busy() fails with BusyError
+
+commit 6b7e4f96c33b9ee1e5911a12f31395dc72e56041
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 14 00:13:41 2014 +0100
+
+    [Rigo] add UPGRADE to AppActions to match DaemonAppActions
+
+commit d856204a8d88a66b9afc1694cf964f986b9dee54
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 11 10:43:53 2014 +0100
+
+    [solo.commands.rescue] simplify "generate" code
+
+commit c22a8efc2cc097fa9b9efbea11c0287c762113f7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 11 09:57:38 2014 +0100
+
+    [solo.commands.rescue] handle the inst_repo lock when needed
+
+commit 86820a9abaa07e7e1805a8260c7c5316c532b18b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 11 09:44:04 2014 +0100
+
+    [solo.commands.hop] acquire the inst_repo exclusive lock before touching it
+
+commit e76775701edd86c1d3bbf97dd124ac2aa61769e2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 5 15:51:29 2014 +0100
+
+    [entropy.client.package] multifetch: define failed_downloads before use
+
+commit 64b0e8baa99235fb93135a12a3f8e7745ad70ee2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 5 14:53:05 2014 +0100
+
+    [entropy.client] Client: rewrite lazy loading support, improve reliability
+
+commit 301aa281d5ddd89bf334ddf30f06b070eb7abc8a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 5 13:59:14 2014 +0100
+
+    [entropy.client] avoid races in Entropy Client @property methods
+
+commit 881f8831cff98174bf83d04e91cd5a2034e5cf80
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 5 13:55:31 2014 +0100
+
+    [entropy.client] set _real_enabled_repos atomically
+    
+    The race was triggered by the startup code path in Rigo.
+
+commit 8c4737ef7a745af554d61994b92fe8b5f2ae6445
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 5 13:32:36 2014 +0100
+
+    [entropy.core] SystemSettingsPlugin: make parse() return plugin metadata
+    
+    This is needed in order to avoid infinite recursion through
+    __maybe_lazy_load()
+
+commit 64fb91dcaec6ab3d3b4cd2b65f6497809f99f20c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 5 13:00:31 2014 +0100
+
+    [entropy.core] SystemSettings: enable lazy loading of external plugins as well
+
+commit ce070e541b13df58b7bf7fc483d14f99f38841eb
+Merge: 282fd0d a03296d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 5 02:57:17 2014 -0800
+
+    Merge pull request #7 from prescott66/patch-4
+    
+    Slovak translation update
+
+commit a03296d92d9990eae76afc6e436adf6d1a1645a6
+Author: Dušan <prescott66@gmail.com>
+Date:   Sun Jan 5 11:27:54 2014 +0100
+
+    Slovak translation update
+    
+    finally translated to 100%
+
+commit 282fd0d74c1f4450c40f9f3e26fb0d1d2ba6063e
+Merge: 1d965c7 1152e6e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 5 02:18:13 2014 -0800
+
+    Merge pull request #6 from prescott66/patch-3
+    
+    Slovak translation update
+
+commit 1152e6e6f0c230c98c57ba483431e5b3020becaa
+Author: Dušan <prescott66@gmail.com>
+Date:   Sun Jan 5 10:11:47 2014 +0100
+
+    Slovak translation update
+
+commit 1d965c7185f88915baa8639e4a8d9da6da955e88
+Merge: 1f4ecf4 42f9df1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 4 23:35:59 2014 -0800
+
+    Merge pull request #5 from prescott66/patch-2
+    
+    Slovak translation update
+
+commit 1f4ecf45b3adfdad45b75decd4ced9c7b0635894
+Merge: c946bac 95a37ca
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 4 23:35:46 2014 -0800
+
+    Merge pull request #4 from prescott66/patch-1
+    
+    Slovak translation update
+
+commit 42f9df141b1dde5c053110c1261ef66459f1ae02
+Author: Dušan <prescott66@gmail.com>
+Date:   Sat Jan 4 22:38:01 2014 +0100
+
+    Slovak translation update
+    
+    Fixed plurals and added new strings
+
+commit 95a37ca2a21c74a47f5adc61feabc9f82f14ef50
+Author: Dušan <prescott66@gmail.com>
+Date:   Sat Jan 4 22:27:40 2014 +0100
+
+    Slovak translation update
+    
+    Fixed strings with plurals
+
+commit c946bacd7d1cf5e72c191f647b72ede8d41e126b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 4 18:17:34 2014 +0100
+
+    [conf] update sabayon-limbo repository description
+
+commit 2e36e7c86c6e4bdacba1dc7ce1823f01f1568e9e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 4 11:16:46 2014 +0100
+
+    Tagging Entropy version 264
+
 commit 92a5f2fcc1e2ebf34add0a0bfe6fb15d1a29a824
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Jan 4 11:16:46 2014 +0100
