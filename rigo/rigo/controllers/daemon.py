@@ -603,6 +603,7 @@ class RigoServiceController(GObject.Object):
         action_map = {
             AppActions.INSTALL: DaemonAppActions.INSTALL,
             AppActions.REMOVE: DaemonAppActions.REMOVE,
+            AppActions.IDLE: DaemonAppActions.IDLE,
             AppActions.UPGRADE: DaemonAppActions.UPGRADE,
         }
         return action_map[app_action]
