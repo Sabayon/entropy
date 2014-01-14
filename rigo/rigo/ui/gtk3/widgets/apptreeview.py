@@ -32,7 +32,8 @@ from rigo.enums import Icons, AppActions
 from rigo.models.application import Application
 from rigo.ui.gtk3.widgets.generictreeview import GenericTreeView
 
-from RigoDaemon.enums import AppActions as DaemonAppActions
+from RigoDaemon.enums import AppActions as DaemonAppActions, \
+    ActivityStates as DaemonActivityStates
 
 
 class AppTreeView(GenericTreeView):
@@ -113,6 +114,12 @@ class AppTreeView(GenericTreeView):
         self.set_search_equal_func(self._app_search, None)
         self.set_property("enable-search", True)
 
+    def _is_upgrade(self):
+        """
+        Return whether the system is currently being upgraded.
+        """
+        return self._service.activity() == DaemonActivityStates.UPGRADING_SYSTEM
+
     def _scrolling_event(self, vadj):
         """
         Event received from the Gtk.VAdjustment of the
@@ -188,7 +195,13 @@ class AppTreeView(GenericTreeView):
 
         app = self.model.get_application(pkg_match)
         app_action = self._get_app_transaction(app)
-        if app_action is None:
+
+        if self._is_upgrade():
+            # System is being upgraded, do not show any buttons.
+            action_btn.set_sensitive(False)
+            action_btn.hide()
+
+        elif app_action is None:
             if app.is_installed():
                 # if we're not showing an Installed
                 # Application and there is an update available
@@ -295,6 +308,10 @@ class AppTreeView(GenericTreeView):
         elif btn_id == CellButtonIDs.ACTION:
             btn.set_sensitive(False)
             store.row_changed(path, store.get_iter(path))
+
+            if self._is_upgrade():
+                # System is being upgraded, do not show activate any buttons.
+                return False
 
             # be sure we dont request an action for a
             # pkg with pre-existing actions

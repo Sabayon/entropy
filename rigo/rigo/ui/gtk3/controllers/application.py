@@ -32,7 +32,8 @@ from rigo.utils import build_application_store_url, \
     escape_markup, prepare_markup
 from rigo.models.preference import Preference
 
-from RigoDaemon.enums import AppActions as DaemonAppActions
+from RigoDaemon.enums import AppActions as DaemonAppActions, \
+    ActivityStates as DaemonActivityStates
 
 from entropy.const import etpConst, const_debug_write, \
     const_debug_enabled, const_convert_to_unicode, const_isunicode
@@ -844,7 +845,14 @@ class ApplicationViewController(GObject.Object):
             child.destroy()
 
         daemon_action = self._get_app_transaction(app)
-        if daemon_action is not None:
+        daemon_activity = self._service.activity()
+
+        if daemon_activity == DaemonActivityStates.UPGRADING_SYSTEM:
+            # If we are upgrading the system, do not show any buttons
+            const_debug_write(
+                __name__, "system is being upgraded, hide buttons")
+            pass
+        elif daemon_action is not None:
             button = Gtk.Button()
             if daemon_action == DaemonAppActions.INSTALL:
                 button.set_label(escape_markup("Installing"))
