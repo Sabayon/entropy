@@ -997,7 +997,7 @@ def const_setup_directory(dirpath):
     @raise OSError: if permissions are fucked up
     """
     try:
-        os.makedirs(dirpath)
+        os.makedirs(dirpath, 0o775)
     except OSError as err:
         if err.errno != errno.EEXIST:
             raise
