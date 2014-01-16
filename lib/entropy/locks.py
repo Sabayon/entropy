@@ -16,7 +16,8 @@ import threading
 import os
 
 from entropy.cache import EntropyCacher
-from entropy.const import etpConst, const_setup_directory, const_setup_file
+from entropy.const import etpConst, const_setup_directory, const_setup_file, \
+    const_debug_write
 from entropy.core.settings.base import SystemSettings
 from entropy.i18n import _
 from entropy.misc import FlockFile
@@ -221,11 +222,14 @@ class ResourceLock(object):
         """
         lock_dir = os.path.dirname(lock_path)
         try:
-            os.makedirs(lock_dir, 0o775)
+            const_setup_directory(lock_dir)
         except OSError as err:
-            if err.errno != errno.EEXIST:
+            const_debug_write(
+                __name__, "Error in const_setup_directory %s: %s" % (
+                    lock_dir, err))
+            # we may just not have the perms to create the dir.
+            if err.errno != errno.EPERM:
                 raise
-        const_setup_directory(lock_dir)
 
         try:
             fmode = 0o664
