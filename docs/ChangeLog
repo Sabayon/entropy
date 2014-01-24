@@ -1,3 +1,32 @@
+commit 49b210e6b097dbdf98beb0effceab24a3726c089
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 24 14:04:11 2014 +0100
+
+    Release Entropy 266
+
+commit 96b3b7115af3876b31faacce768471a7fdd25ef0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 16 07:22:26 2014 +0100
+
+    [entropy.locks] call const_setup_directory only, it's enough
+    
+    Also deal with possible directory creation errors. We can safely
+    ignore them, since we would fail right after anyway.
+    This will allow the code to deal with the case where the directory
+    exists but we don't have enough perms to mkdir it.
+
+commit 5423663751de79112ef24e98593e5b2951bb12a2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 16 07:21:57 2014 +0100
+
+    [entropy.const] fix default makedirs permissions, const_setup_file does it anyway
+
+commit 89983b970576257001f39068a24aa22fb59b212b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 14 09:10:35 2014 +0100
+
+    Tagging Entropy version 265
+
 commit 0b881e238fbac3093e6d20e0e3eceda0d037682d
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Jan 14 09:10:34 2014 +0100
