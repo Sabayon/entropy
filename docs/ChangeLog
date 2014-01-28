@@ -1,3 +1,21 @@
+commit 1841234eb45a671d7102acb3a8f30d8e08e949a9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 28 14:17:45 2014 +0100
+
+    Release Entropy 268
+
+commit 976c5e72c408dd759529e7f38ac8def80969ec36
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 28 14:00:15 2014 +0100
+
+    [eit.commands.command] make possible to avoid dealing with the Entropy Resources Lock
+
+commit c598dcfcd070c2b1d16128091d9b93f935d5259c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 28 11:18:51 2014 +0100
+
+    Tagging Entropy version 267
+
 commit 4988c545025a760760cbd3111e91d7d5b8068695
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Jan 28 11:18:50 2014 +0100
