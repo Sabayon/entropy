@@ -200,6 +200,12 @@ class EitCommand(object):
         server_class = None
         acquired = False
         lock = None
+
+        # make possible to avoid dealing with the resources lock.
+        # This is useful if the lock is already acquired by some
+        # parent or controller process.
+        skip_lock = os.getenv("EIT_NO_RESOURCES_LOCK") is not None
+
         try:
             try:
                 server_class = self._entropy_class()
@@ -207,14 +213,15 @@ class EitCommand(object):
                 print_error(err.value)
                 return 1
 
-            lock = EntropyResourcesLock(output=server_class)
-            acquired = lock.wait_exclusive()
-            if not acquired:
-                server_class.output(
-                    darkgreen(_("Another Entropy is currently running.")),
-                    level="error", importance=1
-                )
-                return 1
+            if not skip_lock:
+                lock = EntropyResourcesLock(output=server_class)
+                acquired = lock.wait_exclusive()
+                if not acquired:
+                    server_class.output(
+                        darkgreen(_("Another Entropy is currently running.")),
+                        level="error", importance=1
+                    )
+                    return 1
 
             server = server_class(default_repository=repo)
 
@@ -243,6 +250,12 @@ class EitCommand(object):
         server_class = None
         acquired = False
         lock = None
+
+        # make possible to avoid dealing with the resources lock.
+        # This is useful if the lock is already acquired by some
+        # parent or controller process.
+        skip_lock = os.getenv("EIT_NO_RESOURCES_LOCK") is not None
+
         try:
             try:
                 server_class = self._entropy_class()
@@ -250,9 +263,10 @@ class EitCommand(object):
                 print_error(err.value)
                 return 1
 
-            lock = EntropyResourcesLock(output=server_class)
-            lock.acquire_shared()
-            acquired = True
+            if not skip_lock:
+                lock = EntropyResourcesLock(output=server_class)
+                lock.acquire_shared()
+                acquired = True
 
             if not acquired:
                 server_class.output(
