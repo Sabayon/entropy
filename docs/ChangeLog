@@ -1,3 +1,27 @@
+commit 4988c545025a760760cbd3111e91d7d5b8068695
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 28 11:18:50 2014 +0100
+
+    Release Entropy 267
+
+commit 97b90950feb16713c07f808716a464bd0a3ac274
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 28 11:17:35 2014 +0100
+
+    [matter] expose more status info to pkgpost
+    
+    - MATTER_PACKAGE_NAMES
+    - MATTER_FAILED_PACKAGES
+    - MATTER_BUILT_PACKAGES
+    - MATTER_NOT_FOUND_PACKAGES
+    - MATTER_NOT_INSTALLED_PACKAGES
+
+commit c16b2e24e57164c39435f4a0436e86083d41e711
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 24 14:04:11 2014 +0100
+
+    Tagging Entropy version 266
+
 commit 49b210e6b097dbdf98beb0effceab24a3726c089
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Jan 24 14:04:11 2014 +0100
