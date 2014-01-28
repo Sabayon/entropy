@@ -10,6 +10,7 @@
 
 """
 import argparse
+import os
 
 from entropy.i18n import _
 from entropy.locks import EntropyResourcesLock
