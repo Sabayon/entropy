@@ -232,6 +232,15 @@ class PackageBuilder(object):
         dirs_cleanup = []
         exit_st = self._run_builder(dirs_cleanup)
 
+        std_env["MATTER_BUILT_PACKAGES"] = " ".join(self._built_packages)
+        std_env["MATTER_FAILED_PACKAGES"] = " ".join(self._not_merged_packages)
+        std_env["MATTER_NOT_INSTALLED_PACKAGES"] = " ".join(
+            self._not_installed_packages)
+        std_env["MATTER_NOT_FOUND_PACKAGES"] = " ".join(
+            self._not_found_packages)
+        std_env["MATTER_UNINSTALLED_PACKAGES"] = " ".join(
+            self._uninstalled_packages)
+
         print_info("builder terminated, exit status: %d" % (exit_st,))
 
         # cleanup temporary directories registered on the queue
