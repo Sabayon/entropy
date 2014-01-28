@@ -433,6 +433,14 @@ class EntropyBinaryPMS(BaseBinaryPMS):
             raise EntropyBinaryPMS.RepositoryPushError(
                 "ouch during repo push")
 
+    def clear_cache(self):
+        """
+        Overridden from BaseBinaryPMS.
+        """
+        for repository_id in self._entropy.repositories():
+            repo = self._entropy.open_repository(repository_id)
+            repo.clearCache()
+
 
 BaseBinaryPMS.register(EntropyBinaryPMS)
 BaseBinaryPMS.DEFAULT = False

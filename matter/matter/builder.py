@@ -228,6 +228,8 @@ class PackageBuilder(object):
                     return exit_st
             finally:
                 os.remove(tmp_path)
+                # data might have become stale
+                self._binpms.clear_cache()
 
         dirs_cleanup = []
         exit_st = self._run_builder(dirs_cleanup)
@@ -264,6 +266,8 @@ class PackageBuilder(object):
                     return post_exit_st
             finally:
                 os.remove(tmp_path)
+                # data might have become stale
+                self._binpms.clear_cache()
 
         return exit_st
 

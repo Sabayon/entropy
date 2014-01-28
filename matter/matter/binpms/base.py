@@ -315,5 +315,11 @@ class BaseBinaryPMS(object):
                 "cannot push packages, exit status: %d" % (
                     exit_st,))
 
+    def clear_cache(self):
+        """
+        Clear memory caches that could have become stale.
+        """
+        pass
+
 
 BaseBinaryPMS.register(BaseBinaryPMS)
