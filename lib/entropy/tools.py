@@ -1390,22 +1390,38 @@ def apply_entropy_delta(pkg_path_a, delta_path, new_pkg_path_b,
         _pkg_extractor = _DELTA_DECOMPRESSION_MAP[pkg_compression]
         used_compression = _DELTA_COMPRESSION_MAP[pkg_compression]
 
-    tmp_fd, tmp_delta_path = const_mkstemp(dir=os.path.dirname(delta_path))
-    os.close(tmp_fd)
-    tmp_spm_fd, tmp_spm_path = const_mkstemp(dir=os.path.dirname(delta_path))
-    os.close(tmp_spm_fd)
+    close_fds = []
+    remove_paths = []
 
-    tmp_fd_a, tmp_path_a = const_mkstemp(dir=os.path.dirname(pkg_path_a))
-    tmp_meta_fd, tmp_metadata_path = const_mkstemp(
-        dir=os.path.dirname(new_pkg_path_b))
-    os.close(tmp_meta_fd)
-
-    tmp_fd_null, tmp_path_null = \
-        const_mkstemp(dir=os.path.dirname(delta_path))
-
-    new_pkg_path_b_tmp = new_pkg_path_b + ".edelta_work"
-    new_pkg_path_b_tmp_compressed = new_pkg_path_b_tmp + ".compress"
     try:
+
+        tmp_fd, tmp_delta_path = const_mkstemp(
+            dir=os.path.dirname(delta_path))
+        close_fds.append(tmp_fd)
+        remove_paths.append(tmp_delta_path)
+
+        tmp_spm_fd, tmp_spm_path = const_mkstemp(
+            dir=os.path.dirname(delta_path))
+        close_fds.append(tmp_spm_fd)
+        remove_paths.append(tmp_spm_path)
+
+        tmp_fd_a, tmp_path_a = const_mkstemp(
+            dir=os.path.dirname(pkg_path_a))
+        close_fds.append(tmp_fd_a)
+        remove_paths.append(tmp_path_a)
+
+        tmp_meta_fd, tmp_metadata_path = const_mkstemp(
+            dir=os.path.dirname(new_pkg_path_b))
+        close_fds.append(tmp_meta_fd)
+        remove_paths.append(tmp_metadata_path)
+
+        tmp_fd_null, tmp_path_null = const_mkstemp(
+            dir=os.path.dirname(delta_path))
+        close_fds.append(tmp_fd_null)
+        remove_paths.append(tmp_path_null)
+
+        new_pkg_path_b_tmp = new_pkg_path_b + ".edelta_work"
+        new_pkg_path_b_tmp_compressed = new_pkg_path_b_tmp + ".compress"
 
         # remove entropy metadata from pkg delta, will be appended to package
         # right after
@@ -1439,18 +1455,19 @@ def apply_entropy_delta(pkg_path_a, delta_path, new_pkg_path_b,
         os.rename(new_pkg_path_b_tmp_compressed, new_pkg_path_b)
 
     finally:
-        for path in (tmp_delta_path, tmp_spm_path, tmp_path_a,
-            tmp_metadata_path, new_pkg_path_b_tmp, tmp_path_null):
+        for fd in close_fds:
+            try:
+                os.close(fd)
+            except OSError as err:
+                if err.errno != errno.EBADF:
+                    raise
 
+        for path in remove_paths:
             try:
                 os.remove(path)
             except (IOError, OSError):
                 pass
-        try:
-            os.close(tmp_fd_a)
-        except OSError as err:
-            if err.errno != errno.EBADF:
-                raise
+
 
 def aggregate_entropy_metadata(entropy_package_file, entropy_metadata_file):
     """
