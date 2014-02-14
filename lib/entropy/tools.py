@@ -1179,7 +1179,8 @@ def unpack_gzip(gzipfilepath):
     @rtype: string
     """
     filepath = gzipfilepath[:-3] # remove .gz
-    fd, tmp_path = const_mkstemp(dir=os.path.dirname(filepath))
+    fd, tmp_path = const_mkstemp(
+        prefix="unpack_gzip.", dir=os.path.dirname(filepath))
     with os.fdopen(fd, "wb") as item:
         filegz = gzip.GzipFile(gzipfilepath, "rb")
         chunk = filegz.read(_READ_SIZE)
@@ -1200,7 +1201,9 @@ def unpack_bzip2(bzip2filepath):
     @rtype: string
     """
     filepath = bzip2filepath[:-4] # remove .bz2
-    fd, tmp_path = const_mkstemp(dir=os.path.dirname(filepath))
+    fd, tmp_path = const_mkstemp(
+        prefix="unpack_bzip2.",
+        dir=os.path.dirname(filepath))
     with os.fdopen(fd, "wb") as item:
         filebz2 = bz2.BZ2File(bzip2filepath, "rb")
         chunk = filebz2.read(_READ_SIZE)
@@ -1304,11 +1307,18 @@ def generate_entropy_delta(pkg_path_a, pkg_path_b, hash_tag,
     else:
         _delta_extractor = _DELTA_DECOMPRESSION_MAP[pkg_compression]
 
-    tmp_fd_a, tmp_path_a = const_mkstemp(dir=os.path.dirname(pkg_path_a))
-    tmp_fd_b, tmp_path_b = const_mkstemp(dir=os.path.dirname(pkg_path_b))
+    tmp_fd_a, tmp_path_a = const_mkstemp(
+        prefix="generate_entropy_delta.",
+        dir=os.path.dirname(pkg_path_a))
+
+    tmp_fd_b, tmp_path_b = const_mkstemp(
+        prefix="generate_entropy_delta.",
+        dir=os.path.dirname(pkg_path_b))
+
     tmp_fd, tmp_path = const_mkstemp(
         prefix="entropy.tools.generate_entropy_delta")
     os.close(tmp_fd)
+
     tmp_fd_spm, tmp_path_spm = const_mkstemp(
         prefix="entropy.tools.generate_entropy_delta")
     os.close(tmp_fd_spm)
@@ -1396,26 +1406,31 @@ def apply_entropy_delta(pkg_path_a, delta_path, new_pkg_path_b,
     try:
 
         tmp_fd, tmp_delta_path = const_mkstemp(
+            prefix="apply_entropy_delta.",
             dir=os.path.dirname(delta_path))
         close_fds.append(tmp_fd)
         remove_paths.append(tmp_delta_path)
 
         tmp_spm_fd, tmp_spm_path = const_mkstemp(
+            prefix="apply_entropy_delta.",
             dir=os.path.dirname(delta_path))
         close_fds.append(tmp_spm_fd)
         remove_paths.append(tmp_spm_path)
 
         tmp_fd_a, tmp_path_a = const_mkstemp(
+            prefix="apply_entropy_delta.",
             dir=os.path.dirname(pkg_path_a))
         close_fds.append(tmp_fd_a)
         remove_paths.append(tmp_path_a)
 
         tmp_meta_fd, tmp_metadata_path = const_mkstemp(
+            prefix="apply_entropy_delta.",
             dir=os.path.dirname(new_pkg_path_b))
         close_fds.append(tmp_meta_fd)
         remove_paths.append(tmp_metadata_path)
 
         tmp_fd_null, tmp_path_null = const_mkstemp(
+            prefix="apply_entropy_delta.",
             dir=os.path.dirname(delta_path))
         close_fds.append(tmp_fd_null)
         remove_paths.append(tmp_path_null)
