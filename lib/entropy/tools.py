@@ -1307,40 +1307,41 @@ def generate_entropy_delta(pkg_path_a, pkg_path_b, hash_tag,
     else:
         _delta_extractor = _DELTA_DECOMPRESSION_MAP[pkg_compression]
 
-    tmp_fd_a, tmp_path_a = const_mkstemp(
-        prefix="generate_entropy_delta.",
-        dir=os.path.dirname(pkg_path_a))
-
-    tmp_fd_b, tmp_path_b = const_mkstemp(
-        prefix="generate_entropy_delta.",
-        dir=os.path.dirname(pkg_path_b))
-
-    tmp_fd, tmp_path = const_mkstemp(
-        prefix="entropy.tools.generate_entropy_delta")
-    os.close(tmp_fd)
-
-    tmp_fd_spm, tmp_path_spm = const_mkstemp(
-        prefix="entropy.tools.generate_entropy_delta")
-    os.close(tmp_fd_spm)
+    close_fds = []
+    remove_paths = []
 
     try:
+
+        tmp_fd_a, tmp_path_a = const_mkstemp(
+            prefix="generate_entropy_delta.",
+            dir=os.path.dirname(pkg_path_a))
+        close_fds.append(tmp_fd_a)
+        remove_paths.append(tmp_path_a)
+
+        tmp_fd_b, tmp_path_b = const_mkstemp(
+            prefix="generate_entropy_delta.",
+            dir=os.path.dirname(pkg_path_b))
+        close_fds.append(tmp_fd_b)
+        remove_paths.append(tmp_path_b)
+
+        tmp_fd, tmp_path = const_mkstemp(
+            prefix="entropy.tools.generate_entropy_delta")
+        close_fds.append(tmp_fd)
+        remove_paths.append(tmp_path)
+
+        tmp_fd_spm, tmp_path_spm = const_mkstemp(
+            prefix="entropy.tools.generate_entropy_delta")
+        close_fds.append(tmp_fd_spm)
+        remove_paths.append(tmp_path_spm)
+
         _delta_extractor(pkg_path_a, tmp_fd_a)
         _delta_extractor(pkg_path_b, tmp_fd_b)
-    finally:
-        # ensure that fds are closed
-        for fd in (tmp_fd_a, tmp_fd_b):
-            try:
-                os.close(fd)
-            except OSError as err:
-                if err.errno != errno.EBADF:
-                    raise
-
-    try:
 
         pkg_path_b_dir = os.path.dirname(pkg_path_b)
         delta_fn = generate_entropy_delta_file_name(
             os.path.basename(pkg_path_a), os.path.basename(pkg_path_b),
             hash_tag)
+
         delta_file = os.path.join(pkg_path_b_dir,
             etpConst['packagesdeltasubdir'], delta_fn)
         delta_dir = os.path.dirname(delta_file)
@@ -1365,7 +1366,14 @@ def generate_entropy_delta(pkg_path_a, pkg_path_b, hash_tag,
         aggregate_entropy_metadata(delta_file, tmp_path)
 
     finally:
-        for pkg_f in (tmp_path_a, tmp_path_b, tmp_path, tmp_path_spm):
+        for fd in close_fds:
+            try:
+                os.close(fd)
+            except OSError as err:
+                if err.errno != errno.EBADF:
+                    raise
+
+        for pkg_f in remove_paths:
             try:
                 os.remove(pkg_f)
             except (IOError, OSError):
