@@ -3,15 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Alberto Federman Neto <mrtabac@gmail.com>, 2013
+# Alberto Federman Neto <mrtabac@gmail.com>, 2013-2014
 # Alberto Federman Neto <mrtabac@gmail.com>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Server\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-12-26 22:54+0100\n"
-"PO-Revision-Date: 2013-12-26 21:54+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
+"PO-Revision-Date: 2014-02-04 23:05+0000\n"
+"Last-Translator: Alberto Federman Neto <mrtabac@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.com/projects/p/sabayon-entropy-server/language/pt_BR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,19 +21,19 @@ msgstr ""
 
 #: ../../lib/entropy/db/skel.py:495 ../../lib/entropy/locks.py:301
 msgid "Acquiring shared lock on"
-msgstr ""
+msgstr "Adquirindo chave compartilhada"
 
 #: ../../lib/entropy/db/skel.py:506
 msgid "Acquired shared lock on"
-msgstr ""
+msgstr "chave compartilhada adquirida"
 
 #: ../../lib/entropy/db/skel.py:540 ../../lib/entropy/locks.py:305
 msgid "Acquiring exclusive lock on"
-msgstr ""
+msgstr "Adquirindo chave exclusiva"
 
 #: ../../lib/entropy/db/skel.py:551
 msgid "Acquired exclusive lock on"
-msgstr ""
+msgstr "Chave exclusiva adquirida"
 
 #: ../../lib/entropy/db/skel.py:2464
 msgid "SPM"
@@ -104,7 +104,7 @@ msgstr "Gerando  Bibliotecas de Metadados, por favor espere!"
 
 #: ../../lib/entropy/db/sql.py:5470
 msgid "Spm error occurred"
-msgstr ""
+msgstr "Ocorreu um erro de SPM"
 
 #: ../../lib/entropy/db/sql.py:5483
 msgid "Spm Unique Identifier not found for"
@@ -649,7 +649,7 @@ msgstr "String de pacotes"
 
 #: ../../lib/entropy/server/interfaces/main.py:4429
 msgid "scanning dependencies"
-msgstr ""
+msgstr "Escaneando dependências"
 
 #: ../../lib/entropy/server/interfaces/main.py:4525
 msgid "checking repository"
@@ -682,7 +682,7 @@ msgstr "Os pacotes injetados estão saudáveis, Que Legal!"
 #: ../../lib/entropy/server/interfaces/main.py:4874
 #: ../../lib/entropy/server/interfaces/main.py:5009
 msgid "test"
-msgstr ""
+msgstr "teste"
 
 #: ../../lib/entropy/server/interfaces/main.py:4875
 msgid "these packages haven't been removed yet"
@@ -695,7 +695,7 @@ msgstr "Requisitado por"
 
 #: ../../lib/entropy/server/interfaces/main.py:4916
 msgid "corrupted entry"
-msgstr ""
+msgstr "entrada corrompida"
 
 #. this means that user is asking to remove dep_pattern
 #: ../../lib/entropy/server/interfaces/main.py:4921
@@ -706,7 +706,7 @@ msgstr "removido"
 
 #: ../../lib/entropy/server/interfaces/main.py:5010
 msgid "these packages have lower than expected revisions"
-msgstr ""
+msgstr "Esses pacotes tem revisões obsoletas, abaixo do esperado"
 
 #: ../../lib/entropy/server/interfaces/main.py:5102
 msgid "Running dependencies test"
@@ -1580,7 +1580,7 @@ msgstr "Aviso"
 
 #: ../../lib/entropy/security.py:724
 msgid "broken advisory"
-msgstr ""
+msgstr "advisor quebrado"
 
 #: ../../lib/entropy/security.py:881
 msgid "getting latest advisories"
@@ -1588,7 +1588,7 @@ msgstr "recebendo as últimas advertências"
 
 #: ../../lib/entropy/security.py:898
 msgid "cannot create temporary directory"
-msgstr ""
+msgstr "não foi possíevl criar o diretório temporário"
 
 #: ../../lib/entropy/security.py:917
 msgid "updated successfully"
@@ -1616,7 +1616,7 @@ msgstr "verificação realizada com Sucesso"
 
 #: ../../lib/entropy/security.py:1062
 msgid "checksum verification failed, sorry"
-msgstr ""
+msgstr "Soma de Checagem falhou, desculpe"
 
 #: ../../lib/entropy/security.py:1087
 msgid "GPG service not available"
