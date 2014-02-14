@@ -3,21 +3,20 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# hor410 <hor410@gmail.com>, 2014
-# Tomáš Chvátal <tomas.chvatal@gmail.com>, 2012-2013
+# andrewtranslates <andrewtranslates@aol.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-12-26 22:52+0100\n"
-"PO-Revision-Date: 2014-01-10 19:46+0000\n"
-"Last-Translator: hor410 <hor410@gmail.com>\n"
-"Language-Team: Czech (http://www.transifex.com/projects/p/sabayon-entropy/language/cs/)\n"
+"PO-Revision-Date: 2014-01-22 00:33+0000\n"
+"Last-Translator: andrewtranslates <andrewtranslates@aol.com>\n"
+"Language-Team: Hungarian (http://www.transifex.com/projects/p/sabayon-entropy/language/hu/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: cs\n"
-"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"Language: hu\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../../lib/entropy/db/skel.py:495
 #: ../../lib/entropy/client/interfaces/package/actions/action.py:100
@@ -45,15 +44,15 @@ msgstr ""
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:964
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:990
 msgid "SPM"
-msgstr "SZB"
+msgstr "SPM"
 
 #: ../../lib/entropy/db/skel.py:2465
 msgid "Running packages metadata update"
-msgstr "Spouštím aktualizaci metadat balíčků"
+msgstr "A csomagok metaadatainak frissítése folyamatban"
 
 #: ../../lib/entropy/db/skel.py:2466
 msgid "it could take a while"
-msgstr "může to chvíli trvat"
+msgstr "ez most eltarthat egy ideig"
 
 #: ../../lib/entropy/db/skel.py:2485 ../../lib/entropy/db/skel.py:2510
 #: ../../lib/entropy/db/skel.py:2521
@@ -63,40 +62,40 @@ msgstr "Entropy"
 #: ../../lib/entropy/db/skel.py:2486
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:965
 msgid "action"
-msgstr "činnost"
+msgstr "művelet"
 
 #: ../../lib/entropy/db/skel.py:2511
 msgid "package move actions complete"
-msgstr "činnosti přesunu balíčku dokončeny"
+msgstr "csomag áthelyezése befejeződött"
 
 #: ../../lib/entropy/db/skel.py:2522
 msgid "package moves completed successfully"
-msgstr "přesuny balíčku úspěšně dokončeny"
+msgstr "csomag áthelyezése sikeresen befejeződött"
 
 #: ../../lib/entropy/db/skel.py:4544
 msgid "Syncing current database"
-msgstr "Synchronizuji současnou databázi"
+msgstr "Aktuális adatbázis szinkronizálása"
 
 #: ../../lib/entropy/db/skel.py:4545
 #: ../../lib/entropy/client/interfaces/db.py:311
 msgid "please wait"
-msgstr "čekejte prosím"
+msgstr "kis türelmet"
 
 #: ../../lib/entropy/db/skel.py:4560
 msgid "Removing entry"
-msgstr "Odebírám záznam"
+msgstr "Bejegyzés eltávolítása"
 
 #: ../../lib/entropy/db/skel.py:4579
 msgid "Adding entry"
-msgstr "Přidávám záznam"
+msgstr "Bejegyzés hozzáadása"
 
 #: ../../lib/entropy/db/sqlite.py:2009
 msgid "Exporting database table"
-msgstr "Exportuji tabulku databáze"
+msgstr "Adatbázis exportálása"
 
 #: ../../lib/entropy/db/sqlite.py:2049
 msgid "Database Export complete."
-msgstr "Export databáze dokončen."
+msgstr "Adatbázis exportálása befejezve."
 
 #: ../../lib/entropy/db/sqlite.py:2415 ../../lib/entropy/db/sqlite.py:2519
 #: ../../lib/entropy/db/sqlite.py:2627 ../../lib/entropy/db/sqlite.py:2640
@@ -105,15 +104,15 @@ msgstr "Export databáze dokončen."
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2792
 #: ../../lib/entropy/client/interfaces/client.py:368
 msgid "ATTENTION"
-msgstr "POZOR"
+msgstr "FIGYELEM"
 
 #: ../../lib/entropy/db/sqlite.py:2417 ../../lib/entropy/db/sqlite.py:2521
 msgid "updating repository metadata layout, please wait!"
-msgstr "aktualizuji rozvržení metadat repozitáře, čekejte prosím..."
+msgstr "kis türelmet, a programcsomag metaadatai frissülnek!"
 
 #: ../../lib/entropy/db/sqlite.py:2628
 msgid "generating provided_libs metadata, please wait!"
-msgstr "generuji metadata provided_libs, čekejte prosím..."
+msgstr "generálódnak a provided_libs metaadatai, kis türelmet!"
 
 #: ../../lib/entropy/db/sql.py:5470
 msgid "Spm error occurred"
@@ -121,15 +120,15 @@ msgstr ""
 
 #: ../../lib/entropy/db/sql.py:5483
 msgid "Spm Unique Identifier not found for"
-msgstr "Nenalezen unikátní identifikátor SZB pro"
+msgstr ""
 
 #: ../../lib/entropy/core/settings/base.py:2086
 msgid "No description"
-msgstr ""
+msgstr "Nincs leírás"
 
 #: ../../lib/kswitch/__init__.py:122
 msgid "has been installed."
-msgstr ""
+msgstr "telepítve."
 
 #: ../../lib/kswitch/__init__.py:123
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3449
@@ -144,7 +143,7 @@ msgstr ""
 #: ../../client/solo/commands/install.py:502
 #: ../../client/solo/commands/install.py:505
 msgid "Attention"
-msgstr "Pozor"
+msgstr "Figyelem"
 
 #: ../../lib/kswitch/__init__.py:124
 msgid "some external drivers cannot work across multiple kernels."
@@ -156,75 +155,75 @@ msgstr ""
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:248
 msgid "Accessibility"
-msgstr "Zpřístupnění"
+msgstr "Elérhetőség"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:250
 msgid "Accessibility applications"
-msgstr "Aplikace pro zpřístupnění"
+msgstr "Elérhetőségi alkalmazások"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:254
 msgid "Office"
-msgstr "Kancelář"
+msgstr "Iroda"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:255
 msgid "Applications used in office environments"
-msgstr "Aplikace používané v kancelářských prostředích"
+msgstr "Irodai környezetben használható alkalmazások"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:261
 msgid "Development"
-msgstr "Vývoj"
+msgstr "Fejlesztés"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:262
 msgid "Applications or system libraries"
-msgstr "Aplikace, či systémové knihovny"
+msgstr "Alkalmazások vagy rendszer könyvtárak"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:266
 msgid "System"
-msgstr "Systém"
+msgstr "Rendszer"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:267
 msgid "System applications or libraries"
-msgstr "Systémové aplikace a knihovny"
+msgstr "Rendszer alkalmazások vagy könyvtárak"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:271
 msgid "Games"
-msgstr "Hry"
+msgstr "Játékok"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:272
 msgid "Games, enjoy your spare time"
-msgstr "Hry, užijte si svůj volný čas"
+msgstr "Játékok, élvezze a szabad idejét"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:276
 msgid "GNOME Desktop"
-msgstr "Prostředí GNOME"
+msgstr "GNOME Környezet"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:278
 msgid "Applications and libraries for the GNOME Desktop"
-msgstr "Aplikace a knihovny pracovního prostředí GNOME"
+msgstr "Alkalmazások és könyvtárak GNOME Környezethez"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:282
 msgid "KDE Desktop"
-msgstr "Prostředí KDE"
+msgstr "KDE Környezet"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:284
 msgid "Applications and libraries for the KDE Desktop"
-msgstr "Aplikace a knihovny pracovního prostředí KDE"
+msgstr "Alkalmazások és könyvtárak KDE Környezethez"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:288
 msgid "XFCE Desktop"
-msgstr "Prostředí XFCE"
+msgstr "XFCE Környezet"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:290
 msgid "Applications and libraries for the XFCE Desktop"
-msgstr "Aplikace a knihovny pracovního prostředí XFCE"
+msgstr "Alkalmazások és könyvtárak XFCE Környezethez"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:294
 msgid "LXDE Desktop"
-msgstr "Prostředí LXDE"
+msgstr "LXDE Környezet"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:296
 msgid "Applications and libraries for the LXDE Desktop"
-msgstr "Aplikace a knihovny pracovního prostředí LXDE"
+msgstr "Alkalmazások és könyvtárak LXDE Környezethez"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:300
 msgid "Multimedia"
@@ -232,31 +231,31 @@ msgstr "Multimédia"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:302
 msgid "Applications and libraries for Multimedia"
-msgstr "Multimediální aplikace a knihovny"
+msgstr "Alkalmazások és könyvtárak Multimédiához"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:306
 msgid "Networking"
-msgstr "Síťové nástroje"
+msgstr "Hálózat"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:308
 msgid "Applications and libraries for Networking"
-msgstr "Síťové aplikace a knihovny"
+msgstr "Alkalmazások és könyvtárak Hálózathoz"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:312
 msgid "Science"
-msgstr "Věda"
+msgstr "Tudomány"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:314
 msgid "Scientific applications and libraries"
-msgstr "Vědecké aplikace a knihovny"
+msgstr "Alkalmazások és könyvtárak Tudományhoz"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:318
 msgid "Security"
-msgstr "Bezpečnost"
+msgstr "Biztonság"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:320
 msgid "Security oriented applications"
-msgstr "Aplikace orientované na bezpečnost"
+msgstr "Biztonsággal kapcsolatos alkalmazások"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:324
 msgid "X11"
@@ -264,11 +263,11 @@ msgstr "X11"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:326
 msgid "Applications and libraries for X11"
-msgstr "Aplikace a knihovny pro X11"
+msgstr "Alkalmazások és könyvtárak X11-hez"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:623
 msgid "Reloading Portage modules"
-msgstr "Znovu načítám moduly Portage"
+msgstr "Portage modulok újratöltése"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:991
 msgid "updating metadata"
@@ -276,313 +275,313 @@ msgstr ""
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:1157
 msgid "error"
-msgstr "chyba"
+msgstr "hiba"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:1159
 msgid "not readable"
-msgstr ""
+msgstr "nem olvasható"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2614
 msgid "package not available on system"
-msgstr "balíček není dostupný v systému"
+msgstr "a csomag nem elérhető a rendszerben"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2623
 msgid "repackaging"
-msgstr "přebaluji"
+msgstr "újracsomagolás"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2635
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2829
 msgid "WARNING"
-msgstr "VAROVÁNÍ"
+msgstr "FIGYELMEZTETÉS"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2636
 msgid "Cannot complete quickpkg for atom"
-msgstr "Nelze dokončit quickpg pro atom"
+msgstr "Nem hajtható végre a quickpkg az atom számára"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2638
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2832
 msgid "do it manually"
-msgstr "udělat to ručně"
+msgstr "manuálisan csinálom"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2656
 msgid "package files rebuild did not run properly"
-msgstr "znovuvytvoření souborů balíčků neproběhlo správně"
+msgstr "a csomag fájlok újraépítése nem megfelelően zajlott le"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2657
 msgid "Please update packages manually"
-msgstr "Prosím aktualizujte balíčky ručně"
+msgstr "Légy szíves frissítsd a csomagokat manuálisan"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2793
 msgid "forcing package updates"
-msgstr "vynucuji aktualizaci balíčků"
+msgstr "csomag frissítés kényszerítése"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2794
 msgid "Syncing with"
-msgstr "Synchronizace s"
+msgstr "Szinkronizálás"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2830
 msgid "Cannot complete quickpkg for atoms"
-msgstr "Nelze dokončit quickpkg pro atomy"
+msgstr "Nem hajtható végre a quickpkg az atoms számára"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3194
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4910
 #: ../../lib/entropy/client/interfaces/package/actions/_triggers.py:284
 #: ../../lib/entropy/client/interfaces/package/actions/_triggers.py:535
 msgid "QA"
-msgstr "QA"
+msgstr "Kérdések, Válaszok"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3195
 msgid "Cannot update Portage package metadata"
-msgstr "Nelze aktualizovat metadata balíčku Portage"
+msgstr ""
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3221
 msgid "SPM uid update error"
-msgstr "Chyba aktualizace uid SZB"
+msgstr "SPM uid frissítési hiba"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3288
 msgid "Cannot update SPM installed pkgs file"
-msgstr "Nelze aktualizovat soubor nainstalovaných balíčků SZB"
+msgstr "Nem frissíthető az SPM installált pkgs fájl"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3390
 msgid "Portage world file is corrupted"
-msgstr "World soubor portage je poškozen"
+msgstr "A Portage world fájl megsérült"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3450
 msgid "preserved libraries have been found on system"
-msgstr "na systému byly nalezeny zachované knihovny"
+msgstr "Lefoglalt könyvtárakat tartalmaz a rendszer"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3595
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3743
 msgid "does not exist"
-msgstr "neexistuje"
+msgstr "nem létezik"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3595
 msgid "Overwriting"
-msgstr "Přepisuji"
+msgstr "Felülírás"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3641
 msgid "variable differs"
-msgstr "proměnné se liší"
+msgstr "eltérő változó"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3641
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3728
 msgid "Updating"
-msgstr "Aktualizuji"
+msgstr "Frissítés"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3656
 msgid "updating critical variables"
-msgstr "aktualizuji kritické proměnné"
+msgstr "kritikus változók frissítése"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3728
 msgid "differs"
-msgstr "se liší"
+msgstr "különbözik"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3743
 msgid "Reverting"
-msgstr "Vracím zpět"
+msgstr "Visszaállítás"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3758
 msgid "Skipping configuration files update, you are not root."
-msgstr "Přeskakuji aktualizaci konfiguračních souborů, nejste root."
+msgstr "A konfigurációs fájlok frissítésének kihagyása, nem vagy root"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4040
 msgid "Error calculating dependencies"
-msgstr "Chyba kalkulace závislostí"
+msgstr "Hiba a függőségek kiszámításakor"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4599
 msgid "not supported"
-msgstr "nepodporováno"
+msgstr "nem támogatott"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4600
 msgid "Probably Portage API has changed"
-msgstr "Pravděpodobně se změnilo API Portage"
+msgstr "Valószínüleg megváltozott a Portage API"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4663
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4756
 msgid "IOError while reading"
-msgstr "Chyba IO při čtení"
+msgstr "Adatforgalmi hiba olvasáskor"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4911
 msgid "illegal Entropy package tag in ebuild"
-msgstr "Neplatná značka balíčku Entropy v ebuildu"
+msgstr "illegális Entropy csomag címke az ebuild-ben"
 
 #: ../../lib/entropy/client/services/interfaces.py:61
 msgid "Unknown documents"
-msgstr "Neznámé dokumenty"
+msgstr "Ismeretlen dokumentumok"
 
 #: ../../lib/entropy/client/services/interfaces.py:62
 msgid "Comments"
-msgstr "Komentáře"
+msgstr "Megjegyzések"
 
 #. BBCODE_TYPE_ID: _('BBcode Documents'),
 #: ../../lib/entropy/client/services/interfaces.py:64
 msgid "Images/Screenshots"
-msgstr "Obrázky/Snímky obrazovky"
+msgstr "Képek/Képernyőképek"
 
 #: ../../lib/entropy/client/services/interfaces.py:65
 msgid "Generic Files"
-msgstr "Obecné soubory"
+msgstr "Általános Fájlok"
 
 #: ../../lib/entropy/client/services/interfaces.py:66
 msgid "Videos"
-msgstr "Videa"
+msgstr "Videók"
 
 #: ../../lib/entropy/client/services/interfaces.py:67
 msgid "Icons"
-msgstr "Ikony"
+msgstr "Ikonok"
 
 #: ../../lib/entropy/client/services/interfaces.py:70
 msgid "Unknown document"
-msgstr "Neznámý dokument"
+msgstr "Ismeretlen dokumentum"
 
 #: ../../lib/entropy/client/services/interfaces.py:71
 msgid "Comment"
-msgstr "Komentář"
+msgstr "Megjegyzés"
 
 #. BBCODE_TYPE_ID: _('BBcode Document'),
 #: ../../lib/entropy/client/services/interfaces.py:73
 msgid "Image/Screenshot"
-msgstr "Obrázek/Snímek obrazovky"
+msgstr "Kép/Képernyőkép"
 
 #: ../../lib/entropy/client/services/interfaces.py:74
 msgid "Generic File"
-msgstr "Obecný soubor"
+msgstr "Általános Fájl"
 
 #: ../../lib/entropy/client/services/interfaces.py:75
 msgid "Video"
-msgstr "Video"
+msgstr "Videó"
 
 #: ../../lib/entropy/client/services/interfaces.py:76
 msgid "Icon"
-msgstr "Ikona"
+msgstr "Ikon"
 
 #: ../../lib/entropy/client/misc.py:250
 msgid "Automerging file"
-msgstr "Automaticky slučuji soubor"
+msgstr "Autómatikusan összevont fájl"
 
 #: ../../lib/entropy/client/misc.py:284
 msgid "Found update"
-msgstr "Nalezena aktualizace"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/sets.py:239
 msgid "Name already taken"
-msgstr "Název je již používán"
+msgstr "A név már foglalt"
 
 #: ../../lib/entropy/client/interfaces/sets.py:254
 msgid "Cannot create the element"
-msgstr "Nelze vytvořit element"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/sets.py:274
 msgid "cannot start with"
-msgstr "nelze začít s"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/sets.py:279
 msgid "Already removed"
-msgstr "Již odebrán"
+msgstr "Már törölve"
 
 #: ../../lib/entropy/client/interfaces/sets.py:283
 msgid "Not defined by user"
-msgstr "Nedefinováno uživatelem"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/sets.py:291
 msgid "Set not found or unable to remove"
-msgstr "Sada nenalezena, nebo nejde odebrat"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/cache.py:90
 #: ../../lib/entropy/client/interfaces/methods.py:110
 #: ../../lib/entropy/client/interfaces/methods.py:135
 #: ../../client/solo/commands/upgrade.py:305
 msgid "Repository"
-msgstr "Repozitář"
+msgstr "Programcsomag"
 
 #: ../../lib/entropy/client/interfaces/cache.py:91
 #: ../../lib/entropy/client/interfaces/methods.py:136
 msgid "is corrupted"
-msgstr "je poškozen"
+msgstr "sérült"
 
 #: ../../lib/entropy/client/interfaces/cache.py:92
 msgid "Cannot calculate the checksum"
-msgstr "Nelze vypočítat kontrolní součet"
+msgstr "Nem lehet kiszámolni az ellenőrző öszeget"
 
 #: ../../lib/entropy/client/interfaces/methods.py:91
 msgid "Please update your repositories now in order to remove this message!"
-msgstr "Prosím aktualizujte nyní Vaše repozitáře pro odstranění této zprávy."
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/methods.py:111
 #: ../../client/solo/commands/pkg.py:189
 #: ../../client/solo/commands/mask.py:101
 msgid "is not available"
-msgstr "není dostupný"
+msgstr "nem elérhető"
 
 #: ../../lib/entropy/client/interfaces/methods.py:111
 #: ../../lib/entropy/client/interfaces/methods.py:136
 msgid "Cannot validate"
-msgstr "Nelze ověřit"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/methods.py:284
 msgid "bad repository id specified"
-msgstr "zadáno špatné id repozitáře"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/methods.py:309
 #, python-format
 msgid "Repository %s hasn't been downloaded yet."
-msgstr "Repozitář %s ještě nebyl stažen."
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/methods.py:1013
 msgid "System database not found or corrupted"
-msgstr "Systémová databáze nenalezena nebo narušena"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/methods.py:1014
 msgid "running in safe mode using temporary, empty repository"
-msgstr "spouštím v bezpečném režimu použitím dočasného prázdného repozitáře"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/methods.py:1199
 msgid "Backing up repository to"
-msgstr "Zálohuji repozitář do"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/methods.py:1219
 msgid "Repository backed up successfully"
-msgstr "Repozitář úspěšně zazálohován"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/methods.py:1228
 #: ../../lib/entropy/client/interfaces/methods.py:1286
 #: ../../lib/entropy/const.py:629
 msgid "All fine"
-msgstr "Vše v pořádku"
+msgstr "Minden rendben"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1247
 msgid "Restoring backed up repository"
-msgstr "Obnovuji zazálohovaný repozitář"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/methods.py:1265
 msgid "Unable to unpack"
-msgstr "Nelze rozbalit"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/methods.py:1275
 msgid "Repository restored successfully"
-msgstr "Repozitář úspěšně obnoven"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/methods.py:1417
 #: ../../lib/entropy/client/interfaces/package/actions/remove.py:129
 #: ../../lib/entropy/client/interfaces/package/actions/remove.py:136
 msgid "Removing"
-msgstr "Odstraňuje se"
+msgstr "Eltávolítás"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1831
 msgid "Checking speed of"
-msgstr "Ověřuji rychlost"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/methods.py:1862
 msgid "Mirror speed"
-msgstr "Rychlost zrcadla"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/methods.py:2414
 msgid "not a valid method"
-msgstr "neplatná metoda"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:309
 msgid "Injecting downloaded dump"
-msgstr "Vkládám stažená data"
+msgstr "A letöltött dump beillesztése"
 
 #: ../../lib/entropy/client/interfaces/db.py:408
 msgid "Scanning URL"
@@ -598,126 +597,126 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:457
 msgid "Looking for an alternate route using package mirrors"
-msgstr "Vyhledávám alternativní cestu pomocí zrcadel balíčku"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:466
 msgid "Checking repository URL"
-msgstr "Kontroluji URL repozitáře"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:485
 msgid "Found repository at URL"
-msgstr "Repozitář nalezen na URL"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:497
 msgid "Unable to find alternate repository mirrors. Sorry."
-msgstr "Nelze nalézt alternativní zrcadla repozitáře. Lituji."
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:519
 #: ../../client/solo/commands/status.py:153
 msgid "Repository URL"
-msgstr "URL repozitáře"
+msgstr "Programcsomag URL"
 
 #: ../../lib/entropy/client/interfaces/db.py:529
 msgid "Repository local path"
-msgstr "Místní cesta k repozitáři"
+msgstr "Programcsomag helyi útvonala"
 
 #: ../../lib/entropy/client/interfaces/db.py:537
 msgid "Repository API"
-msgstr "API repozitáře"
+msgstr "Programcsomag API"
 
 #: ../../lib/entropy/client/interfaces/db.py:587
 msgid "Downloading repository"
-msgstr "Stahuji repozitář"
+msgstr "Programcsomag letöltése"
 
 #: ../../lib/entropy/client/interfaces/db.py:637
 msgid "unable to download the repository"
-msgstr "nelze stáhnout repozitář"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:658
 msgid "Downloading checksum"
-msgstr "Stahuji kontrolní součet"
+msgstr "Ellenőrző összeg letöltése"
 
 #: ../../lib/entropy/client/interfaces/db.py:685
 msgid "Cannot fetch checksum"
-msgstr "Nelze stáhnout kontrolní součet"
+msgstr "Ellenőrző összeg nem elérhető"
 
 #: ../../lib/entropy/client/interfaces/db.py:686
 #: ../../lib/entropy/client/interfaces/db.py:1265
 msgid "Cannot verify repository integrity"
-msgstr "Nelze ověřit integritu repozitáře"
+msgstr "Programcsomag integritása nem ellenőrizhető"
 
 #: ../../lib/entropy/client/interfaces/db.py:783
 msgid "Unpacking database to"
-msgstr "Rozbaluji databázi do"
+msgstr "Adatbázis kicsomagolása"
 
 #: ../../lib/entropy/client/interfaces/db.py:800
 msgid "Cannot unpack compressed package"
-msgstr "Nelze rozbalit zkomprimovaný balíček"
+msgstr "Tömörített csomag nem kicsomagolható"
 
 #: ../../lib/entropy/client/interfaces/db.py:801
 msgid "Skipping repository"
-msgstr "Přeskakuji repozitář"
+msgstr "Programcsomag kihagyása"
 
 #: ../../lib/entropy/client/interfaces/db.py:829
 msgid "Repository is invalid"
-msgstr "Repozitář je neplatný"
+msgstr "Érvénytelen programcsomag"
 
 #: ../../lib/entropy/client/interfaces/db.py:853
 msgid "Indexing Repository metadata"
-msgstr "Indexování metadat repozitáře"
+msgstr "Programcsomag metaadat indexelése"
 
 #: ../../lib/entropy/client/interfaces/db.py:1070
 msgid "Downloading repository metafile"
-msgstr "Stahuji meta soubor repozitáře"
+msgstr "Programcsomag metafájl letöltése"
 
 #: ../../lib/entropy/client/interfaces/db.py:1080
 msgid "Downloading GPG signature of repository metafile"
-msgstr "Stahuji podpis GPG meta souboru repozitáře"
+msgstr "Programcsomag metafájl GPG aláírásának letöltése"
 
 #: ../../lib/entropy/client/interfaces/db.py:1090
 msgid "Downloading Notice Board"
-msgstr "Stahuji nástěnku oznámení"
+msgstr "Notice Board letöltése"
 
 #: ../../lib/entropy/client/interfaces/db.py:1116
 msgid "unpacked meta file"
-msgstr "rozbalen meta soubor"
+msgstr "kicsomagolt meta fájl"
 
 #: ../../lib/entropy/client/interfaces/db.py:1122
 msgid "removed meta file"
-msgstr "odebrán meta soubor"
+msgstr "eltávolított meta fájl"
 
 #: ../../lib/entropy/client/interfaces/db.py:1139
 msgid "not available, it's ok"
-msgstr "nedostupný, nevadí"
+msgstr "nem elérhető, de rendben van így"
 
 #: ../../lib/entropy/client/interfaces/db.py:1143
 msgid "not available, not very ok!"
-msgstr "není dostupný, to není moc v pořádku!"
+msgstr "nem elérhető, nagyon nem jó így!"
 
 #: ../../lib/entropy/client/interfaces/db.py:1156
 msgid "available, w00t!"
-msgstr "dostupný, skvělé!"
+msgstr "elérhető, jajjjdejó!"
 
 #: ../../lib/entropy/client/interfaces/db.py:1174
 msgid "cannot be unpacked, not very ok!"
-msgstr "nelze rozbalit, to není moc dobré!"
+msgstr "nem lehet kicsomagolni, nagyon nem jó!"
 
 #: ../../lib/entropy/client/interfaces/db.py:1227
 msgid "Repository revision"
-msgstr "Revize repozitáře"
+msgstr "Programcsomag felülvizsgálat"
 
 #: ../../lib/entropy/client/interfaces/db.py:1250
 msgid "Checking downloaded repository"
-msgstr "Kontroluji stažený repozitář"
+msgstr "Letöltött programcsomag ellenőrzése"
 
 #: ../../lib/entropy/client/interfaces/db.py:1264
 msgid "Cannot open digest"
-msgstr "Nelze otevřít digest"
+msgstr "Nem megnyitható kivonat"
 
 #: ../../lib/entropy/client/interfaces/db.py:1275
 #: ../../lib/entropy/client/interfaces/db.py:1286
 msgid "Downloaded repository status"
-msgstr "Stav staženého repozitáře"
+msgstr "Programcsomag státusza letöltve"
 
 #: ../../lib/entropy/client/interfaces/db.py:1276
 msgid "OK"
@@ -725,7 +724,7 @@ msgstr "OK"
 
 #: ../../lib/entropy/client/interfaces/db.py:1287
 msgid "ERROR"
-msgstr "CHYBA"
+msgstr "HIBA"
 
 #: ../../lib/entropy/client/interfaces/db.py:1296
 msgid "An error occurred while checking repository integrity"
@@ -733,278 +732,276 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:1297
 msgid "Giving up"
-msgstr "Vzdávám se"
+msgstr "Feladom"
 
 #: ../../lib/entropy/client/interfaces/db.py:1319
 #: ../../lib/entropy/security.py:397
 msgid ""
 "Make sure to verify the imported key and set an appropriate trust level"
-msgstr "Ujistěte se, že ověříte importovaný klíč a nastavíte vhodnou úroveň důvěry"
+msgstr "Győződj meg az importált kulcsok helyességéről és a megfelelő biztonsági szintről"
 
 #: ../../lib/entropy/client/interfaces/db.py:1339
 msgid "This repository suports GPG-signed packages"
-msgstr "Repozitář podporuje balíčky podepsané GPG"
+msgstr "Ez a programcsomag támogatja a GPG aláírásos csomagokat"
 
 #: ../../lib/entropy/client/interfaces/db.py:1346
 msgid "you may want to install GnuPG to take advantage of this feature"
-msgstr "možná chcete nainstalovat GnuPG pro využívání této funkce"
+msgstr "nem ártana felinstallálni a GnuPG-t hogy élvezhesd ennek a funkciónak az előnyét"
 
 #: ../../lib/entropy/client/interfaces/db.py:1381
 #: ../../lib/entropy/security.py:437
 msgid "GPG key changed for"
-msgstr "Změnil se GPG klíč pro"
+msgstr "GPG kulcs meváltozott"
 
 #: ../../lib/entropy/client/interfaces/db.py:1401
 #: ../../lib/entropy/security.py:456
 msgid "GPG key already installed for"
-msgstr "Již existuje GPG klíč pro"
+msgstr "GPG kulcs már látezik"
 
 #: ../../lib/entropy/client/interfaces/db.py:1414
 msgid "GPG key EXPIRED for repository"
-msgstr "Vypršel GPG klíč repozitáře"
+msgstr "GPG kulcs LEJÁRT ehhez a programcsomaghoz"
 
 #: ../../lib/entropy/client/interfaces/db.py:1426
 msgid "Installing GPG key for repository"
-msgstr "Instaluji GPG klíč pro repozitář"
+msgstr "GPG kulcs installálása programcsomaghoz"
 
 #: ../../lib/entropy/client/interfaces/db.py:1444
 #: ../../lib/entropy/client/interfaces/db.py:1477
 #: ../../lib/entropy/security.py:493
 msgid "Error during GPG key installation"
-msgstr "Chyba při instalaci GPG klíče"
+msgstr "Hiba GPG kulcs installálása közben"
 
 #: ../../lib/entropy/client/interfaces/db.py:1454
 msgid "GPG key seems already installed but not properly recorded, resetting"
-msgstr "GPG klíč vypadá nainstalovaný, ale špatně zaznamenaný, nastavuji znovu"
+msgstr "Úgy tűnik installálva van a GPG kulcs, csak nem lett rendesen feljegyezve, újraállítás"
 
 #: ../../lib/entropy/client/interfaces/db.py:1489
 msgid "Successfully installed GPG key for repository"
-msgstr "Úspěšně nainstalován GPG klíč pro repozitář"
+msgstr "Sikeres GPG kulcs installálás a programcsomaghoz"
 
 #: ../../lib/entropy/client/interfaces/db.py:1498
 #: ../../lib/entropy/security.py:513
 msgid "Fingerprint"
-msgstr "Otisk"
+msgstr "Ujjlenyomat"
 
 #: ../../lib/entropy/client/interfaces/db.py:1536
 msgid "Verifying GPG signature of"
-msgstr "Ověřuji GPG podpis"
+msgstr "GPG aláírás ellenőrzése"
 
 #: ../../lib/entropy/client/interfaces/db.py:1550
 msgid "Verified GPG signature of"
-msgstr "Ověřen GPG podpis"
+msgstr "GPG aláírás ellenőrizve"
 
 #: ../../lib/entropy/client/interfaces/db.py:1560
 #: ../../lib/entropy/security.py:541
 msgid "Error during GPG verification of"
-msgstr "Chyba při ověřování GPG"
+msgstr "Hiba a GPG aláírás ellenőrzése közben"
 
 #: ../../lib/entropy/client/interfaces/db.py:1569
 #: ../../lib/entropy/security.py:550
 msgid "It could mean a potential security risk"
-msgstr "Může znamenat potenciální bezpečnostní riziko"
+msgstr "Ez potenciális biztonsági kockázatot jelenthet"
 
 #: ../../lib/entropy/client/interfaces/db.py:1627
 msgid "Web Service"
-msgstr "Služba webu"
+msgstr "Web Szolgáltatás"
 
 #: ../../lib/entropy/client/interfaces/db.py:1628
 msgid "skipping differential sync"
-msgstr "přeskakuji diferenciální synchronizaci"
+msgstr "differenciális szinkronizálás kihagyása"
 
 #: ../../lib/entropy/client/interfaces/db.py:1629
 msgid "threshold"
-msgstr "Práh"
+msgstr "küszöb"
 
 #: ../../lib/entropy/client/interfaces/db.py:1663
 msgid "Web Service communication error"
-msgstr "Chyba komunikace se službou webu"
+msgstr "Web Szolgáltatás kommunikációs hiba"
 
 #: ../../lib/entropy/client/interfaces/db.py:1683
 msgid "Web Service data error"
-msgstr "Chyba dat služby webu"
+msgstr "Web Szolgáltatás adat hiba"
 
 #: ../../lib/entropy/client/interfaces/db.py:1699
 msgid "Local status"
-msgstr "Místní stav"
+msgstr "Helyi státusz"
 
 #: ../../lib/entropy/client/interfaces/db.py:1731
 msgid "Fetching segments"
-msgstr "Stahuji segmenty"
+msgstr "Szegmensek lekérése"
 
 #: ../../lib/entropy/client/interfaces/db.py:1767
 #: ../../lib/entropy/client/interfaces/db.py:1786
 #: ../../lib/entropy/client/interfaces/db.py:1803
 msgid "Web Service status"
-msgstr "Stav služby webu"
+msgstr "Web Szolgáltatás státusz"
 
 #: ../../lib/entropy/client/interfaces/db.py:1768
 msgid "cannot fetch repository metadata"
-msgstr "Nelze stáhnout metadata repozitáře"
+msgstr "Programcsomag metaadata nem elérhető"
 
 #: ../../lib/entropy/client/interfaces/db.py:1787
 msgid "cannot update treeupdates data"
-msgstr "nelze aktualizovat data treeupdates"
+msgstr "nem frissíthető treeupdates adat"
 
 #: ../../lib/entropy/client/interfaces/db.py:1804
 msgid "cannot update package sets data"
-msgstr "nelze aktualizovat data sad balíčků"
+msgstr "nem frissíthető a csomag készlet adata"
 
 #: ../../lib/entropy/client/interfaces/db.py:1820
 msgid "Fetch error on segment while adding"
-msgstr "Chyba stahování na segmentu při přidávání"
+msgstr "Hozzáadás közben lehívási hiba lépett fel a szegmensben"
 
 #: ../../lib/entropy/client/interfaces/db.py:1846
 msgid "repository error while adding packages"
-msgstr "chyba repozitáře při přidávání balíčků"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:1869
 msgid "repository error while removing packages"
-msgstr "chyba repozitáře při odebírání balíčků"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:1885
 msgid "Repository checksum doesn't match remote."
-msgstr "Kontrolní součet repozitáře nesouhlasí."
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:1888
 msgid "local"
-msgstr "místní"
+msgstr "helyi"
 
 #: ../../lib/entropy/client/interfaces/db.py:1893
 msgid "remote"
-msgstr "vzdálený"
+msgstr "távoli"
 
 #: ../../lib/entropy/client/interfaces/db.py:2003
 msgid "repository is already up to date"
-msgstr "repozitář je již aktuální"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:2016
 msgid "Repository is being updated"
-msgstr "Repozitář se aktualizuje"
+msgstr "Programcsomag frissítés alatt"
 
 #: ../../lib/entropy/client/interfaces/db.py:2017
 msgid "Try again in a few minutes"
-msgstr "Zkuste znovu za pár minut"
+msgstr "Próbálkozz pár perc múlva"
 
 #: ../../lib/entropy/client/interfaces/db.py:2213
 msgid "Configuration files update error, not critical, continuing"
-msgstr "Nekritická chyba aktualizace konfiguračních souborů, pokračuji"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/client.py:369
 msgid "forcing packages metadata update"
-msgstr "Vynucuji aktualizaci metadat balíčků"
+msgstr "csomagok metaadatainak frissítésének kényszerítése"
 
 #: ../../lib/entropy/client/interfaces/client.py:378
 msgid "Updating system database using repository"
-msgstr "Aktualizuji systémovou databázi pomocí repozitáře"
+msgstr "Rendszer adatbázis frissítése programcsomag használatával"
 
 #: ../../lib/entropy/client/interfaces/repository.py:195
 msgid "Something bad happened. Please have a look."
-msgstr "Stalo se něco špatného. Prosím podívejte se."
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/repository.py:214
 msgid "there is"
 msgid_plural "there are"
-msgstr[0] "Existuje"
-msgstr[1] "Existují"
-msgstr[2] "Existuje"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../../lib/entropy/client/interfaces/repository.py:216
 msgid "package file that could be removed"
 msgid_plural "package files that could be removed"
-msgstr[0] "balíček, který lze odebrat"
-msgstr[1] "balíčky, které lze odebrat"
-msgstr[2] "balíčků, které lze odebrat"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../../lib/entropy/client/interfaces/repository.py:229
 msgid "Packages are stored in"
-msgstr "Balíčky jsou uloženy v"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/repository.py:299
 msgid "Advisories fetch error"
-msgstr "Chyba stahování doporučení"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/repository.py:316
 msgid "Repositories synchronization"
-msgstr "Synchronizace repozitářů"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/dep.py:53
 #, python-format
 msgid "Checking %s"
-msgstr "Kontroluji %s"
+msgstr "%s ellenőrizve"
 
 #: ../../lib/entropy/client/interfaces/dep.py:2201
 msgid "Sorting dependencies"
-msgstr "Řadím závislosti"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/dep.py:2474
 msgid "Calculating inverse dependencies for"
-msgstr "Zkoumám reverzní závislosti pro"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/dep.py:3176
 msgid "Calculating updates"
-msgstr "Zkoumám aktualizace"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:589
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:670
 msgid "Mirror"
-msgstr "Zrcadlo"
+msgstr "Tükör"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:591
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:672
 msgid "maximum failure threshold reached"
-msgstr "dosažen maximální počet chyb"
+msgstr "Maximális hiba küszöb elérve"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:642
 msgid "success"
-msgstr "úspěch"
+msgstr "siker"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:655
 msgid "Aggregated transfer rate"
-msgstr "Agregovaná rychlost přenosu"
+msgstr "Felhalmozott átviteli érték"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:658
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:733
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:176
 msgid "second"
-msgstr "sekunda"
+msgstr "másodperc"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:674
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:750
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:197
 msgid "Error downloading from"
-msgstr "Chyba stahování z"
+msgstr "Hiba letöltés közben"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:679
 msgid "data not available on this mirror"
-msgstr "data nejsou dostupná na zrcadle"
+msgstr "nem elérhető ezen a tükrözésen"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:682
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:761
 msgid "wrong checksum"
-msgstr "špatný kontrolní součet"
+msgstr "hibás ellenőrző öszeg"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:685
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:773
 msgid "not found"
-msgstr "nenalezeno"
+msgstr "nem található"
 
 #. timeout!
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:688
 msgid "timeout error"
-msgstr "vypršení časového limitu"
+msgstr "időkorlát hiba"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:691
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:786
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:207
 msgid "discarded download"
-msgstr "vyřazené stahování"
+msgstr "megtagadott letöltések"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:695
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:789
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:210
 msgid "unknown reason"
-msgstr "neznámý důvod"
+msgstr "ismeretlen ok"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:803
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:811
@@ -1013,7 +1010,7 @@ msgstr "neznámý důvod"
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:151
 #: ../../client/solo/utils.py:276 ../../client/solo/commands/command.py:353
 msgid "Downloading"
-msgstr "Stahuji"
+msgstr "Letöltés"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:805
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:813
@@ -1021,17 +1018,16 @@ msgstr "Stahuji"
 #: ../../client/solo/commands/_manage.py:558
 msgid "package"
 msgid_plural "packages"
-msgstr[0] "balíček"
-msgstr[1] "balíčky"
-msgstr[2] "balíčků"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:827
 msgid "Some packages cannot be fetched"
-msgstr "Některé balíčky nelze stáhnout"
+msgstr "Néhány csomag nem elérhető"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:828
 msgid "Try to update your repositories and retry"
-msgstr "Zkuste aktualizovat repozitáře a opakujte"
+msgstr "A programcsomagok frissítése után próbáld újra"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:841
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:832
@@ -1041,20 +1037,20 @@ msgstr "Zkuste aktualizovat repozitáře a opakujte"
 #: ../../lib/entropy/client/interfaces/package/actions/config.py:164
 #: ../../client/solo/commands/rescue.py:204
 msgid "Error"
-msgstr "Chyba"
+msgstr "Hiba"
 
 #: ../../lib/entropy/client/interfaces/package/actions/_triggers.py:285
 msgid "Cannot run External trigger for"
-msgstr "Nelze spustit externí spouštěč pro"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/_triggers.py:287
 #: ../../lib/entropy/client/interfaces/package/actions/_triggers.py:539
 msgid "Please report it"
-msgstr "Prosíme nahlaste chybu"
+msgstr "Tegyél bejelentést"
 
 #: ../../lib/entropy/client/interfaces/package/actions/_triggers.py:499
 msgid "Installing info"
-msgstr "Instaluji do"
+msgstr "Telepítési információ"
 
 #: ../../lib/entropy/client/interfaces/package/actions/_triggers.py:522
 msgid "Package phase"
@@ -1084,7 +1080,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/remove.py:149
 msgid "Removing from Entropy"
-msgstr "Odstraňuji z Entropy"
+msgstr "Eltávolítás az Entropy-ból"
 
 #: ../../lib/entropy/client/interfaces/package/actions/remove.py:234
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:866
@@ -1097,34 +1093,34 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:701
 msgid "Downloading from"
-msgstr "Stahuji"
+msgstr "Letöltés innen"
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:727
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:172
 msgid "Successfully downloaded from"
-msgstr "Úspěšně staženo z"
+msgstr "Sikeres letöltés innen"
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:732
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:174
 msgid "at"
-msgstr "na"
+msgstr "-nál"
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:757
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:202
 msgid "file not available on this mirror"
-msgstr "soubor není dostupný na zrcadle"
+msgstr "fájl nem elérhető ezen a tükrözésen"
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:767
 msgid "Disabling resume"
-msgstr "Zakazuji obnovení"
+msgstr "Letiltás újraengedélyezése"
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:779
 msgid "timeout, retrying on this mirror"
-msgstr "vypršel časový limit, zkouším na následujícím zrcadle"
+msgstr "időtúllépés, újra próbálás ezen a tükrön"
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:782
 msgid "timeout, giving up"
-msgstr "vypršel časový limit, vzdávám se"
+msgstr "időtúllépés, abbahagyás"
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:830
 msgid "Package cannot be downloaded. Try to update repositories"
@@ -1132,27 +1128,27 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1017
 msgid "Package signature verification error for"
-msgstr "Chyba ověření podpisu balíčku pro"
+msgstr "Csomag aláírás ellenőrzési hiba"
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1050
 msgid "disabled"
-msgstr "vypnuto"
+msgstr "letiltva"
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1069
 msgid "Package signature verification"
-msgstr "Ověřování podpisu balíčku"
+msgstr "Csomag aláírás ellenőrzés"
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1071
 msgid "temporarily unavailable"
-msgstr "dočasně nedostupný"
+msgstr "ideiglenesen nem elérhető"
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1083
 msgid "Package signature"
-msgstr "Podpis balíčku"
+msgstr "Csomag aláírás"
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1085
 msgid "does not match the recorded one"
-msgstr "neshoduje se se zaznamenaným"
+msgstr "nem egyezik a feljegyzettel"
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1097
 msgid "validated"
@@ -1160,7 +1156,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1107
 msgid "Checking package checksum..."
-msgstr "Ověřuji kontrolní součet balíčku..."
+msgstr "Csomag ellenőrző összeg ellenőrzése..."
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1125
 msgid "Checksum validation error"
@@ -1184,11 +1180,11 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:187
 msgid "Local path"
-msgstr "Místní cesta"
+msgstr "Helyi elérési út"
 
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:227
 msgid "Fetching sources"
-msgstr "Stahuji zdroje"
+msgstr "Források betöltése"
 
 #: ../../lib/entropy/client/interfaces/package/actions/_manage.py:79
 msgid "Protecting"
@@ -1212,45 +1208,45 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/_manage.py:352
 msgid "Cannot protect broken symlink"
-msgstr "Nelze chránit rozbitý symbolický odkaz"
+msgstr "Nem védhető az elromlott symlink"
 
 #: ../../lib/entropy/client/interfaces/package/actions/_manage.py:386
 msgid "Skipping file installation/removal"
-msgstr "Přeskakuji instalaci/odstranění souboru"
+msgstr "Installáció/eltávolítás átugrása"
 
 #: ../../lib/entropy/client/interfaces/package/actions/_manage.py:430
 #: ../../lib/entropy/client/interfaces/package/actions/_manage.py:548
 msgid "Protecting config file"
-msgstr "Chráním konfigurační soubor"
+msgstr "Konfigurációs fájl védelem"
 
 #: ../../lib/entropy/client/interfaces/package/actions/_manage.py:525
 msgid "Removing config file, never modified"
-msgstr "Odstraňuji konfigurační soubor, nebyl nikdy měněn"
+msgstr "Konfigurációs fájl eltávolítása, módosítatlanul"
 
 #: ../../lib/entropy/client/interfaces/package/actions/_manage.py:547
 msgid "remove"
-msgstr "odebrat"
+msgstr "eltávolít"
 
 #: ../../lib/entropy/client/interfaces/package/actions/_manage.py:567
 msgid "This package contains a badly encoded file !!!"
-msgstr "Balíček obsahuje špatně kódovaný soubor!"
+msgstr "Ez a csomag egy rosszul kódolt fájlt tartalmaz !!!"
 
 #: ../../lib/entropy/client/interfaces/package/actions/_manage.py:696
 msgid "Collision found during removal of"
-msgstr "Nalezena kolize při odebírání"
+msgstr "Eltávolítás közben ütközést történt"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:344
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:559
 msgid "Unpacking"
-msgstr "Rozbaluji"
+msgstr "Kicsomagolás"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:384
 msgid "Unpack error"
-msgstr "Chyba rozbalení"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:416
 msgid "Unable to find Entropy metadata in package"
-msgstr "Nelze nalézt metadata Entropy v balíčku"
+msgstr "Nem található az Entropy metaadat a csomagban"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:455
 msgid "Unable to unpack package"
@@ -1258,11 +1254,11 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:526
 msgid "Merging"
-msgstr "Slučuji"
+msgstr "Egybevonás"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:532
 msgid "Merging package"
-msgstr "Slučuji balíček"
+msgstr "Csomag egybevonása"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:565
 msgid "An error occurred while trying to unpack the package"
@@ -1271,11 +1267,11 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:568
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1262
 msgid "Check if your system is healthy"
-msgstr "Ověřte zda je systém v pořádku"
+msgstr "A rendszer épségének ellenőrzése"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:651
 msgid "Setup"
-msgstr "Nastavení"
+msgstr "Telepítés"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:681
 msgid "Pre-install"
@@ -1284,11 +1280,11 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:730
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:744
 msgid "Error during package files permissions setup"
-msgstr "Chyba při nastavení práv souborů balíčku"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:837
 msgid "Cleaning previously installed application data."
-msgstr "Čistím data od původně nainstalované aplikace."
+msgstr "Előzetesen installált alkalmazások adatainak kitakarítása"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:923
 msgid "Post-install"
@@ -1298,7 +1294,7 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:956
 #: ../../client/solo/utils.py:67
 msgid "Cleaning"
-msgstr "Čistím"
+msgstr "Takarítás"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1261
 msgid "An error occurred while trying to install the package"
@@ -1310,23 +1306,23 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1307
 msgid "Installing"
-msgstr "Instaluji"
+msgstr "Installálás"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1313
 msgid "Installing package"
-msgstr "Instaluji balíček"
+msgstr "Csomag installálása"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1335
 msgid "unsupported splitdebug usage (package files)"
-msgstr "nepodporované použití splitdebug (soubory balíčku)"
+msgstr "nem támogatott splitdebug használat (csomag fájlok)"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1339
 msgid "<3 debug files installation enabled <3"
-msgstr "<3 instalace ladících souborů zapnuta <3"
+msgstr "<3 hibakeresési fájlok installálása engedélyezve <3"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1437
 msgid "Collision found during install for"
-msgstr "Nalezena kolize při instalaci"
+msgstr "Installálás közben ütközés történt"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1439
 msgid "QA:"
@@ -1334,7 +1330,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1441
 msgid "cannot overwrite"
-msgstr "nelze přepsat"
+msgstr "nem felülírható"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1525
 #, python-format
@@ -1351,14 +1347,14 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1606
 msgid "Cannot remove symlink"
-msgstr "Nelze odebrat symbolický odkaz"
+msgstr "Nem eltávolítható a symlink"
 
 #. we can merge it, files, even if
 #. contains changes have not been modified
 #. by the user
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1774
 msgid "Automerging config file, never modified"
-msgstr "Automaticky slučuji konfigurační soubor, nikdy nebyl měněn"
+msgstr "Konfigurációs fájl automatikus egybevonása, módosítatlanul"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1803
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1825
@@ -1375,11 +1371,11 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1908
 msgid "please report"
-msgstr "prosím nahlaste"
+msgstr "légy szíves jelentsd"
 
 #: ../../lib/entropy/client/interfaces/package/actions/config.py:85
 msgid "configuration phase"
-msgstr "konfigurační fáze"
+msgstr "konfigurációs fázis"
 
 #: ../../lib/entropy/client/interfaces/package/actions/config.py:141
 #: ../../lib/entropy/client/interfaces/package/actions/config.py:161
@@ -1388,11 +1384,11 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/config.py:143
 msgid "Make sure that your system is healthy"
-msgstr "Ujistěte se, že je systém v pořádku"
+msgstr "Ellenőrizd le hogy ép e a rendszered"
 
 #: ../../lib/entropy/client/interfaces/package/actions/config.py:163
 msgid "It seems that Source Package Manager entry is missing"
-msgstr "Vypadá to že záznam správce zdrojových balíčků chybí"
+msgstr "Úgy tűnik, hogy a Source Package Manager bejegyzés hiányzik"
 
 #: ../../lib/entropy/client/interfaces/package/actions/config.py:190
 msgid "The requested package is no longer available."
@@ -1401,46 +1397,45 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/package/actions/config.py:212
 #: ../../lib/entropy/client/interfaces/package/actions/config.py:218
 msgid "Configuring package"
-msgstr "Nastavuji balíček"
+msgstr "Csomag konfigurálás"
 
 #: ../../lib/entropy/fetchers.py:854
 msgid "infinite"
-msgstr "neomezeně"
+msgstr "végtelen"
 
 #: ../../lib/entropy/fetchers.py:926
 msgid "[F]"
-msgstr "[F]"
+msgstr ""
 
 #: ../../lib/entropy/fetchers.py:927 ../../lib/entropy/fetchers.py:1344
 msgid "ETA"
-msgstr "ETA"
+msgstr ""
 
 #: ../../lib/entropy/fetchers.py:928 ../../lib/entropy/fetchers.py:1345
 msgid "sec"
-msgstr "s"
+msgstr "mp"
 
 #: ../../lib/entropy/fetchers.py:1208
 msgid "Aggregated download"
-msgstr "Agregované stahování"
+msgstr ""
 
 #: ../../lib/entropy/fetchers.py:1210
 msgid "item"
 msgid_plural "items"
-msgstr[0] "položka"
-msgstr[1] "položky"
-msgstr[2] "položek"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../../lib/entropy/security.py:469
 msgid "GPG key EXPIRED for URL"
-msgstr "VYPRŠEL GPG klíč pro URL"
+msgstr ""
 
 #: ../../lib/entropy/security.py:479
 msgid "Installing GPG key for URL"
-msgstr "Instaluji GPG klíč pro URL"
+msgstr ""
 
 #: ../../lib/entropy/security.py:504
 msgid "Successfully installed GPG key for URL"
-msgstr "Úspěšně nainstalován GPG klíč pro URL"
+msgstr ""
 
 #: ../../lib/entropy/security.py:561 ../../lib/entropy/security.py:880
 #: ../../lib/entropy/security.py:916 ../../lib/entropy/security.py:921
@@ -1449,18 +1444,18 @@ msgstr "Úspěšně nainstalován GPG klíč pro URL"
 #: ../../lib/entropy/security.py:1061 ../../lib/entropy/security.py:1086
 #: ../../lib/entropy/security.py:1121
 msgid "Security Advisories"
-msgstr "Bezpečnostní doporučení"
+msgstr ""
 
 #: ../../lib/entropy/security.py:562
 msgid "GPG key verification successful"
-msgstr "Ověření GPG klíče bylo úspěšné"
+msgstr ""
 
 #: ../../lib/entropy/security.py:722 ../../client/solo/commands/_manage.py:397
 #: ../../client/solo/commands/_manage.py:430
 #: ../../client/solo/commands/pkg.py:187 ../../client/solo/commands/mask.py:99
 #: ../../client/solo/commands/mask.py:172
 msgid "Warning"
-msgstr "Varování"
+msgstr "Figyelmeztetés"
 
 #: ../../lib/entropy/security.py:724
 msgid "broken advisory"
@@ -1468,7 +1463,7 @@ msgstr ""
 
 #: ../../lib/entropy/security.py:881
 msgid "getting latest advisories"
-msgstr "získávám nejnovější doporučení"
+msgstr ""
 
 #: ../../lib/entropy/security.py:898
 msgid "cannot create temporary directory"
@@ -1476,27 +1471,27 @@ msgstr ""
 
 #: ../../lib/entropy/security.py:917
 msgid "updated successfully"
-msgstr "aktualizováno úspěšně"
+msgstr "sikeresen frissítve"
 
 #: ../../lib/entropy/security.py:922
 msgid "already up to date"
-msgstr "už je aktuální"
+msgstr ""
 
 #: ../../lib/entropy/security.py:990
 msgid "cannot download checksum, sorry"
-msgstr "nelze stáhnout kontrolní součet, pardon"
+msgstr ""
 
 #: ../../lib/entropy/security.py:1019
 msgid "unable to download advisories, sorry"
-msgstr "nelze stáhnout doporučení, promiňte"
+msgstr ""
 
 #: ../../lib/entropy/security.py:1031
 msgid "Verifying checksum"
-msgstr "Ověřuji kontrolní součet"
+msgstr ""
 
 #: ../../lib/entropy/security.py:1051
 msgid "verification successful"
-msgstr "ověření bylo úspěšné"
+msgstr ""
 
 #: ../../lib/entropy/security.py:1062
 msgid "checksum verification failed, sorry"
@@ -1504,75 +1499,75 @@ msgstr ""
 
 #: ../../lib/entropy/security.py:1087
 msgid "GPG service not available"
-msgstr "Služba GPG není dostupná"
+msgstr ""
 
 #: ../../lib/entropy/security.py:1122
 msgid "digest verification failed, try again later"
-msgstr "ověřovaní digest bohužel selhalo, zkuste to později"
+msgstr ""
 
 #: ../../lib/entropy/const.py:607
 msgid "Runtime dependency"
-msgstr "Závislost běhu"
+msgstr ""
 
 #: ../../lib/entropy/const.py:608
 msgid "Post dependency"
-msgstr "Po instalační závislost"
+msgstr ""
 
 #: ../../lib/entropy/const.py:609
 msgid "Manually added (by staff) dependency"
-msgstr "Ručně přidaná (vývojářská) závislost"
+msgstr ""
 
 #: ../../lib/entropy/const.py:610
 msgid "Build dependency"
-msgstr "Závislost sestavení"
+msgstr ""
 
 #: ../../lib/entropy/const.py:630
 msgid "Corrupted Client Repository. Please restore a backup."
-msgstr "Poškozený repozitář klienta. Prosím obnovte jej ze zálohy."
+msgstr ""
 
 #: ../../lib/entropy/const.py:662
 msgid "reason not available"
-msgstr "důvod není dostupný"
+msgstr ""
 
 #: ../../lib/entropy/const.py:663
 msgid "user package.mask"
-msgstr "uživatelský package.mask"
+msgstr ""
 
 #: ../../lib/entropy/const.py:664
 msgid "system keywords"
-msgstr ""
+msgstr "rendszer kulcsszavak"
 
 #: ../../lib/entropy/const.py:665
 msgid "user package.unmask"
-msgstr "uživatelský package.unmask"
+msgstr ""
 
 #: ../../lib/entropy/const.py:666
 msgid "user repo package.keywords (all packages)"
-msgstr "uživatelský package.keywords repozitáře (všechny balíčky)"
+msgstr ""
 
 #: ../../lib/entropy/const.py:667
 msgid "user repo package.keywords"
-msgstr "uživatelský package.keywords repozitáře"
+msgstr ""
 
 #: ../../lib/entropy/const.py:668
 msgid "user package.keywords"
-msgstr "uživatelský package.keywords"
+msgstr ""
 
 #: ../../lib/entropy/const.py:669
 msgid "completely masked (by keyword?)"
-msgstr "zcela maskován (přes klíčové slovo?)"
+msgstr ""
 
 #: ../../lib/entropy/const.py:670
 msgid "repository general packages.db.mask"
-msgstr "obecný packages.db.mask repozitáře"
+msgstr ""
 
 #: ../../lib/entropy/const.py:671
 msgid "repository general packages.db.keywords"
-msgstr "obecný packages.db.keywords repozitáře"
+msgstr ""
 
 #: ../../lib/entropy/const.py:672
 msgid "user license.mask"
-msgstr "uživatelský license.mask"
+msgstr ""
 
 #: ../../lib/entropy/const.py:673
 msgid "user live unmask"
@@ -1584,7 +1579,7 @@ msgstr ""
 
 #: ../../lib/entropy/output.py:637
 msgid "Entropy needs your attention"
-msgstr "Entropy vyžaduje Vaši pozornost"
+msgstr ""
 
 #: ../../lib/entropy/output.py:780 ../../lib/entropy/output.py:1026
 #: ../../client/solo/utils.py:487 ../../client/solo/commands/ugc.py:656
@@ -1596,7 +1591,7 @@ msgstr "Entropy vyžaduje Vaši pozornost"
 #: ../../client/solo/commands/upgrade.py:300
 #: ../../client/solo/commands/upgrade.py:336
 msgid "Yes"
-msgstr "Ano"
+msgstr "Igen"
 
 #: ../../lib/entropy/output.py:780 ../../client/solo/utils.py:489
 #: ../../client/solo/main.py:168 ../../client/solo/commands/config.py:152
@@ -1612,112 +1607,112 @@ msgstr "Ano"
 #: ../../client/solo/commands/upgrade.py:300
 #: ../../client/solo/commands/mask.py:161
 msgid "No"
-msgstr "Ne"
+msgstr "Nem"
 
 #: ../../lib/entropy/output.py:795
 msgid "Entropy got a question for you"
-msgstr "Entropy na Vás má dotaz"
+msgstr ""
 
 #: ../../lib/entropy/output.py:809
 msgid "Interrupted"
-msgstr "Přerušeno"
+msgstr "Megszakítva"
 
 #: ../../lib/entropy/output.py:872 ../../lib/entropy/output.py:876
 msgid "Selected number"
-msgstr "Vybrané číslo"
+msgstr ""
 
 #: ../../lib/entropy/output.py:893 ../../client/solo/commands/_manage.py:671
 msgid "Please select an option"
-msgstr "Prosím vyberte možnost"
+msgstr "Válassz az opciók közül"
 
 #: ../../lib/entropy/output.py:895
 msgid "Discard all"
-msgstr "Zahodit vše"
+msgstr ""
 
 #: ../../lib/entropy/output.py:896
 msgid "Confirm"
-msgstr "Potvrdit"
+msgstr "Megerősít"
 
 #: ../../lib/entropy/output.py:897
 msgid "Add item"
-msgstr "Přidat položku"
+msgstr "Elem hozzáadása"
 
 #: ../../lib/entropy/output.py:898
 msgid "Edit item"
-msgstr "Upravit položku"
+msgstr "Elem szerkesztése"
 
 #: ../../lib/entropy/output.py:899
 msgid "Remove item"
-msgstr "Odebrat položku"
+msgstr "Elem törlése"
 
 #: ../../lib/entropy/output.py:900
 msgid "Show current list"
-msgstr "Zobrazit aktuální seznam"
+msgstr ""
 
 #: ../../lib/entropy/output.py:904 ../../client/solo/commands/conf.py:251
 #: ../../client/solo/commands/conf.py:294
 msgid "Your choice (type a number and press enter):"
-msgstr "Vaše volba (zadejte číslo a stiskněte klávesu enter):"
+msgstr ""
 
 #: ../../lib/entropy/output.py:936
 msgid "You don't have typed a number."
-msgstr "Nezadali jste číslo."
+msgstr ""
 
 #: ../../lib/entropy/output.py:939
 msgid "Invalid action."
-msgstr "Neplatná činnost."
+msgstr ""
 
 #: ../../lib/entropy/output.py:949
 msgid "String to add (-1 to go back):"
-msgstr "Řetězec k přidání (-1 krok zpět):"
+msgstr ""
 
 #: ../../lib/entropy/output.py:959
 msgid "Invalid string."
-msgstr "Neplatný řetězec."
+msgstr "Érvénytelen szöveg."
 
 #: ../../lib/entropy/output.py:967
 msgid "Element number to edit (-1 to go back):"
-msgstr "Číslo prvku k úpravě (-1 krok zpět):"
+msgstr ""
 
 #: ../../lib/entropy/output.py:978
 msgid "old"
-msgstr "starý"
+msgstr "régi"
 
 #: ../../lib/entropy/output.py:978
 msgid "new value:"
-msgstr "nová hodnota:"
+msgstr "új érték:"
 
 #: ../../lib/entropy/output.py:986 ../../lib/entropy/output.py:1004
 msgid "Invalid element."
-msgstr "Neplatný prvek"
+msgstr "Érvénytelen elem."
 
 #: ../../lib/entropy/output.py:995
 msgid "Element number to remove (-1 to go back):"
-msgstr "Číslo prvku k odebrání (-1 krok zpět):"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:163
 msgid "Searching for broken reverse dependencies"
-msgstr "Hledám rozbité reverzní závislosti"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:180
 msgid "scanning for broken reverse dependencies"
-msgstr "prohledávání rozbitých reverzních závislostí"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:221
 msgid "broken libraries detected"
-msgstr "nalezeny rozbité knihovny"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:232
 msgid "needs"
-msgstr "vyžaduje"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:271
 msgid "scanning"
-msgstr "prohledávám"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:313
 msgid "blacklisted dependencies !!!"
-msgstr "závislosti na černé listině"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:338
 msgid "requires libraries"
@@ -1729,97 +1724,97 @@ msgstr ""
 
 #: ../../lib/entropy/qa.py:402 ../../lib/entropy/qa.py:629
 msgid "no packages"
-msgstr "žádné balíčky"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:431
 msgid "is potentially missing these dependencies"
-msgstr "pravděpodobně chybí v závislostech"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:568
 msgid "determining missing libraries"
-msgstr "zjišťuji chybějící knihovny"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:600
 msgid "requires"
-msgstr "vyžaduje"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:617 ../../lib/entropy/qa.py:628
 msgid "provided by"
-msgstr "poskytováno"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:641
 msgid "no missing runtime libraries found"
-msgstr "nenalezeny žádné chybějící knihovny"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:677
 msgid "Libraries test"
-msgstr "Test knihoven"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:692
 msgid "Broken symbols packages list"
-msgstr "Seznam balíčků s rozbitými symboly"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:693
 msgid "Broken executables list"
-msgstr "Seznam rozbitých spustitelných souborů"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:695
 msgid "Dumping results into these files"
-msgstr "Vkládám výsledky do souborů"
+msgstr "Eredmények berakása ezekbe a fájlokba"
 
 #: ../../lib/entropy/qa.py:775
 msgid "discarding directory"
-msgstr "zahazuji adresář"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:777
 msgid "because it's symlinked on"
-msgstr "protože je symbolickým odkazem na"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:827
 msgid "Collecting broken executables"
-msgstr "Sbírám rozbité spustitelné soubory"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:833
 msgid "don't worry about libraries that are shown here but not later."
-msgstr "nestarejte se o zde vypsané knihovny, které se nevypíší později."
+msgstr ""
 
 #: ../../lib/entropy/qa.py:854
 msgid "Scanning libraries"
-msgstr "Prohledávám knihovny"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:964
 msgid "various broken symbols"
-msgstr "různé rozbité symboly"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:1003
 msgid "Matching broken libraries/executables"
-msgstr "Vyhledávám odpovídající rozbité binární soubory/knihovny"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:1769
 msgid "Not prepared yet"
-msgstr "Ještě nepřipraveno"
+msgstr ""
 
 #: ../../client/solo/utils.py:68
 msgid "directory"
-msgstr "adresář"
+msgstr "könyvtár"
 
 #: ../../client/solo/utils.py:76
 msgid "Cleaned"
-msgstr "Vyčištěno"
+msgstr ""
 
 #: ../../client/solo/utils.py:78
 msgid "files and directories"
-msgstr "soubory a adresáře"
+msgstr ""
 
 #: ../../client/solo/utils.py:199 ../../client/solo/utils.py:479
 #: ../../client/solo/utils.py:481 ../../client/solo/commands/repo.py:505
 #: ../../client/solo/commands/repo.py:560
 msgid "N/A"
-msgstr "Nedostupný"
+msgstr "N.A."
 
 #: ../../client/solo/utils.py:278 ../../client/solo/commands/command.py:355
 msgid "Uploading"
-msgstr "Odesílání"
+msgstr "Feltöltés alatt"
 
 #: ../../client/solo/utils.py:338 ../../client/solo/utils.py:374
 #: ../../client/solo/utils.py:375 ../../client/solo/utils.py:579
@@ -1828,69 +1823,69 @@ msgstr ""
 
 #: ../../client/solo/utils.py:373
 msgid "Not installed"
-msgstr "Nenainstalován"
+msgstr ""
 
 #: ../../client/solo/utils.py:400 ../../client/solo/commands/query.py:467
 #: ../../client/solo/commands/query.py:716
 #: ../../client/solo/commands/query.py:1040
 msgid "Package"
-msgstr "Balíček"
+msgstr "Csomag"
 
 #: ../../client/solo/utils.py:402 ../../client/solo/commands/hop.py:57
 msgid "branch"
-msgstr "větev"
+msgstr ""
 
 #: ../../client/solo/utils.py:413
 msgid "Category"
-msgstr "Kategorie"
+msgstr "Kategória"
 
 #: ../../client/solo/utils.py:415
 msgid "Name"
-msgstr "Název"
+msgstr "Név"
 
 #: ../../client/solo/utils.py:430 ../../client/solo/commands/query.py:581
 msgid "Masked"
-msgstr "Maskovaný"
+msgstr ""
 
 #: ../../client/solo/utils.py:433
 msgid "Available"
-msgstr "Dostupný"
+msgstr "Elérhető"
 
 #: ../../client/solo/utils.py:435 ../../client/solo/utils.py:443
 msgid "Installed"
-msgstr "Nainstalováno"
+msgstr "Installálva"
 
 #: ../../client/solo/utils.py:438 ../../client/solo/utils.py:444
 msgid "version"
-msgstr "verze"
+msgstr "verzió"
 
 #: ../../client/solo/utils.py:439 ../../client/solo/utils.py:446
 msgid "revision"
-msgstr "revize"
+msgstr "felülvizsgálat"
 
 #: ../../client/solo/utils.py:449
 msgid "Slot"
-msgstr "Slot"
+msgstr ""
 
 #: ../../client/solo/utils.py:470
 msgid "Size"
-msgstr "Velikost"
+msgstr "Méret"
 
 #: ../../client/solo/utils.py:472 ../../client/solo/commands/ugc.py:382
 msgid "Download"
-msgstr "Stáhnout"
+msgstr "Letöltés"
 
 #: ../../client/solo/utils.py:474
 msgid "Checksum"
-msgstr "Kontrolní součet"
+msgstr "Ellenőrző összeg"
 
 #: ../../client/solo/utils.py:482
 msgid "SHA1"
-msgstr ""
+msgstr "SHA1"
 
 #: ../../client/solo/utils.py:484
 msgid "SHA256"
-msgstr ""
+msgstr "SHA256"
 
 #: ../../client/solo/utils.py:490 ../../client/solo/commands/status.py:133
 msgid "GPG"
@@ -1898,70 +1893,70 @@ msgstr "GPG"
 
 #: ../../client/solo/utils.py:495
 msgid "Dependencies"
-msgstr "Závislosti"
+msgstr ""
 
 #: ../../client/solo/utils.py:503 ../../client/solo/utils.py:682
 msgid "Legend"
-msgstr "Vysvětlivky"
+msgstr "Jelmagyarázat"
 
 #: ../../client/solo/utils.py:510
 msgid "Conflicts"
-msgstr "Konflikty"
+msgstr ""
 
 #: ../../client/solo/utils.py:515
 msgid "Homepage"
-msgstr "Domovská stránka"
+msgstr "Honlap"
 
 #: ../../client/solo/utils.py:525 ../../client/solo/commands/security.py:228
 #: ../../client/solo/commands/ugc.py:627
 msgid "Description"
-msgstr "Popis"
+msgstr "Leírás"
 
 #: ../../client/solo/utils.py:534
 msgid "USE flags"
-msgstr "USE flagy"
+msgstr ""
 
 #: ../../client/solo/utils.py:550
 msgid "CHOST"
-msgstr "CHOST"
+msgstr ""
 
 #: ../../client/solo/utils.py:552
 msgid "CFLAGS"
-msgstr "CFLAGS"
+msgstr ""
 
 #: ../../client/solo/utils.py:554
 msgid "CXXFLAGS"
-msgstr "CXXFLAGS"
+msgstr ""
 
 #: ../../client/solo/utils.py:558
 msgid "Sources"
-msgstr "Zdroje"
+msgstr "Források"
 
 #: ../../client/solo/utils.py:563
 msgid "Entry API"
-msgstr "API záznamu"
+msgstr ""
 
 #: ../../client/solo/utils.py:565
 msgid "Compiled with"
-msgstr "Zkompilováno s"
+msgstr ""
 
 #: ../../client/solo/utils.py:570 ../../client/solo/commands/search.py:180
 #: ../../client/solo/commands/ugc.py:375 ../../client/solo/commands/ugc.py:634
 #: ../../client/solo/commands/match.py:236
 msgid "Keywords"
-msgstr "Klíčová slova"
+msgstr "Kulcsszavak"
 
 #: ../../client/solo/utils.py:585
 msgid "Created"
-msgstr "Vytvořeno"
+msgstr "Létrehozva"
 
 #: ../../client/solo/utils.py:592 ../../client/solo/commands/_manage.py:730
 msgid "License"
-msgstr "Licence"
+msgstr "Licensz"
 
 #: ../../client/solo/utils.py:614
 msgid "Reverse graphing installed package"
-msgstr "Vytvářím reverzní graf nainstalovaného balíčku"
+msgstr ""
 
 #: ../../client/solo/utils.py:626 ../../client/solo/utils.py:785
 #: ../../client/solo/commands/config.py:119
@@ -1971,62 +1966,62 @@ msgstr "Vytvářím reverzní graf nainstalovaného balíčku"
 #: ../../client/solo/commands/download.py:164
 #: ../../client/solo/commands/mask.py:118
 msgid "No packages found"
-msgstr "Žádné balíčky nenalezeny"
+msgstr ""
 
 #: ../../client/solo/utils.py:685
 msgid "packages passed as arguments"
-msgstr "balíčky předané jako parametry"
+msgstr ""
 
 #: ../../client/solo/utils.py:688
 msgid "packages with no further dependencies"
-msgstr "balíčky bez dalších závislostí"
+msgstr ""
 
 #: ../../client/solo/utils.py:691
 msgid "packages with further dependencies (node)"
-msgstr "balíčky s dalšími závislostmi (uzel)"
+msgstr ""
 
 #: ../../client/solo/utils.py:694
 msgid "packages already pulled in as dependency in upper levels (circularity)"
-msgstr "balíčky již vtaženy jako závislosti ve vyšších úrovních (kruhová závislost)"
+msgstr ""
 
 #: ../../client/solo/utils.py:773
 msgid "Graphing"
-msgstr "Vytvářím graf"
+msgstr ""
 
 #: ../../client/solo/main.py:40
 msgid "Installed packages repository corrupted. Please re-generate it"
-msgstr "Repozitář nainstalovaných balíčků je narušený. Prosím vytvořte jej znovu"
+msgstr ""
 
 #: ../../client/solo/main.py:50
 msgid "Cannot continue"
-msgstr "Nelze pokračovat"
+msgstr "Nem folytatható"
 
 #: ../../client/solo/main.py:79
 msgid "Your hard drive is full! Your fault!"
-msgstr "Pevný disk je plný."
+msgstr "Megtelt a merevlemez! Te tehetsz róla!"
 
 #: ../../client/solo/main.py:88
 msgid "No more memory dude! Your fault!"
-msgstr "Došla paměť RAM."
+msgstr "Hver, nincs több memória! A te hibád!"
 
 #: ../../client/solo/main.py:94
 msgid ""
 "Hi. My name is Bug Reporter. I am sorry to inform you that the program "
 "crashed. Well, you know, shit happens."
-msgstr "Ahoj, jmenuji se Oznamovač chyb. Bohužel vám musím oznámit že program havaroval. No, jak víte, život je svině."
+msgstr ""
 
 #: ../../client/solo/main.py:100
 msgid ""
 "But there's something you could do to help me to be a better application."
-msgstr "Ale je zde něco co můžete udělat abyste mi pomohli být lepší aplikací."
+msgstr ""
 
 #: ../../client/solo/main.py:106
 msgid "-- BUT, DO NOT SUBMIT THE SAME REPORT MORE THAN ONCE --"
-msgstr "-- ALE, NEODESÍLEJTE STEJNÉ HLÁŠENÍ VÍCE NEŽ JEDNOU --"
+msgstr ""
 
 #: ../../client/solo/main.py:111
 msgid "Now I am showing you what happened. Don't panic, I'm here to help you."
-msgstr "Nyní zobrazím co se stalo. Žádný strach, jsem tu abych Vám pomáhal."
+msgstr "Most megmutatom mi történt. Ne ess pánikba, majd én segítek neked."
 
 #: ../../client/solo/main.py:148
 msgid ""
@@ -2042,45 +2037,45 @@ msgstr ""
 
 #: ../../client/solo/main.py:170
 msgid "Ok, ok ok ok... Sorry!"
-msgstr "Dobře, dobře... Promiňte!"
+msgstr "Ok, ok ok ok... Bocsi!"
 
 #: ../../client/solo/main.py:176
 msgid ""
 "If you want to be contacted back (and actively supported), also answer the "
 "questions below:"
-msgstr "Pokud si přejete být kontaktováni (a získat aktivní podporu), odpovězte také na následující otázky:"
+msgstr ""
 
 #: ../../client/solo/main.py:183
 msgid "Your Full name:"
-msgstr "Vaše celé jméno:"
+msgstr "Teljes neved:"
 
 #: ../../client/solo/main.py:184
 msgid "Your E-Mail address:"
-msgstr "Vaše e-mailová adresa:"
+msgstr "E-Mail címed:"
 
 #: ../../client/solo/main.py:185
 msgid "What you were doing:"
-msgstr "Co jste dělali:"
+msgstr ""
 
 #: ../../client/solo/main.py:207
 msgid ""
 "Thank you very much. The error has been reported and hopefully, the problem "
 "will be solved as soon as possible."
-msgstr "Děkuji. Chyba byla nahlášena a doufejme, že problém bude odstraněn co nejdříve."
+msgstr ""
 
 #: ../../client/solo/main.py:213
 msgid ""
 "Ugh. Cannot send the report. Please mail the file below to "
 "lxnay@sabayon.org."
-msgstr "Ah. Nelze odeslat oznámení. Prosím odešlete následující soubor na lxnay@sabayon.org"
+msgstr ""
 
 #: ../../client/solo/main.py:233
 msgid "Entropy/Equo version mismatch"
-msgstr "Inkonzistence verzí Entropy a Equo"
+msgstr ""
 
 #: ../../client/solo/main.py:234
 msgid "it could make your system explode!"
-msgstr "může explodovat Váš systém."
+msgstr "ettől felrobbanhat a rendszered!"
 
 #: ../../client/solo/main.py:243
 msgid "Entropy is running off a Live System"
@@ -2092,11 +2087,11 @@ msgstr ""
 
 #: ../../client/solo/main.py:347 ../kernel-switcher:117
 msgid "superuser access required"
-msgstr "vyžadována práva správce"
+msgstr ""
 
 #: ../../client/solo/commands/moo.py:113
 msgid "moo at user"
-msgstr "zabučet na uživatele"
+msgstr ""
 
 #: ../../client/solo/commands/moo.py:120
 msgid "bow to lxnay"
@@ -2105,7 +2100,7 @@ msgstr ""
 #: ../../client/solo/commands/query.py:72
 #: ../../client/solo/commands/query.py:1598
 msgid "repository query tools"
-msgstr "nástroje dotazování k repozitáři"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:73
 #: ../../client/solo/commands/query.py:154
@@ -2118,20 +2113,20 @@ msgstr "nástroje dotazování k repozitáři"
 #: ../../client/solo/commands/pkg.py:72
 #: ../../client/solo/commands/preservedlibs.py:68 ../kernel-switcher:49
 msgid "available commands"
-msgstr "dostupné příkazy"
+msgstr "elérhető parancsok"
 
 #: ../../client/solo/commands/query.py:77
 msgid "resolve what package a file belongs to"
-msgstr "zjistit ke kterému balíčku patří soubor"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:80
 #: ../../client/solo/commands/query.py:200
 msgid "file path"
-msgstr "cesta k souboru"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:87
 msgid "show package changelog"
-msgstr "zobrazit seznam změn balíčku"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:90
 #: ../../client/solo/commands/query.py:100
@@ -2147,73 +2142,73 @@ msgstr "zobrazit seznam změn balíčku"
 #: ../../client/solo/commands/download.py:56
 #: ../../client/solo/commands/mask.py:44
 msgid "package name"
-msgstr "název balíčku"
+msgstr "csomag neve"
 
 #: ../../client/solo/commands/query.py:97
 msgid "show reverse dependencies of package"
-msgstr "zobrazit reverzní závislosti balíčku"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:107
 msgid "search package by description"
-msgstr "vyhledat balíček podle popisu"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:110
 msgid "description keyword"
-msgstr "klíčové slovo popisu"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:117
 msgid "show files owned by package"
-msgstr "zobrazit soubory vlastněné balíčkem"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:127
 msgid "search installed packages"
-msgstr "vyhledat nainstalované balíčky"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:137
 msgid "show packages using the given license"
-msgstr "zobrazit balíčky využívající zadanou licenci"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:140
 msgid "license name"
-msgstr "název licence"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:146
 #: ../../client/solo/commands/query.py:153
 msgid "list packages"
-msgstr "vypsat balíčky"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:157
 msgid "list installed packages"
-msgstr "vypsat nainstalované balíčky"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:160
 msgid "only list packages installed by user"
-msgstr "vypsat pouze balíčky nainstalované uživatelem"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:163
 msgid "only list packages installed from given repositories"
-msgstr "vypsat pouze balíčky nainstalované z daných repozitářů"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:171
 msgid "list available packages"
-msgstr "vypsat dostupné balíčky"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:174
 msgid "only list packages from given repositories"
-msgstr "vypsat pouze balíčky z daných repozitářů"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:182
 msgid "show packages able to handle the given mimetype"
-msgstr "zobrazit balíčky schopné zpracovat zadaný typ MIME"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:185
 msgid "mimetype"
-msgstr "typ MIME"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:188
 #: ../../client/solo/commands/query.py:203
 msgid "only show installed packages"
-msgstr "zobrazit pouze nainstalované balíčky"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:197
 msgid "associate file to packages able to handle it"
@@ -2221,19 +2216,19 @@ msgstr ""
 
 #: ../../client/solo/commands/query.py:212
 msgid "show runtime libraries needed by the given package"
-msgstr "zobrazit knihovny potřebné pro běh zadaného balíčku"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:222
 msgid "search files not belonging to any packages"
-msgstr "vyhledat soubory nepatřící žádnému balíčku"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:228
 msgid "show packages requiring the given library name"
-msgstr "zobrazit balíčky vyžadující zadanou knihovnu"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:231
 msgid "library name (example: libdl.so.2)"
-msgstr "název knihovny (např: libl.so.2)"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:238
 msgid "search package sets"
@@ -2241,31 +2236,31 @@ msgstr ""
 
 #: ../../client/solo/commands/query.py:241
 msgid "set name"
-msgstr "název sady"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:248
 msgid "show packages owning the given slot"
-msgstr "zobrazit balíčky vlastnící zadaný slot"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:251
 msgid "slot name"
-msgstr "název slotu"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:258
 msgid "show packages owning the given tag"
-msgstr "zobrazit balíčky vlastnící zadanou značku"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:261
 msgid "tag name"
-msgstr "název značky"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:268
 msgid "show packages at the given revision"
-msgstr "zobrazit balíčky se zadanou revizí"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:271
 msgid "revision name"
-msgstr "název revize"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:278
 msgid "show the direct dependencies graph for the given package"
@@ -2284,7 +2279,7 @@ msgstr ""
 
 #: ../../client/solo/commands/query.py:312
 msgid "show the number of updates available"
-msgstr "zobrazit počet dostupných aktualizací"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:359
 msgid "Belong Search"
@@ -2303,9 +2298,8 @@ msgstr ""
 #: ../../client/solo/commands/match.py:240
 msgid "entry"
 msgid_plural "entries"
-msgstr[0] "záznam"
-msgstr[1] "záznamy"
-msgstr[2] "záznamů"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../../client/solo/commands/query.py:411
 #: ../../client/solo/commands/query.py:577
@@ -2317,7 +2311,7 @@ msgstr[2] "záznamů"
 #: ../../client/solo/commands/query.py:1465
 #: ../../client/solo/commands/query.py:1513
 msgid "Keyword"
-msgstr "Klíčové slovo"
+msgstr "Kulcsszó"
 
 #: ../../client/solo/commands/query.py:415
 #: ../../client/solo/commands/query.py:592
@@ -2334,25 +2328,25 @@ msgstr "Klíčové slovo"
 #: ../../client/solo/commands/search.py:182
 #: ../../client/solo/commands/match.py:238
 msgid "Found"
-msgstr "Nalezeno"
+msgstr "Találat"
 
 #: ../../client/solo/commands/query.py:433
 msgid "ChangeLog Search"
-msgstr "Hledat seznam změn"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:443
 #: ../../client/solo/commands/query.py:451
 #: ../../client/solo/commands/_manage.py:292
 msgid "No match for"
-msgstr "Žádná shoda pro"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:479
 msgid "No ChangeLog available"
-msgstr "Žádný dostupný seznam změn"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:494
 msgid "Attention: developer-repo option not enabled"
-msgstr "Pozor: volba devel-repo není povolena"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:514
 msgid "Reverse Dependencies Search"
@@ -2361,12 +2355,12 @@ msgstr ""
 #: ../../client/solo/commands/query.py:579
 #: ../../client/solo/commands/libtest.py:201
 msgid "Matched"
-msgstr "Spárováno"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:585
 #: ../../client/solo/commands/repo.py:120
 msgid "from repository"
-msgstr "z repozitáře"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:587
 msgid "from the installed packages repository"
@@ -2374,7 +2368,7 @@ msgstr ""
 
 #: ../../client/solo/commands/query.py:615
 msgid "Description Search"
-msgstr "Hledat popis"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:639
 #: ../../client/solo/commands/query.py:795
@@ -2385,27 +2379,27 @@ msgstr "Hledat popis"
 #: ../../client/solo/commands/query.py:1476
 #: ../../client/solo/commands/query.py:1524
 msgid "No matches"
-msgstr "Žádná shoda"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:690
 msgid "Files Search"
-msgstr "Vyhledávání souborů"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:718
 msgid "files"
-msgstr "soubory"
+msgstr "fájlok"
 
 #: ../../client/solo/commands/query.py:746
 msgid "License Search"
-msgstr "Hledat licenci"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:812
 msgid "Listing Packages"
-msgstr "Vypisuji balíčky"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:905
 msgid "Repository is not available"
-msgstr "Repozitář není dostupný"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:935
 msgid "Searching Mimetype"
@@ -2417,27 +2411,27 @@ msgstr ""
 
 #: ../../client/solo/commands/query.py:1042
 msgid "libraries"
-msgstr "knihovny"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:1058
 msgid "Orphans Search"
-msgstr "Hledat sirotky"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:1126
 msgid "Analyzing"
-msgstr "Kontroluji"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:1140
 msgid "Analyzed directories"
-msgstr "Zkontrolované adresáře"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:1145
 msgid "Masked directories"
-msgstr "Maskované adresáře"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:1150
 msgid "Number of files collected on the filesystem"
-msgstr "Počet souborů nasbíraných na souborovém systému"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:1155
 msgid "Now searching among installed packages"
@@ -2445,27 +2439,27 @@ msgstr ""
 
 #: ../../client/solo/commands/query.py:1186
 msgid "Checking"
-msgstr "Kontroluji"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:1201
 msgid "Number of total files"
-msgstr "Celkový počet souborů"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:1207
 msgid "Number of matching files"
-msgstr "Počet odpovídajících souborů"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:1214
 msgid "Number of orphaned files"
-msgstr "Počet osiřelých souborů"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:1220
 msgid "Writing file to disk"
-msgstr "Zapisuji soubor na disk"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:1250
 msgid "Total space wasted"
-msgstr "Celkem zbytečně využitého místa"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:1268
 msgid "Required Packages Search"
@@ -2473,40 +2467,40 @@ msgstr ""
 
 #: ../../client/solo/commands/query.py:1286
 msgid "Library"
-msgstr "Knihovna"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:1310
 msgid "Package Set Search"
-msgstr "Hledání v sadách balíčků"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:1366
 msgid "Slot Search"
-msgstr "Hledat slot"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:1429
 msgid "Tag Search"
-msgstr "Hledat značku"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:1492
 msgid "Revision Search"
-msgstr "Hledat revizi"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:1562
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:2
 msgid "Available Updates"
-msgstr "Dostupné aktualizace"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:1577
 msgid "Packages to update:"
-msgstr "Balíčky k aktualizaci:"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:1580
 msgid "Packages to remove:"
-msgstr "Balíčky k odebrání:"
+msgstr ""
 
 #: ../../client/solo/commands/query.py:1584
 msgid "Packages already up-to-date:"
-msgstr "Balíčky jsou již aktuální."
+msgstr ""
 
 #: ../../client/solo/commands/query.py:1587
 msgid "Critical updates found:"
@@ -2525,7 +2519,7 @@ msgstr ""
 #: ../../client/solo/commands/download.py:62
 #: ../../client/solo/commands/mask.py:49
 msgid "ask before making any changes"
-msgstr "dotázat se před provedením libovolných změn"
+msgstr ""
 
 #: ../../client/solo/commands/config.py:69
 #: ../../client/solo/commands/security.py:93
@@ -2537,7 +2531,7 @@ msgstr "dotázat se před provedením libovolných změn"
 #: ../../client/solo/commands/upgrade.py:73
 #: ../../client/solo/commands/download.py:69
 msgid "show what would be done"
-msgstr "zobrazit co by se provedlo"
+msgstr ""
 
 #: ../../client/solo/commands/config.py:76
 #: ../../client/solo/commands/remove.py:82
@@ -2549,7 +2543,7 @@ msgstr "zobrazit co by se provedlo"
 #: ../../client/solo/commands/upgrade.py:80
 #: ../../client/solo/commands/download.py:76
 msgid "verbose output"
-msgstr "podrobný výstup"
+msgstr ""
 
 #: ../../client/solo/commands/config.py:129
 #: ../../client/solo/commands/status.py:130
@@ -2560,132 +2554,132 @@ msgstr "podrobný výstup"
 #: ../../client/solo/commands/install.py:300
 #: ../../client/solo/commands/install.py:386
 msgid "Not available"
-msgstr "Nedostupný"
+msgstr ""
 
 #: ../../client/solo/commands/config.py:133
 msgid "installed from"
-msgstr "nainstalovaný z"
+msgstr ""
 
 #: ../../client/solo/commands/config.py:144
 msgid "Packages involved"
-msgstr "Zapojené balíčky"
+msgstr ""
 
 #: ../../client/solo/commands/config.py:151
 #: ../../client/solo/commands/install.py:554
 msgid "Would you like to continue ?"
-msgstr "Přejete si pokračovat?"
+msgstr "Szeretnéd tovább folytatni?"
 
 #: ../../client/solo/commands/config.py:171
 msgid "configure"
-msgstr "nastavit"
+msgstr ""
 
 #: ../../client/solo/commands/config.py:194
 msgid "configure installed packages"
-msgstr "nastavit nainstalované balíčky"
+msgstr ""
 
 #: ../../client/solo/commands/status.py:105
 msgid "Repository name"
-msgstr "Název repozitáře"
+msgstr ""
 
 #: ../../client/solo/commands/status.py:114
 msgid "Revision"
-msgstr "Revize"
+msgstr ""
 
 #: ../../client/solo/commands/status.py:126
 msgid "Repository class"
-msgstr "Třída repozitáře"
+msgstr ""
 
 #: ../../client/solo/commands/status.py:140
 msgid "Notice Board"
-msgstr "Nástěnka oznámení"
+msgstr ""
 
 #: ../../client/solo/commands/status.py:147
 msgid "Path"
-msgstr "Cesta"
+msgstr ""
 
 #: ../../client/solo/commands/status.py:160
 msgid "Package URLs"
-msgstr "URL balíčku"
+msgstr ""
 
 #: ../../client/solo/commands/status.py:175
 msgid "show Repositories status"
-msgstr "zobrazit stav repozitářů"
+msgstr ""
 
 #: ../../client/solo/commands/cache.py:60
 msgid "manage cache"
-msgstr "spravovat vyrovnávací paměť"
+msgstr ""
 
 #: ../../client/solo/commands/cache.py:64
 msgid "clean Entropy Library Cache"
-msgstr "vyčistit vyrovnávací paměť knihovny Entropy"
+msgstr ""
 
 #: ../../client/solo/commands/cache.py:67
 msgid "show more details"
-msgstr "zobrazit více detailů"
+msgstr "több részlet mutatása"
 
 #: ../../client/solo/commands/cache.py:70
 msgid "print results in a scriptable way"
-msgstr "vypíše výstup ve formátu vhodném pro skripty"
+msgstr ""
 
 #: ../../client/solo/commands/cache.py:127
 msgid "Cleaning Entropy cache, please wait ..."
-msgstr "Čistím vyrovnávací paměť Entropy, čekejte prosím..."
+msgstr ""
 
 #: ../../client/solo/commands/cache.py:134
 msgid "Entropy cache cleaned."
-msgstr "Vyrovnávací paměť Entropy vyčištěna."
+msgstr ""
 
 #: ../../client/solo/commands/cache.py:145
 msgid "manage Entropy Library Cache"
-msgstr "spravovat vyrovnávací paměť knihovny entropy"
+msgstr ""
 
 #: ../../client/solo/commands/update.py:64
 #: ../../client/solo/commands/ugc.py:240
 #: ../../client/solo/commands/notice.py:57
 msgid "repository"
-msgstr "repozitář"
+msgstr "programcsomag"
 
 #: ../../client/solo/commands/update.py:67
 msgid "force update"
-msgstr "vynutit aktualizaci"
+msgstr ""
 
 #: ../../client/solo/commands/update.py:103
 msgid "You must be either root or in this group:"
-msgstr "Musíte být root, nebo v následující skupině:"
+msgstr ""
 
 #: ../../client/solo/commands/update.py:123
 msgid "Sending the update request to Entropy Services"
-msgstr "Zasílám službám Entropy požadavek k aktualizaci"
+msgstr ""
 
 #: ../../client/solo/commands/update.py:124
 msgid "Repositories will be updated in background"
-msgstr "Repozitáře budou aktualizovány na pozadí"
+msgstr ""
 
 #: ../../client/solo/commands/update.py:133
 msgid "app-admin/rigo-daemon not installed. Update not allowed."
-msgstr "Není nainstalován app-admin/rigo-daemo. Aktualizace nepovolena."
+msgstr ""
 
 #: ../../client/solo/commands/update.py:200
 msgid "Have a nice day"
-msgstr "Přeji hezký den"
+msgstr "További szép napot"
 
 #: ../../client/solo/commands/update.py:205
 msgid "Repositories update not allowed"
-msgstr "Aktualizace repozitářů není povolena"
+msgstr ""
 
 #: ../../client/solo/commands/update.py:230
 #: ../../client/solo/commands/hop.py:116
 msgid "No repositories specified in"
-msgstr "Žádné repozitáře specifikovány v"
+msgstr ""
 
 #: ../../client/solo/commands/update.py:251
 #: ../../client/solo/commands/notice.py:123
 msgid "Notice board not available"
-msgstr "Nástěnka oznámení není dostupná"
+msgstr ""
 
 #: ../../client/solo/commands/update.py:265
 msgid "Notice board"
-msgstr "Nástěnka oznámení"
+msgstr ""
 
 #. title
 #: ../../client/solo/commands/update.py:278
@@ -2694,139 +2688,139 @@ msgstr "Nástěnka oznámení"
 #: ../../client/solo/commands/notice.py:146
 #: ../../client/solo/commands/notice.py:183
 msgid "Title"
-msgstr "Název"
+msgstr "Cím"
 
 #: ../../client/solo/commands/update.py:287
 msgid "update repositories"
-msgstr "aktualizovat repozitáře"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:68
 #: ../../client/solo/commands/security.py:660
 msgid "system security tools"
-msgstr "nástroje zabezpečení systému"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:73
 msgid "verify installed files using stored checksums"
-msgstr "ověřit nainstalované soubory pomocí uložených kontrolních součtů"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:77
 msgid "consider mtime instead of SHA256 (false positives ahead)"
-msgstr "brát v potaz mtime místo SHA256 (může způsobit falešnou detekci)"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:81
 msgid "update hashes and mtime (useful after editing config files)"
-msgstr "aktualizovat otisky a mtime (užitečné po editaci konfiguračních souborů)"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:85
 msgid "reinstall faulty packages"
-msgstr "přeinstalovat narušené balíčky"
+msgstr "hibás programcsomagok újratelepítése"
 
 #: ../../client/solo/commands/security.py:96
 #: ../../client/solo/commands/security.py:168
 #: ../../client/solo/commands/install.py:99
 #: ../../client/solo/commands/upgrade.py:94
 msgid "just download packages"
-msgstr "pouze stáhnout balíčky"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:112
 msgid "download the latest Security Advisories"
-msgstr "stáhnout nejnovější bezpečnostní doporučení"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:116
 msgid "force download"
-msgstr "vynutit stažení"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:125
 msgid "list all the available Security Advisories"
-msgstr "vypsat všechna dostupná bezpečnostní doporučení"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:131
 msgid "list only affected"
-msgstr "vypsat pouze ovlivněné"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:134
 msgid "list only unaffected"
-msgstr "vypsat pouze neovlivněné"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:143
 msgid "show information about provided advisories identifiers"
-msgstr "zobrazit informace o poskytnutých doporučeních"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:148
 msgid "advisory indentifier"
-msgstr "identifikátor doporučení"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:155
 msgid "automatically install all the available security updates"
-msgstr "automaticky instalovat všechny dostupné bezpečnostní aktualizace"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:219
 msgid "Advisory Identifier"
-msgstr "Identifikátor doporučení"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:251
 msgid "Background"
-msgstr "Pozadí"
+msgstr "Háttér"
 
 #: ../../client/solo/commands/security.py:258
 msgid "Exploitable"
-msgstr "Zneužitelné"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:264
 msgid "Impact"
-msgstr "Dopad"
+msgstr "Hatás"
 
 #: ../../client/solo/commands/security.py:271
 msgid "Impact type"
-msgstr "Typ dopadu"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:276
 msgid "Revised"
-msgstr "Revidované"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:281
 msgid "Announced"
-msgstr "Oznámeno"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:286
 msgid "Synopsis"
-msgstr "Přehled"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:293
 msgid "References"
-msgstr "Odkazy"
+msgstr "Referenciák"
 
 #: ../../client/solo/commands/security.py:299
 msgid "Upstream bugs"
-msgstr "Chyby upstreamu"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:305
 msgid "Affected"
-msgstr "Dotčené"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:313
 msgid "vulnerable versions"
-msgstr "zranitelné verze"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:316
 msgid "unaffected versions"
-msgstr "nedotčené verze"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:321
 msgid "Workaround"
-msgstr "Dočasné řešení"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:328
 msgid "Resolution"
-msgstr "Rozlišení"
+msgstr "Felbontás"
 
 #: ../../client/solo/commands/security.py:367
 msgid "no checksum information"
-msgstr "žádné informace o kontrolním součtu"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:416
 msgid "found altered files"
-msgstr "nalezeny pozměněné soubory"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:435
 msgid "assimilated new hashes and mtime"
@@ -2834,254 +2828,254 @@ msgstr ""
 
 #: ../../client/solo/commands/security.py:446
 msgid "unavailable"
-msgstr "nedostupné"
+msgstr "nem elérhető"
 
 #: ../../client/solo/commands/security.py:468
 msgid "Checking system files"
-msgstr "Kontroluji systémové soubory"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:479
 msgid "No altered files found"
-msgstr "Nenalezeny změněné soubory"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:505
 msgid "Altered files have been found"
-msgstr "Byly nalezeny změněné soubory"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:509
 msgid "Packages have been reinstalled successfully"
-msgstr "Balíčky byly úspěšně znovu nainstalovány"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:540
 msgid "No advisories available or applicable"
-msgstr "Žádná dostupná, či použitelná doporučení"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:594
 msgid "Advisory does not exist"
-msgstr "Doporučení neexistuje"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:618
 msgid "Calculating security updates"
-msgstr "Zkoumám bezpečnostní aktualizace"
+msgstr ""
 
 #: ../../client/solo/commands/security.py:643
 msgid "All the available updates have been already installed"
-msgstr "Všechny dostupné aktualizace jsou již nainstalovány"
+msgstr ""
 
 #: ../../client/solo/commands/conf.py:75
 msgid "manage configuration file updates"
-msgstr "spravovat aktualizace konfiguračních souborů"
+msgstr ""
 
 #: ../../client/solo/commands/conf.py:79
 msgid "update configuration files"
-msgstr "aktualizovat soubory nastavení"
+msgstr ""
 
 #: ../../client/solo/commands/conf.py:144
 msgid "Scanning filesystem"
-msgstr "Prohledávám souborový systém"
+msgstr ""
 
 #: ../../client/solo/commands/conf.py:150
 #: ../../client/solo/commands/conf.py:176
 msgid "All fine baby. Nothing to do!"
-msgstr "Vše v pořádku. Nic k provedení."
+msgstr "Minden baba. Nincs mit tenni!"
 
 #: ../../client/solo/commands/conf.py:171
 msgid "file"
-msgstr "soubor"
+msgstr "fájl"
 
 #: ../../client/solo/commands/conf.py:187
 #: ../../client/solo/commands/conf.py:633
 msgid "Type a number"
-msgstr "Zadejte číslo"
+msgstr ""
 
 #: ../../client/solo/commands/conf.py:217
 msgid "Please choose a file to update by typing its identification number."
-msgstr "Prosím vyberte soubor k aktualizaci, zadáním identifikačního čísla."
+msgstr ""
 
 #: ../../client/solo/commands/conf.py:221
 msgid "Other options are:"
-msgstr "Další možnosti jsou:"
+msgstr "Egyéb opciók:"
 
 #: ../../client/solo/commands/conf.py:225
 #: ../../client/solo/commands/notice.py:153
 #: ../../magneto/src/magneto/core/interfaces.py:196
 msgid "Exit"
-msgstr "Ukončit"
+msgstr "Kilép"
 
 #: ../../client/solo/commands/conf.py:230
 msgid "Automerge all the files asking you one by one"
-msgstr "Automaticky sloučit všechny soubory a ptát se po jednom"
+msgstr ""
 
 #: ../../client/solo/commands/conf.py:235
 msgid "Automerge all the files without questioning"
-msgstr "Automaticky sloučit všechny soubory bez dotazování"
+msgstr ""
 
 #: ../../client/solo/commands/conf.py:240
 msgid "Discard all the files asking you one by one"
-msgstr "Zahodit všechny soubory a ptát se po jednom"
+msgstr ""
 
 #: ../../client/solo/commands/conf.py:245
 msgid "Discard all the files without questioning"
-msgstr "Zahodit všechny soubory bez dotazování"
+msgstr ""
 
 #: ../../client/solo/commands/conf.py:258
 msgid "Please choose an action to take for the selected file."
-msgstr "Prosím vyberte činnost k provedení pro vybraný soubor."
+msgstr ""
 
 #: ../../client/solo/commands/conf.py:263
 msgid "Come back to the files list"
-msgstr "Vrátit se zpět k seznamu souborů"
+msgstr ""
 
 #: ../../client/solo/commands/conf.py:268
 msgid "Replace original with update"
-msgstr "Nahradit původní soubor aktualizovaným"
+msgstr ""
 
 #: ../../client/solo/commands/conf.py:273
 msgid "Delete update, keeping original as is"
-msgstr "Smazat aktualizaci, ponechat soubor v původním stavu"
+msgstr ""
 
 #: ../../client/solo/commands/conf.py:278
 msgid "Edit proposed file and show diffs again"
-msgstr "Upravit navrhovaný soubor a zobrazit znovu rozdíl"
+msgstr ""
 
 #: ../../client/solo/commands/conf.py:283
 msgid "Interactively merge original with update"
-msgstr "Interaktivně sloučit původní s aktualizací"
+msgstr ""
 
 #: ../../client/solo/commands/conf.py:288
 msgid "Show differences again"
-msgstr "Znovu zobrazit rozdíl"
+msgstr ""
 
 #: ../../client/solo/commands/conf.py:384
 #: ../../client/solo/commands/conf.py:439
 msgid "Source file"
-msgstr "Zdrojový soubor"
+msgstr "Forrás fájl"
 
 #: ../../client/solo/commands/conf.py:389
 #: ../../client/solo/commands/conf.py:444
 msgid "Destination file"
-msgstr "Cílový soubor"
+msgstr "Cél fájl"
 
 #: ../../client/solo/commands/conf.py:394
 msgid "Overwrite ?"
-msgstr "Přepsat?"
+msgstr "Felülír?"
 
 #: ../../client/solo/commands/conf.py:403
 msgid "Cannot merge"
-msgstr "Nelze sloučit"
+msgstr ""
 
 #: ../../client/solo/commands/conf.py:449
 msgid "Discard ?"
-msgstr "Zahodit?"
+msgstr "Eldob?"
 
 #: ../../client/solo/commands/conf.py:455
 #: ../../client/solo/commands/conf.py:590
 msgid "Discarding"
-msgstr "Zahazuji"
+msgstr "Eldobás"
 
 #: ../../client/solo/commands/conf.py:464
 msgid "Cannot remove"
-msgstr "Nelze odebrat"
+msgstr ""
 
 #: ../../client/solo/commands/conf.py:480
 msgid "Editing file"
-msgstr "Edituji soubor"
+msgstr "Fájl szerkesztése"
 
 #: ../../client/solo/commands/conf.py:487
 msgid "Edited file"
-msgstr "Upravený soubor"
+msgstr "Szerkesztett fájl"
 
 #: ../../client/solo/commands/conf.py:489
 msgid "showing difference"
-msgstr "zobrazuji rozdíl"
+msgstr ""
 
 #: ../../client/solo/commands/conf.py:497
 #: ../../client/solo/commands/conf.py:602
 #: ../../client/solo/commands/conf.py:613
 msgid "Automerging"
-msgstr "Automaticky slučuji"
+msgstr ""
 
 #: ../../client/solo/commands/conf.py:538
 msgid "Interactive merge"
-msgstr "Interaktivní sloučení"
+msgstr ""
 
 #: ../../client/solo/commands/conf.py:554
 msgid "OSError during interactive merge"
-msgstr "Chyba OSError při interaktivním sloučení"
+msgstr ""
 
 #: ../../client/solo/commands/conf.py:561
 msgid "IOError during interactive merge"
-msgstr "Chyba IO při interaktivním sloučení"
+msgstr ""
 
 #: ../../client/solo/commands/conf.py:571
 msgid "Unable to merge file"
-msgstr "Nelze sloučit soubor"
+msgstr ""
 
 #: ../../client/solo/commands/conf.py:621
 msgid "Selected file"
-msgstr "Vybraný soubor"
+msgstr "Kiválasztott fájl"
 
 #: ../../client/solo/commands/conf.py:643
 #, python-format
 msgid "Replacing %s with %s"
-msgstr "Nahrazuji %s použitím %s"
+msgstr ""
 
 #: ../../client/solo/commands/conf.py:650
 #, python-format
 msgid "Cannot merge %s"
-msgstr "Nelze sloučit %s"
+msgstr ""
 
 #: ../../client/solo/commands/conf.py:658
 #, python-format
 msgid "Deleting %s"
-msgstr "Mažu %s"
+msgstr ""
 
 #: ../../client/solo/commands/conf.py:664
 #, python-format
 msgid "Cannot remove %s"
-msgstr "Nelze odebrat %s"
+msgstr ""
 
 #: ../../client/solo/commands/conf.py:702
 msgid "manage package file updates"
-msgstr "spravovat aktualizace souborů balíčku"
+msgstr ""
 
 #: ../../client/solo/commands/yell.py:34
 msgid "You should run equo --help"
-msgstr "Měli byste spustit equo --help"
+msgstr ""
 
 #: ../../client/solo/commands/yell.py:35
 msgid "You didn't run equo --help, did you?"
-msgstr "Vy jste nespustili equo --help, že?"
+msgstr ""
 
 #: ../../client/solo/commands/yell.py:36
 msgid "Did you even read equo --help??"
-msgstr "Už jste četli equo --help?"
+msgstr ""
 
 #: ../../client/solo/commands/yell.py:37
 msgid "I give up. Run that equo --help !!!!!!!"
-msgstr "Vzdávám se. Spusťte equo --help."
+msgstr ""
 
 #: ../../client/solo/commands/yell.py:38
 msgid "OH MY GOD. RUN equo --heeeeeeeeeeeeeelp"
-msgstr "Opravdu, prosím spusťte equo --help."
+msgstr ""
 
 #: ../../client/solo/commands/yell.py:39
 msgid "Illiteracy is a huge problem in this world"
-msgstr "Negramotnost je velkým problémem dneška"
+msgstr "Az írástudatlanság mai napig nagy probléma"
 
 #: ../../client/solo/commands/yell.py:40
 msgid "Ok i give up, you are hopeless"
-msgstr "Dobrá, vzdávám se, není Vám pomoci"
+msgstr "Ok feladom, ez reménytelen"
 
 #: ../../client/solo/commands/yell.py:41 ../../client/solo/commands/yell.py:42
 #: ../../client/solo/commands/yell.py:43 ../../client/solo/commands/yell.py:44
 #: ../../client/solo/commands/yell.py:45 ../../client/solo/commands/yell.py:47
 msgid "Go to hell."
-msgstr "Jděte k čertu."
+msgstr "Menj a pokolba."
 
 #: ../../client/solo/commands/yell.py:46
 msgid "Stop that, you idiot."
-msgstr "Nedělejte to, blázne."
+msgstr "Hagyd ezt abba, te buta."
 
 #: ../../client/solo/commands/yell.py:117
 msgid "yell at user"
@@ -3093,7 +3087,7 @@ msgstr ""
 #: ../../client/solo/commands/upgrade.py:106
 #: ../../client/solo/commands/download.py:89
 msgid "exclude package dependencies"
-msgstr "vynechat závislosti balíčku"
+msgstr ""
 
 #: ../../client/solo/commands/remove.py:95
 #: ../../client/solo/commands/source.py:103
@@ -3101,7 +3095,7 @@ msgstr "vynechat závislosti balíčku"
 #: ../../client/solo/commands/upgrade.py:112
 #: ../../client/solo/commands/download.py:102
 msgid "do not calculate dependencies recursively"
-msgstr "nepočítat závislosti rekurzivně"
+msgstr ""
 
 #: ../../client/solo/commands/remove.py:101
 #: ../../client/solo/commands/source.py:109
@@ -3109,7 +3103,7 @@ msgstr "nepočítat závislosti rekurzivně"
 #: ../../client/solo/commands/upgrade.py:118
 #: ../../client/solo/commands/download.py:108
 msgid "include dependencies no longer needed"
-msgstr "vkládat závislosti, které již nejsou potřeba"
+msgstr ""
 
 #: ../../client/solo/commands/remove.py:107
 #: ../../client/solo/commands/install.py:136
@@ -3125,96 +3119,96 @@ msgstr ""
 
 #: ../../client/solo/commands/remove.py:119
 msgid "force system packages removal (dangerous!)"
-msgstr "vynutit odebrání systémových balíčků (nebezpečné)"
+msgstr ""
 
 #: ../../client/solo/commands/remove.py:187
 msgid "removal"
-msgstr "odstranění"
+msgstr ""
 
 #: ../../client/solo/commands/remove.py:204
 #: ../../client/solo/commands/source.py:182
 #: ../../client/solo/commands/download.py:182
 msgid "All done"
-msgstr "Vše hotovo"
+msgstr "Mind elkészült"
 
 #: ../../client/solo/commands/remove.py:216
 msgid "These are the packages that should be MANUALLY removed"
-msgstr "Tyto balíčky by měly být RUČNĚ odebrány"
+msgstr ""
 
 #: ../../client/solo/commands/remove.py:222
 #: ../../client/solo/commands/install.py:366
 msgid "These are the packages that would be removed"
-msgstr "Balíčky k odebrání"
+msgstr ""
 
 #: ../../client/solo/commands/remove.py:263
 msgid "Packages that would be removed"
-msgstr "Balíčky, které budou odebrány"
+msgstr ""
 
 #: ../../client/solo/commands/remove.py:293
 #: ../../client/solo/commands/install.py:457
 msgid "Freed disk space"
-msgstr "Uvolněný prostor na disku"
+msgstr "Felszabadult lemez terület"
 
 #: ../../client/solo/commands/remove.py:300
 msgid "Total bandwidth wasted"
-msgstr "Celkem zbytečně staženo"
+msgstr ""
 
 #: ../../client/solo/commands/remove.py:342
 msgid "Ouch!"
-msgstr "Au!"
+msgstr "Jujj!"
 
 #: ../../client/solo/commands/remove.py:343
 msgid "the following system packages were pulled in"
-msgstr "následující systémové balíčky byly přidány do"
+msgstr ""
 
 #: ../../client/solo/commands/remove.py:366
 msgid "Would you like to proceed ?"
-msgstr "Přejete si pokračovat?"
+msgstr ""
 
 #: ../../client/solo/commands/remove.py:381
 msgid "remove packages from system"
-msgstr "odebrat balíčky ze systému"
+msgstr ""
 
 #: ../../client/solo/commands/search.py:68
 msgid "search keyword"
-msgstr "klíčové slovo hledání"
+msgstr ""
 
 #: ../../client/solo/commands/search.py:72
 #: ../../client/solo/commands/repo.py:133
 #: ../../client/solo/commands/match.py:87
 msgid "quiet output, for scripting purposes"
-msgstr "tichý výstup, vhodné pro skripty"
+msgstr ""
 
 #: ../../client/solo/commands/search.py:81
 msgid "search among installed packages only"
-msgstr "hledat pouze mezi nainstalovanými balíčky"
+msgstr ""
 
 #: ../../client/solo/commands/search.py:85
 msgid "search among available packages only"
-msgstr "hledat pouze mezi dostupnými balíčky"
+msgstr ""
 
 #: ../../client/solo/commands/search.py:169
 msgid "Searching"
-msgstr "Hledání"
+msgstr "Keresés"
 
 #: ../../client/solo/commands/search.py:213
 msgid "search packages in repositories"
-msgstr "vyhledat balíčky v repozitářích"
+msgstr ""
 
 #: ../../client/solo/commands/deptest.py:64
 #: ../../client/solo/commands/libtest.py:67
 #: ../../client/solo/commands/unused.py:66
 msgid "show less details (useful for scripting)"
-msgstr "zobrazit méně podrobností (užitečné pro skriptování)"
+msgstr ""
 
 #: ../../client/solo/commands/deptest.py:67
 #: ../../client/solo/commands/libtest.py:74 ../kernel-switcher:45
 msgid "just show what would be done"
-msgstr "pouze zobrazit co by se vykonalo"
+msgstr ""
 
 #: ../../client/solo/commands/deptest.py:160
 msgid "Running dependency test"
-msgstr "Spouštím test závislostí"
+msgstr ""
 
 #: ../../client/solo/commands/deptest.py:170
 msgid "No missing dependencies"
@@ -3222,38 +3216,38 @@ msgstr ""
 
 #: ../../client/solo/commands/deptest.py:175
 msgid "These are the dependencies not found"
-msgstr "Toto jsou nenalezené závislosti"
+msgstr "Ezek a csomag függőségek nem találhatóak"
 
 #: ../../client/solo/commands/deptest.py:185
 msgid "Needed by"
-msgstr "Potřebné pro"
+msgstr "Szükséges"
 
 #: ../../client/solo/commands/deptest.py:196
 msgid "Would you like to install the packages ?"
-msgstr "přejete si nainstalovat tyto balíčky?"
+msgstr ""
 
 #: ../../client/solo/commands/deptest.py:203
 #: ../../client/solo/commands/libtest.py:230
 msgid "Installing available packages in"
-msgstr "Instaluji dostupné balíčky v"
+msgstr ""
 
 #: ../../client/solo/commands/deptest.py:204
 #: ../../client/solo/commands/libtest.py:231
 msgid "10 seconds"
-msgstr "10 sekund"
+msgstr "10 másodperc"
 
 #: ../../client/solo/commands/deptest.py:223
 msgid "look for unsatisfied dependencies"
-msgstr "vyhledat nesplněné závislosti"
+msgstr ""
 
 #: ../../client/solo/commands/command.py:127
 msgid "not a valid directory"
-msgstr "není platným adresářem"
+msgstr ""
 
 #: ../../client/solo/commands/command.py:142
 #: ../../client/solo/commands/pkg.py:79
 msgid "not a valid Entropy package file"
-msgstr "není platným balíčkem Entropy"
+msgstr ""
 
 #: ../../client/solo/commands/command.py:154
 #: ../../client/solo/commands/source.py:83
@@ -3261,35 +3255,35 @@ msgstr "není platným balíčkem Entropy"
 #: ../../client/solo/commands/upgrade.py:87
 #: ../../client/solo/commands/download.py:83
 msgid "quiet output"
-msgstr "tichý výstup"
+msgstr ""
 
 #: ../../client/solo/commands/command.py:388
 msgid "Acquiring Entropy Resources Lock, please wait..."
-msgstr "Získávám zámek zdrojů Entropy, čekejte prosím..."
+msgstr ""
 
 #: ../../client/solo/commands/command.py:400
 msgid "Another Entropy is currently running."
-msgstr "Jiná Entropy již běží."
+msgstr ""
 
 #: ../../client/solo/commands/command.py:459
 msgid "When you wrote"
-msgstr "Když jste napsal"
+msgstr ""
 
 #: ../../client/solo/commands/command.py:461
 msgid "You Meant(tm)"
-msgstr "Myslel jste(tm)"
+msgstr ""
 
 #: ../../client/solo/commands/command.py:462
 msgid "one of these below?"
-msgstr "jedno z následujících?"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:71 ../../client/solo/commands/ugc.py:1011
 msgid "manage User Generated Content"
-msgstr "spravovat uživatelem generovaný obsah"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:75
 msgid "login against the given repository"
-msgstr "přihlásit se k zadanému repozitáři"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:77 ../../client/solo/commands/ugc.py:87
 #: ../../client/solo/commands/ugc.py:99 ../../client/solo/commands/ugc.py:140
@@ -3298,25 +3292,25 @@ msgstr "přihlásit se k zadanému repozitáři"
 #: ../../client/solo/commands/repo.py:112
 #: ../../client/solo/commands/repo.py:140
 msgid "repository name"
-msgstr "název repozitáře"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:80 ../../client/solo/commands/ugc.py:90
 msgid "force action"
-msgstr "vynutit činnost"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:85
 msgid "logout from the given repository"
-msgstr "odhlásit ze zadaného repozitáře"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:96
 msgid ""
 "manage package documents in the selected repository (comments, files, "
 "videos)"
-msgstr "spravovat dokumenty balíčku ve vybraném repozitáři (komentáře, soubory, videa)"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:104
 msgid "manage Documents"
-msgstr "spravovat dokumenty"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:108
 msgid "get available documents for the provided package name"
@@ -3326,7 +3320,7 @@ msgstr ""
 #: ../../client/solo/commands/ugc.py:127 ../../client/solo/commands/ugc.py:151
 #: ../../client/solo/commands/ugc.py:158
 msgid "package name (example: x11-libs/qt)"
-msgstr "název balíčku (např: x11-libs/qt)"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:116
 msgid "add a new document to the provided package name"
@@ -3334,107 +3328,107 @@ msgstr ""
 
 #: ../../client/solo/commands/ugc.py:124
 msgid "remove documents from database using their identifiers"
-msgstr "odebrat dokumenty z databáze pomocí jejich identifikátorů"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:130
 msgid "document identifier"
-msgstr "identifikátor dokumentu"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:137
 msgid "manage package votes in the selected repository"
-msgstr "spravovat hlasy balíčku ve vybraném repozitáři"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:145
 msgid "manage Votes"
-msgstr "spravovat hlasy"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:149
 msgid "get vote for the provided package name"
-msgstr "získat hodnocení zadaného balíčku"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:156
 msgid "add vote to the provided package name"
-msgstr "přidat hodnocení zadaného balíčku"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:200 ../../client/solo/commands/ugc.py:304
 msgid "Invalid repository"
-msgstr "Neplatný repozitář"
+msgstr "Érvénytelen programcsomag"
 
 #: ../../client/solo/commands/ugc.py:211 ../../client/solo/commands/ugc.py:315
 #: ../../client/solo/commands/ugc.py:439 ../../client/solo/commands/ugc.py:521
 #: ../../client/solo/commands/ugc.py:737 ../../client/solo/commands/ugc.py:854
 #: ../../client/solo/commands/ugc.py:892
 msgid "Repository does not support Entropy Services."
-msgstr "Repozitář nepodporuje služby Entropy"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:221
 msgid "Already logged in as"
-msgstr "Již přihlášen jako"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:223
 msgid "Please logout first"
-msgstr "Nejprve se prosím odhlaste"
+msgstr "Légy szíves lépj ki előbb"
 
 #: ../../client/solo/commands/ugc.py:235
 msgid "Username"
-msgstr "Uživatelské jméno"
+msgstr "Felhasználónév"
 
 #: ../../client/solo/commands/ugc.py:236
 msgid "Password"
-msgstr "Heslo"
+msgstr "Jelszó"
 
 #: ../../client/solo/commands/ugc.py:240
 msgid "Please login against"
-msgstr "Prosím přihlaste se na"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:248
 msgid "Login aborted. Not logged in."
-msgstr "Přihlášení přerušeno. Nepřihlášen."
+msgstr "Belépés megszakítva. Nem vagy belépve."
 
 #: ../../client/solo/commands/ugc.py:262
 msgid "Authentication error. Not logged in."
-msgstr "Chyba ověření. Nepřihlášen."
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:271
 msgid "Communication error. Not logged in."
-msgstr "Chyba komunikace. Nepřihlášen."
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:281
 msgid "Successfully logged in as"
-msgstr "Úspěšné přihlášení jako"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:288
 msgid "From now on, any UGC action will be committed as this user"
-msgstr "Nadále budou všechny činnosti UGO zaslány pod uživatelem"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:325
 msgid "Not logged in."
-msgstr "Nepřihlášen."
+msgstr "Nem vagy belépve."
 
 #: ../../client/solo/commands/ugc.py:334
 msgid "User"
-msgstr "Uživatel"
+msgstr "Felhasználó"
 
 #: ../../client/solo/commands/ugc.py:336
 msgid "has been logged out."
-msgstr "byl odhlášen."
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:345
 msgid "No title"
-msgstr "Bez názvu"
+msgstr "Nincs cím"
 
 #: ../../client/solo/commands/ugc.py:372
 #: ../../client/solo/commands/notice.py:189
 msgid "Content"
-msgstr "Obsah"
+msgstr "Tartalom"
 
 #: ../../client/solo/commands/ugc.py:389
 msgid "no votes"
-msgstr "žádné hlasy"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:395
 msgid "current package vote"
-msgstr "aktuální volba balíčku"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:456 ../../client/solo/commands/ugc.py:466
 #: ../../client/solo/commands/ugc.py:483 ../../client/solo/commands/ugc.py:702
@@ -3443,39 +3437,39 @@ msgstr "aktuální volba balíčku"
 #: ../../client/solo/commands/ugc.py:867 ../../client/solo/commands/ugc.py:945
 #: ../../client/solo/commands/ugc.py:980 ../../client/solo/commands/ugc.py:991
 msgid "UGC error"
-msgstr "Chyba UGO"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:495
 msgid "Number of downloads"
-msgstr "Počet stažení"
+msgstr "Letöltések száma"
 
 #: ../../client/solo/commands/ugc.py:502
 msgid "No User Generated Content available."
-msgstr "Žádný dostupný uživatelem generovaný obsah."
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:533 ../../client/solo/commands/ugc.py:904
 msgid "Not logged in, please login first."
-msgstr "Nepřihlášen, nejprve se prosím přihlaste."
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:543
 msgid "Add document"
-msgstr "Přidat dokument"
+msgstr "Dokumentum hozzáadása"
 
 #: ../../client/solo/commands/ugc.py:548
 msgid "text comment"
-msgstr "textová poznámka"
+msgstr "szöveges megjegyzés"
 
 #: ../../client/solo/commands/ugc.py:549
 msgid "icon"
-msgstr "ikona"
+msgstr "ikon"
 
 #: ../../client/solo/commands/ugc.py:550
 msgid "simple file"
-msgstr "jednoduchý soubor"
+msgstr "egyszerű fájl"
 
 #: ../../client/solo/commands/ugc.py:551
 msgid "simple image"
-msgstr "jednoduchý obrázek"
+msgstr "egyszerű kép"
 
 #: ../../client/solo/commands/ugc.py:552
 msgid "video"
@@ -3483,125 +3477,125 @@ msgstr "video"
 
 #: ../../client/solo/commands/ugc.py:569
 msgid "Insert document title"
-msgstr "Zadejte název dokumentu"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:571
 msgid "Insert document description/comment"
-msgstr "Zadejte popis/komentář dokumentu"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:574
 msgid "Insert document's keywords (space separated)"
-msgstr "Zadejte klíčová slova dokumentu (odděleno mezerou)"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:576
 msgid "Choose document type"
-msgstr "Vyberte typ dokumentu"
+msgstr "Válassz dokumentum típust"
 
 #: ../../client/solo/commands/ugc.py:581 ../../client/solo/commands/ugc.py:601
 msgid "Entropy UGC document submission"
-msgstr "Zaslání dokumentu UGO Entropy"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:598
 msgid "Insert document path"
-msgstr "Zadejte cestu k dokumentu"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:614 ../../client/solo/commands/ugc.py:754
 #: ../../client/solo/commands/ugc.py:957
 msgid "Please review your submission"
-msgstr "Prosím zkontrolujte svůj příspěvek"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:642
 msgid "Document path"
-msgstr "Cesta k dokumentu"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:649
 msgid "Document type"
-msgstr "Typ dokumentu"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:655 ../../client/solo/commands/ugc.py:969
 msgid "Do you want to submit?"
-msgstr "Chcete odeslat?"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:687
 msgid "Invalid document"
-msgstr "Neplatný dokument"
+msgstr "Érvénytelen dokumentum"
 
 #: ../../client/solo/commands/ugc.py:716
 msgid "Document added, thank you!"
-msgstr "Dokument přidán, děkuji!"
+msgstr "Dokumentum hozzáadva, köszönjük!"
 
 #: ../../client/solo/commands/ugc.py:747
 msgid "Documents removal"
-msgstr "Odstranit dokumenty"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:760
 msgid "Document identifiers"
-msgstr "Identifikátory dokumentu"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:765
 msgid "Would you like to review them?"
-msgstr "Přejete si je zkontrolovat?"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:788
 msgid "Would you like to continue with the removal?"
-msgstr "Přejete si pokračovat v odstranění?"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:811
 msgid "cannot get the requested Document"
-msgstr "nelze získat požadovaný dokument"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:831
 msgid "UGC status"
-msgstr "Stav UGO"
+msgstr "UGC státusz"
 
 #: ../../client/solo/commands/ugc.py:832
 msgid "removed successfully"
-msgstr "odstraněno úspěšně"
+msgstr "sikeresen törölve"
 
 #: ../../client/solo/commands/ugc.py:913
 msgid "add vote"
-msgstr "přidat hlas"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:921
 msgid "Insert your vote (from 1 to 5)"
-msgstr "Zadejte svůj hlas (od 1 do 5)"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:925
 msgid "Entropy UGC vote submission"
-msgstr "Zaslání hlasu UGO Entropy"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:946
 msgid "invalid vote, must be in range"
-msgstr "neplatný hlas, musí být v rozsahu"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:963
 msgid "Vote"
-msgstr "Volit"
+msgstr "Szavaz"
 
 #: ../../client/solo/commands/ugc.py:992
 msgid "already voted"
-msgstr "již hlasováno"
+msgstr ""
 
 #: ../../client/solo/commands/ugc.py:1000
 msgid "vote added, thank you!"
-msgstr "hlas přidán, děkuji!"
+msgstr ""
 
 #: ../../client/solo/commands/repo.py:67
 #: ../../client/solo/commands/repo.py:737
 msgid "manage repositories"
-msgstr "spravovat repozitáře"
+msgstr ""
 
 #: ../../client/solo/commands/repo.py:71
 msgid "enable repositories"
-msgstr "povolit repozitáře"
+msgstr "programcsomag engedélyezése"
 
 #: ../../client/solo/commands/repo.py:79
 msgid "disable repositories"
-msgstr "zakázat repozitáře"
+msgstr "programcsomag letiltása"
 
 #: ../../client/solo/commands/repo.py:87
 msgid "add a repository"
-msgstr "přidat repozitář"
+msgstr "programcsomag hozzáadása"
 
 #: ../../client/solo/commands/repo.py:92
 msgid "repository description"
@@ -3621,7 +3615,7 @@ msgstr ""
 
 #: ../../client/solo/commands/repo.py:109
 msgid "remove a repository"
-msgstr "odebrat repozitář"
+msgstr ""
 
 #: ../../client/solo/commands/repo.py:117
 msgid "rename a repository"
@@ -3633,105 +3627,105 @@ msgstr ""
 
 #: ../../client/solo/commands/repo.py:128
 msgid "list active repositories"
-msgstr "vypsat aktivní repozitáře"
+msgstr ""
 
 #: ../../client/solo/commands/repo.py:137
 msgid "reorder mirrors basing on response time"
-msgstr "seřadit zrcadla podle času odpovědi"
+msgstr ""
 
 #: ../../client/solo/commands/repo.py:143
 msgid "simulate execution"
-msgstr "simulovat spuštění"
+msgstr ""
 
 #: ../../client/solo/commands/repo.py:148
 msgid "merge content of source repository to destination"
-msgstr "sloučit obsah zdrojového repozitáře do cíle"
+msgstr ""
 
 #: ../../client/solo/commands/repo.py:150
 msgid "source repository"
-msgstr "zdrojový repozitář"
+msgstr ""
 
 #: ../../client/solo/commands/repo.py:152
 msgid "destination repository"
-msgstr "cílový repozitář"
+msgstr ""
 
 #: ../../client/solo/commands/repo.py:156
 msgid "also remove dependency conflicts during merge"
-msgstr "také odstranit konflikty závislostí při sloučení"
+msgstr ""
 
 #: ../../client/solo/commands/repo.py:252
 msgid "repository already enabled"
-msgstr "repozitář je již povolen"
+msgstr "programcsomag már engedélyezve van"
 
 #: ../../client/solo/commands/repo.py:261
 #: ../../client/solo/commands/repo.py:315
 #: ../../client/solo/commands/repo.py:600
 msgid "repository not available"
-msgstr "repozitář není dostupný"
+msgstr "programcsomag nem elérhető"
 
 #: ../../client/solo/commands/repo.py:281
 msgid "repository enabled"
-msgstr "repozitář povolen"
+msgstr "programcsomag engedélyezve"
 
 #: ../../client/solo/commands/repo.py:287
 msgid "cannot enable repository"
-msgstr "nelze povolit repozitář"
+msgstr "programcsomag nem engedélyezhető"
 
 #: ../../client/solo/commands/repo.py:306
 msgid "repository already disabled"
-msgstr "repozitář je již zakázán"
+msgstr "programcsomag"
 
 #: ../../client/solo/commands/repo.py:337
 #: ../../client/solo/commands/repo.py:351
 msgid "cannot disable repository"
-msgstr "nelze zakázat repozitář"
+msgstr ""
 
 #: ../../client/solo/commands/repo.py:345
 msgid "repository disabled"
-msgstr "repozitář zakázán"
+msgstr ""
 
 #: ../../client/solo/commands/repo.py:373
 msgid "Repository id:"
-msgstr "Id repozitáře:"
+msgstr "Programcsomag azonosító:"
 
 #: ../../client/solo/commands/repo.py:376
 msgid "Description:"
-msgstr "Popis:"
+msgstr "Leírás"
 
 #: ../../client/solo/commands/repo.py:379
 msgid "Repository format:"
-msgstr "Formát repozitáře:"
+msgstr "Programcsomag formátum:"
 
 #: ../../client/solo/commands/repo.py:383
 msgid "Packages URL:"
-msgstr "URL balíčků:"
+msgstr "Csomagok URL-je:"
 
 #: ../../client/solo/commands/repo.py:385
 msgid "Repository URL:"
-msgstr "URL repozitáře:"
+msgstr "Programcsomag URL"
 
 #: ../../client/solo/commands/repo.py:407
 #: ../../client/solo/commands/repo.py:533
 msgid "repository added succesfully"
-msgstr "repozitář přidán úspěšně"
+msgstr "programcsomag sikeresen hozzáadva"
 
 #: ../../client/solo/commands/repo.py:412
 #: ../../client/solo/commands/repo.py:543
 msgid "cannot add repository"
-msgstr "nelze přidat repozitář"
+msgstr "programcsomag nem adható hozzá"
 
 #: ../../client/solo/commands/repo.py:434
 #: ../../client/solo/commands/repo.py:483
 msgid "repository id not available"
-msgstr "není dostupné id repozitáře"
+msgstr "programcsomag azonosítója nem elérhető"
 
 #: ../../client/solo/commands/repo.py:454
 msgid "repository removed succesfully"
-msgstr "repozitář odebrán úspěšně"
+msgstr "programcsomag sikeresen eltávolítva"
 
 #: ../../client/solo/commands/repo.py:460
 msgid "cannot remove repository"
-msgstr "nelze odebrat repozitář"
+msgstr "programcsomag nem eltávolítható"
 
 #: ../../client/solo/commands/repo.py:491
 msgid "repository id already available"
@@ -3743,36 +3737,36 @@ msgstr ""
 
 #: ../../client/solo/commands/repo.py:614
 msgid "mirror order:"
-msgstr "pořadí zrcadel:"
+msgstr ""
 
 #: ../../client/solo/commands/repo.py:624
 msgid "mirrors sorted successfully"
-msgstr "zrcadla seřazena úspěšně"
+msgstr ""
 
 #: ../../client/solo/commands/repo.py:643
 #: ../../client/solo/commands/repo.py:650
 msgid "repository not found"
-msgstr "repozitář nenalezen"
+msgstr "programcsomag nem található"
 
 #: ../../client/solo/commands/repo.py:659
 msgid "repository cannot be source and destination"
-msgstr "repozitář nemůže být zdrojem i cílem"
+msgstr ""
 
 #: ../../client/solo/commands/repo.py:667
 msgid "merging repositories"
-msgstr "slučuji repozitáře"
+msgstr ""
 
 #: ../../client/solo/commands/repo.py:683
 msgid "working on repository"
-msgstr "pracuji na repozitáři"
+msgstr ""
 
 #: ../../client/solo/commands/repo.py:700
 msgid "merging package"
-msgstr "slučuji balíček"
+msgstr ""
 
 #: ../../client/solo/commands/repo.py:724
 msgid "done merging packages"
-msgstr "slučování balíčků dokončeno"
+msgstr ""
 
 #: ../../client/solo/commands/source.py:96
 #: ../../client/solo/commands/install.py:117
@@ -3790,91 +3784,90 @@ msgstr ""
 #: ../../client/solo/commands/upgrade.py:100
 #: ../../client/solo/commands/download.py:120
 msgid "include build-time dependencies"
-msgstr "vkládat závislosti pro sestavení"
+msgstr ""
 
 #: ../../client/solo/commands/source.py:127
 msgid "save files into the current working directory"
-msgstr "uložit soubory do aktuálního pracovního adresáře"
+msgstr ""
 
 #: ../../client/solo/commands/source.py:176
 #: ../../client/solo/commands/rescue.py:645
 #: ../../client/solo/commands/install.py:544
 #: ../../client/solo/commands/download.py:176
 msgid "Nothing to do"
-msgstr "Nic k provedení"
+msgstr "Nincs teendő"
 
 #: ../../client/solo/commands/source.py:207
 msgid "sources download"
-msgstr "stažení zdrojů"
+msgstr ""
 
 #: ../../client/solo/commands/source.py:230
 msgid "download packages source code"
-msgstr "stáhnout zdrojový kód balíčků"
+msgstr ""
 
 #: ../../client/solo/commands/libtest.py:80
 msgid "print broken files to stdout"
-msgstr "vypsat rozbité soubory na stdout"
+msgstr ""
 
 #: ../../client/solo/commands/libtest.py:85
 msgid "dump results to files"
-msgstr "vložit výsledky do souborů"
+msgstr ""
 
 #: ../../client/solo/commands/libtest.py:142
 #: ../../client/solo/commands/libtest.py:176
 msgid "System is healthy"
-msgstr "Systém je zdravý"
+msgstr "A Rendszer ép"
 
 #: ../../client/solo/commands/libtest.py:182
 msgid "Libraries/Executables statistics"
-msgstr "Statistiky knihoven/spustitelných souborů"
+msgstr ""
 
 #: ../../client/solo/commands/libtest.py:188
 msgid "Not matched"
-msgstr "Beze shody"
+msgstr ""
 
 #: ../../client/solo/commands/libtest.py:224
 msgid "Would you like to install them ?"
-msgstr "Přejete si je nainstalovat?"
+msgstr ""
 
 #: ../../client/solo/commands/libtest.py:252
 msgid "look for missing libraries"
-msgstr "vyhledat chybějící knihovny"
+msgstr ""
 
 #: ../../client/solo/commands/notice.py:162
 msgid "Choose one by typing its identifier"
-msgstr "Vyberte jeden napsáním identifikátoru"
+msgstr ""
 
 #: ../../client/solo/commands/notice.py:194
 msgid "Link"
-msgstr "Odkaz"
+msgstr "Hivatkozás"
 
 #: ../../client/solo/commands/notice.py:203
 msgid "Press Enter to continue"
-msgstr "Stiskněte enter pro pokračování"
+msgstr "Nyomj Enter-t a folytatáshoz"
 
 #: ../../client/solo/commands/notice.py:211
 msgid "repository notice board reader"
-msgstr "čtečka nástěnky oznámení repozitáře"
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:94
 msgid "Scanning configuration files to update"
-msgstr "Prohledávám konfigurační soubory k aktualizaci"
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:103
 msgid "No configuration files to update."
-msgstr "Žádné konfigurační soubory k aktualizaci."
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:108
 #, python-format
 msgid "There is %s configuration file needing update"
 msgid_plural "There are %s configuration files needing update"
-msgstr[0] "%s konfigurační soubor potřebuje aktualizovat"
-msgstr[1] "%s konfigurační soubory potřebují aktualizovat"
-msgstr[2] "%s konfiguračních souborů potřebuje aktualizovat"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../../client/solo/commands/_manage.py:116
 msgid "Please run"
-msgstr "Prosím spusťte"
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:136
 #, python-format
@@ -3882,159 +3875,158 @@ msgid "There is %s preserved library on the system"
 msgid_plural "There are %s preserved libraries on the system"
 msgstr[0] ""
 msgstr[1] ""
-msgstr[2] ""
 
 #. every package matching app-foo is masked
 #: ../../client/solo/commands/_manage.py:245
 msgid "Every package matching"
-msgstr "Každý odpovídající balíček"
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:247
 msgid "is masked"
-msgstr "je skrytý"
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:265
 msgid "Masking reason"
-msgstr "Důvod maskování"
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:277
 msgid "matching"
-msgstr "odpovídá"
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:279
 msgid "is broken"
-msgstr "je rozbitý"
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:283
 msgid "atom"
-msgstr "atom"
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:285
 msgid "in"
-msgstr "v"
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:294
 msgid "in repositories"
-msgstr "v repozitářích"
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:307
 msgid "Not found"
-msgstr "Nenalezeno"
+msgstr "Nincs találat"
 
 #: ../../client/solo/commands/_manage.py:316
 msgid "package needed by"
-msgstr "balíček je vyžadován pro"
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:322
 #: ../../client/solo/commands/_manage.py:740
 #: ../../client/solo/commands/install.py:391
 msgid "from"
-msgstr "z"
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:400
 msgid "Skipped"
-msgstr "Přeskočeno"
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:432
 msgid "is not installed"
-msgstr "není nainstalován"
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:460
 msgid "Calculating dependencies"
-msgstr "Zkoumám závislosti"
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:472
 msgid "Dependencies not found"
-msgstr "Závislosti nenalezeny"
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:483
 msgid "Conflicting packages were pulled in"
-msgstr "Byly vtaženy konfliktní balíčky"
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:499
 msgid "Please mask conflicts using"
-msgstr "Prosím zamaskujte konflikty použitím"
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:551
 #: ../../client/solo/commands/_manage.py:594
 msgid "download"
-msgstr "stahování"
+msgstr "letöltés"
 
 #: ../../client/solo/commands/_manage.py:620
 msgid "Repositories are old, please run:"
-msgstr "Repozitáře jsou zastaralé, prosím spusťte:"
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:644
 msgid "Please update the following critical packages"
-msgstr "Prosím aktualizujte následující kritické balíčky"
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:655
 msgid "You should install them as soon as possible"
-msgstr "Měl byste je nainstalovat co nejdříve"
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:676
 msgid "Read the license"
-msgstr "Přečíst licenci"
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:681
 msgid "Accept the license (I've read it)"
-msgstr "Přijmout licenci (četl jsem ji)"
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:686
 msgid "Accept the license and don't ask anymore (I've read it)"
-msgstr "Přijmout licenci a znovu se neptat (četl jsem ji)"
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:690
 msgid "Quit"
-msgstr "Zavřít"
+msgstr "Kilépés"
 
 #: ../../client/solo/commands/_manage.py:697
 msgid "Your choice (type a number and press enter)"
-msgstr "Vaše volba (zadejte číslo a stiskněte klávesu enter)"
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:724
 msgid "You need to accept the licenses below"
-msgstr "Musíte přijmout následující licence"
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:732
 #: ../../client/solo/commands/preservedlibs.py:142
 msgid "needed by"
-msgstr "požadována"
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:772
 msgid "No license data available"
-msgstr "Nejsou dostupná žádná licenční data"
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:783
 msgid "No file viewer"
-msgstr "Žádný prohlížeč souborů"
+msgstr ""
 
 #: ../../client/solo/commands/_manage.py:784
 msgid "License saved into"
-msgstr "Licence uložena do"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:71
 #: ../../client/solo/commands/pkg.py:71 ../../client/solo/commands/pkg.py:455
 msgid "execute advanced tasks on packages"
-msgstr "vykonat pokročilé úlohy nad balíčky"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:91
 msgid "check installed packages repository for errors"
-msgstr "zkontrolovat chyby v repozitáři nainstalovaných balíčků"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:98
 msgid "compact the installed packages repository"
-msgstr "zkomprimovat repozitář nainstalovaných balíčků"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:104
 msgid ""
 "re-generate the installed packages repository using the Source Package "
 "Manager"
-msgstr "znovu vytvořit repozitář nainstalovaných balíčků pomocí správce zdrojových balíčků"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:111
 msgid "re-generate SPM<->Entropy package UIDs mapping"
-msgstr "znovu vytvořit mapu UID balíku SPM<->Entropy"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:117
 msgid ""
@@ -4044,55 +4036,55 @@ msgstr ""
 
 #: ../../client/solo/commands/rescue.py:128
 msgid "create a backup of the installed packages repository"
-msgstr "vytvořit zálohu repozitáře nainstalovaných balíčků"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:134
 msgid "restore a backup of the installed packages repository"
-msgstr "obnovit repozitář nainstalovaných balíčků ze zálohy"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:177
 msgid "Repository error"
-msgstr "Chyba repozitáře"
+msgstr "Programcsomag hiba"
 
 #: ../../client/solo/commands/rescue.py:185
 #: ../../client/solo/commands/rescue.py:238
 #: ../../client/solo/commands/rescue.py:247
 msgid "Sanity Check"
-msgstr "Ověření normálnosti"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:186
 msgid "installed packages repository"
-msgstr "repozitář nainstalovaných balíčků"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:192
 msgid "Scanning..."
-msgstr "Prohledávám..."
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:228
 msgid "Error checking package"
-msgstr "Chyba ověřování balíčku"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:239
 msgid "corrupted"
-msgstr "poškozený"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:248
 msgid "passed"
-msgstr "v pořádku"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:270
 msgid "Compacting the Installed Packages repository"
-msgstr "Komprimuji repozitář nainstalovaných balíčků"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:283
 msgid "Compaction complete"
-msgstr "Komprese dokončena"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:312
 msgid ""
 "the Installed Packages repository will be re-generated using the Source "
 "Package Manager"
-msgstr "repozitář nainstalovaných balíčků bude obnoven pomocí správce zdrojových balíčků"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:323
 msgid "I am not joking, this is quite disruptive"
@@ -4100,15 +4092,15 @@ msgstr ""
 
 #: ../../client/solo/commands/rescue.py:331
 msgid "Understood ?"
-msgstr "Rozumíte?"
+msgstr "Megértetted?"
 
 #: ../../client/solo/commands/rescue.py:335
 msgid "Really ?"
-msgstr "Skutečně?"
+msgstr "Biztosan?"
 
 #: ../../client/solo/commands/rescue.py:340
 msgid "This is your last chance"
-msgstr "Vaše poslední šance"
+msgstr "Ez az utolsó lehetőséged"
 
 #: ../../client/solo/commands/rescue.py:341
 msgid "Ok?"
@@ -4117,78 +4109,78 @@ msgstr "Ok?"
 #: ../../client/solo/commands/rescue.py:358
 #: ../../client/solo/commands/rescue.py:381
 msgid "Cannot read metadata"
-msgstr "Nelze číst metadata"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:389
 msgid "Creating a backup of the current repository"
-msgstr "Vytvářím zálohu současného repozitáře"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:401
 msgid "Cannot backup the repository"
-msgstr "Nelze zálohovat repozitář"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:418
 msgid "Cannot delete old repository"
-msgstr "Nelze smazat starý repozitář"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:428
 msgid "Initializing a new repository"
-msgstr "Inicializuji nový repozitář"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:449
 msgid "Repository initialized, generating metadata"
-msgstr "Repozitář inicializován, vytvářím metadata"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:479
 #: ../../client/solo/commands/rescue.py:740
 msgid "Invalid package"
-msgstr "Neplatný balíček"
+msgstr "Érvénytelen csomag"
 
 #: ../../client/solo/commands/rescue.py:492
 #: ../../client/solo/commands/rescue.py:754
 msgid "Metadata generation error"
-msgstr "Chyba při generování metadat"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:535
 msgid "Indexing metadata, please wait..."
-msgstr "Indexuji metadata, čekejte prosím..."
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:540
 msgid "Repository metadata generation complete"
-msgstr "Generování metadat repozitáře dokončeno"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:555
 msgid "Scanning Source Package Manager repository"
-msgstr "Prohledávám repozitář správce zdrojových balíčků"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:569
 msgid "Cannot find package"
-msgstr "Nemohu najít balíček"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:581
 msgid "Scanning Entropy repository"
-msgstr "Prohledávám repozitář Entropy"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:652
 msgid "These packages were removed"
-msgstr "Tyto balíčky byly odebrány"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:674
 #: ../../client/solo/commands/rescue.py:713
 msgid "Continue ?"
-msgstr "Pokračovat?"
+msgstr "Folytatod?"
 
 #: ../../client/solo/commands/rescue.py:693
 msgid "Removal complete"
-msgstr "Odebírání dokončeno"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:700
 msgid "These packages were added"
-msgstr "Tyto balíčky byly přidány"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:796
 msgid "Update complete"
-msgstr "Aktualizace dokončena"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:808
 msgid "Re-generating packages mapping"
@@ -4196,15 +4188,15 @@ msgstr ""
 
 #: ../../client/solo/commands/rescue.py:817
 msgid "Packages mapping re-generated"
-msgstr "Vytváření mapy balíčků"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:845
 msgid "No backups found"
-msgstr "Nenalezeny žádné zálohy"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:867
 msgid "Select the repository to restore"
-msgstr "Vyberte repozitář k obnovení"
+msgstr ""
 
 #: ../../client/solo/commands/rescue.py:874
 msgid "Entropy Installed Packages Repository backups"
@@ -4212,11 +4204,11 @@ msgstr ""
 
 #: ../../client/solo/commands/rescue.py:899
 msgid "tools to rescue the running system"
-msgstr "nástroj na záchranu běžícího systému"
+msgstr ""
 
 #: ../../client/solo/commands/match.py:83
 msgid "match keyword"
-msgstr "klíčové slovo pro porovnání"
+msgstr ""
 
 #: ../../client/solo/commands/match.py:95
 msgid "return only injected packages "
@@ -4224,19 +4216,19 @@ msgstr ""
 
 #: ../../client/solo/commands/match.py:100
 msgid "match among installed packages only"
-msgstr "porovnávej pouze mezi nainstalovanými balíčky"
+msgstr ""
 
 #: ../../client/solo/commands/match.py:104
 msgid "match among available packages only"
-msgstr "porovnávej pouze mezi dostupnými balíčky"
+msgstr ""
 
 #: ../../client/solo/commands/match.py:108
 msgid "return all the matches, not just the best"
-msgstr "vrátit všechny shody, ne jen nejlepší"
+msgstr ""
 
 #: ../../client/solo/commands/match.py:113
 msgid "return matches found in every repository"
-msgstr "vrátit shody nalezené v každém repozitáři"
+msgstr ""
 
 #: ../../client/solo/commands/match.py:119
 msgid "print download URIs (w/--quiet)"
@@ -4244,11 +4236,11 @@ msgstr ""
 
 #: ../../client/solo/commands/match.py:123
 msgid "print repository information (w/--quiet)"
-msgstr "vypsat informace o repozitáři (s --quiet)"
+msgstr ""
 
 #: ../../client/solo/commands/match.py:127
 msgid "print description too (w/--quiet)"
-msgstr "vypsat také popisek (s --quiet)"
+msgstr ""
 
 #: ../../client/solo/commands/match.py:131
 msgid "print \":<slot>\" next to package names (w/--quiet)"
@@ -4256,7 +4248,7 @@ msgstr ""
 
 #: ../../client/solo/commands/match.py:225
 msgid "Matching"
-msgstr "Párování"
+msgstr ""
 
 #: ../../client/solo/commands/match.py:273
 msgid "match packages in repositories"
@@ -4271,75 +4263,75 @@ msgstr ""
 #: ../../client/solo/commands/upgrade.py:150
 #: ../../client/solo/commands/download.py:127
 msgid "download multiple packages in parallel (max 10)"
-msgstr "stáhnout více balíčků zároveň (max 10)"
+msgstr ""
 
 #: ../../client/solo/commands/install.py:219
 msgid "These are the packages that would be installed"
-msgstr "Balíčky, které by se nainstalovaly"
+msgstr ""
 
 #: ../../client/solo/commands/install.py:367
 msgid "conflicting/substituted"
-msgstr "kolidující/nahrazující"
+msgstr ""
 
 #: ../../client/solo/commands/install.py:402
 msgid "Packages needing to be installed/updated/downgraded"
-msgstr "Balíčky k instalaci/aktualizaci/snížení verze"
+msgstr ""
 
 #: ../../client/solo/commands/install.py:407
 msgid "Packages needing to be removed"
-msgstr "Balíčky k odebrání"
+msgstr ""
 
 #: ../../client/solo/commands/install.py:414
 msgid "Packages needing to be installed"
-msgstr "Balíčky k instalaci"
+msgstr ""
 
 #: ../../client/solo/commands/install.py:421
 msgid "Packages needing to be reinstalled"
-msgstr "Balíčky k reinstalaci"
+msgstr ""
 
 #: ../../client/solo/commands/install.py:428
 msgid "Packages needing to be updated"
-msgstr "Balíčky k aktualizaci"
+msgstr ""
 
 #: ../../client/solo/commands/install.py:435
 msgid "Packages needing to be downgraded"
-msgstr "Balíčky ke snížení verze"
+msgstr ""
 
 #: ../../client/solo/commands/install.py:448
 msgid "Download size"
-msgstr "Stahovaná velikost"
+msgstr "Letöltés mérete"
 
 #: ../../client/solo/commands/install.py:455
 msgid "Used disk space"
-msgstr "Využitý prostor na disku"
+msgstr "Felhasznált lemez terület"
 
 #: ../../client/solo/commands/install.py:471
 msgid "You need at least"
-msgstr "Potřebujete alespoň"
+msgstr "Szükség van legalább"
 
 #: ../../client/solo/commands/install.py:473
 msgid "of free space"
-msgstr "volného místa"
+msgstr "szabad területre"
 
 #: ../../client/solo/commands/install.py:487
 msgid "You don't have enough space for the installation. Free some space into"
-msgstr "Nemáte dostatek místa na disku pro instalaci. Uvolněte nějaké místo v"
+msgstr ""
 
 #: ../../client/solo/commands/install.py:586
 msgid "Download complete"
-msgstr "Stahování dokončeno"
+msgstr "Letöltés befejezve"
 
 #: ../../client/solo/commands/install.py:635
 msgid "install"
-msgstr "instalovat"
+msgstr "installál"
 
 #: ../../client/solo/commands/install.py:663
 msgid "Installation complete"
-msgstr "Instalace dokončena"
+msgstr ""
 
 #: ../../client/solo/commands/install.py:672
 msgid "install or update packages or package files"
-msgstr "instalovat, či aktualizovat balíčky, nebo soubory balíčků"
+msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:130
 msgid ""
@@ -4349,35 +4341,35 @@ msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:201
 msgid "Calculating System Updates"
-msgstr "Zkoumám systémové aktualizace"
+msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:220
 msgid "Packages matching update"
-msgstr "Balíčky odpovídající aktualizaci"
+msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:226
 msgid "Packages matching not available"
-msgstr "Shodný balíček není dostupný"
+msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:232
 msgid "Packages matching already up to date"
-msgstr "Balíčky souhlasí, systém je již aktuální"
+msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:256
 msgid "Nothing to update"
-msgstr "Nic k aktualizaci"
+msgstr "Nincs frissíteni való"
 
 #: ../../client/solo/commands/upgrade.py:272
 msgid ""
 "On the system there are packages that are not available anymore in the "
 "online repositories"
-msgstr "V systému jsou balíčky, které již nejsou dostupné na online repozitářích"
+msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:277
 msgid ""
 "Even if they are usually harmless, it is suggested (after proper "
 "verification) to remove them."
-msgstr "I když jsou většinou neškodné je doporučeno (po ověření) je odebrat."
+msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:289
 msgid "To automatically remove them, please run: equo upgrade --purge."
@@ -4385,44 +4377,44 @@ msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:300
 msgid "Selective"
-msgstr "Vybrat"
+msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:308
 msgid "Would you like to remove them?"
-msgstr "Přejete si je odebrat?"
+msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:335
 msgid "Remove this?"
-msgstr "Odebrat?"
+msgstr "Eltávolítod ezt?"
 
 #: ../../client/solo/commands/upgrade.py:350
 msgid "Nothing to remove"
-msgstr "Nic k odebrání"
+msgstr "Nincs mit eltávolítani"
 
 #: ../../client/solo/commands/upgrade.py:380
 msgid "There are more updates to install, reloading Entropy"
-msgstr "Existuje více aktualizací k instalaci, znovu načítám Entropy"
+msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:400
 msgid "upgrade the system"
-msgstr "aktualizovat systém"
+msgstr ""
 
 #: ../../client/solo/commands/pkg.py:86
 msgid "generate packages from the installed system"
-msgstr "generovat balíčky z nainstalovaného systému"
+msgstr ""
 
 #: ../../client/solo/commands/pkg.py:90
 msgid "installed package name"
-msgstr "název nainstalovaného balíčku"
+msgstr ""
 
 #: ../../client/solo/commands/pkg.py:95 ../../client/solo/commands/pkg.py:111
 #: ../../client/solo/commands/pkg.py:127 ../../client/solo/commands/pkg.py:143
 msgid "destination directory where to save generated packages"
-msgstr "cílový adresář pro uložení generovaných balíčků"
+msgstr ""
 
 #: ../../client/solo/commands/pkg.py:101
 msgid "transform SPM package files into Entropy ones"
-msgstr "převést balíčky SZB na balíčky Entropy"
+msgstr ""
 
 #: ../../client/solo/commands/pkg.py:106
 msgid "SPM package file path"
@@ -4430,7 +4422,7 @@ msgstr ""
 
 #: ../../client/solo/commands/pkg.py:117
 msgid "transform Entropy package files into SPM ones"
-msgstr "převést balíčky Entropy na balíčky SZB"
+msgstr ""
 
 #: ../../client/solo/commands/pkg.py:122 ../../client/solo/commands/pkg.py:138
 msgid "Entropy package file path"
@@ -4438,24 +4430,24 @@ msgstr ""
 
 #: ../../client/solo/commands/pkg.py:133
 msgid "extract Entropy metadata from Entropy packages"
-msgstr "extrahovat metadata Entropy z balíčků Entropy"
+msgstr ""
 
 #: ../../client/solo/commands/pkg.py:219 ../../client/solo/commands/pkg.py:271
 #: ../../client/solo/commands/pkg.py:369 ../../client/solo/commands/pkg.py:417
 msgid "broken directory path"
-msgstr "špatná cesta k adresáři"
+msgstr ""
 
 #: ../../client/solo/commands/pkg.py:232
 msgid "generating package"
-msgstr "vytvářím balíček"
+msgstr ""
 
 #: ../../client/solo/commands/pkg.py:242
 msgid "package file creation error"
-msgstr "chyba vytváření balíčku"
+msgstr ""
 
 #: ../../client/solo/commands/pkg.py:250
 msgid "package generated"
-msgstr "balíček vytvořen"
+msgstr ""
 
 #: ../../client/solo/commands/pkg.py:280 ../../client/solo/commands/pkg.py:376
 #: ../../client/solo/commands/pkg.py:424
@@ -4464,19 +4456,19 @@ msgstr ""
 
 #: ../../client/solo/commands/pkg.py:293
 msgid "package file extraction complete"
-msgstr "extrakce souborů balíčku dokončeno"
+msgstr ""
 
 #: ../../client/solo/commands/pkg.py:337
 msgid "package metadata generation complete"
-msgstr "generování metadat balíčku dokončeno"
+msgstr ""
 
 #: ../../client/solo/commands/pkg.py:348
 msgid "package file generated at"
-msgstr "soubor balíčku vytvořen v"
+msgstr ""
 
 #: ../../client/solo/commands/pkg.py:388 ../../client/solo/commands/pkg.py:437
 msgid "error during metadata extraction"
-msgstr "chyba při extrakci metadat"
+msgstr ""
 
 #: ../../client/solo/commands/pkg.py:396
 msgid "package file generated"
@@ -4484,15 +4476,15 @@ msgstr ""
 
 #: ../../client/solo/commands/pkg.py:445
 msgid "metadata file generated"
-msgstr "soubor metadat vytvořen"
+msgstr ""
 
 #: ../../client/solo/commands/unused.py:72
 msgid "sort packages by size"
-msgstr "seřadit balíčky dle velikosti"
+msgstr ""
 
 #: ../../client/solo/commands/unused.py:77
 msgid "include packages installed by user"
-msgstr "vložit balíčky nainstalované uživatelem"
+msgstr ""
 
 #: ../../client/solo/commands/unused.py:117
 msgid ""
@@ -4501,47 +4493,47 @@ msgstr ""
 
 #: ../../client/solo/commands/unused.py:164
 msgid "look for unused packages (pay attention)"
-msgstr "vyhledat nevyužité balíčky (dávejte pozor)"
+msgstr ""
 
 #: ../../client/solo/commands/cleanup.py:97
 msgid "remove downloaded packages and clean temp. directories"
-msgstr "odstranit stažené balíčky a vyčistit dočasné adresáře"
+msgstr ""
 
 #: ../../client/solo/commands/download.py:198
 msgid "download packages, essentially"
-msgstr "stáhnout balíčky"
+msgstr ""
 
 #: ../../client/solo/commands/help.py:70
 msgid "Entropy Command Line Client, Equo"
-msgstr "Equo, klient příkazové řádky Entropy"
+msgstr ""
 
 #: ../../client/solo/commands/help.py:77
 msgid "force colored output"
-msgstr "vynutit barevný výstup"
+msgstr ""
 
 #: ../../client/solo/commands/help.py:102 ../kernel-switcher:162
 msgid "this help"
-msgstr "nápověda"
+msgstr ""
 
 #: ../../client/solo/commands/hop.py:92
 msgid "Already on branch"
-msgstr "Již na větvi"
+msgstr ""
 
 #: ../../client/solo/commands/hop.py:133
 msgid "Succesfully switched to branch"
-msgstr "Úspěšně přepnuto na větev"
+msgstr ""
 
 #: ../../client/solo/commands/hop.py:140
 msgid "Now run 'equo upgrade' to upgrade your distribution to"
-msgstr "Nyní spusťte 'equo upgrade' pro aktualizaci distribuce na"
+msgstr ""
 
 #: ../../client/solo/commands/hop.py:148
 msgid "Unable to switch to branch"
-msgstr "Nelze přepnout na větev"
+msgstr ""
 
 #: ../../client/solo/commands/hop.py:160
 msgid "upgrade the System to a new branch"
-msgstr "aktualizovat sytém na novou větev"
+msgstr ""
 
 #: ../../client/solo/commands/version.py:59
 msgid "show equo version"
@@ -4549,27 +4541,27 @@ msgstr ""
 
 #: ../../client/solo/commands/mask.py:53
 msgid "only show what would be done"
-msgstr "pouze zobrazit co by se udělalo"
+msgstr ""
 
 #: ../../client/solo/commands/mask.py:125
 msgid "These are the packages that would be handled"
-msgstr "Balíčky, které budou zpracovány"
+msgstr ""
 
 #: ../../client/solo/commands/mask.py:160
 msgid "Would you like to continue?"
-msgstr "Přejete si pokračovat?"
+msgstr ""
 
 #: ../../client/solo/commands/mask.py:174
 msgid "action not executed"
-msgstr "činnost nebyla vykonána"
+msgstr ""
 
 #: ../../client/solo/commands/mask.py:222
 msgid "mask one or more packages"
-msgstr "zamaskovat jeden a nebo více balíčků"
+msgstr ""
 
 #: ../../client/solo/commands/mask.py:229
 msgid "unmask one or more packages"
-msgstr "odmaskovat jeden a nebo více balíčků"
+msgstr ""
 
 #: ../../client/solo/commands/preservedlibs.py:67
 msgid "manage preserved libraries"
@@ -4605,109 +4597,109 @@ msgstr ""
 
 #: ../../magneto/src/magneto/kde/interfaces.py:74
 msgid "Magneto Entropy Updates Applet"
-msgstr "Appet aktualizací balíčků Magneto"
+msgstr ""
 
 #: ../../magneto/src/magneto/kde/interfaces.py:248
 #: ../../magneto/src/magneto/gtk/interfaces.py:220
 msgid "Your system currently has an outdated version of"
-msgstr "Váš systém obsahuje zastaralé verze"
+msgstr ""
 
 #: ../../magneto/src/magneto/kde/interfaces.py:249
 #: ../../magneto/src/magneto/gtk/interfaces.py:221
 msgid "installed"
-msgstr "nainstalován"
+msgstr "installálva"
 
 #: ../../magneto/src/magneto/kde/interfaces.py:250
 #: ../../magneto/src/magneto/gtk/interfaces.py:222
 msgid "the latest available version is"
-msgstr "nejnovější dostupná verze je"
+msgstr ""
 
 #: ../../magneto/src/magneto/kde/interfaces.py:252
 #: ../../magneto/src/magneto/gtk/interfaces.py:224
 msgid ""
 "It is recommended that you upgrade to the latest before updating any other "
 "packages"
-msgstr "Doporučujeme Vám nejprve aktualizovat na nejnovější verzi před aktualizací libovolných dalších balíčků"
+msgstr ""
 
 #: ../../magneto/src/magneto/kde/components.py:48
 msgid "Close"
-msgstr "Zavřít"
+msgstr "Bezár"
 
 #: ../../magneto/src/magneto/kde/components.py:49
 msgid "Launch Application Browser"
-msgstr "Spustit prohlížeč aplikací"
+msgstr ""
 
 #: ../../magneto/src/magneto/kde/components.py:59
 msgid "Application updates"
-msgstr "Aktualizace aplikací"
+msgstr ""
 
 #: ../../magneto/src/magneto/gtk/interfaces.py:147
 msgid "System Updates"
-msgstr "Aktualizace systému"
+msgstr ""
 
 #: ../../magneto/src/magneto/gtk/components.py:52
 msgid "Application"
-msgstr "Aplikace"
+msgstr "Alkalmazás"
 
 #: ../../magneto/src/magneto/gtk/components.py:54
 msgid "Latest version"
-msgstr "Nejnovější verze"
+msgstr "Legújabb verzió"
 
 #: ../../magneto/src/magneto/gtk/components.py:96
 msgid "Critical Information"
-msgstr "Kritická informace"
+msgstr ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:183
 msgid "_Disable Notification Applet"
-msgstr "_Zakázat oznamovací applet"
+msgstr ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:184
 msgid "Disable Notification Applet"
-msgstr "Zakázat oznamovací applet"
+msgstr ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:185
 msgid "_Enable Notification Applet"
-msgstr "_Povolit oznamovací applet"
+msgstr ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:186
 msgid "Enable Notification Applet"
-msgstr "Povolit oznamovací applet"
+msgstr ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:187
 msgid "_Check for updates"
-msgstr "_Zkontrolovat aktualizace"
+msgstr ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:188
 msgid "Check for updates"
-msgstr "Zkontrolovat aktualizace"
+msgstr "Frissítések keresése"
 
 #: ../../magneto/src/magneto/core/interfaces.py:189
 msgid "_Launch Package Manager"
-msgstr "_Spustit správce balíčků"
+msgstr ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:190
 msgid "Launch Package Manager"
-msgstr "Spustit správce balíčků"
+msgstr ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:191
 msgid "_Packages Website"
-msgstr "_Webová stránka prohlížení balíčků"
+msgstr ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:192
 msgid "Use Packages web interface"
-msgstr "Použít webové rozhraní prohlížení balíčků"
+msgstr ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:193
 msgid "_Sabayon Linux Website"
-msgstr "_Webová stránka Sabayon Linuxu"
+msgstr ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:194
 msgid "Launch Sabayon Linux Website"
-msgstr "Otevřít webovou stránku Sabayon Linux"
+msgstr ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:196
 msgid "_Exit"
-msgstr "_Ukončit"
+msgstr "_Kilépés"
 
 #: ../../magneto/src/magneto/core/interfaces.py:335
 msgid "System restart needed"
@@ -4719,62 +4711,60 @@ msgstr ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:343
 msgid "Cannot monitor Sabayon updates"
-msgstr "Nelze monitorovat aktualizace Sabayonu"
+msgstr ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:345
 msgid "Entropy DBus service not available"
-msgstr "Služba DBus Entropy není dostupná"
+msgstr ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:346
 msgid "unable to communicate with the updates service"
-msgstr "nelze komunikovat se službou aktualizací"
+msgstr ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:364
 #, python-format
 msgid "There is %s update available"
 msgid_plural "There are %s updates available"
-msgstr[0] "Je dostupná %s aktualizace"
-msgstr[1] "Jsou dostupné %s aktualizace"
-msgstr[2] "Je dostupných %s aktualizací"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:370
 msgid "Sabayon updates available"
-msgstr "Dostupné aktualizace Sabayonu"
+msgstr "Sabayon frissítések elérhetőek"
 
 #: ../../magneto/src/magneto/core/interfaces.py:371
 #, python-format
 msgid "There is <b>%s</b> update available"
 msgid_plural "There are <b>%s</b> updates available"
-msgstr[0] "Je dostupná <b>%s</b> aktualizace"
-msgstr[1] "Jsou dostupné <b>%s</b> aktualizace"
-msgstr[2] "Je dostupných <b>%s</b> aktualizací"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:376
 msgid "Upgrade now"
-msgstr ""
+msgstr "Frissítés most"
 
 #. all fine, no updates
 #: ../../magneto/src/magneto/core/interfaces.py:380
 #: ../../magneto/src/magneto/core/interfaces.py:382
 msgid "Your Sabayon is up-to-date"
-msgstr "Váš Sabayon je aktuální"
+msgstr "Naprakész a Sabayon"
 
 #: ../../magneto/src/magneto/core/interfaces.py:383
 msgid "No updates available at this time, cool!"
-msgstr "Žádné dostupné aktualizace, super!"
+msgstr "Jelenleg nincs elérhető frissítés, király!"
 
 #. all fine, no updates
 #: ../../magneto/src/magneto/core/interfaces.py:394
 msgid "Repositories are being updated"
-msgstr "Repozitáře se aktualizují"
+msgstr "A programcsomagok épp automatikusan frissülnek"
 
 #: ../../magneto/src/magneto/core/interfaces.py:395
 msgid "Sabayon repositories status"
-msgstr "Stav repozitářů Sabayon"
+msgstr "Sabayon programcsomagok státusza"
 
 #: ../../magneto/src/magneto/core/interfaces.py:396
 msgid "Repositories are being updated automatically"
-msgstr "Repozitáře se automaticky aktualizují"
+msgstr ""
 
 #. all fine, no updates
 #: ../../magneto/src/magneto/core/interfaces.py:404
@@ -4784,59 +4774,59 @@ msgstr ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:406
 msgid "Do not shutdown nor reboot the computer!"
-msgstr ""
+msgstr "Ne kapcsold ki és ne indísd újra a számítógépet!"
 
 #: ../../magneto/src/magneto/core/interfaces.py:499
 msgid "Updates Notification Applet Disabled"
-msgstr "Applet oznamování aktualizací zakázán"
+msgstr ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:509
 msgid "Updates Notification Applet Enabled"
-msgstr "Applet oznamování aktualizací povolen"
+msgstr ""
 
 #: ../kernel-switcher:28
 msgid "Sabayon Kernel Switcher"
-msgstr "Přepínač jader Sabayon"
+msgstr ""
 
 #: ../kernel-switcher:35
 msgid "quiet mode"
-msgstr "tichý režim"
+msgstr "csendes üzem"
 
 #: ../kernel-switcher:38
 msgid "verbose mode"
-msgstr "podrobný režim"
+msgstr ""
 
 #: ../kernel-switcher:42
 msgid "ask confirmation"
-msgstr "vyžádat potvrzení"
+msgstr ""
 
 #: ../kernel-switcher:92
 msgid "Package does not exist"
-msgstr "Balíček neexistuje"
+msgstr ""
 
 #: ../kernel-switcher:100
 msgid "Not a kernel"
-msgstr "Není jádro"
+msgstr ""
 
 #: ../kernel-switcher:110
 msgid "Cannot find your currently running kernel."
-msgstr "Nelze nalézt Vaše aktuálně spuštěné jádro."
+msgstr ""
 
 #: ../kernel-switcher:112
 msgid "Try without --from-running."
-msgstr "Zkuste bez --from-running."
+msgstr ""
 
 #: ../kernel-switcher:127
 msgid "No kernel packages found"
-msgstr "Nenalezen žádný balíček s jádrem"
+msgstr ""
 
 #: ../kernel-switcher:145
 msgid "install a new or just another kernel"
-msgstr "nainstalovat nové a nebo další jádro"
+msgstr ""
 
 #: ../kernel-switcher:150
 msgid "use 'uname -r' to determine the running kernel"
-msgstr "použít 'uname -r' pro zjištění běžícího jádra"
+msgstr ""
 
 #: ../kernel-switcher:153
 msgid "the new kernel package dependency name"
@@ -4844,12 +4834,12 @@ msgstr ""
 
 #: ../kernel-switcher:157
 msgid "list kernels"
-msgstr "vypsat jádra"
+msgstr ""
 
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:1
 msgid "Magneto Application Updates Notifier"
-msgstr "Oznamovač aktualizací balíčků Magneto"
+msgstr ""
 
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:3
 msgid "_Load Package Manager"
-msgstr "_Načíst správce balíčků"
+msgstr ""
