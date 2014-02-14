@@ -210,10 +210,6 @@ class EntropyClientTest(unittest.TestCase):
                 self.assertNotEqual(None, dbconn.getPackageData(idpackage))
                 self.assertNotEqual(None, dbconn.retrieveAtom(idpackage))
 
-    def test_package_installation(self):
-        for pkg_path, pkg_atom in self.test_pkgs:
-            self._do_pkg_test(pkg_path, pkg_atom)
-
     def test_package_installation_new_api(self):
         for pkg_path, pkg_atom in self.test_pkgs:
             self._do_pkg_test_new_api(pkg_path, pkg_atom)
@@ -307,66 +303,6 @@ else:
                 trigger.kill()
 
         self.assertEqual(exit_st, 42)
-
-    def _do_pkg_test(self, pkg_path, pkg_atom):
-
-        # this test might be considered controversial, for now, let's keep it
-        # here, we use equo stuff to make sure it keeps working
-        from solo.commands.pkg import SoloPkg
-
-        # we need to tweak the default unpack dir to make pkg install available
-        # for uids != 0
-        temp_unpack = const_mkdtemp()
-        old_unpackdir = etpConst['entropyunpackdir']
-        etpConst['entropyunpackdir'] = temp_unpack
-
-        fake_root = const_mkdtemp()
-        pkg_dir = const_mkdtemp()
-        inst_dir = const_mkdtemp()
-
-        s_pkg = SoloPkg(["inflate", pkg_path, "--savedir", pkg_dir])
-        func, func_args = s_pkg.parse()
-        # do not call func directly because the real method is
-        # wrapper around a lock call
-        rc = s_pkg._inflate(self.Client)
-        self.assertTrue(rc == 0)
-        self.assertTrue(os.listdir(pkg_dir))
-
-        etp_pkg = os.path.join(pkg_dir, os.listdir(pkg_dir)[0])
-        self.assertTrue(os.path.isfile(etp_pkg))
-
-        matches = []
-        try:
-            matches = self.Client.add_package_repository(etp_pkg)
-        except EntropyPackageException as err:
-            if etpConst['currentarch'] == "amd64":
-                raise
-            self.assertEqual(str(err), "invalid architecture")
-        else:
-            self.assertNotEqual(matches, [])
-            for match in matches:
-                my_p = self.Client.Package()
-                my_p.prepare(match, "install", {})
-                # unit testing metadata setting, of course, undocumented
-                my_p.pkgmeta['unittest_root'] = fake_root
-                rc = my_p.run()
-                self.assertTrue(rc == 0)
-
-        # remove pkg
-        idpackages = self.Client.installed_repository().listAllPackageIds()
-        for idpackage in idpackages:
-            my_p = self.Client.Package()
-            my_p.prepare((idpackage,), "remove", {})
-            rc = my_p.run()
-            self.assertTrue(rc == 0)
-
-        # done installing
-        shutil.rmtree(pkg_dir, True)
-        shutil.rmtree(temp_unpack, True)
-        shutil.rmtree(fake_root, True)
-
-        # restore orig const value
-        etpConst['entropyunpackdir'] = old_unpackdir
 
     def _do_pkg_test_new_api(self, pkg_path, pkg_atom):
 

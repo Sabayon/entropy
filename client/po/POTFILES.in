@@ -33,7 +33,6 @@
 ../lib/entropy/client/interfaces/methods.py
 ../lib/entropy/client/interfaces/noticeboard.py
 ../lib/entropy/client/interfaces/settings.py
-../lib/entropy/client/interfaces/loaders.py
 ../lib/entropy/client/interfaces/db.py
 ../lib/entropy/client/interfaces/client.py
 ../lib/entropy/client/interfaces/repository.py

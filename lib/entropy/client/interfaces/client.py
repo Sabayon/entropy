@@ -17,13 +17,26 @@ from entropy.core import Singleton
 from entropy.locks import EntropyResourcesLock
 from entropy.fetchers import UrlFetcher, MultipleUrlFetcher
 from entropy.output import TextInterface, bold, red, darkred, blue
-from entropy.client.interfaces.loaders import LoadersMixin
+from entropy.qa import QAInterface
+from entropy.security import System, Repository as RepositorySecurity
+from entropy.spm.plugins.factory import get_default_instance as get_spm, \
+    get_default_class as get_spm_default_class
+
 from entropy.client.interfaces.db import InstalledPackagesRepository
 from entropy.client.interfaces.dep import CalculatorsMixin
 from entropy.client.interfaces.methods import RepositoryMixin, MiscMixin, \
     MatchMixin
+from entropy.client.interfaces.package import PackageActionFactory
+from entropy.client.interfaces.repository import Repository
+
 from entropy.client.interfaces.settings import ClientSystemSettingsPlugin
-from entropy.client.misc import sharedinstlock
+from entropy.client.interfaces.sets import Sets
+
+from entropy.client.misc import sharedinstlock, ConfigurationUpdates
+
+from entropy.client.services.interfaces import \
+    ClientWebServiceFactory, RepositoryWebServiceFactory
+
 from entropy.const import etpConst, const_debug_write, \
     const_convert_to_unicode, const_setup_perms
 from entropy.core.settings.base import SystemSettings
@@ -36,9 +49,8 @@ import entropy.dep
 import entropy.tools
 
 
-class Client(Singleton, TextInterface, LoadersMixin,
-             CalculatorsMixin, RepositoryMixin, MiscMixin,
-             MatchMixin):
+class Client(Singleton, TextInterface, CalculatorsMixin,
+             RepositoryMixin, MiscMixin, MatchMixin):
 
     def init_singleton(self, indexing = True, installed_repo = None,
             xcache = True, user_xcache = False, repo_validation = True,
@@ -101,9 +113,6 @@ class Client(Singleton, TextInterface, LoadersMixin,
 
         self._real_enabled_repos = None
         self._real_enabled_repos_lock = threading.RLock()
-
-        # class init
-        LoadersMixin.__init__(self)
 
         self._multiple_url_fetcher = multiple_url_fetcher
         self._url_fetcher = url_fetcher
@@ -426,3 +435,127 @@ class Client(Singleton, TextInterface, LoadersMixin,
                 const_setup_perms(cache_dir, etpConst['entropygid'])
             except (IOError, OSError):
                 return
+
+    def QA(self):
+        """
+        Load Entropy QA interface object
+
+        @rtype: entropy.qa.QAInterface
+        """
+        qa_intf = QAInterface()
+        qa_intf.output = self.output
+        qa_intf.ask_question = self.ask_question
+        qa_intf.input_box = self.input_box
+        qa_intf.set_title = self.set_title
+        return qa_intf
+
+    def Settings(self):
+        """
+        Return SystemSettings instance object
+        """
+        return self._settings
+
+    def ClientSettings(self):
+        """
+        Return SystemSettings Entropy Client plugin metadata dictionary
+        """
+        p_id = ClientSystemSettingsPlugin.ID
+        return self._settings[p_id]
+
+    def Cacher(self):
+        """
+        Return EntropyCacher instance object
+
+        @return: EntropyCacher instance object
+        @rtype: entropy.cache.EntropyCacher
+        """
+        return self._cacher
+
+    def PackageActionFactory(self):
+        """
+        Load Entropy PackageActionFactory instance object
+        """
+        return PackageActionFactory(self)
+
+    def ConfigurationUpdates(self):
+        """
+        Return Entropy Configuration File Updates management object.
+        """
+        return ConfigurationUpdates(self)
+
+    def Spm(self):
+        """
+        Load Source Package Manager instance object
+        """
+        return get_spm(self)
+
+    def Spm_class(self):
+        """
+        Load Source Package Manager default plugin class
+        """
+        return get_spm_default_class()
+
+    def Repositories(self, *args, **kwargs):
+        """
+        Load Entropy Repositories manager instance object
+
+        @return: Repository instance object
+        @rtype: entropy.client.interfaces.repository.Repository
+        """
+        client_data = self.ClientSettings()['misc']
+        kwargs['gpg'] = client_data['gpg']
+        return Repository(self, *args, **kwargs)
+
+    def Security(self, *args, **kwargs):
+        """
+        Load Entropy Security Advisories interface object
+
+        @return: Repository Security instance object
+        @rtype: entropy.security.System
+        """
+        return System(self, *args, **kwargs)
+
+    def RepositorySecurity(self, keystore_dir = None):
+        """
+        Load Entropy Repository Security interface object
+
+        @return: Repository Repository Security instance object
+        @rtype: entropy.security.Repository
+        @raise RepositorySecurity.GPGError: GPGError based instances in case
+            of problems.
+        """
+        if keystore_dir is None:
+            keystore_dir = etpConst['etpclientgpgdir']
+        return RepositorySecurity(keystore_dir = keystore_dir)
+
+    def Sets(self):
+        """
+        Load Package Sets interface object
+
+        @return: Sets instance object
+        @rtype: entropy.client.interfaces.sets.Sets
+        """
+        return Sets(self)
+
+    def WebServices(self):
+        """
+        Load the Entropy Web Services Factory interface, that can be used
+        to obtain a WebService object that is able to communicate with
+        repository remote services, if available.
+
+        @return: WebServicesFactory instance object
+        @rtype: entropy.client.services.interfaces.WebServicesFactory
+        """
+        return ClientWebServiceFactory(self)
+
+    def RepositoryWebServices(self):
+        """
+        Load the Repository Entropy Web Services Factory interface, that can
+        be used to obtain a RepositoryWebService object that is able to
+        communicate with repository remote services, querying for package
+        metadata and general repository status.
+
+        @return: RepositoryWebServiceFactory instance object
+        @rtype: entropy.client.services.interfaces.RepositoryWebServiceFactory
+        """
+        return RepositoryWebServiceFactory(self)
