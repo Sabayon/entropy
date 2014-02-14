@@ -1,3 +1,129 @@
+commit 9724a166892d00f1605e5ea6d8ac59bd36cba01e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 14 16:28:36 2014 +0100
+
+    Release Entropy 270
+
+commit 49426c2aadf1396af3213788c592875d9f7b613f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 14 16:15:51 2014 +0100
+
+    [server] update translations
+
+commit e4411da04980eec8ad8a7a41b6b1b6888bc64e5c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 14 16:14:59 2014 +0100
+
+    [Rigo] update translations
+
+commit f833a6cca5ab97df8a45efaeccb8b71cdb05d094
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 14 16:14:07 2014 +0100
+
+    [client] update translations
+
+commit d759bdd74ba1f11d70aa9f4f31f5fc4f16b59ee9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 14 16:13:34 2014 +0100
+
+    [entropy.client] move LoadersMixin back into the Client class
+
+commit 03ef3991bd3a77d3d3e6df422202738a6085545b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 14 13:10:16 2014 +0100
+
+    [entropy.client] refactor NoticeBoard Entropy Client API
+
+commit 10d8c6b6d59c2e96cbf08b24cb8d718b849d1116
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 14 11:31:11 2014 +0100
+
+    [entropy.tools] generate_entropy_delta: make sure not to leak any fds
+
+commit f44eb72b81b4780d38550241b1f2a82bb718a0a5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 14 11:18:03 2014 +0100
+
+    [entropy.tools] pass prefix= to every const_mkstemp call
+
+commit 92146a8c1719cd240b9c87421441d7121ff9777e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 13 16:12:35 2014 +0100
+
+    [entropy.tools] apply_entropy_delta: avoid potential fd leaks
+
+commit 4a9980d37c04cd2a9f8bfc9063c39efaf36bc78f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 29 17:37:36 2013 +0100
+
+    [entropy.qa] rename ErrorReportInterface to ErrorReport, it's cleaner
+
+commit 715e628c848560628328346452a35d3c8ebcb470
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 29 11:10:13 2013 +0100
+
+    [entropy.client] drop CacheMixin class
+
+commit b4196026d85a047744bc1c01e81ef61ec6ed894f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 29 11:08:46 2013 +0100
+
+    [entropy.client] drop _get_available_packages_hash()
+
+commit d0cf15ffc6aff9d3c6ab17655e6897276927010c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 29 11:08:28 2013 +0100
+
+    [entropy.client] add missing imports
+
+commit cc3d69c8b2dceeafffc9fdd7f317631008fb7668
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 29 11:01:51 2013 +0100
+
+    [entropy.client] rename _repositories_hash() to repositories_checksum()
+
+commit 2b6a4e8d9afd638d88167d795e8f6f82c8dbe4ba
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 29 10:52:48 2013 +0100
+
+    [entropy.client.cache] improve _repositories_hash() robustness against collisions
+
+commit f6591e1ade652dee5713cb5a7ae6238c8a72f8d0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 29 10:42:58 2013 +0100
+
+    [entropy.client.cache] drop _selective_repositories_hash()
+
+commit f5eb6c1803e141bb84a3eb7473cab73d550bf53c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 29 10:39:00 2013 +0100
+
+    [entropy.client.cache] drop _all_repositories_hash, duplicate of _repositories_hash()
+
+commit 3c3a376a3ba5df18217985accba17b08e60c5469
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 29 10:32:33 2013 +0100
+
+    [entropy.client] rename _filter_available_repositories() to filter_repositories()
+
+commit a83935d33c32a0863ed59f13a0037f9cfcdb1e0a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 29 10:31:59 2013 +0100
+
+    [entropy.client.client] move clear_cache() to Client
+
+commit 8589b8746544435e91ed1872ad8fc8c0d7487bee
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 28 16:52:27 2014 +0100
+
+    [matter] add clear_cache() to BaseBinaryPMS to clear memory caches
+
+commit c43f7700621c01a58fe92c5c821a5633b6216b6a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 28 14:39:33 2014 +0100
+
+    Tagging Entropy version 269
+
 commit 34a03796cb5cec9d0ab344025ae53362702c1c38
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Jan 28 14:39:33 2014 +0100
