@@ -4,13 +4,13 @@
 # 
 # Translators:
 # RyD0pR3c <prendter@gmail.com>, 2013
-# RyD0pR3c <prendter@gmail.com>, 2013
+# RyD0pR3c <prendter@gmail.com>, 2013-2014
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-12-26 22:54+0100\n"
-"PO-Revision-Date: 2013-12-24 10:31+0000\n"
+"PO-Revision-Date: 2014-01-11 16:05+0000\n"
 "Last-Translator: RyD0pR3c <prendter@gmail.com>\n"
 "Language-Team: Polish (http://www.transifex.com/projects/p/sabayon-rigo/language/pl/)\n"
 "MIME-Version: 1.0\n"
@@ -670,16 +670,16 @@ msgstr "Pokaż dostępne kernele"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:778
 msgid "Browse through the available and installable Linux kernel binaries."
-msgstr ""
+msgstr "Przeglądaj dostępne i możliwe do zainstalowania kernele Linux."
 
 #: ../rigo/ui/gtk3/controllers/applications.py:790
 msgid "Show Available Long-Term-Stable Kernels"
-msgstr ""
+msgstr "Pokaż dostępne stabilne długoterminowe kernele"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:791
 msgid ""
 "Browse through the available and installable Linux LTS kernel binaries."
-msgstr ""
+msgstr "Przeglądaj dostępne i możliwe do zainstalowania kernele Linux LTS."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:182
 #, python-format
@@ -1173,7 +1173,7 @@ msgstr "Wesołych Świąt \\o/!"
 
 #: ../rigo_app.py:947
 msgid "Happy birthday to my authoooooor!"
-msgstr ""
+msgstr "Wszystkiego najlepszego z okazji urodzin memu autorooooowi!"
 
 #: ../rigo_app.py:949
 msgid "<=|=< (this is optimistically a fish)"
