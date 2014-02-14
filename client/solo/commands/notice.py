@@ -15,6 +15,8 @@ import argparse
 from entropy.i18n import _
 from entropy.output import darkred, blue, brown, darkgreen
 
+from entropy.client.interfaces.noticeboard import NoticeBoard
+
 from solo.commands.descriptor import SoloCommandDescriptor
 from solo.commands.command import SoloCommand
 
@@ -123,13 +125,17 @@ Read Repository Notice Board.
                 blue(_("Notice board not available")),
                 level="error", importance=1,
                 header=darkred(" @@ "))
+
+        nb = NoticeBoard(repo)
         try:
-            data = entropy_client.get_noticeboard(repo)
+            data = nb.data()
         except KeyError:
             data = None
+
         if not data:
             show_err()
             return
+
         return data
 
     def _show_notice_selector(self, entropy_client, title, mydict):

@@ -18,6 +18,7 @@ from entropy.output import darkred, red, brown, purple, teal, blue, \
 from entropy.misc import ParallelTask
 from entropy.const import etpConst, const_debug_write
 from entropy.services.client import WebService
+from entropy.client.interfaces.noticeboard import NoticeBoard
 
 import entropy.tools
 
@@ -251,11 +252,18 @@ Update Entropy Repositories.
                     blue(_("Notice board not available"))),
                     level="error", importance=1)
 
+        nb = NoticeBoard(repository)
+
         try:
-            return entropy_client.get_noticeboard(repository)
+            data = nb.data()
         except KeyError:
+            data = None
             show_err()
+
+        if not data:
             return None
+
+        return data
 
     def _show_notice_board_summary(self, entropy_client, repository):
         """

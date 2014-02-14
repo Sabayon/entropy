@@ -22,7 +22,6 @@ from entropy.client.interfaces.db import InstalledPackagesRepository
 from entropy.client.interfaces.dep import CalculatorsMixin
 from entropy.client.interfaces.methods import RepositoryMixin, MiscMixin, \
     MatchMixin
-from entropy.client.interfaces.noticeboard import NoticeBoardMixin
 from entropy.client.interfaces.settings import ClientSystemSettingsPlugin
 from entropy.client.misc import sharedinstlock
 from entropy.const import etpConst, const_debug_write, \
@@ -39,7 +38,7 @@ import entropy.tools
 
 class Client(Singleton, TextInterface, LoadersMixin,
              CalculatorsMixin, RepositoryMixin, MiscMixin,
-             MatchMixin, NoticeBoardMixin):
+             MatchMixin):
 
     def init_singleton(self, indexing = True, installed_repo = None,
             xcache = True, user_xcache = False, repo_validation = True,

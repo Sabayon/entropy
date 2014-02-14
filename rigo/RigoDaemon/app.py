@@ -82,6 +82,7 @@ from entropy.fetchers import UrlFetcher, MultipleUrlFetcher
 from entropy.output import TextInterface, purple, teal
 from entropy.client.interfaces import Client
 from entropy.client.interfaces.package.actions.action import PackageAction
+from entropy.client.interfaces.noticeboard import NoticeBoard
 from entropy.client.interfaces.repository import Repository
 from entropy.client.interfaces.package.preservedlibs import PreservedLibraries
 from entropy.services.client import WebService
@@ -2935,10 +2936,15 @@ class RigoDaemonService(dbus.service.Object):
         with self._rwsem.reader():
             notices = []
             for repository in self._entropy.repositories():
-                notice = self._entropy.get_noticeboard(
-                    repository)
+                nb = NoticeBoard(repository)
+
+                try:
+                    notice = nb.data()
+                except KeyError:
+                    notice = None
                 if not notice:
                     continue
+
                 notices.append((repository, notice))
 
         if notices:
