@@ -1,10 +1,13 @@
 Short term:
 
 - add repository dependencies and conflicts metadata
-
 - entropy.client.interfaces code refactoring
 - wrap available repositories usage around a ResourceLock, this will
   decrease the need for an exclusively held Entropy Resources Lock.
+- add devel extra packages containing:
+  - /usr/include
+  - /usr/share/gtk-doc
+  - /usr/share/help?
 
 - conditional deps:
   enabled with ETP_PORTAGE_CONDITIONAL_DEPS_ENABLE
