@@ -304,7 +304,7 @@ Execute advanced tasks on Entropy packages and the running system.
             pkg_data['revision'] = etpConst['spmetprev']
             download_dirpath = entropy.tools.create_package_dirpath(
                 pkg_data['branch'], nonfree=False, restricted=False)
-            download_name = entropy.dep.create_package_filename(
+            download_name = entropy.dep.create_package_relative_path(
                 pkg_data['category'], pkg_data['name'],
                 pkg_data['version'], pkg_data['versiontag'],
                 ext=etpConst['packagesext'],
@@ -316,6 +316,11 @@ Execute advanced tasks on Entropy packages and the running system.
             # migrate to the proper format
             final_path = os.path.join(savedir, download_name)
             if package_path != final_path:
+                try:
+                    os.makedirs(os.path.dirname(final_path))
+                except OSError as err:
+                    if err.errno != errno.EISDIR:
+                        raise
                 shutil.move(package_path, final_path)
             package_path = final_path
 

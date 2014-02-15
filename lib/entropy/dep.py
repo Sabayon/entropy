@@ -785,6 +785,34 @@ def create_package_filename(category, name, version, package_tag,
     package_name += ext
     return package_name
 
+def create_package_relative_path(category, name, version, package_tag,
+                                 ext = None, revision = None,
+                                 sha1 = None):
+    """
+    Create package relative path, containing the filename string.
+
+    The relative path contains a sub-directory part that is used to
+    distribute files across different directories (to avoid hot spots).
+
+    @param category: package category
+    @type category: string
+    @param name: package name
+    @type name: string
+    @param version: package version
+    @type version: string
+    @param package_tag: package tag, if any, or None
+    @type package_tag: string or None
+    @keyword ext: alternative package file extension
+    @type ext: string
+    @keyword sha1: a SHA1 checksum to add to the file name
+    @type sha1: string
+    @return: package file name string
+    @rtype: string
+    """
+    return category + "/" + create_package_filename(
+        category, name, version, package_tag, ext = ext,
+        revision = revision, sha1 = sha1)
+
 def strip_entropy_package_extension(pkg_path):
     """
     Strip entropy package file extension from package path pkg_path.

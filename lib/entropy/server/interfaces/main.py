@@ -6265,11 +6265,11 @@ class Server(Client):
         old_download_url = repo.retrieveDownloadURL(package_id)
         download_dir = os.path.dirname(old_download_url)
 
-        package_name = entropy.dep.create_package_filename(
+        package_filename = entropy.dep.create_package_filename(
             category, name, version, tag, ext = etpConst['packagesext'],
             revision = revision, sha1 = sha1)
 
-        download_url = os.path.join(download_dir, package_name)
+        download_url = os.path.join(download_dir, package_filename)
         repo.setDownloadURL(package_id, download_url)
         repo.commit()
 

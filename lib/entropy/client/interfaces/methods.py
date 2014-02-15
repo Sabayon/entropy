@@ -2194,7 +2194,7 @@ class MiscMixin:
         package_sha1 = None
         if signatures:
             package_sha1 = signatures['sha1']
-        pkgname = entropy.dep.create_package_filename(
+        pkgname = entropy.dep.create_package_relative_path(
             entropy_package_metadata['category'],
             entropy_package_metadata['name'],
             entropy_package_metadata['version'],

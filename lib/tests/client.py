@@ -328,7 +328,9 @@ else:
         self.assertTrue(rc == 0)
         self.assertTrue(os.listdir(pkg_dir))
 
-        etp_pkg = os.path.join(pkg_dir, os.listdir(pkg_dir)[0])
+        final_pkg_dir = os.path.join(pkg_dir, os.path.dirname(pkg_atom))
+
+        etp_pkg = os.path.join(final_pkg_dir, os.listdir(final_pkg_dir)[0])
         self.assertTrue(os.path.isfile(etp_pkg))
 
         matches = []

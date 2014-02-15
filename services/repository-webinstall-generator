@@ -104,7 +104,7 @@ exit ${?}
             atom, category, name, version, slot, tag, revision, branch, \
                 etpapi = self._repo.getScopeData(package_id)
             version += "%s%s" % (etpConst['entropyrevisionprefix'], revision,)
-            local_etp_fn = entropy.dep.create_package_filename(category,
+            local_etp_fn = entropy.dep.create_package_relative_path(category,
                 name, version, tag, ext = etpConst['packagesext_webinstall'])
             local_etp_path = os.path.join(local_package_dir, local_etp_fn)
             return local_etp_path
