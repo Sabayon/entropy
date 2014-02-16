@@ -170,6 +170,16 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         metadata['affected_directories'] = set()
         metadata['affected_infofiles'] = set()
 
+        # craete an atomically safe unpack directory path
+        unpack_dir = os.path.join(
+            etpConst['entropyunpackdir'],
+            self._escape_path(metadata['atom']).lstrip(os.path.sep))
+        try:
+            os.makedirs(unpack_dir, 0o755)
+        except OSError as err:
+            if err.errno != errno.EEXIST:
+                raise
+
         metadata['smartpackage'] = False
         # set unpack dir and image dir
         if is_package_repo:
@@ -187,21 +197,22 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             repo_data = self._settings['repositories']
             repo_meta = repo_data['available'][self._repository_id]
             metadata['smartpackage'] = repo_meta['smartpackage']
-            metadata['pkgpath'] = repo_meta['pkgpath']
+
+            # create a symlink into a generic entropy temp directory
+            # and reference the file from there. This will avoid
+            # Entropy locking code to change ownership and permissions
+            # of the directory containing the package file.
+            pkg_dir = const_mkdtemp(dir=unpack_dir, prefix="repository_pkgdir")
+            pkgpath = os.path.join(
+                pkg_dir, os.path.basename(repo_meta['pkgpath']))
+
+            os.symlink(repo_meta['pkgpath'], pkgpath)
+
+            metadata['pkgpath'] = pkgpath
 
         else:
             metadata['pkgpath'] = self.get_standard_fetch_disk_path(
                 metadata['download'])
-
-        # craete an atomically safe unpack directory path
-        unpack_dir = os.path.join(
-            etpConst['entropyunpackdir'],
-            self._escape_path(metadata['atom']).lstrip(os.path.sep))
-        try:
-            os.makedirs(unpack_dir, 0o755)
-        except OSError as err:
-            if err.errno != errno.EEXIST:
-                raise
 
         metadata['unpackdir'] = const_mkdtemp(dir=unpack_dir)
 
