@@ -1544,7 +1544,11 @@ def dump_entropy_metadata(entropy_package_file, entropy_metadata_file):
     with open(entropy_package_file, "r+b") as old:
         old_mmap = None
         try:
-            f_size = os.lstat(entropy_package_file).st_size
+            try:
+                f_size = os.stat(entropy_package_file).st_size
+            except OSError as err:
+                return False
+
             if f_size <= 0:
                 # WTF!
                 return False
