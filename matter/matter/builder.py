@@ -859,7 +859,7 @@ class PackageBuilder(object):
         real_queue_map = dict((pkg.cpv, pkg) for pkg in real_queue)
         failed_package = None
         if retval != 0:
-            merge_list = mtimedb.get("resume", {}).get("mergelist")
+            merge_list = mtimedb.get("resume", {}).get("mergelist", [])
             for _merge_type, _merge_root, merge_atom, _merge_act in merge_list:
                 merge_atom = "%s" % (merge_atom,)
                 if failed_package is None:
