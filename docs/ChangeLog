@@ -1,8 +1,26 @@
-commit 8f331e13f69eaba95e653ef1096cfde1b2ed1f0a
+commit 2e82d22768398496a2cf320071a0ceade94ba56a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 21 11:08:44 2014 +0100
+
+    Release Entropy 272
+
+commit 7456df4e9aff9b85f4ec66c1e17dbd7c76272b4f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 21 11:07:56 2014 +0100
+
+    Tagging Entropy version 271
+
+commit 82f2d2e1dee1499f8f0740fe942d902730f66cbb
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Feb 21 11:07:56 2014 +0100
 
     Release Entropy 271
+
+commit fc2488e5f7ac1c3176edae80729e76a17eafc2a4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 17 21:03:29 2014 +0100
+
+    [matter] merge_list could be None, make sure it never is
 
 commit 855afdff1d13af186d37f47ed22389fbf6d9480f
 Author: Fabio Erculiani <lxnay@sabayon.org>
