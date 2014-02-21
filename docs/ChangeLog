@@ -1,3 +1,57 @@
+commit 8f331e13f69eaba95e653ef1096cfde1b2ed1f0a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 21 11:07:56 2014 +0100
+
+    Release Entropy 271
+
+commit 855afdff1d13af186d37f47ed22389fbf6d9480f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 16 13:20:50 2014 +0100
+
+    [entropy.client.package] Do not alter repository package file directory permissions
+    
+    It was observed that the new locking mechanism introduced a problem
+    with the management of repository package files (.tbz2 files passed
+    to "equo install", for instance). Try to avoid that by symlinking
+    the package file to a safe location and using this one as pkgpath.
+    
+    This fixes bug 4604.
+
+commit 4c8d1801eaeb994c169e878b78a18a272517886a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 16 13:18:15 2014 +0100
+
+    [entropy.tools] dump_entropy_metadata: follow symlinks when determining file size
+    
+    The package file passed as input might be pointing to a symlink.
+    If we use lstat().st_size we will get the symlink file size back
+    rather than the source file size, which is of course unwanted.
+    
+    This is part of the fixes for bug 4604.
+
+commit 1f6bd34749db3388a6530713b72223d19072ca10
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 15 19:10:16 2014 +0100
+
+    [entropy] prefix package download URLs with the category directory
+    
+    This makes possible to avoid directory hot spots on repository mirrors.
+    This commit requires some mileage and real-world testing, but it
+    seems to be running good on a relatively small repository.
+    No backward compatibility issues have been reported.
+
+commit e45b5dc73eeb17cc41af3701bfacb1c4e6f0048a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 15 15:52:43 2014 +0100
+
+    [todo] update TODO
+
+commit 1345074a61bad2e31485c3529c03e07693b4d610
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 14 16:28:37 2014 +0100
+
+    Tagging Entropy version 270
+
 commit 9724a166892d00f1605e5ea6d8ac59bd36cba01e
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Feb 14 16:28:36 2014 +0100
