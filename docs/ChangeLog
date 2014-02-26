@@ -1,3 +1,21 @@
+commit 846e9b16d85488536e453151339e0ee5b935567d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 26 16:02:41 2014 +0100
+
+    Release Entropy 273
+
+commit 9c505b4f58293dc5d84c58e20ba9309c65f6a7c3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 26 16:02:13 2014 +0100
+
+    [entropy.server] correctly generate extra_download URLs
+
+commit 55d7dc68ef245a685d5e8611c3c679248c7f511c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 21 11:08:44 2014 +0100
+
+    Tagging Entropy version 272
+
 commit 2e82d22768398496a2cf320071a0ceade94ba56a
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Feb 21 11:08:44 2014 +0100
