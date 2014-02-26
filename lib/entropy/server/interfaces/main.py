@@ -6064,9 +6064,10 @@ class Server(Client):
             repo_sec = None
 
         def _generate_extra_download(path, down_type):
-            extra_url = entropy.tools.create_package_dirpath(mydata['branch'],
-                nonfree = is_licensed_ugly, restricted = is_restricted) + \
-                    "/" + os.path.basename(path)
+            extra_url = os.path.dirname(mydata['download'])
+            extra_url += "/"
+            extra_url += os.path.basename(path)
+
             size = entropy.tools.get_file_size(path)
             disksize = entropy.tools.get_uncompressed_size(path)
             md5 = entropy.tools.md5sum(path)
