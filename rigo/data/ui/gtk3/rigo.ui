@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.16.1 -->
 <interface>
-  <requires lib="gtk+" version="2.24"/>
-  <!-- interface-naming-policy project-wide -->
+  <requires lib="gtk+" version="3.10"/>
   <object class="GtkImage" id="appViewCommentSendImage">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -13,11 +13,6 @@
     <property name="icon_name">mail-send-receive</property>
   </object>
   <object class="GtkTextBuffer" id="appViewCommentTextBuffer"/>
-  <object class="GtkImage" id="rigoIcon">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-preferences</property>
-  </object>
   <object class="GtkWindow" id="rigoWindow">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Rigo Application Browser</property>
@@ -27,14 +22,16 @@
     <property name="icon_name">system-software-update</property>
     <signal name="delete-event" handler="onDeleteWindow" swapped="no"/>
     <child>
-      <object class="GtkVBox" id="appVbox">
+      <object class="GtkBox" id="appVbox">
         <property name="width_request">0</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
         <child>
-          <object class="GtkVBox" id="notificationBox">
+          <object class="GtkBox" id="notificationBox">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
             <property name="spacing">1</property>
             <child>
               <placeholder/>
@@ -47,16 +44,18 @@
           </packing>
         </child>
         <child>
-          <object class="GtkVBox" id="appAreaVBox">
+          <object class="GtkBox" id="appAreaVBox">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="border_width">8</property>
+            <property name="orientation">vertical</property>
             <child>
-              <object class="GtkVBox" id="searchVbox">
+              <object class="GtkBox" id="searchVbox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkHBox" id="searchHbox">
+                  <object class="GtkBox" id="searchHbox">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <child>
@@ -66,7 +65,6 @@
                         <property name="can_focus">False</property>
                         <property name="receives_default">True</property>
                         <property name="relief">none</property>
-                        <accelerator key="m" signal="clicked" modifiers="GDK_CONTROL_MASK"/>
                         <child>
                           <object class="GtkImage" id="prefImage">
                             <property name="visible">True</property>
@@ -74,6 +72,7 @@
                             <property name="icon_name">preferences-other</property>
                           </object>
                         </child>
+                        <accelerator key="m" signal="clicked" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -88,13 +87,8 @@
                         <property name="can_focus">True</property>
                         <property name="max_length">512</property>
                         <property name="invisible_char">●</property>
-                        <property name="invisible_char_set">True</property>
                         <property name="primary_icon_stock">gtk-find</property>
                         <property name="secondary_icon_stock">gtk-undo</property>
-                        <property name="primary_icon_activatable">True</property>
-                        <property name="secondary_icon_activatable">True</property>
-                        <property name="primary_icon_sensitive">True</property>
-                        <property name="secondary_icon_sensitive">True</property>
                         <accelerator key="f" signal="grab-focus" modifiers="GDK_CONTROL_MASK"/>
                         <accelerator key="b" signal="backspace" modifiers="GDK_CONTROL_MASK"/>
                       </object>
@@ -119,17 +113,17 @@
               </packing>
             </child>
             <child>
-              <object class="GtkVBox" id="appsViewVbox">
+              <object class="GtkBox" id="appsViewVbox">
                 <property name="can_focus">False</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkScrolledWindow" id="appsViewScrolledWindow">
                     <property name="can_focus">True</property>
                     <property name="hscrollbar_policy">never</property>
-                    <property name="vscrollbar_policy">automatic</property>
-                    <accelerator key="p" signal="grab-focus" modifiers="GDK_CONTROL_MASK"/>
                     <child>
                       <placeholder/>
                     </child>
+                    <accelerator key="p" signal="grab-focus" modifiers="GDK_CONTROL_MASK"/>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -138,9 +132,10 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkVBox" id="appsViewNotFoundVbox">
+                  <object class="GtkBox" id="appsViewNotFoundVbox">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="orientation">vertical</property>
                     <child>
                       <placeholder/>
                     </child>
@@ -160,8 +155,9 @@
               </packing>
             </child>
             <child>
-              <object class="GtkVBox" id="workViewVbox">
+              <object class="GtkBox" id="workViewVbox">
                 <property name="can_focus">False</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <placeholder/>
                 </child>
@@ -173,8 +169,9 @@
               </packing>
             </child>
             <child>
-              <object class="GtkVBox" id="staticViewVbox">
+              <object class="GtkBox" id="staticViewVbox">
                 <property name="can_focus">False</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <placeholder/>
                 </child>
@@ -186,14 +183,14 @@
               </packing>
             </child>
             <child>
-              <object class="GtkVBox" id="configViewVbox">
+              <object class="GtkBox" id="configViewVbox">
                 <property name="can_focus">False</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkScrolledWindow" id="configViewScrolledWindow">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="hscrollbar_policy">never</property>
-                    <property name="vscrollbar_policy">automatic</property>
                     <child>
                       <placeholder/>
                     </child>
@@ -212,14 +209,14 @@
               </packing>
             </child>
             <child>
-              <object class="GtkVBox" id="noticeViewVbox">
+              <object class="GtkBox" id="noticeViewVbox">
                 <property name="can_focus">False</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkScrolledWindow" id="noticeViewScrolledWindow">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="hscrollbar_policy">never</property>
-                    <property name="vscrollbar_policy">automatic</property>
                     <child>
                       <placeholder/>
                     </child>
@@ -238,14 +235,14 @@
               </packing>
             </child>
             <child>
-              <object class="GtkVBox" id="preferencesViewVbox">
+              <object class="GtkBox" id="preferencesViewVbox">
                 <property name="can_focus">False</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkScrolledWindow" id="preferencesViewScrolledWindow">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="hscrollbar_policy">never</property>
-                    <property name="vscrollbar_policy">automatic</property>
                     <child>
                       <placeholder/>
                     </child>
@@ -264,14 +261,14 @@
               </packing>
             </child>
             <child>
-              <object class="GtkVBox" id="repoViewVbox">
+              <object class="GtkBox" id="repoViewVbox">
                 <property name="can_focus">False</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkScrolledWindow" id="repoViewScrolledWindow">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="hscrollbar_policy">never</property>
-                    <property name="vscrollbar_policy">automatic</property>
                     <child>
                       <placeholder/>
                     </child>
@@ -290,14 +287,14 @@
               </packing>
             </child>
             <child>
-              <object class="GtkVBox" id="groupViewVbox">
+              <object class="GtkBox" id="groupViewVbox">
                 <property name="can_focus">False</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkScrolledWindow" id="groupViewScrolledWindow">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="hscrollbar_policy">never</property>
-                    <property name="vscrollbar_policy">automatic</property>
                     <child>
                       <placeholder/>
                     </child>
@@ -319,15 +316,15 @@
               <object class="GtkScrolledWindow" id="appViewScrollWin">
                 <property name="can_focus">True</property>
                 <property name="hscrollbar_policy">never</property>
-                <property name="vscrollbar_policy">automatic</property>
                 <child>
                   <object class="GtkViewport" id="appViewVport">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <child>
-                      <object class="GtkVBox" id="appViewVbox">
+                      <object class="GtkBox" id="appViewVbox">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="orientation">vertical</property>
                         <child>
                           <object class="GtkAlignment" id="appViewHeaderHboxAlign">
                             <property name="visible">True</property>
@@ -338,22 +335,23 @@
                             <property name="top_padding">8</property>
                             <property name="right_padding">5</property>
                             <child>
-                              <object class="GtkHBox" id="appViewHeaderHbox">
+                              <object class="GtkBox" id="appViewHeaderHbox">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <child>
-                                  <object class="GtkVBox" id="appViewStatsVbox">
+                                  <object class="GtkBox" id="appViewStatsVbox">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                    <property name="orientation">vertical</property>
                                     <child>
                                       <object class="GtkImage" id="appViewImage">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                         <property name="stock">gtk-missing-image</property>
-                                        <property name="icon-size">6</property>
+                                        <property name="icon_size">6</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -370,9 +368,10 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkVBox" id="appViewAppInfoVbox">
+                                  <object class="GtkBox" id="appViewAppInfoVbox">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
+                                    <property name="orientation">vertical</property>
                                     <child>
                                       <object class="GtkLabel" id="appViewNameLabel">
                                         <property name="visible">True</property>
@@ -397,17 +396,20 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkVBox" id="appViewActionArea">
+                                  <object class="GtkBox" id="appViewActionArea">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
+                                    <property name="orientation">vertical</property>
                                     <child>
-                                      <object class="GtkVBox" id="appViewInnerStatsVbox">
+                                      <object class="GtkBox" id="appViewInnerStatsVbox">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
+                                        <property name="orientation">vertical</property>
                                         <child>
-                                          <object class="GtkVBox" id="appViewStarsSelVbox">
+                                          <object class="GtkBox" id="appViewStarsSelVbox">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
+                                            <property name="orientation">vertical</property>
                                             <child>
                                               <placeholder/>
                                             </child>
@@ -473,7 +475,7 @@
                             <property name="top_padding">4</property>
                             <property name="bottom_padding">6</property>
                             <child>
-                              <object class="GtkHBox" id="appViewButtonArea">
+                              <object class="GtkBox" id="appViewButtonArea">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="spacing">8</property>
@@ -527,10 +529,11 @@
                             <property name="left_padding">25</property>
                             <property name="right_padding">25</property>
                             <child>
-                              <object class="GtkVBox" id="appViewCommentsVbox">
+                              <object class="GtkBox" id="appViewCommentsVbox">
                                 <property name="width_request">300</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="orientation">vertical</property>
                                 <child>
                                   <placeholder/>
                                 </child>
@@ -551,10 +554,11 @@
                             <property name="left_padding">25</property>
                             <property name="right_padding">25</property>
                             <child>
-                              <object class="GtkVBox" id="appViewMyCommentsVbox">
+                              <object class="GtkBox" id="appViewMyCommentsVbox">
                                 <property name="width_request">300</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="orientation">vertical</property>
                                 <child>
                                   <placeholder/>
                                 </child>
@@ -568,9 +572,10 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkVBox" id="appViewCommentsWriteVbox">
+                          <object class="GtkBox" id="appViewCommentsWriteVbox">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="orientation">vertical</property>
                             <child>
                               <object class="GtkAlignment" id="appViewCommentTextAlign">
                                 <property name="visible">True</property>
@@ -598,7 +603,7 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkHButtonBox" id="appViewCommentButtonBox">
+                              <object class="GtkButtonBox" id="appViewCommentButtonBox">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <child>
@@ -663,10 +668,11 @@
                             <property name="left_padding">25</property>
                             <property name="right_padding">25</property>
                             <child>
-                              <object class="GtkVBox" id="appViewImagesVbox">
+                              <object class="GtkBox" id="appViewImagesVbox">
                                 <property name="width_request">300</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="orientation">vertical</property>
                                 <child>
                                   <placeholder/>
                                 </child>
@@ -712,9 +718,10 @@
           </packing>
         </child>
         <child>
-          <object class="GtkVBox" id="bottomNotificationBox">
+          <object class="GtkBox" id="bottomNotificationBox">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
             <property name="spacing">1</property>
             <child>
               <placeholder/>
@@ -728,6 +735,11 @@
         </child>
       </object>
     </child>
+  </object>
+  <object class="GtkImage" id="rigoIcon">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-preferences</property>
   </object>
   <object class="GtkListStore" id="searchEntryStore">
     <columns>
