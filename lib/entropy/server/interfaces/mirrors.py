@@ -17,6 +17,10 @@ import threading
 import multiprocessing
 import socket
 import codecs
+try:
+    from Queue import Queue
+except ImportError:
+    from queue import Queue
 
 from entropy.exceptions import EntropyPackageException
 from entropy.output import red, darkgreen, bold, brown, blue, darkred, \
@@ -1094,11 +1098,33 @@ class Server(object):
 
     def _calculate_remote_package_files(self, repository_id, uri, txc_handler):
 
-        remote_files = 0
         remote_packages_data = {}
         remote_packages = []
         branch = self._settings['repositories']['branch']
+        fifo_q = Queue()
 
+        def get_content(lookup_dir):
+            only_dir = self._entropy.complete_remote_package_relative_path(
+                "", repository_id)
+            db_url_dir = lookup_dir[len(only_dir):]
+
+            # create path to lock file if it doesn't exist
+            if not txc_handler.is_dir(lookup_dir):
+                txc_handler.makedirs(lookup_dir)
+
+            info = txc_handler.list_content_metadata(lookup_dir)
+
+            dirs = []
+            for path, size, user, group, perms in info:
+
+                if perms.startswith("d"):
+                    fifo_q.put(os.path.join(lookup_dir, path))
+                else:
+                    rel_path = os.path.join(db_url_dir, path)
+                    remote_packages.append(rel_path)
+                    remote_packages_data[rel_path] = int(size)
+
+        # initialize the queue
         pkgs_dir_types = self._entropy._get_pkg_dir_names()
         for pkg_dir_type in pkgs_dir_types:
 
@@ -1106,27 +1132,13 @@ class Server(object):
                 pkg_dir_type, repository_id)
             remote_dir = os.path.join(remote_dir, etpConst['currentarch'],
                 branch)
-            only_dir = self._entropy.complete_remote_package_relative_path("",
-                repository_id)
-            db_url_dir = remote_dir[len(only_dir):]
 
-            # create path to lock file if it doesn't exist
-            if not txc_handler.is_dir(remote_dir):
-                txc_handler.makedirs(remote_dir)
+            fifo_q.put(remote_dir)
 
-            remote_packages_info = txc_handler.list_content_metadata(remote_dir)
-            remote_packages += [os.path.join(db_url_dir, x[0]) for x \
-                in remote_packages_info]
+        while not fifo_q.empty():
+            get_content(fifo_q.get())
 
-            for pkg in remote_packages:
-                if pkg.endswith(etpConst['packagesext']):
-                    remote_files += 1
-
-            my_remote_pkg_data = dict((os.path.join(db_url_dir, x[0]),
-                int(x[1])) for x in remote_packages_info)
-            remote_packages_data.update(my_remote_pkg_data)
-
-        return remote_files, remote_packages, remote_packages_data
+        return remote_packages, remote_packages_data
 
     def _calculate_packages_to_sync(self, repository_id, uri):
 
@@ -1147,14 +1159,14 @@ class Server(object):
 
         txc = self._entropy.Transceiver(uri)
         with txc as handler:
-            remote_files, remote_packages, remote_packages_data = \
-                self._calculate_remote_package_files(repository_id, uri,
-                    handler)
+            (remote_packages,
+             remote_packages_data) = self._calculate_remote_package_files(
+                repository_id, uri, handler)
 
         self._entropy.output(
             "%s:  %s %s" % (
                 blue(_("remote packages")),
-                bold(str(remote_files)),
+                bold("%d" % (len(remote_packages),)),
                 red(_("files stored")),
             ),
             importance = 0,
