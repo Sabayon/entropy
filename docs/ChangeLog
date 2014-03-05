@@ -1,3 +1,39 @@
+commit 200d0ce137638cc4751ec0c63cbe07448f7de669
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 5 12:44:44 2014 +0100
+
+    Release Entropy 274
+
+commit 704b9a161a9893e463df490d2428cfa329e23f79
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 5 12:43:16 2014 +0100
+
+    [entropy.server.interfaces.mirrors] fix _calculate_remote_package_files wrt separate package dirs
+
+commit 285b5558af59fd4fe63ac5bb2f428b66f163b6a3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 5 11:20:50 2014 +0100
+
+    [entropy.server.interfaces.mirrors] speed up _calculate_local_{upload,package}_files
+
+commit 880aba81cbc59bfd65eddf6e055c499b6b96f7d5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 5 11:15:10 2014 +0100
+
+    [entropy.server.interfaces.mirrors] simplify local packages calculation methods
+
+commit 7bc1306d285a64ce3dddae9e802b643639fe43e3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 2 12:13:14 2014 +0100
+
+    [Rigo] require Gtk+ 3.10 and solve all deprecation warnings related to Gtk*Box
+
+commit 11d166dfad96250917e5e783968853351c07ab17
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 26 16:02:42 2014 +0100
+
+    Tagging Entropy version 273
+
 commit 846e9b16d85488536e453151339e0ee5b935567d
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Feb 26 16:02:41 2014 +0100
