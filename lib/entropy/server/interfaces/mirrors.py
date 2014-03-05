@@ -882,39 +882,32 @@ class Server(object):
 
     def _calculate_local_upload_files(self, repository_id):
 
-        upload_packages = set()
         upload_dir = self._entropy._get_local_upload_directory(repository_id)
 
         # check if it exists
         if not os.path.isdir(upload_dir):
-            return upload_packages
+            return set()
 
         branch = self._settings['repositories']['branch']
-        upload_pkgs = self._entropy._get_basedir_pkg_listing(upload_dir,
-            etpConst['packagesext'], branch = branch)
+        upload_packages = self._entropy._get_basedir_pkg_listing(
+            upload_dir, etpConst['packagesext'], branch = branch)
 
-        pkg_ext = etpConst['packagesext']
-        for package in upload_pkgs:
-            if package.endswith(pkg_ext):
-                upload_packages.add(package)
-
-        return upload_packages
+        return set(upload_packages)
 
     def _calculate_local_package_files(self, repository_id, weak_files = False):
 
-        local_packages = set()
         base_dir = self._entropy._get_local_repository_base_directory(
             repository_id)
 
         # check if it exists
         if not os.path.isdir(base_dir):
-            return local_packages
+            return set()
 
         branch = self._settings['repositories']['branch']
         pkg_ext = etpConst['packagesext']
 
-        pkg_files = set(self._entropy._get_basedir_pkg_listing(base_dir,
-            pkg_ext, branch = branch))
+        pkg_files = set(self._entropy._get_basedir_pkg_listing(
+                base_dir, pkg_ext, branch = branch))
 
         weak_ext = etpConst['packagesweakfileext']
         weak_ext_len = len(weak_ext)
@@ -933,11 +926,7 @@ class Server(object):
                         branch = branch))
                 )
 
-        for package in pkg_files:
-            if package.endswith(pkg_ext):
-                local_packages.add(package)
-
-        return local_packages
+        return pkg_files
 
     def _show_local_sync_stats(self, upload_files, local_files):
         self._entropy.output(
