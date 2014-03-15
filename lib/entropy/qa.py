@@ -33,7 +33,8 @@ from entropy.const import etpConst, etpSys, const_debug_write, const_mkdtemp, \
     const_is_python3, const_file_readable
 from entropy.output import blue, darkgreen, red, darkred, bold, purple, brown, \
     teal
-from entropy.exceptions import PermissionDenied, SystemDatabaseError
+from entropy.exceptions import PermissionDenied, SystemDatabaseError, \
+    FileNotFound
 from entropy.i18n import _
 from entropy.core import EntropyPluginStore
 from entropy.core.settings.base import SystemSettings
@@ -928,8 +929,12 @@ class QAInterface(TextInterface, EntropyPluginStore):
             broken_sym_found = set()
             if broken_symbols and not mylibs:
 
-                read_broken_syms = entropy.tools.read_elf_broken_symbols(
+                try:
+                    read_broken_syms = entropy.tools.read_elf_broken_symbols(
                         real_exec_path)
+                except FileNotFound:
+                    read_broken_syms = set()
+
                 my_broken_syms = set()
                 for read_broken_sym in read_broken_syms:
                     for reg_sym in broken_syms_list_regexp:
