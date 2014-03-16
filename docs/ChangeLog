@@ -1,3 +1,35 @@
+commit 8e64909155f672c0f62a84a113c5f3bf765138cd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 16 17:04:10 2014 +0100
+
+    Release Entropy 275
+
+commit a04e6381bb9aa7679ea1b8b2ff2290859631a9d5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 16 17:03:36 2014 +0100
+
+    [Rigo] update translations
+
+commit 0af817e33b14b952c1be16bdb0bb8964fd8b53af
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 16 17:03:23 2014 +0100
+
+    [client] update translations
+
+commit b8d3b84f4cd21270f7869360379c2cf8ee09e17f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 15 09:42:00 2014 +0100
+
+    [entropy.qa] catch FileNotFound when calling read_elf_broken_symbols
+    
+    This fixes bug #4632
+
+commit 54afc204d5cc8fa8af05bbc94dc270d83ef59d4d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 5 12:44:45 2014 +0100
+
+    Tagging Entropy version 274
+
 commit 200d0ce137638cc4751ec0c63cbe07448f7de669
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Mar 5 12:44:44 2014 +0100
