@@ -1257,6 +1257,44 @@ class QAInterface(TextInterface, EntropyPluginStore):
 
         return results
 
+    def _is_system_package(self, entropy_client, package_id, entropy_repository,
+                           system_packages):
+        """
+        Return whether a package is a system package.
+
+        @param entropy_client: Entropy Client instance
+        @type entropy_client: entropy.client.interfaces.client.Client base
+            class object
+        @param package_id: the package identifier
+        @type package_id: int
+        @param entropy_repository: the Entropy repository where the package
+            is located
+        @type entropy_repository: entropy.db.EntropyRepository object
+        @param system_packages: a list (set) of system packages
+            (package matches)
+        @type system_packages: set
+        @return: True, if package is a system package
+        @rtype: bool
+        """
+        if (package_id, entropy_repository.name) in system_packages:
+            return True
+
+        reverse_deps = entropy_repository.retrieveReverseDependencies(
+            package_id, key_slot = True)
+        # with virtual packages, it can happen that system packages
+        # are not directly marked as such. so, check direct inverse deps
+        # and see if we find one
+        for rev_pkg_key, rev_pkg_slot in reverse_deps:
+            rev_pkg_id, rev_repo_id = entropy_client.atom_match(rev_pkg_key,
+                match_slot = rev_pkg_slot)
+            if rev_pkg_id == -1:
+                # can't find
+                continue
+            if (rev_pkg_id, rev_repo_id) in system_packages:
+                return True
+
+        return False
+
     def _get_missing_libraries(self, entropy_client, package_match):
         """
         Service method able to determine whether dependencies are missing
@@ -1274,26 +1312,6 @@ class QAInterface(TextInterface, EntropyPluginStore):
             set([list of missing dependencies])
         @rtype: tuple
         """
-
-        def is_system_pkg(pkg_id, repo, system_packages):
-            if (pkg_id, repo.name) in system_packages:
-                return True
-
-            reverse_deps = repo.retrieveReverseDependencies(pkg_id,
-                key_slot = True)
-            # with virtual packages, it can happen that system packages
-            # are not directly marked as such. so, check direct inverse deps
-            # and see if we find one
-            for rev_pkg_key, rev_pkg_slot in reverse_deps:
-                rev_pkg_id, rev_repo_id = entropy_client.atom_match(rev_pkg_key,
-                    match_slot = rev_pkg_slot)
-                if rev_pkg_id == -1:
-                    # can't find
-                    continue
-                if (rev_pkg_id, rev_repo_id) in system_packages:
-                    return True
-
-            return False
 
         def populate_caches(pkg_id, repo, provided_libs, scope_cache):
             """
@@ -1374,7 +1392,8 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 key, slot = pkg_dbconn.retrieveKeySlot(pkg_id)
                 if (key, slot) in scope_cache:
                     continue
-                system_pkg = is_system_pkg(pkg_id, pkg_dbconn, system_packages)
+                system_pkg = self._is_system_package(
+                    entropy_client, pkg_id, pkg_dbconn, system_packages)
                 if system_pkg:
                     # ignore system package missing dep if this is a
                     # system package, it means that further missing
