@@ -429,8 +429,6 @@ class QAInterface(TextInterface, EntropyPluginStore):
             for executable, sonames in missing.items():
                 elfclass = entropy.tools.read_elf_class(executable)
 
-                filtered_sonames = filtered_missing_sonames.setdefault(
-                    executable, set())
                 for soname in sonames:
 
                     system_pkgs = set()
@@ -448,6 +446,8 @@ class QAInterface(TextInterface, EntropyPluginStore):
                         system_pkgs.add(system_pkg)
 
                     if not all(system_pkgs):
+                        filtered_sonames = filtered_missing_sonames.setdefault(
+                            executable, set())
                         filtered_sonames.add(soname)
 
             return filtered_missing_sonames
