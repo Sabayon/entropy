@@ -388,6 +388,13 @@ class QAInterface(TextInterface, EntropyPluginStore):
         """
         repos = sorted(entropy_client.repositories())
 
+        # populate the system packages cache
+        system_packages = set()
+        for s_repo_id in repos:
+            s_repo = entropy_client.open_repository(s_repo_id)
+            for s_package_id in s_repo.listAllSystemPackageIds():
+                system_packages.add((s_package_id, s_repo_id))
+
         def _warn_soname(soname, elfclass):
             # try to resolve soname
             for needed_repo in repos:
@@ -412,7 +419,42 @@ class QAInterface(TextInterface, EntropyPluginStore):
                     header = brown("     # ")
                 )
 
+        def _filter_missing_sonames(missing):
+            """
+            Determine whether the missing sonames bound to individual
+            executables are valid. Check if soname points to a system pkg
+            and filter it out in case.
+            """
+            filtered_missing_sonames = {}
+            for executable, sonames in missing.items():
+                elfclass = entropy.tools.read_elf_class(executable)
+
+                filtered_sonames = filtered_missing_sonames.setdefault(
+                    executable, set())
+                for soname in sonames:
+
+                    system_pkgs = set()
+                    for needed_repo in repos:
+                        needed_dbconn = entropy_client.open_repository(
+                            needed_repo)
+
+                        pkg_ids = needed_dbconn.resolveNeeded(
+                            soname, elfclass = elfclass)
+
+                        system_pkg = all(
+                            [self._is_system_package(
+                                    entropy_client, x, needed_dbconn,
+                                    system_packages) for x in pkg_ids])
+                        system_pkgs.add(system_pkg)
+
+                    if not all(system_pkgs):
+                        filtered_sonames.add(soname)
+
+            return filtered_missing_sonames
+
+
         broken_matches = set()
+
         for count, (package_id, repo_id) in enumerate(package_matches, 1):
             dbconn = entropy_client.open_repository(repo_id)
             atom = dbconn.retrieveAtom(package_id)
@@ -421,6 +463,10 @@ class QAInterface(TextInterface, EntropyPluginStore):
             # ldd check, but just warn)
             missing_sonames = self._get_unresolved_sonames(entropy_client,
                 (package_id, repo_id))
+
+            if missing_sonames:
+                missing_sonames = _filter_missing_sonames(missing_sonames)
+
             if missing_sonames:
                 broken_matches.add((package_id, repo_id))
 
