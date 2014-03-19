@@ -473,8 +473,9 @@ If you would like to selectively add certain packages, please see
             def pkg_filter(spm_name):
                 if spm_name in to_be_added:
                     return spm_name
+
                 try:
-                    return entropy_server.Spm(
+                    inst_spm_name = entropy_server.Spm(
                         ).match_installed_package(spm_name)
                 except KeyError:
                     entropy_server.output(
