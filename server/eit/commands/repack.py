@@ -60,8 +60,7 @@ The package must be already available in the queried repository.
             return parser.print_help, []
 
         # setup atoms variable before spawning commit
-        self._packages = nsargs.packages[:]
-        self._repackage = self._packages
+        self._repackage = nsargs.packages[:]
         return self._call_exclusive, [self._commit, nsargs.into]
 
 EitCommandDescriptor.register(
