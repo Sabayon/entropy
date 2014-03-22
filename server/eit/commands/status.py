@@ -115,8 +115,8 @@ Show repository status (such as: *configured mirrors*,
         repo_data = repos_data[repo_id]
         repo_rev = entropy_server.local_repository_revision(repo_id)
         store_dir = entropy_server._get_local_store_directory(repo_id)
-        upload_files, upload_packages = \
-            entropy_server.Mirrors._calculate_local_upload_files(repo_id)
+        upload_packages = entropy_server.Mirrors._calculate_local_upload_files(
+            repo_id)
         key_sorter = lambda x: \
             entropy_server.open_repository(x[1]).retrieveAtom(x[0])
 
@@ -143,7 +143,7 @@ Show repository status (such as: *configured mirrors*,
             toc.append((" ", brown(pkg_rel)))
 
         toc.append(("  %s:" % (darkgreen(_("upload packages")),),
-                    str(upload_files),))
+                    str(len(upload_packages)),))
         for pkg_rel in sorted(upload_packages):
             toc.append((" ", brown(pkg_rel)))
 
