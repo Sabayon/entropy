@@ -1,3 +1,54 @@
+commit 6c10619d21f25b97607d4b47b43ddbcf9b46386b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 22 08:13:05 2014 +0100
+
+    Release Entropy 276
+
+commit cda2ff9e0fed3d9c73e443c7a692f20eaddfb809
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 22 08:12:23 2014 +0100
+
+    [eit.command.status] fix _calculate_local_upload_files() usage
+
+commit 119dd0c36b65348a3beece05b7371b836b041900
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 19 12:30:47 2014 +0100
+
+    [eit.commands.commit] fix "eit add foo" (when foo does not exist)
+
+commit 4aede70e108482a22243b5d3ce689835428dde10
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 19 12:30:09 2014 +0100
+
+    [eit.commands.repack] do not set self._packages, adds unnecessary elaboration
+
+commit 09505b7eadb7c76157bafc4bedc0a237083b2ed8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 18 15:27:46 2014 +0100
+
+    [entropy.qa] do not account for broken executables if there are no missing sonames
+
+commit 5c246d10bad7d56be8eb67bb20a9e613850ef8aa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 18 15:21:29 2014 +0100
+
+    [entropy.qa] filter out missing sonames if they belong to system packages
+    
+    When warning user for potentially broken ELF objects, it is better
+    to filter out sonames pointing to system packages.
+
+commit d0fce0b3750ff4b5b391aae3982b82646004d269
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 18 14:22:54 2014 +0100
+
+    [entropy.qa] move is_system_pkg to instance method
+
+commit b9d87febc23fae19f82a0470a00e3d0bd64e2ab9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 16 17:04:11 2014 +0100
+
+    Tagging Entropy version 275
+
 commit 8e64909155f672c0f62a84a113c5f3bf765138cd
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Mar 16 17:04:10 2014 +0100
