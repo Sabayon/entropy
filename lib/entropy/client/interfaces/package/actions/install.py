@@ -1631,13 +1631,23 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
 
             elif not os.path.isdir(rootdir):
                 # directory not found, we need to create it
-
                 try:
                     # really force a simple mkdir first of all
                     os.mkdir(rootdir)
-                except OSError:
-                    os.makedirs(rootdir)
+                except (OSError, IOError) as err:
+                    # the only two allowed errors are these
+                    if err.errno not in (errno.EEXIST, errno.ENOENT):
+                        raise
 
+                    # if the error is about ENOENT, try creating
+                    # the whole directory tree and check against races
+                    # (EEXIST).
+                    if err.errno == errno.ENOENT:
+                        try:
+                            os.makedirs(rootdir)
+                        except (OSError, IOError) as err2:
+                            if err2.errno != errno.EEXIST:
+                                raise
 
             if not os.path.islink(rootdir):
 
