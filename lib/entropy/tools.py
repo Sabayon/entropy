@@ -2783,9 +2783,6 @@ def read_elf_broken_symbols(elf_file):
         proc = subprocess.Popen(
             args, stdout = subprocess.PIPE,
             stderr = subprocess.PIPE)
-        exit_st = proc.wait()
-        if exit_st != 0:
-            raise FileNotFound("ldd error")
 
         out = const_convert_to_unicode("")
         while True:
@@ -2797,6 +2794,10 @@ def read_elf_broken_symbols(elf_file):
             out += tout
             if not tout:
                 break
+
+        exit_st = proc.wait()
+        if exit_st != 0:
+            raise FileNotFound("ldd error")
 
     except (OSError, IOError) as err:
         if err.errno != errno.ENOENT:
