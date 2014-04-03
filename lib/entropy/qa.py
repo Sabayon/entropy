@@ -1233,7 +1233,11 @@ class QAInterface(TextInterface, EntropyPluginStore):
         unresolved_sonames = {}
 
         for elf_file in elf_files:
-            sonames = entropy.tools.read_elf_real_dynamic_libraries(elf_file)
+            try:
+                sonames = entropy.tools.read_elf_real_dynamic_libraries(
+                    elf_file)
+            except FileNotFound:
+                continue
 
             for soname in sonames:
                 resolved_soname_path = resolve_cache.setdefault(soname,
