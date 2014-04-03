@@ -2781,7 +2781,8 @@ def read_elf_broken_symbols(elf_file):
 
     try:
         proc = subprocess.Popen(
-            args, stderr = subprocess.PIPE)
+            args, stdout = os.devnull,
+            stderr = subprocess.PIPE)
 
         output = const_convert_to_unicode("")
 
@@ -2807,6 +2808,7 @@ def read_elf_broken_symbols(elf_file):
     finally:
         if proc is not None:
             proc.stderr.close()
+            proc.stdout.close()
 
     outcome = set()
     if output is not None:
