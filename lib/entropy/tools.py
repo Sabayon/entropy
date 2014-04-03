@@ -2777,23 +2777,31 @@ def read_elf_broken_symbols(elf_file):
     """
     proc = None
     args = ("/usr/bin/ldd", "-r", elf_file)
-    out = None
+    output = None
 
     try:
         proc = subprocess.Popen(
             args, stdout = subprocess.PIPE,
             stderr = subprocess.PIPE)
 
-        out = const_convert_to_unicode("")
+        output = const_convert_to_unicode("")
+        out_depleted = False
+
         while True:
             # make sure that stdout is flushed and won't block
-            proc.stdout.read()
-            tout = proc.stderr.read()
-            if const_is_python3():
-                tout = const_convert_to_unicode(tout)
-            out += tout
-            if not tout:
+            out = None
+            if not out_depleted:
+                out = proc.stdout.read()
+                if not out:
+                    out_depleted = True
+
+            err = proc.stderr.read()
+            if not err:
                 break
+
+            if const_is_python3():
+                err = const_convert_to_unicode(err)
+            output += err
 
         exit_st = proc.wait()
         if exit_st != 0:
@@ -2810,8 +2818,8 @@ def read_elf_broken_symbols(elf_file):
             proc.stdout.close()
 
     outcome = set()
-    if out is not None:
-        for line in out.split("\n"):
+    if output is not None:
+        for line in output.split("\n"):
             if line.startswith("undefined symbol: "):
                 symbol = line.split("\t")[0].split()[-1]
                 outcome.add(symbol)
