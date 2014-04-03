@@ -2781,19 +2781,11 @@ def read_elf_broken_symbols(elf_file):
 
     try:
         proc = subprocess.Popen(
-            args, stdout = subprocess.PIPE,
-            stderr = subprocess.PIPE)
+            args, stderr = subprocess.PIPE)
 
         output = const_convert_to_unicode("")
-        out_depleted = False
 
         while True:
-            # make sure that stdout is flushed and won't block
-            out = None
-            if not out_depleted:
-                out = proc.stdout.read()
-                if not out:
-                    out_depleted = True
 
             err = proc.stderr.read()
             if not err:
@@ -2815,7 +2807,6 @@ def read_elf_broken_symbols(elf_file):
     finally:
         if proc is not None:
             proc.stderr.close()
-            proc.stdout.close()
 
     outcome = set()
     if output is not None:
