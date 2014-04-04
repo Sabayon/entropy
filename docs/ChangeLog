@@ -1,3 +1,75 @@
+commit 62e1b9e63b1036f341255e49c4f567950b375f7f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 4 11:35:46 2014 +0200
+
+    Release Entropy 277
+
+commit 788e54ced342054e558cf8003b8edace635c6e2a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 4 11:35:27 2014 +0200
+
+    [Rigo] update translations
+
+commit 3ddeed9cdffa752c176d12e6a5e32b13a28359f8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 4 11:34:12 2014 +0200
+
+    [client] update translations
+
+commit 06ba8833df5e2e505937448e02fb260dab35ee99
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 3 12:58:28 2014 +0200
+
+    [entropy.qa] catch FileNotFound on read_elf_real_dynamic_libraries
+
+commit de1baee2ccb447936ae58b9f7422d1d57c65b629
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 3 12:58:08 2014 +0200
+
+    [entropy.tools] read_elf_real_dynamic_libraries: do not block if stdout buffer is full
+
+commit 1ead98fb6eb794f40de2c4c07a383a2e77c19593
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 3 12:45:41 2014 +0200
+
+    [entropy.tools] open os.devnull and pass a file handle to Popen()
+
+commit 97a5b45e27e5c3f5b21d6953a6336a54ffc0a313
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 3 12:42:47 2014 +0200
+
+    [entropy.tools] open stdout and redirect it to os.devnull
+
+commit f2ddad2e0c913f8e158198e41a78c3d371095284
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 3 12:40:15 2014 +0200
+
+    [entropy.tools] do not read stdout at all
+
+commit bb47a20fc9d168367b87d1e43e35a3229cd6669c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 3 12:37:13 2014 +0200
+
+    [entropy.tools] avoid blocking on stdout when stderr buffer was full
+
+commit 85c262ff90477ec95d7d49633fe747542deb60df
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 3 12:19:33 2014 +0200
+
+    [entropy.tools] read_elf_broken_symbols: do not block when stdio buffers are full
+
+commit b8ee50d5148ca5246d141a831e9f990d99f20a42
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 24 12:19:15 2014 +0100
+
+    [entropy.client.package] install: correctly deal with mkdir, makedirs errors
+
+commit 95702f0d7b291fc1565908ebac4d1596901bdf2e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 22 08:13:06 2014 +0100
+
+    Tagging Entropy version 276
+
 commit 6c10619d21f25b97607d4b47b43ddbcf9b46386b
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Mar 22 08:13:05 2014 +0100
