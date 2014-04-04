@@ -3,13 +3,13 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Ivica  Kolić <ikoli@yahoo.com>, 2012-2013
+# Ivica  Kolić <ikoli@yahoo.com>, 2012-2014
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-14 16:14+0100\n"
-"PO-Revision-Date: 2013-12-20 00:46+0000\n"
+"PO-Revision-Date: 2014-04-02 17:11+0000\n"
 "Last-Translator: Ivica  Kolić <ikoli@yahoo.com>\n"
 "Language-Team: Croatian (http://www.transifex.com/projects/p/sabayon-rigo/language/hr/)\n"
 "MIME-Version: 1.0\n"
@@ -28,7 +28,7 @@ msgstr "Šaljem podatke"
 
 #: ../RigoDaemon/app.py:935
 msgid "Internal activity in progress"
-msgstr ""
+msgstr "Interna aktivnost u tijeku"
 
 #: ../RigoDaemon/app.py:937
 msgid "Upgrade in progress"
@@ -209,7 +209,7 @@ msgstr "<b>%s</b>, nije autorizirano"
 #: ../rigo/controllers/daemon.py:808
 #, python-format
 msgid "<b>%s</b>, internal error"
-msgstr ""
+msgstr "<b>%s</b>, interna greška"
 
 #: ../rigo/controllers/daemon.py:813
 #, python-format
@@ -653,7 +653,7 @@ msgstr "Pokaži instalirane programe"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:759
 msgid "Browse through the currently Installed Applications."
-msgstr ""
+msgstr "Pregledaj trenutno instalirane programe."
 
 #: ../rigo/ui/gtk3/controllers/applications.py:768
 msgid "Optimize Download Speed"
@@ -732,7 +732,7 @@ msgstr "Treba preuzeti repozitorije, <b>ažuriraj sada</b>?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:262
 msgid "I dunno dude, I'd say Yes"
-msgstr ""
+msgstr "Ne znam čovječe, ja bih rekao Da"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:265
 msgid "_Yes, why not?"
@@ -787,7 +787,7 @@ msgstr "_Naravno ne"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:439
 msgid "A watched pot never boils"
-msgstr ""
+msgstr "Posuda u koju se gleda nikada ne zakuha"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:498
 #, python-format
@@ -875,9 +875,9 @@ msgstr ""
 msgid "<b>%s</b> Application Action will start in <big><b>%d</b></big> second"
 msgid_plural ""
 "<b>%s</b> Application Action will start in <big><b>%d</b></big> seconds"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "<b>%s</b> Radnja programa će početi za  <big><b>%d</b></big> sekunda"
+msgstr[1] "<b>%s</b> Radnja programa će početi za  <big><b>%d</b></big> sekundi"
+msgstr[2] "<b>%s</b> Radnja programa će početi za  <big><b>%d</b></big> sekundi"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1020
 #, python-format
@@ -942,13 +942,13 @@ msgstr "Preimenovanje repozitorija <b>nije dozvoljeno</b>!"
 #, python-format
 msgid "There is <b>%d</b> preserved library on the system"
 msgid_plural "There are <b>%d</b> preserved libraries on the system"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Postoji <b>%d</b> sačuvana biblioteka u sustavu"
+msgstr[1] "Postoji <b>%d</b> sačuvanih biblioteka u sustavu"
+msgstr[2] "Postoji <b>%d</b> sačuvanih biblioteka u sustavu"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1227
 msgid "Preserved libraries detected on the system."
-msgstr ""
+msgstr "Sačuvane bibblioteke su detektirane u sustavu."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1231
 msgid "_Update system now"
@@ -969,17 +969,17 @@ msgstr ""
 #. unrated caption
 #: ../rigo/ui/gtk3/widgets/stars.py:501
 msgid "Awful"
-msgstr ""
+msgstr "Grozno"
 
 #. 1 star rating
 #: ../rigo/ui/gtk3/widgets/stars.py:502
 msgid "Poor"
-msgstr ""
+msgstr "Bijedno"
 
 #. 2 star rating
 #: ../rigo/ui/gtk3/widgets/stars.py:503
 msgid "Adequate"
-msgstr ""
+msgstr "Odgovarajuće"
 
 #. 3 star rating
 #: ../rigo/ui/gtk3/widgets/stars.py:504
@@ -1049,7 +1049,7 @@ msgstr "<i>Pregledajte <b>programe</b> lakoćom</i>"
 
 #: ../rigo_app.py:112
 msgid "Hey hey hey!"
-msgstr ""
+msgstr "Ej ej ej!"
 
 #: ../rigo_app.py:113
 msgid "Rigo is working, are you sure?"
@@ -1119,7 +1119,7 @@ msgstr ""
 
 #: ../rigo_app.py:531
 msgid "Applications managed <b>successfully</b>!"
-msgstr ""
+msgstr "Programima je upravljano <b>uspješno</b>!"
 
 #: ../rigo_app.py:533
 msgid "System Upgraded <b>successfully</b>!"
