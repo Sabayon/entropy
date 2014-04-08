@@ -6524,9 +6524,6 @@ class Server(Client):
             target_matches = [(x, pkg_repo) for x in package_ids]
             missing_map = my_qa.test_missing_dependencies(
                 self, target_matches, blacklist = pkg_blacklisted_deps)
-            # also warn about potentially missing library deps
-            _broken_matches = my_qa.warn_missing_dependencies(
-                self, target_matches)
 
             missing_deps = self.__user_filter_out_missing_deps(pkg_repo,
                 dbconn, missing_map, ask)
