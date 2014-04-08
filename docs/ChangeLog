@@ -1,3 +1,27 @@
+commit 7c6b27437c22f66bdd0a9e5a6da7ace5c7b7b397
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 8 13:55:56 2014 +0200
+
+    Release Entropy 280
+
+commit f95946754db8a37d71583ddd21ec088f71a02da5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 8 13:55:05 2014 +0200
+
+    [eit.commands.cp] fix parsing of source and dest repos
+
+commit 8cbab29394bfc11cd35f4fee4223c44437705cfa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 8 13:44:48 2014 +0200
+
+    [eit.commands.cp] replace "+" with "*" in the packages argument spec
+
+commit a08324f43490dbca115f022ac7638819d0ddfd6a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 8 12:06:21 2014 +0200
+
+    Tagging Entropy version 279
+
 commit 050a79044500e769f207428598aa66ce2756029f
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Apr 8 12:06:21 2014 +0200
