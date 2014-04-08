@@ -64,7 +64,7 @@ class EitCp(EitCommand):
         parser.add_argument("--quick", action="store_true",
                             default=not self._ask,
                             help=_("no stupid questions"))
-        parser.add_argument("packages", nargs='+', metavar="<package>",
+        parser.add_argument("packages", nargs='*', metavar="<package>",
                             help=_("package dependency"))
         return parser
 
