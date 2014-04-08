@@ -1,3 +1,29 @@
+commit 050a79044500e769f207428598aa66ce2756029f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 8 12:06:21 2014 +0200
+
+    Release Entropy 279
+
+commit ba1d77fa10831a159cac75443a248e48ea7194ce
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 8 12:02:39 2014 +0200
+
+    [eit.commands] add --quick support to eit {mv,cp}
+    
+    This avoids interactivity
+
+commit 8f8f58bb41a15d660ced8b58b8da7dc53b008b31
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 8 11:54:59 2014 +0200
+
+    [eit.commands] remove _get_parser() from EitMv, it's shared with EitCp
+
+commit 7c4cedae0bbc4385455ea5ee76e6a685626e226f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 8 11:23:57 2014 +0200
+
+    Tagging Entropy version 278
+
 commit 6c5626f63847dc5f2141297c6b646d7a996177c3
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Apr 8 11:23:56 2014 +0200
