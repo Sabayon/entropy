@@ -1,3 +1,24 @@
+commit 6c5626f63847dc5f2141297c6b646d7a996177c3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 8 11:23:56 2014 +0200
+
+    Release Entropy 278
+
+commit 1f064736a316ef74efcd78061ee96e88483d826a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 8 09:37:29 2014 +0200
+
+    [entropy.server] do not warn about missing dependencies
+    
+    The code is slow and doesn't give any useful and reliable information
+    to the user.
+
+commit 73c6c1e7011a2758811511f165dada9e71824742
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 4 11:35:47 2014 +0200
+
+    Tagging Entropy version 277
+
 commit 62e1b9e63b1036f341255e49c4f567950b375f7f
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Apr 4 11:35:46 2014 +0200
