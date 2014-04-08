@@ -48,10 +48,10 @@ class EitCp(EitCommand):
             formatter_class=argparse.RawDescriptionHelpFormatter,
             prog="%s %s" % (sys.argv[0], self.NAME))
 
-        parser.add_argument("source", nargs=1,
+        parser.add_argument("source",
                             metavar="<source>",
                             help=_("source repository"))
-        parser.add_argument("dest", nargs=1,
+        parser.add_argument("dest",
                             metavar="<dest>",
                             help=_("destination repository"))
         parser.add_argument("--conservative", action="store_true",
@@ -124,8 +124,8 @@ Copy packages from source repository to destination repository.
         except IOError as err:
             return parser.print_help, []
 
-        self._source = nsargs.source[0]
-        self._dest = nsargs.dest[0]
+        self._source = nsargs.source
+        self._dest = nsargs.dest
         self._deps = nsargs.deps
         self._ask = not nsargs.quick
         self._packages += nsargs.packages
