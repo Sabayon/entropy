@@ -41,11 +41,11 @@ class EitCp(EitCommand):
     def _get_parser(self):
         """ Overridden from EitCp """
         descriptor = EitCommandDescriptor.obtain_descriptor(
-            EitCp.NAME)
+            self.NAME)
         parser = argparse.ArgumentParser(
             description=descriptor.get_description(),
             formatter_class=argparse.RawDescriptionHelpFormatter,
-            prog="%s %s" % (sys.argv[0], EitCp.NAME))
+            prog="%s %s" % (sys.argv[0], self.NAME))
 
         parser.add_argument("source", nargs=1,
                             metavar="<source>",
@@ -60,7 +60,7 @@ class EitCp(EitCommand):
         parser.add_argument("--deps", action="store_true",
                             default=False,
                             help=_("include dependencies"))
-        parser.add_argument("package", nargs='+', metavar="<package>",
+        parser.add_argument("packages", nargs='+', metavar="<package>",
                             help=_("package dependency"))
         return parser
 
@@ -123,7 +123,7 @@ Copy packages from source repository to destination repository.
         self._source = nsargs.source[0]
         self._dest = nsargs.dest[0]
         self._deps = nsargs.deps
-        self._packages += nsargs.package
+        self._packages += nsargs.packages
         self._entropy_class()._inhibit_treeupdates = nsargs.conservative
 
         return self._call_exclusive, [self._move_copy, self._source]
