@@ -33,6 +33,7 @@ class EitCp(EitCommand):
         self._source = None
         self._dest = None
         self._deps = False
+        self._ask = True
         self._packages = []
         self._copy = True
         # execute package name and slot updates
@@ -60,6 +61,9 @@ class EitCp(EitCommand):
         parser.add_argument("--deps", action="store_true",
                             default=False,
                             help=_("include dependencies"))
+        parser.add_argument("--quick", action="store_true",
+                            default=not self._ask,
+                            help=_("no stupid questions"))
         parser.add_argument("packages", nargs='+', metavar="<package>",
                             help=_("package dependency"))
         return parser
@@ -81,7 +85,7 @@ class EitCp(EitCommand):
                     # already given a repo
                     outcome = []
                     break
-        outcome += ["--deps", "--conservative"]
+        outcome += ["--deps", "--conservative", "--quick"]
 
         def _startswith(string):
             if last_arg is not None:
@@ -123,6 +127,7 @@ Copy packages from source repository to destination repository.
         self._source = nsargs.source[0]
         self._dest = nsargs.dest[0]
         self._deps = nsargs.deps
+        self._ask = not nsargs.quick
         self._packages += nsargs.packages
         self._entropy_class()._inhibit_treeupdates = nsargs.conservative
 
@@ -183,11 +188,15 @@ Copy packages from source repository to destination repository.
 
         rc = False
         if self._copy:
-            rc = entropy_server.copy_packages(package_ids, self._source,
-                self._dest, pull_dependencies = self._deps)
+            rc = entropy_server.copy_packages(
+                package_ids, self._source,
+                self._dest, pull_dependencies = self._deps,
+                ask = self._ask)
         else:
-            rc = entropy_server.move_packages(package_ids, self._source,
-                self._dest, pull_dependencies = self._deps)
+            rc = entropy_server.move_packages(
+                package_ids, self._source,
+                self._dest, pull_dependencies = self._deps,
+                ask = self._ask)
         if rc:
             return 0
         return 1

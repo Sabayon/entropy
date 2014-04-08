@@ -51,6 +51,7 @@ then is removed from source.
         self._source = nsargs.source
         self._dest = nsargs.dest
         self._deps = nsargs.deps
+        self._ask = not nsargs.quick
         self._packages += nsargs.packages
         self._copy = False
         self._entropy_class()._inhibit_treeupdates = nsargs.conservative
