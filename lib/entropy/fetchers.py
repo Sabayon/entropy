@@ -306,7 +306,7 @@ class UrlFetcher(TextInterface):
                     if self.__thread_stop_func != None:
                         self.__thread_stop_func()
             finally:
-                if std_err is not None:
+                if std_r is not None:
                     std_r.close()
             return return_code
 
