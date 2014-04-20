@@ -1,3 +1,30 @@
+commit 796db961f971ccc0deb3bd2d7f2252452e69bc0b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 20 13:41:40 2014 +0100
+
+    Release Entropy 281
+
+commit 61ba6ea268127e1807889fd213d0e0c32389bf11
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 20 13:27:29 2014 +0100
+
+    [entropy.client] fix deadlock when running "equo rescue generate"
+    
+    _real_logger_lock must be a reentrant lock.
+    This fixes bug 4624.
+
+commit f1e7432bef30ef9a10e8de93255b68b878f5aa2a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 14 09:08:46 2014 +0200
+
+    [entropy.fetchers] fix undefined reference, std_err (it is actually std_r)
+
+commit 2f88a7e672114f5900fa8dea22658e639cb08c1d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 8 13:55:57 2014 +0200
+
+    Tagging Entropy version 280
+
 commit 7c6b27437c22f66bdd0a9e5a6da7ace5c7b7b397
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Apr 8 13:55:56 2014 +0200
