@@ -109,7 +109,7 @@ class Client(Singleton, TextInterface, CalculatorsMixin,
         self._real_settings_client_plg_lock = threading.RLock()
 
         self._real_logger = None
-        self._real_logger_lock = threading.Lock()
+        self._real_logger_lock = threading.RLock()
 
         self._real_enabled_repos = None
         self._real_enabled_repos_lock = threading.RLock()
