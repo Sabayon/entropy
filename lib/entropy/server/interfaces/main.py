@@ -2195,6 +2195,13 @@ class Server(Client):
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         return sorted(srv_set['repositories'])
 
+    @property
+    def _enabled_repos(self):
+        """
+        Monkey-patched Entropy Client property provided for compatibility.
+        """
+        return self.repositories()
+
     def qa_repositories(self):
         """
         Return a list of QA-testable available Entropy Server repositories.
