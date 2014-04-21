@@ -2192,15 +2192,20 @@ class Server(Client):
         @return: list of available Entropy Server repositories
         @rtype: list
         """
-        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
-        return sorted(srv_set['repositories'])
+        return self._enabled_repos
 
     @property
     def _enabled_repos(self):
         """
         Monkey-patched Entropy Client property provided for compatibility.
         """
-        return self.repositories()
+        try:
+            srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
+        except KeyError:
+            # this happens during the init phase, ignore
+            return []
+        else:
+            return sorted(srv_set['repositories'])
 
     def qa_repositories(self):
         """
