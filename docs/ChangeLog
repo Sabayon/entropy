@@ -1,3 +1,21 @@
+commit 6faaad1d0b66a068b7904b0440f1d8b0b40194fe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 5 18:36:22 2014 +0100
+
+    Release Entropy 283
+
+commit 87702f9aa04c550d1b914869d17f16724b4037c9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 5 18:35:48 2014 +0100
+
+    [misc] update ifconfig and sha256sum usage in hwgen
+
+commit a4f32bf2d87829305603ea42640281ecab01446f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 21 22:03:47 2014 +0100
+
+    Tagging Entropy version 282
+
 commit 38b08e5429cf9136cd6c4564790bcc18eb6b3a9b
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Apr 21 22:03:46 2014 +0100
