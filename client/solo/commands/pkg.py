@@ -10,6 +10,7 @@
 
 """
 import os
+import errno
 import sys
 import argparse
 import shutil
