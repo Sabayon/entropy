@@ -1,3 +1,21 @@
+commit 76dd2fb9a06ff55f567a68bada14622a29f3154d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 18 09:13:55 2014 +0100
+
+    Release Entropy 284
+
+commit 39e2ab68908133c080db9b0238f3f088ff1d343a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat May 10 21:42:32 2014 +0100
+
+    [solo.commands.pkg] add missing import: errno
+
+commit d55bddc3e6fd43d10f2a08db6db0882ba760aefc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 5 18:36:22 2014 +0100
+
+    Tagging Entropy version 283
+
 commit 6faaad1d0b66a068b7904b0440f1d8b0b40194fe
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon May 5 18:36:22 2014 +0100
