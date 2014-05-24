@@ -1024,7 +1024,7 @@ class RepositoryMixin:
                     pass
 
             cache_s = "{%s:{%r;%s}}" % (repository_id, mtime, checksum)
-            sha.update(const_convert_to_unicode(cache_s))
+            sha.update(const_convert_to_rawstring(cache_s))
 
         sha.update(const_convert_to_rawstring("-end-"))
 
