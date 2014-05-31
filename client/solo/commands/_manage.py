@@ -325,7 +325,7 @@ class SoloManage(SoloCommand):
                         header=darkred("        # "),
                         level="error")
 
-    def _scan_packages(self, entropy_client, packages):
+    def _scan_packages(self, entropy_client, packages, onlydeps=False):
         """
         Analyze the list of packages and expand, validate, rework
         it. This is used by equo install, equo source, and others.
@@ -353,6 +353,16 @@ class SoloManage(SoloCommand):
                     final_package_names.append(match)
                 continue
 
+            # if onlydeps is True and we find a package with
+            # mask_filter=False, then take it.
+            # We are only going to use its deps, anyway.
+            if onlydeps:
+                match = entropy_client.atom_match(package, mask_filter=False)
+                if match[0] != -1:
+                    if match not in final_package_names:
+                        final_package_names.append(match)
+                    continue
+
             # determine if a category should be added and package
             # matched. If removing the category we end up with the
             # same name, then there is no category part.
@@ -379,12 +389,23 @@ class SoloManage(SoloCommand):
             # inside available repositories, otherwise give up.
             package = "%s/%s" % (inst_pkg_cat, package)
             match = entropy_client.atom_match(package)
-            if match[0] == -1:
-                self._show_masked_package_info(entropy_client, package)
+            if match[0] != -1:
+                if match not in final_package_names:
+                    final_package_names.append(match)
                 continue
 
-            if match not in final_package_names:
-                final_package_names.append(match)
+            # if onlydeps is True and we find a package with
+            # mask_filter=False, then take it.
+            # We are only going to use its deps, anyway.
+            if onlydeps:
+                match = entropy_client.atom_match(package, mask_filter=False)
+                if match[0] != -1:
+                    if match not in final_package_names:
+                        final_package_names.append(match)
+                    continue
+
+            # giving up completely
+            self._show_masked_package_info(entropy_client, package)
 
         if package_files:
             for pkg in package_files:

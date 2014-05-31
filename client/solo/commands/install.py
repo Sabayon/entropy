@@ -524,7 +524,8 @@ Install or update packages or package files.
 
             if package_matches is None:
                 packages = self._scan_packages(
-                    entropy_client, packages)
+                    entropy_client, packages,
+                    onlydeps=onlydeps)
                 if not packages:
                     entropy_client.output(
                         "%s." % (

@@ -1421,20 +1421,23 @@ class CalculatorsMixin:
             ## first element checks
             add_to_graph = True
             if first_element:
+                first_element = False
+
                 if only_deps:
                     # in this case, we only add pkg_match to
                     # the graph if it's a dependency of something else
+                    # also, with only_deps we should ignore if pkg is masked
                     add_to_graph = False
-                first_element = False
-                # we need to check if first element is masked because of
-                # course, we don't trust function caller.
-                mask_pkg_id, idreason = repo_db.maskFilter(pkg_id)
-                if mask_pkg_id == -1:
-                    mask_atom = repo_db.retrieveAtom(pkg_id)
-                    if mask_atom is None:
-                        mask_atom = 'N/A' # wtf?
-                    deps_not_found.add(mask_atom)
-                    continue # back to while
+                else:
+                    # we need to check if first element is masked because of
+                    # course, we don't trust function caller.
+                    mask_pkg_id, idreason = repo_db.maskFilter(pkg_id)
+                    if mask_pkg_id == -1:
+                        mask_atom = repo_db.retrieveAtom(pkg_id)
+                        if mask_atom is None:
+                            mask_atom = 'N/A' # wtf?
+                        deps_not_found.add(mask_atom)
+                        continue # back to while
 
             # search inside installed packages repository if there's something
             # in the same slot, if so, do some extra checks first.
@@ -2161,7 +2164,7 @@ class CalculatorsMixin:
         if self.xcache:
             sha = hashlib.sha1()
 
-            cache_s = "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|v6" % (
+            cache_s = "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|v7" % (
                 ";".join(["%s" % (x,) for x in sorted(package_matches)]),
                 empty_deps,
                 deep_deps,
