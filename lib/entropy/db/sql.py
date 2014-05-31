@@ -1362,7 +1362,7 @@ class EntropySQLRepository(EntropyRepositoryBase):
         self._insertOnDiskSize(package_id, pkg_data['disksize'])
         if pkg_data['trigger']:
             self._insertTrigger(package_id, pkg_data['trigger'])
-        self._insertConflicts(package_id, pkg_data['conflicts'])
+        self.insertConflicts(package_id, pkg_data['conflicts'])
 
         self._insertProvide(package_id, pkg_data['provide_extended'])
 
@@ -1704,6 +1704,30 @@ class EntropySQLRepository(EntropyRepositoryBase):
         self._cursor().executemany("""
         INSERT INTO dependencies VALUES (?, ?, ?)
         """, insert_list())
+
+    def removeConflicts(self, package_id):
+        """
+        Remove all the conflicts of package.
+
+        @param package_id: package indentifier
+        @type package_id: int
+        """
+        self._cursor().execute("""
+        DELETE FROM conflicts WHERE idpackage = ?
+        """, (package_id,))
+
+    def insertConflicts(self, package_id, conflicts):
+        """
+        Insert dependency conflicts for package.
+
+        @param package_id: package indentifier
+        @type package_id: int
+        @param conflicts: list of dep. conflicts
+        @type conflicts: list
+        """
+        self._cursor().executemany("""
+        INSERT INTO conflicts VALUES (?, ?)
+        """, [(package_id, x,) for x in conflicts])
 
     def insertContent(self, package_id, content, already_formatted = False):
         """
@@ -2077,19 +2101,6 @@ class EntropySQLRepository(EntropyRepositoryBase):
         self._cursor().executemany("""
         INSERT INTO sources VALUES (?, ?)
         """, [x for x in map(mymf, sources) if x != 0])
-
-    def _insertConflicts(self, package_id, conflicts):
-        """
-        Insert dependency conflicts for package.
-
-        @param package_id: package indentifier
-        @type package_id: int
-        @param conflicts: list of dep. conflicts
-        @type conflicts: list
-        """
-        self._cursor().executemany("""
-        INSERT INTO conflicts VALUES (?, ?)
-        """, [(package_id, x,) for x in conflicts])
 
     def _insertProvide(self, package_id, provides):
         """

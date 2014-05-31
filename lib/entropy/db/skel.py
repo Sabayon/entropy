@@ -1391,6 +1391,26 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         raise NotImplementedError()
 
+    def removeConflicts(self, package_id):
+        """
+        Remove all the conflicts of package.
+
+        @param package_id: package indentifier
+        @type package_id: int
+        """
+        raise NotImplementedError()
+
+    def insertConflicts(self, package_id, conflicts):
+        """
+        Insert dependency conflicts for package.
+
+        @param package_id: package indentifier
+        @type package_id: int
+        @param conflicts: list of dep. conflicts
+        @type conflicts: list
+        """
+        raise NotImplementedError()
+
     def insertContent(self, package_id, content, already_formatted = False):
         """
         Insert content metadata for package. "content" can either be a dict()
