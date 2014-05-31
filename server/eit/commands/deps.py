@@ -92,7 +92,8 @@ non-permanent way.
             entropy_server.output(txt)
 
     def _show_package_dependencies(self, entropy_server, atom,
-                                   orig_deps, partial = False):
+                                   orig_deps, orig_conflicts,
+                                   partial = False):
         """
         Print package dependencies for atom.
         """
@@ -116,7 +117,20 @@ non-permanent way.
             entropy_server.output(
                 _("No dependencies"),
                 header=brown("    # "))
-        else:
+
+        for dep_str in orig_conflicts:
+            entropy_server.output(
+                "[%s] %s" % (
+                    teal(_("conflict")),
+                    purple(dep_str)),
+                header=brown("  #"))
+
+        if not orig_conflicts:
+            entropy_server.output(
+                _("No conflicts"),
+                header=brown("    # "))
+
+        if orig_deps:
             self._show_dependencies_legend(entropy_server, "  ")
 
         if partial:
@@ -165,39 +179,58 @@ non-permanent way.
         repo = entropy_server.open_repository(repository_id)
         for package_id in package_ids:
             atom = repo.retrieveAtom(package_id)
+
             orig_deps = repo.retrieveDependencies(
                 package_id, extended = True,
                 resolve_conditional_deps = False)
             dep_type_map = dict(orig_deps)
 
+            orig_conflicts = ["!%s" % (x,) for x in
+                              repo.retrieveConflicts(package_id)]
+            orig_conflicts.sort()
+
             def dep_check_cb(s):
-                input_params = [
-                    ('dep_type', ('combo', (_("Dependency type"),
-                        avail_dep_type_desc),),
-                    pkg_dep_types_cb, False)
-                ]
 
-                data = entropy_server.input_box(
-                    ("%s: %s" % (_('Select a dependency type for'), s,)),
-                    input_params
-                )
-                if data is None:
-                    return False
+                is_conflict = s.startswith("!")
+                changes_made_type_map = {}
+                confl_changes_made = []
 
-                rc_dep_type = avail_dep_type_desc.index(
-                    data['dep_type'][1])
-                dep_type_map[s] = rc_dep_type
-                changes_made_type_map = {s: rc_dep_type}
+                if is_conflict:
+                    confl_changes_made.append(s[1:])
+                else:
+                    input_params = [
+                        ('dep_type', ('combo', (_("Dependency type"),
+                            avail_dep_type_desc),),
+                        pkg_dep_types_cb, False)
+                    ]
 
-                self._show_package_dependencies(entropy_server,
-                    atom, changes_made_type_map.items(), partial = True)
+                    data = entropy_server.input_box(
+                        ("%s: %s" % (_('Select a dependency type for'), s,)),
+                        input_params
+                    )
+                    if data is None:
+                        return False
+
+                    rc_dep_type = avail_dep_type_desc.index(
+                        data['dep_type'][1])
+                    dep_type_map[s] = rc_dep_type
+
+                    changes_made_type_map.update({s: rc_dep_type})
+
+                self._show_package_dependencies(
+                    entropy_server,
+                    atom, changes_made_type_map.items(),
+                    confl_changes_made, partial = True)
+
                 return True
 
             self._show_package_dependencies(
-                    entropy_server, atom, orig_deps)
+                    entropy_server, atom, orig_deps,
+                    orig_conflicts)
 
             entropy_server.output("")
             current_deps = [x[0] for x in orig_deps]
+            current_deps += orig_conflicts
             input_params = [
                 ('new_deps', ('list', (_('Dependencies'), current_deps),),
                     dep_check_cb, True)
@@ -207,11 +240,16 @@ non-permanent way.
             if data is None:
                 continue
 
-            new_deps = data.get('new_deps', [])
-            orig_deps = [(x, dep_type_map[x],) for x in new_deps]
+            orig_deps = []
+            orig_conflicts = []
+            for x in data.get('new_deps', []):
+                if x.startswith("!"):
+                    orig_conflicts.append(x[1:])
+                else:
+                    orig_deps.append((x, dep_type_map[x],))
 
             self._show_package_dependencies(
-                entropy_server, atom, orig_deps)
+                entropy_server, atom, orig_deps, orig_conflicts)
             rc_ask = entropy_server.ask_question(_("Confirm ?"))
             if rc_ask == _("No"):
                 continue
@@ -224,6 +262,8 @@ non-permanent way.
                 try:
                     w_repo.removeDependencies(package_id)
                     w_repo.insertDependencies(package_id, orig_deps)
+                    w_repo.removeConflicts(package_id)
+                    w_repo.insertConflicts(package_id, orig_conflicts)
                     w_repo.commit()
                 except (KeyboardInterrupt, SystemExit,):
                     continue
