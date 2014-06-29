@@ -1,3 +1,41 @@
+commit 68dc9f92df207ce62069c5ebed5afd3f8fb38ce0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 29 15:27:07 2014 +0100
+
+    Release Entropy 285
+
+commit 92254d3986f9ba3ac6a8dca77fcc606ebbdf38a0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat May 31 15:27:08 2014 +0100
+
+    [eit.commands.deps] add support for adding and removing conflicts
+
+commit d2e181bcb42f8607048fde66b10316016940c915
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat May 31 15:25:43 2014 +0100
+
+    [entropy.db] add removeConflicts() and insertConflicts()
+
+commit 713fd9dd74f8c40c4b16e4ad1087c731ff32bf5e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat May 31 14:02:54 2014 +0100
+
+    [entropy.client] ignore package masking for the first element when only_deps is True
+
+commit 40a05bf1c301d887d8ddc59373b2296945964104
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat May 24 19:49:55 2014 +0100
+
+    [entropy.client] use const_convert_to_rawstring with hashlib
+    
+    This fixes bug #4713
+
+commit efd8d941125f773ada8dd116a07db385ee37a398
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 18 09:13:56 2014 +0100
+
+    Tagging Entropy version 284
+
 commit 76dd2fb9a06ff55f567a68bada14622a29f3154d
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun May 18 09:13:55 2014 +0100
