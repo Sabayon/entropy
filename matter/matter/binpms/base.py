@@ -297,7 +297,7 @@ class BaseBinaryPMS(object):
         """
         pkgpush_f = self._nsargs.portage_pkgpush
         if pkgpush_f is None:
-            return
+            return 0
 
         hook_name = pkgpush_f.name
         if not hook_name.startswith("/"):
@@ -314,6 +314,7 @@ class BaseBinaryPMS(object):
             raise BaseBinaryPMS.RepositoryPushError(
                 "cannot push packages, exit status: %d" % (
                     exit_st,))
+        return exit_st
 
     def clear_cache(self):
         """

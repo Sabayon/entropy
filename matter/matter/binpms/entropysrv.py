@@ -433,6 +433,8 @@ class EntropyBinaryPMS(BaseBinaryPMS):
             raise EntropyBinaryPMS.RepositoryPushError(
                 "ouch during repo push")
 
+        return exit_st
+
     def clear_cache(self):
         """
         Overridden from BaseBinaryPMS.
