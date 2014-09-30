@@ -320,7 +320,7 @@ Execute advanced tasks on Entropy packages and the running system.
                 try:
                     os.makedirs(os.path.dirname(final_path))
                 except OSError as err:
-                    if err.errno != errno.EISDIR:
+                    if err.errno not in (errno.EISDIR, errno.EEXIST):
                         raise
                 shutil.move(package_path, final_path)
             package_path = final_path
