@@ -133,7 +133,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
 
     # bump this every time schema changes and databaseStructureUpdate
     # should be triggered
-    _SCHEMA_REVISION = 5
+    _SCHEMA_REVISION = 6
 
     _INSERT_OR_REPLACE = "INSERT OR REPLACE"
     _INSERT_OR_IGNORE = "INSERT OR IGNORE"
@@ -766,7 +766,6 @@ class EntropySQLiteRepository(EntropySQLRepository):
                 DELETE FROM content WHERE idpackage = %d;
                 DELETE FROM counters WHERE idpackage = %d;
                 DELETE FROM sizes WHERE idpackage = %d;
-                DELETE FROM needed WHERE idpackage = %d;
                 DELETE FROM triggers WHERE idpackage = %d;
                 DELETE FROM systempackages WHERE idpackage = %d;
                 DELETE FROM injected WHERE idpackage = %d;
@@ -779,6 +778,16 @@ class EntropySQLiteRepository(EntropySQLRepository):
                 self._cursor().execute("""
                 DELETE FROM packagedownloads WHERE idpackage = (?)""",
                 (package_id,))
+
+            # Added on Sept. 2014
+            if self._doesTableExist("needed_libs"):
+                self._cursor().execute(
+                    "DELETE FROM needed_libs WHERE idpackage = (?)",
+                    (package_id,))
+            else:
+                self._cursor().execute(
+                    "DELETE FROM needed WHERE idpackage = (?)",
+                    (package_id,))
 
     def _addDependency(self, dependency):
         """
@@ -906,6 +915,22 @@ class EntropySQLiteRepository(EntropySQLRepository):
         super(EntropySQLiteRepository, self).insertDependencies(
             package_id, depdata)
         self._clearLiveCache("retrieveDependencies")
+
+    def _insertNeededLibs(self, package_id, needed_libs):
+        """
+        Reimplemented from EntropySQLRepository.
+        We must handle backward compatibility.
+        """
+        try:
+            # be optimistic and delay if condition
+            super(EntropySQLiteRepository, self)._insertNeededLibs(
+                package_id, needed_libs)
+        except OperationalError as err:
+            if self._doesTableExist("needed_libs"):
+                raise
+            self._migrateNeededLibs()
+            super(EntropySQLiteRepository, self)._insertNeededLibs(
+                package_id, needed_libs)
 
     def _insertUseflags(self, package_id, useflags):
         """
@@ -1975,6 +2000,9 @@ class EntropySQLiteRepository(EntropySQLRepository):
         if not self._doesColumnInTableExist("preserved_libs", "atom"):
             self._createPreservedLibsAtomColumn()
 
+        # added on Sept. 2014, keep forever? ;-)
+        self._migrateNeededLibs()
+
         # added on Sept. 2010, keep forever? ;-)
         self._migrateBaseinfoExtrainfo()
 
@@ -2419,6 +2447,40 @@ class EntropySQLiteRepository(EntropySQLRepository):
             ON baseinfo ( idlicense, idcategory );
         """)
 
+    def _migrateNeededLibs(self):
+        """
+        Migrate from needed and neededreference schema to the
+        new needed_libs.
+        """
+        if self._doesTableExist("needed_libs"):
+            return
+
+        self._cursor().executescript("""
+        BEGIN TRANSACTION;
+        DROP TABLE IF EXISTS needed_libs_temp;
+        CREATE TABLE needed_libs_temp (
+            idpackage INTEGER,
+            lib_user_path VARCHAR,
+            lib_user_soname VARCHAR,
+            soname VARCHAR,
+            elfclass INTEGER,
+            rpath VARCHAR,
+            FOREIGN KEY(idpackage)
+                REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+        );
+        INSERT INTO needed_libs_temp
+            SELECT needed.idpackage, "", "", neededreference.library,
+                needed.elfclass, "" FROM needed, neededreference
+            WHERE needed.idneeded = neededreference.idneeded;
+
+        ALTER TABLE needed_libs_temp RENAME TO needed_libs;
+        DROP TABLE IF EXISTS neededreference;
+        DROP TABLE IF EXISTS needed;
+        COMMIT;
+        """)
+        self._clearLiveCache("_doesTableExist")
+        self._clearLiveCache("_doesColumnInTableExist")
+
     def _isBaseinfoExtrainfo2010(self):
         """
         Return is _baseinfo_extrainfo_2010 setting is
@@ -2532,14 +2594,14 @@ class EntropySQLiteRepository(EntropySQLRepository):
         tables = ("extrainfo", "dependencies" , "provide",
             "conflicts", "configprotect", "configprotectmask", "sources",
             "useflags", "keywords", "content", "counters", "sizes",
-            "needed", "triggers", "systempackages", "injected",
+            "needed", "needed_libs", "triggers", "systempackages", "injected",
             "installedtable", "automergefiles", "packagesignatures",
             "packagespmphases", "provided_libs")
 
         done_something = False
         foreign_keys_supported = False
         for table in tables:
-            if not self._doesTableExist(table): # wtf
+            if not self._doesTableExist(table):
                 continue
 
             cur = self._cursor().execute("""

@@ -2600,6 +2600,22 @@ def is_valid_md5(string):
         return True
     return False
 
+def elf_class_strtoint(elf_class_str):
+    """
+    Convert an ELF class metadataum string to its int value.
+
+    @param elf_class_str: the ELF class string
+    @type elf_class_str: string
+    @return: ELF class int value
+    @rtype: int
+    """
+    if elf_class_str in ("X86_64", "ELFCLASS64"):
+        return 2
+    elif elf_class_str in ("386", "ELFCLASS32"):
+        return 1
+    else:
+        raise ValueError('unsupported %s' % (elf_class_str,))
+
 def read_elf_class(elf_file):
     """
     Read ELF class metadatum from ELF file.
@@ -2714,6 +2730,55 @@ def read_elf_dynamic_libraries(elf_file):
                 libs = line.strip().split(" ", -1)[0].split(",")
                 outcome.update(libs)
     return outcome
+
+def read_elf_metadata(elf_file):
+    """
+    Extract soname, elf class, runpath and NEEDED metadata from ELF file.
+
+    @param elf_file: path to ELF file
+    @type elf_file: string
+    @return: dict with "soname", "class", "runpath" and "needed" keys.
+    @rtype: dict
+    """
+    proc = None
+    args = ("/usr/bin/scanelf", "-qF", "%M;%S;%r;%n", elf_file)
+
+    out = None
+    try:
+        proc = subprocess.Popen(args, stdout = subprocess.PIPE)
+        exit_st = proc.wait()
+        if exit_st != 0:
+            raise FileNotFound("scanelf failure")
+        out = proc.stdout.read()
+
+    except (OSError, IOError) as err:
+        if err.errno != errno.ENOENT:
+            raise
+        raise FileNotFound("/usr/bin/scanelf not found")
+
+    finally:
+        if proc is not None:
+            try:
+                proc.stdout.close()
+            except (OSError, IOError):
+                pass
+
+    if out is not None:
+        if const_is_python3():
+            out = const_convert_to_unicode(out)
+        for line in out.split("\n"):
+            if line:
+                data = line.strip().split(" ", -1)[0]
+                elfclass_str, soname, runpath, libs = data.split(";")
+                libs = set(libs.split(","))
+                return {
+                    'soname': soname,
+                    'class': elf_class_strtoint(elfclass_str),
+                    'runpath': runpath,
+                    'needed': libs,
+                }
+
+    raise FileNotFound("scanelf failure")
 
 def read_elf_real_dynamic_libraries(elf_file):
     """

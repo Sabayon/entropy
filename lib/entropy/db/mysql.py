@@ -350,18 +350,15 @@ class EntropyMySQLRepository(EntropySQLRepository):
                     counter INTEGER(10) NOT NULL
                 );
 
-                CREATE TABLE needed (
+                CREATE TABLE needed_libs (
                     idpackage INTEGER(10) UNSIGNED NOT NULL,
-                    idneeded INTEGER(10) UNSIGNED NOT NULL,
+                    lib_user_path VARCHAR(512) NOT NULL,
+                    lib_user_soname VARCHAR(75) NOT NULL,
+                    soname VARCHAR(75) NOT NULL,
                     elfclass INTEGER(10) NOT NULL,
+                    rpath VARCHAR(1024) NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                );
-
-                CREATE TABLE neededreference (
-                    idneeded INTEGER(10) UNSIGNED NOT NULL
-                        AUTO_INCREMENT PRIMARY KEY,
-                    library VARCHAR(75) NOT NULL
                 );
 
                 CREATE TABLE provided_libs (

@@ -425,17 +425,15 @@ class EntropySQLRepository(EntropyRepositoryBase):
                     counter INTEGER
                 );
 
-                CREATE TABLE needed (
+                CREATE TABLE needed_libs (
                     idpackage INTEGER,
-                    idneeded INTEGER,
+                    lib_user_path VARCHAR,
+                    lib_user_soname VARCHAR,
+                    soname VARCHAR,
                     elfclass INTEGER,
+                    rpath VARCHAR,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                );
-
-                CREATE TABLE neededreference (
-                    idneeded INTEGER PRIMARY KEY AUTOINCREMENT,
-                    library VARCHAR
                 );
 
                 CREATE TABLE provided_libs (
@@ -1295,8 +1293,12 @@ class EntropySQLRepository(EntropyRepositoryBase):
         ### other information iserted below are not as
         ### critical as these above
 
-        # tables using a select
-        self._insertNeeded(package_id, pkg_data['needed'])
+        if "needed_libs" in pkg_data:
+            needed_libs = pkg_data['needed_libs']
+        else: # needed, kept for backward compatibility.
+            needed_libs = [("", "", soname, elfclass, "")
+                           for soname, elfclass in pkg_data['needed']]
+        self._insertNeededLibs(package_id, needed_libs)
 
         self.insertDependencies(package_id, pkg_data['pkg_dependencies'])
 
@@ -1531,21 +1533,6 @@ class EntropySQLRepository(EntropyRepositoryBase):
         cur = self._cursor().execute("""
         INSERT INTO useflagsreference VALUES (NULL, ?)
         """, (useflag,))
-        return cur.lastrowid
-
-    def _addNeeded(self, needed):
-        """
-        Add package libraries' ELF object NEEDED string to repository.
-        Return its identifier (idneeded).
-
-        @param needed: NEEDED string (as shown in `readelf -d elf.so`)
-        @type needed: string
-        @return: needed identifier (idneeded)
-        @rtype: int
-        """
-        cur = self._cursor().execute("""
-        INSERT INTO neededreference VALUES (NULL, ?)
-        """, (needed,))
         return cur.lastrowid
 
     def _setSystemPackage(self, package_id):
@@ -2131,26 +2118,19 @@ class EntropySQLRepository(EntropyRepositoryBase):
             idpackage != ?
             """, default_provides)
 
-    def _insertNeeded(self, package_id, neededs):
+    def _insertNeededLibs(self, package_id, needed_libs):
         """
         Insert package libraries' ELF object NEEDED string for package.
-        Return its identifier (idneeded).
 
         @param package_id: package indentifier
         @type package_id: int
-        @param neededs: list of NEEDED string (as shown in `readelf -d elf.so`)
-        @type neededs: string
+        @param needed_libs: list of tuples composed of:
+            (library user path, library user soname, soname, elfclass, rpath)
+        @type needed_libs: list
         """
-        def mymf(needed_data):
-            needed, elfclass = needed_data
-            idneeded = self.isNeededAvailable(needed)
-            if idneeded == -1:
-                idneeded = self._addNeeded(needed)
-            return (package_id, idneeded, elfclass,)
-
         self._cursor().executemany("""
-        INSERT INTO needed VALUES (?, ?, ?)
-        """, list(map(mymf, neededs)))
+        INSERT INTO needed_libs VALUES (?, ?, ?, ?, ?, ?)
+        """, [(package_id,) + tuple(x) for x in needed_libs])
 
     def _insertOnDiskSize(self, package_id, mysize):
         """
@@ -2400,7 +2380,6 @@ class EntropySQLRepository(EntropyRepositoryBase):
         """
         self._cleanupUseflags()
         self._cleanupSources()
-        self._cleanupNeeded()
         self._cleanupDependencies()
         self._cleanupChangelogs()
 
@@ -2432,14 +2411,6 @@ class EntropySQLRepository(EntropyRepositoryBase):
         self._cursor().execute("""
         DELETE FROM sourcesreference
         WHERE idsource NOT IN (SELECT idsource FROM sources)""")
-
-    def _cleanupNeeded(self):
-        """
-        Cleanup "needed" metadata unused references to save space.
-        """
-        self._cursor().execute("""
-        DELETE FROM neededreference
-        WHERE idneeded NOT IN (SELECT idneeded FROM needed)""")
 
     def _cleanupDependencies(self):
         """
@@ -3112,22 +3083,39 @@ class EntropySQLRepository(EntropyRepositoryBase):
         """, (package_id,))
         return self._cur2frozenset(cur)
 
-    def retrieveNeededRaw(self, package_id):
-        """
-        Reimplemented from EntropyRepositoryBase.
-        """
-        cur = self._cursor().execute("""
-        SELECT library FROM needed,neededreference
-        WHERE needed.idpackage = ? AND
-        needed.idneeded = neededreference.idneeded""", (package_id,))
-        return self._cur2frozenset(cur)
-
     def retrieveNeeded(self, package_id, extended = False, formatted = False):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        if extended:
+        if not self._doesTableExist("needed_libs"):
+            # TODO: remove in 2016.
+            return self._compatRetrieveNeeded(
+                package_id, extended=extended, formatted=formatted)
 
+        if extended:
+            cur = self._cursor().execute("""
+            SELECT soname, elfclass FROM needed_libs
+            WHERE idpackage = ? ORDER BY soname
+            """, (package_id,))
+            needed = tuple(cur)
+
+        else:
+            cur = self._cursor().execute("""
+            SELECT soname FROM needed_libs
+            WHERE idpackage = ? ORDER BY soname
+            """, (package_id,))
+            needed = self._cur2tuple(cur)
+
+        if extended and formatted:
+            return dict((lib, elfclass,) for lib, elfclass in needed)
+        return needed
+
+    def _compatRetrieveNeeded(self, package_id, extended = False,
+                              formatted = False):
+        """
+        Backward compatibility schema support for retrieveNeeded().
+        """
+        if extended:
             cur = self._cursor().execute("""
             SELECT library,elfclass FROM needed,neededreference
             WHERE needed.idpackage = ? AND
@@ -3136,7 +3124,6 @@ class EntropySQLRepository(EntropyRepositoryBase):
             needed = tuple(cur)
 
         else:
-
             cur = self._cursor().execute("""
             SELECT library FROM needed,neededreference
             WHERE needed.idpackage = ? AND
@@ -3147,6 +3134,16 @@ class EntropySQLRepository(EntropyRepositoryBase):
         if extended and formatted:
             return dict((lib, elfclass,) for lib, elfclass in needed)
         return needed
+
+    def retrieveNeededLibraries(self, package_id):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        """
+        cur = self._cursor().execute("""
+        SELECT lib_user_path, lib_user_soname, soname, elfclass, rpath
+        FROM needed_libs WHERE idpackage = ?
+        """, (package_id,))
+        return frozenset(cur)
 
     def retrieveProvidedLibraries(self, package_id):
         """
@@ -4004,18 +4001,6 @@ class EntropySQLRepository(EntropyRepositoryBase):
             return result[0]
         return -1
 
-    def isNeededAvailable(self, needed):
-        """
-        Reimplemented from EntropyRepositoryBase.
-        """
-        cur = self._cursor().execute("""
-        SELECT idneeded FROM neededreference WHERE library = ? LIMIT 1
-        """, (needed,))
-        result = cur.fetchone()
-        if result:
-            return result[0]
-        return -1
-
     def isSpmUidAvailable(self, spm_uid):
         """
         Reimplemented from EntropyRepositoryBase.
@@ -4218,6 +4203,33 @@ class EntropySQLRepository(EntropyRepositoryBase):
     def searchNeeded(self, needed, elfclass = -1, like = False):
         """
         Reimplemented from EntropyRepositoryBase.
+        """
+        if not self._doesTableExist("needed_libs"):
+            # kept for backward compatibility.
+            return self._compatSearchNeeded(
+                needed, elfclass = elfclass, like = like)
+
+        likestr = ''
+        if like:
+            needed = needed.replace("*", "%")
+            likestr = 'LIKE'
+
+        elfsearch = ''
+        search_args = (needed,)
+        if elfclass != -1:
+            elfsearch = ' AND elfclass = ?'
+            search_args = (needed, elfclass,)
+
+        cur = self._cursor().execute("""
+        SELECT idpackage FROM needed_libs
+        WHERE soname %s ? %s
+        """ % (likestr, elfsearch,), search_args)
+
+        return self._cur2frozenset(cur)
+
+    def _compatSearchNeeded(self, needed, elfclass = -1, like = False):
+        """
+        searchNeeded() implementation compatible with the old needed schema.
         """
         if like:
             needed = needed.replace("*", "%")
@@ -5136,7 +5148,7 @@ class EntropySQLRepository(EntropyRepositoryBase):
         self._createProvideIndex()
         self._createConflictsIndex()
         self._createExtrainfoIndex()
-        self._createNeededIndex()
+        self._createNeededLibsIndex()
         self._createUseflagsIndex()
         self._createLicensedataIndex()
         self._createConfigProtectReferenceIndex()
@@ -5239,27 +5251,19 @@ class EntropySQLRepository(EntropyRepositoryBase):
         except OperationalError:
             pass
 
-    def _createNeededIndex(self):
+    def _createNeededLibsIndex(self):
         try:
             self._cursor().execute("""
-                CREATE INDEX neededindex ON neededreference
-                    ( library );
+                CREATE INDEX needed_libs_idpackage ON needed_libs
+                    ( idpackage );
             """)
         except OperationalError:
             pass
 
         try:
             self._cursor().execute("""
-                CREATE INDEX neededindex_idpk_idneeded ON needed
-                    ( idpackage, idneeded );
-            """)
-        except OperationalError:
-            pass
-
-        try:
-            self._cursor().execute("""
-                CREATE INDEX neededindex_idn_elfclass ON needed
-                    ( idneeded, elfclass );
+                CREATE INDEX needed_libs_soname_elfclass ON needed_libs
+                    ( soname, elfclass );
             """)
         except OperationalError:
             pass

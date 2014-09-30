@@ -1067,7 +1067,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                 'branch': '4',
                 'content': {},
                 'content_safety': {},
-                'needed': [('libc.so.6', 2)],
+                'needed_libs': [('/usr/bin/foo', 'foo', 'libc.so.6', 2, '')],
                 'version': '1.2.3-r1',
                 'keywords': set(),
                 'cflags': '-Os -march=x86-64 -pipe',
@@ -1857,7 +1857,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             'useflags': self.retrieveUseflags(package_id),
             'keywords': self.retrieveKeywords(package_id),
             'sources': sources,
-            'needed': self.retrieveNeeded(package_id, extended = True),
+            'needed_libs': self.retrieveNeededLibraries(package_id)
             'provided_libs': self.retrieveProvidedLibraries(package_id),
             'provide_extended': self.retrieveProvide(package_id),
             'conflicts': self.retrieveConflicts(package_id),
@@ -1921,6 +1921,12 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             package_id, extended = True,
             resolve_conditional_deps = False)
 
+        needed_libs = self.retrieveNeededLibraries(package_id)
+        compat_needed_libs = tuple(
+            sorted((soname, elfclass) for _x, _x, soname, elfclass, _x
+                    in needed_libs)
+        )
+
         data = {
             'atom': atom,
             'name': name,
@@ -1953,7 +1959,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             'useflags': self.retrieveUseflags(package_id),
             'keywords': self.retrieveKeywords(package_id),
             'sources': sources,
-            'needed': self.retrieveNeeded(package_id, extended = True),
+            'needed': compat_needed_libs,
+            'needed_libs': needed_libs,
             'provided_libs': self.retrieveProvidedLibraries(package_id),
             'provide_extended': self.retrieveProvide(package_id),
             'conflicts': self.retrieveConflicts(package_id),
@@ -2205,7 +2212,15 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                 package.appendChild(config_protect_mask)
 
             needed_libs = doc.createElement("needed-libs")
-            if data['needed']:
+            if "needed_libs" in data:
+                for _x, _x, needed, elf_class, _x in sorted(
+                        data['needed_libs']):
+                    needed_el = doc.createElement("needed-lib")
+                    needed_el.setAttribute("name", needed)
+                    needed_el.setAttribute("elfclass", "%d" % (elf_class,))
+                    needed_libs.appendChild(needed_el)
+                package.appendChild(needed_libs)
+            else:  # needed
                 for needed, elf_class in sorted(data['needed']):
                     needed_el = doc.createElement("needed-lib")
                     needed_el.setAttribute("name", needed)
@@ -3261,22 +3276,10 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         raise NotImplementedError()
 
-    def retrieveNeededRaw(self, package_id):
-        """
-        Return (raw format) "NEEDED" ELF metadata for libraries contained
-        in given package.
-
-        @param package_id: package indentifier
-        @type package_id: int
-        @return: list (frozenset) of "NEEDED" entries contained in ELF objects
-            packed into package file
-        @rtype: frozenset
-        """
-        raise NotImplementedError()
-
     def retrieveNeeded(self, package_id, extended = False, formatted = False):
         """
         Return "NEEDED" elf metadata for libraries contained in given package.
+        Deprecated, use retrieveNeededLibraries.
 
         @param package_id: package indentifier
         @type package_id: int
@@ -3288,6 +3291,18 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         @type formatted: bool
         @return: "NEEDED" metadata for libraries contained in given package.
         @rtype: tuple or dict
+        """
+        raise NotImplementedError()
+
+    def retrieveNeededLibraries(self, package_id):
+        """
+        Return the needed libraries for a given package.
+
+        @param package_id: package indentifier
+        @type package_id: int
+        @return: list (frozenset) of tuples composed by library user path,
+            library user soname, soname, elf class, rpath.
+        @rtype: frozenset
         """
         raise NotImplementedError()
 
@@ -3847,19 +3862,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         @type extended: bool
         @return: list of packages owning given library
         @rtype: frozenset
-        """
-        raise NotImplementedError()
-
-    def isNeededAvailable(self, needed):
-        """
-        Return whether NEEDED ELF entry (library name) is available in
-        repository.
-        Returns NEEDED entry identifier
-
-        @param needed: NEEDED ELF entry (library name)
-        @type needed: string
-        @return: NEEDED entry identifier or -1 if not found
-        @rtype: int
         """
         raise NotImplementedError()
 
