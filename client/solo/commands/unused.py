@@ -74,8 +74,6 @@ Report unused packages that could be removed.
                             help=_("sort packages by size"))
         _commands.append("--sortbysize")
 
-        # XXX: spm-db is recorded by 'equo rescue spmsync' and probably also 'equo generate.'
-        # XXX: Are there any other cases to consider? SPM package installed differently, somehow?
         parser.add_argument("--spm-wanted", action="store_true",
                             default=self._spm_wanted,
                             help=_("consider packages installed with" \
@@ -111,13 +109,6 @@ Report unused packages that could be removed.
         self._get_parser()
         return self._bashcomp(sys.stdout, last_arg, self._commands)
 
-    def _installed_pkg_ids(self, entropy_repository):
-        """
-        Return IDs list of packages from a given repository.
-        """
-        repository_id = entropy_repository.repository_id()
-        return entropy_repository.listAllPackageIds()
-
     def _filter_user_packages(self, inst_repo, pkg_ids):
         """
         For a given repository and package IDs, return only
@@ -126,14 +117,13 @@ Report unused packages that could be removed.
         SPM.
         """
         def _filter_user(pkg_id):
-            return inst_repo.getInstalledPackageSource(pkg_id) == \
-                    etpConst['install_sources']['user']
+            source = inst_repo.getInstalledPackageSource(pkg_id)
+            return source == etpConst['install_sources']['user']
 
         def _filter_user_or_by_SPM(pkg_id):
             if _filter_user(pkg_id):
                 return True
 
-            # XXX: Should I also compare spmetprev?
             repo = inst_repo.getInstalledPackageRepository(x)
             if repo is None:
                 # sensible default
@@ -184,9 +174,6 @@ Report unused packages that could be removed.
 
             for dep in deps:
                 package_id, pkg_rc = inst_repo.atomMatch(dep)
-                # XXX: At least one of the cases when it's not 0 is when
-                # a package is a build time dep., not present on the
-                # system. Can this case (pkg_rc != 0) simply be ignored?
                 if pkg_rc == 0:
                     dep_ids.append(package_id)
 
@@ -194,18 +181,6 @@ Report unused packages that could be removed.
 
         return _get
 
-    def _sorted(self, atom_size_pairs):
-        """
-        Helper function to sort the (atom, on_disk_size) pairs.
-        """
-        if self._sortbysize:
-            sort_index = 1
-        else:
-            sort_index = 0
-
-        return sorted(atom_size_pairs, key=lambda x: x[sort_index])
-
-    # XXX: Locking: is this correct?
     @sharedlock
     def _unused(self, entropy_client, inst_repo):
         """
@@ -213,21 +188,24 @@ Report unused packages that could be removed.
         """
         if not self._quiet:
             entropy_client.output(
-                # XXX: Add again the information about false positives?
-                # XXX: Note: it's in the command description to be careful with this already.
                 "%s..." % (
                     blue(_("Running unused packages test")),),
                 header=red(" @@ "))
 
-        all_ids = self._installed_pkg_ids(inst_repo)
+        all_ids = inst_repo.listAllPackageIds()
         user_packages = self._filter_user_packages(inst_repo, all_ids)
         wanted_ids = self._get_flat_deps(user_packages,
                                          self._get_dep_ids(inst_repo))
         not_needed = all_ids - wanted_ids
 
-        not_needed_pkgs_data = self._sorted(
-            [(inst_repo.retrieveAtom(x), inst_repo.retrieveOnDiskSize(x)) \
-             for x in not_needed])
+        def _sort_key(x):
+            sort_index = 1 if self._sortbysize else 0
+            return x[sort_index]
+
+        not_needed_pkgs_data = sorted(
+            [(inst_repo.retrieveAtom(x), inst_repo.retrieveOnDiskSize(x))
+             for x in not_needed],
+            key=_sort_key)
 
         if self._quiet:
             entropy_client.output(
