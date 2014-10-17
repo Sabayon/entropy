@@ -1,3 +1,54 @@
+commit 95f594388c4d8e7b311c01144154447d46d9c0e5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 17 21:40:27 2014 +0200
+
+    Release Entropy 286
+
+commit 49c970974d8ad1b9b730320a43ba2e8b1d42ab82
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 17 11:29:13 2014 +0100
+
+    [entropy.db.sql] fix typo in SQL in resolveNeeded
+
+commit 2a35e8a9d043bfdc884219e1da333c5f36997a5d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 30 20:41:18 2014 +0100
+
+    [solo.commands.pkg] EEXIST is fine when using makedirs()
+
+commit eed20a69c02cec91cf41d8c6065b3fd772967fbd
+Merge: 7b2810c bbedeeb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 16 19:37:14 2014 +0100
+
+    Merge pull request #9 from kpcyrd/master
+    
+    Update package-hashes to default to sha256 gpg
+
+commit bbedeeb4539c40f2188f23e6defd9ba9521a9f84
+Author: kpcyrd <git@rxv.cc>
+Date:   Wed Oct 15 18:32:26 2014 +0200
+
+    Update package-hashes to default to sha256 gpg
+
+commit 7b2810c0543f5910a785fed09f7c4e31727ae3e4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 30 09:10:11 2014 +0100
+
+    [entropy.db] rewrite needed libraries SQL schema, keep compat.
+
+commit 7e2846c4916e689e6d69c721d1aaf31a72ef2b8d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 5 17:20:30 2014 +0100
+
+    [matter] binpms: return int on push()
+
+commit f506573ae4639094d74cfa5ac59855c3b1682364
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 29 15:27:07 2014 +0100
+
+    Tagging Entropy version 285
+
 commit 68dc9f92df207ce62069c5ebed5afd3f8fb38ce0
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Jun 29 15:27:07 2014 +0100
