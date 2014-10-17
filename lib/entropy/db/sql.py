@@ -4209,7 +4209,7 @@ class EntropySQLRepository(EntropyRepositoryBase):
             return self._compatSearchNeeded(
                 needed, elfclass = elfclass, like = like)
 
-        likestr = ''
+        likestr = '='
         if like:
             needed = needed.replace("*", "%")
             likestr = 'LIKE'
