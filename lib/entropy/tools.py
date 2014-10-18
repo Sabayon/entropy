@@ -2737,8 +2737,9 @@ def read_elf_metadata(elf_file):
 
     @param elf_file: path to ELF file
     @type elf_file: string
-    @return: dict with "soname", "class", "runpath" and "needed" keys.
-    @rtype: dict
+    @return: dict with "soname", "class", "runpath" and "needed" keys. None if
+        no metadata is found.
+    @rtype: dict or None
     """
     proc = None
     args = ("/usr/bin/scanelf", "-qF", "%M;%S;%r;%n", elf_file)
@@ -2766,6 +2767,10 @@ def read_elf_metadata(elf_file):
     if out is not None:
         if const_is_python3():
             out = const_convert_to_unicode(out)
+        if not out:
+            # no metadata.
+            return None
+
         for line in out.split("\n"):
             if line:
                 data = line.strip().split(" ", -1)[0]

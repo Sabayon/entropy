@@ -4707,6 +4707,8 @@ class PortagePlugin(SpmPlugin):
                 continue
 
             meta = entropy.tools.read_elf_metadata(unpack_obj)
+            if not meta:
+                continue
             for soname in meta['needed']:
                 needed_libs.add((
                     obj, meta['soname'], soname, elf_class, meta['runpath']))
