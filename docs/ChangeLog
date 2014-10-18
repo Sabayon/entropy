@@ -1,3 +1,39 @@
+commit f282e30422655f413e4dd5e453766244e0a85472
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 18 14:58:21 2014 +0200
+
+    Release Entropy 287
+
+commit 35542de6c0c2626f2c00d59555ba94cff0f63351
+Merge: 86e2094 bbb1b71
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 17 23:20:40 2014 +0100
+
+    Merge pull request #10 from Enlik/master-like-depclean
+    
+    improved 'equo unused' algorithm
+
+commit bbb1b710c25a21c6e9779980cf9ea74695ac97f7
+Author: Sławomir Nizio <poczta-sn@gazeta.pl>
+Date:   Fri Oct 17 23:57:02 2014 +0200
+
+    [entropy.client] updates to unused.py after review
+
+commit deeb3e8dd65d82d993372c92120236f34147f201
+Author: Sławomir Nizio <poczta-sn@gazeta.pl>
+Date:   Fri Sep 5 23:13:28 2014 +0200
+
+    [entropy.client] equo unused that works more like emerge --depclean
+    
+    Almost done, but there are comments with things I'd like to get
+    feedback about.
+
+commit 86e2094824c2a3b6e7461f65d6a64085a8f12d1a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 17 21:40:27 2014 +0200
+
+    Tagging Entropy version 286
+
 commit 95f594388c4d8e7b311c01144154447d46d9c0e5
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Oct 17 21:40:27 2014 +0200
