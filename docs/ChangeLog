@@ -1,3 +1,21 @@
+commit e36fd3d6c82bbb4397a05bcf514588370bf8f87d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 18 15:59:47 2014 +0200
+
+    Release Entropy 288
+
+commit c3f57228bf82b0c1a30666fd190c783d2e071f4c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 18 15:59:26 2014 +0200
+
+    [entropy.tools] fix read_elf_metadata in case of no metadata
+
+commit 0cb63c69f0946ff6393834eba50e5aabbe752dfa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 18 14:58:21 2014 +0200
+
+    Tagging Entropy version 287
+
 commit f282e30422655f413e4dd5e453766244e0a85472
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Oct 18 14:58:21 2014 +0200
