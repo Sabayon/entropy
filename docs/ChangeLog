@@ -1,3 +1,21 @@
+commit 645dec3d941229b0d7091fb1242209e199efcaca
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 18 19:29:50 2014 +0200
+
+    Release Entropy 290
+
+commit 6925722fc0c517a25deecd4f1caf6bbac3d5e45f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 18 19:29:20 2014 +0200
+
+    [entropy.db] do not drop needed, improve backward compat.
+
+commit 5a88ea3f211619c45246401ec11498d08fbf4d1d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 18 15:59:47 2014 +0200
+
+    Tagging Entropy version 288
+
 commit e36fd3d6c82bbb4397a05bcf514588370bf8f87d
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Oct 18 15:59:47 2014 +0200
