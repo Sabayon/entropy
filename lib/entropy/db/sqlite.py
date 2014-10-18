@@ -2475,7 +2475,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
 
         ALTER TABLE needed_libs_temp RENAME TO needed_libs;
         DROP TABLE IF EXISTS neededreference;
-        DROP TABLE IF EXISTS needed;
+        DELETE FROM needed;
         COMMIT;
         """)
         self._clearLiveCache("_doesTableExist")
