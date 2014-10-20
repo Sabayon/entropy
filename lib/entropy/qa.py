@@ -540,6 +540,8 @@ class QAInterface(TextInterface, EntropyPluginStore):
         else:
             excluded_libraries = set(excluded_libraries)
 
+        ldpaths = set(entropy.tools.collect_linker_paths())  # expensive-ish
+
         # update content taken from brokenlinksmask.conf
         excluded_libraries.update(self._settings['broken_links_mask'])
 
@@ -1274,8 +1276,8 @@ class QAInterface(TextInterface, EntropyPluginStore):
 
         return unresolved_sonames
 
-    def _resolve_library(self, entropy_client, library_name, elfclass,
-                         repositories):
+    def _resolve_library(self, entropy_client, library_name,
+                         elfclass, rpath, linker_paths, repositories):
         """
         Resolve a library name (SONAME) in the given repositories.
 
@@ -1286,6 +1288,11 @@ class QAInterface(TextInterface, EntropyPluginStore):
         @type library_name: string
         @param elfclass: ELF class of the library to resolve
         @type elfclass: int
+        @param rpath: the RPATH metadata for the library
+        @type rpath: string
+        @param linker_paths: list (set) of paths the linker is currently
+            configured to use
+        @type linker_paths: set
         @param repositories: list of repository identifiers
         @type repositories: list
         @return: a list of resolved libraries, each item of the
@@ -1293,6 +1300,8 @@ class QAInterface(TextInterface, EntropyPluginStore):
         @rtype: list
         """
         results = []
+
+        local_ldpaths = linker_paths | set(entropy.tools.parse_rpath(rpath))
 
         for repository_id in repositories:
             repo = entropy_client.open_repository(repository_id)
@@ -1302,7 +1311,8 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 continue
 
             for pkg_id, path in data_solved:
-                results.append((pkg_id, repository_id, path))
+                if os.path.dirname(path) in local_ldpaths:
+                    results.append((pkg_id, repository_id, path))
 
         return results
 
@@ -1413,18 +1423,22 @@ class QAInterface(TextInterface, EntropyPluginStore):
             for s_package_id in s_repo.listAllSystemPackageIds():
                 system_packages.add((s_package_id, s_repo_id))
 
-        for _usr_path, _usr_soname, needed, elfclass, _rpath in neededs:
+        ldpaths = set(entropy.tools.collect_linker_paths())  # expensive-ish
+
+        for _usr_path, _usr_soname, soname, elfclass, rpath in neededs:
             data_solved = self._resolve_library(
-                entropy_client, needed, elfclass, repos)
+                entropy_client, soname, elfclass, rpath, ldpaths, repos)
+
             data_size = len(data_solved)
             data_solved = [(pkg_id, pkg_repo, path) for \
                 pkg_id, pkg_repo, path in data_solved if (pkg_id, pkg_repo)
                     not in packages_cache]
+
             if not data_solved or (data_size != len(data_solved)):
                 continue
 
             # check if the package is providing its own food
-            provided_paths = provided_libs.get((needed, elfclass))
+            provided_paths = provided_libs.get((soname, elfclass))
             found = False
             if provided_paths:
                 for pkg_id, pkg_repo, path in data_solved:
@@ -1452,7 +1466,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                     # but in general, system packages are implicit deps
                     break
 
-                map_key = (needed, elfclass)
+                map_key = (soname, elfclass)
                 keyslot = "%s%s%s" % (key, etpConst['entropyslotprefix'],
                     slot,)
 
