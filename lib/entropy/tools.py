@@ -2650,6 +2650,18 @@ def is_elf_file(elf_file):
         return True
     return False
 
+def parse_rpath(rpath):
+    """
+    Parse RPATH metadata stored in repository and return an ordered
+    list of paths.
+
+    @param rpath: raw RPATH metadata string
+    @type rpath: string
+    @return: a list of paths
+    @rtype: list
+    """
+    return rpath.split(":")
+
 def resolve_dynamic_library(library, requiring_executable):
     """
     Resolve given library name (as contained into ELF metadata) to
