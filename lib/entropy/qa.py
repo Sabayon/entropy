@@ -501,7 +501,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
     def test_missing_runtime_libraries(self, entropy_client, package_matches,
         base_repository_id = None, excluded_libraries = None, silent = False):
         """
-        Use collected packages ELF metadata (retrieveNeeded(),
+        Use collected packages ELF metadata (retrieveNeededLibraries(),
         resolveNeeded()) to look for potentially missing
         shared libraries. This is very handy in case of library breakages
         across multiple server-side repositories.
@@ -629,9 +629,8 @@ class QAInterface(TextInterface, EntropyPluginStore):
 
             is_base_repo = repository_id == base_repository_id
 
-            # list of (needed, elfclass)
-            needed = repo.retrieveNeeded(package_id, extended = True)
-            for library, elfclass in needed:
+            needed = repo.retrieveNeededLibraries(package_id)
+            for _usr_path, _usr_soname, library, elfclass, _rpath in needed:
                 if library in excluded_libraries:
                     continue
                 resolved = _resolve_needed(repo, package_id, library, elfclass,
@@ -1384,7 +1383,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
 
         rdepends = {}
         rdepends_plain = set()
-        neededs = dbconn.retrieveNeeded(package_id, extended = True)
+        neededs = dbconn.retrieveNeededLibraries(package_id)
         if not neededs:
             return rdepends, rdepends_plain
 
@@ -1414,7 +1413,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
             for s_package_id in s_repo.listAllSystemPackageIds():
                 system_packages.add((s_package_id, s_repo_id))
 
-        for needed, elfclass in neededs:
+        for _usr_path, _usr_soname, needed, elfclass, _rpath in neededs:
             data_solved = self._resolve_library(
                 entropy_client, needed, elfclass, repos)
             data_size = len(data_solved)

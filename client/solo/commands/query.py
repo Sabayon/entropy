@@ -1023,18 +1023,20 @@ Repository query tools.
                 continue
 
             atom = inst_repo.retrieveAtom(pkg_id)
-            neededs = inst_repo.retrieveNeeded(
-                pkg_id, extended=True)
-            for needed, elfclass in neededs:
+            neededs = inst_repo.retrieveNeededLibraries(pkg_id)
+            for usr_path, usr_soname, soname, elfclass, rpath in neededs:
+                out_str = "%s:%s" % (soname, elfclass)
                 if verbose:
-                    needed = "%s %s" % (needed, elfclass)
+                    out_str = "%s:%s:%s:%s:%s" % (
+                        usr_path, usr_soname, soname, elfclass, rpath)
+
                 if quiet:
-                    entropy_client.output(
-                        needed, level="generic")
+                    entropy_client.output(out_str, level="generic")
                 else:
                     entropy_client.output(
-                        darkred(const_convert_to_unicode(needed)),
+                        darkred(const_convert_to_unicode(out_str)),
                         header=blue("  # "))
+
             if not quiet:
                 toc = []
                 toc.append(("%s:" % (blue(_("Package")),), purple(atom)))

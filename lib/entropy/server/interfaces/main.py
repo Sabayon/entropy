@@ -6624,7 +6624,7 @@ class Server(Client):
             pkg_md5, pkg_slot, pkg_etpapi, \
             pkg_date, pkg_size, pkg_rev = repo_db.getBaseData(package_id)
             pkg_deps = repo_db.retrieveDependenciesList(package_id)
-            pkg_needed = repo_db.retrieveNeeded(package_id, extended = True)
+            pkg_needed = repo_db.retrieveNeededLibraries(package_id)
             pkg_provided_libs = repo_db.retrieveProvidedLibraries(package_id)
             pkg_keywords = repo_db.retrieveKeywords(package_id)
 
@@ -6664,8 +6664,9 @@ class Server(Client):
             env['PKG_SIZE'] = str(pkg_size)
             env['PKG_REVISION'] = str(pkg_rev)
             env['PKG_DEPS'] = str("\n".join(pkg_deps))
-            env['PKG_NEEDED_LIBS'] = str("\n".join(["%s|%s" % (x, y) \
-                    for x, y in pkg_needed]))
+            env['PKG_NEEDED_LIBS'] = str("\n".join(
+                    ["%s|%s" % (a, b, x, y, c) for a, b, x, y, c in
+                     pkg_needed]))
             env['PKG_PROVIDED_LIBS'] = str("\n".join(
                 ["%s|%s|%s" % (x, y, z) for x, y, z in \
                     pkg_provided_libs]))

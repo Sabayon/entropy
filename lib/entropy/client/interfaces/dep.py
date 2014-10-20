@@ -1809,28 +1809,27 @@ class CalculatorsMixin:
         as package dependency but not on the current system state.
         """
         package_id, repository_id = package_match
+        inst_repo = self.installed_repository()
         repo = self.open_repository(repository_id)
 
-        repo_needed = repo.retrieveNeeded(package_id,
-            extended = True, formatted = True)
-        installed_needed = self.installed_repository().retrieveNeeded(
-            installed_package_id, extended = True, formatted = True)
+        repo_needed = set(repo.retrieveNeededLibraries(package_id))
+        installed_needed = set(inst_repo.retrieveNeededLibraries(
+                installed_package_id))
 
         # intersect the two dicts and find the libraries that
         # have not changed. We assume that a pkg cannot link
         # the same SONAME with two different elf classes.
-        # but that is what retrieveNeeded() assumes as well
-        common_libs = set(repo_needed) & set(installed_needed)
+        # but that is what retrieveNeededLibraries() assumes as well
+        common_libs = repo_needed & installed_needed
         # assume that we can in-place change these two dicts
-        for common_lib in common_libs:
-            repo_needed.pop(common_lib, None)
-            installed_needed.pop(common_lib, None)
+        for lib_data in common_libs:
+            repo_needed.discard(lib_data)
+            installed_needed.discard(lib_data)
 
-        soname = const_convert_to_unicode(".so")
-        repo_split = dict(
-            (x, x.split(soname)[0]) for x in repo_needed)
-        installed_split = dict(
-            (x, x.split(soname)[0]) for x in installed_needed)
+        soname_ext = const_convert_to_unicode(".so")
+        # x[2] is soname.
+        repo_split = {x: x[2].split(soname_ext) for x in repo_needed}
+        installed_split = {x: x[2].split(soname_ext) for x in installed_split}
 
         inst_lib_dumps = set() # was installed_side
         repo_lib_dumps = set() # was repo_side

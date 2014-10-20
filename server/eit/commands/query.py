@@ -231,12 +231,17 @@ tools.
             repo = entropy_server.open_repository(repo_id)
 
             atom = repo.retrieveAtom(pkg_id)
-            neededs = repo.retrieveNeeded(pkg_id)
-            for needed in neededs:
+            neededs = repo.retrieveNeededLibraries(pkg_id)
+            for usr_path, usr_soname, soname, elfclass, rpath in neededs:
+                out_str = "%s:%s:%s:%s:%s" % (
+                    usr_path, usr_soname, soname, elfclass, rpath)
+
                 if self._quiet:
-                    entropy_server.output(needed, level="generic")
+                    entropy_server.output(out_str, level="generic")
                 else:
-                    entropy_server.output(needed)
+                    entropy_server.output(
+                        darkred(const_convert_to_unicode(out_str)),
+                        header=blue("  # "))
 
             if not self._quiet:
                 entropy_server.output(
