@@ -1828,21 +1828,24 @@ class CalculatorsMixin:
 
         soname_ext = const_convert_to_unicode(".so")
         # x[2] is soname.
-        repo_split = {x: x[2].split(soname_ext) for x in repo_needed}
-        installed_split = {x: x[2].split(soname_ext) for x in installed_split}
+        repo_split = {x: tuple(x[2].split(soname_ext)) for x in repo_needed}
+        installed_split = {x: tuple(x[2].split(soname_ext))
+                           for x in installed_needed}
 
         inst_lib_dumps = set() # was installed_side
         repo_lib_dumps = set() # was repo_side
         # ^^ library dumps using repository NEEDED metadata
 
-        for lib, lib_name in installed_split.items():
+        for lib_data, lib_name in installed_split.items():
+            _usr_path, _usr_soname, lib, elfclass, rpath = lib_data
             if lib_name in repo_split.values():
                 # (library name, elf class)
-                inst_lib_dumps.add((lib, installed_needed[lib]))
+                inst_lib_dumps.add((lib, elfclass))
 
-        for lib, lib_name in repo_split.items():
+        for lib_data, lib_name in repo_split.items():
+            _usr_path, _usr_soname, lib, elfclass, rpath = lib_data
             if lib_name in installed_split.values():
-                repo_lib_dumps.add((lib, repo_needed[lib]))
+                repo_lib_dumps.add((lib, elfclass))
 
         # now consider the case in where we have new libraries
         # that are not in the installed libraries set.
@@ -1852,16 +1855,16 @@ class CalculatorsMixin:
             # Reverse repo_split in order to generate a mapping
             # between a library name and its set of full libraries
             reversed_repo_split = {}
-            for lib, lib_name in repo_split.items():
+            for lib_data, lib_name in repo_split.items():
+                _usr_path, _usr_soname, lib, elfclass, rpath = lib_data
                 obj = reversed_repo_split.setdefault(lib_name, set())
-                obj.add(lib)
+                obj.add((lib, elfclass))
 
             new_repo_lib_dumps = set()
             for lib_name in new_libraries:
                 libs = reversed_repo_split[lib_name]
-                for lib in libs:
-                    elf_class = repo_needed[lib]
-                    new_repo_lib_dumps.add((lib, elf_class))
+                for lib, elfclass in libs:
+                    new_repo_lib_dumps.add((lib, elfclass))
             repo_lib_dumps |= new_repo_lib_dumps
 
         return inst_lib_dumps, repo_lib_dumps
