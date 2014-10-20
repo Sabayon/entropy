@@ -1840,12 +1840,12 @@ class CalculatorsMixin:
             _usr_path, _usr_soname, lib, elfclass, rpath = lib_data
             if lib_name in repo_split.values():
                 # (library name, elf class)
-                inst_lib_dumps.add((lib, elfclass))
+                inst_lib_dumps.add((lib, elfclass, rpath))
 
         for lib_data, lib_name in repo_split.items():
             _usr_path, _usr_soname, lib, elfclass, rpath = lib_data
             if lib_name in installed_split.values():
-                repo_lib_dumps.add((lib, elfclass))
+                repo_lib_dumps.add((lib, elfclass, rpath))
 
         # now consider the case in where we have new libraries
         # that are not in the installed libraries set.
@@ -1858,14 +1858,10 @@ class CalculatorsMixin:
             for lib_data, lib_name in repo_split.items():
                 _usr_path, _usr_soname, lib, elfclass, rpath = lib_data
                 obj = reversed_repo_split.setdefault(lib_name, set())
-                obj.add((lib, elfclass))
+                obj.add((lib, elfclass, rpath))
 
-            new_repo_lib_dumps = set()
             for lib_name in new_libraries:
-                libs = reversed_repo_split[lib_name]
-                for lib, elfclass in libs:
-                    new_repo_lib_dumps.add((lib, elfclass))
-            repo_lib_dumps |= new_repo_lib_dumps
+                repo_lib_dumps |= reversed_repo_split[lib_name]
 
         return inst_lib_dumps, repo_lib_dumps
 
@@ -1968,7 +1964,7 @@ class CalculatorsMixin:
 
         found_matches = set()
         keyslot = repo.retrieveKeySlotAggregated(package_id)
-        for needed, elfclass in bumped_needed_libs:
+        for needed, elfclass, rpath in bumped_needed_libs:
 
             solved_neededs = []
             found = False
@@ -2050,7 +2046,7 @@ class CalculatorsMixin:
         # all the packages in bumped_needed_libs should be
         # pulled in and updated
         installed_package_ids = set()
-        for needed, elfclass in bumped_needed_libs:
+        for needed, elfclass, rpath in bumped_needed_libs:
             installed_package_ids |= inst_repo.searchNeeded(
                 needed, elfclass = elfclass)
         # drop myself
