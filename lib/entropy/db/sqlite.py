@@ -2474,7 +2474,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
             WHERE needed.idneeded = neededreference.idneeded;
 
         ALTER TABLE needed_libs_temp RENAME TO needed_libs;
-        DROP TABLE IF EXISTS neededreference;
+        DELETE FROM neededreference;
         DELETE FROM needed;
         COMMIT;
         """)
