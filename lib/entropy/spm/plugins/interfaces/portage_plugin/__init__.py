@@ -4707,8 +4707,9 @@ class PortagePlugin(SpmPlugin):
                 continue
 
             meta = entropy.tools.read_elf_metadata(unpack_obj)
-            if not meta:
+            if meta is None:
                 continue
+
             for soname in meta['needed']:
                 needed_libs.add((
                     obj, meta['soname'], soname, elf_class, meta['runpath']))
@@ -4766,15 +4767,11 @@ class PortagePlugin(SpmPlugin):
         # caused by the installation of the package, if this metadata
         # is read off a non-installed one.
         provided_libs = set()
-        ldpaths = entropy.tools.collect_linker_paths()
         for obj, ftype in content.items():
 
             if ftype not in ("obj", "sym"):
                 continue
             obj_dir, obj_name = os.path.split(obj)
-
-            if obj_dir not in ldpaths:
-                continue
 
             unpack_obj = os.path.join(pkg_dir, obj.lstrip("/"))
             try:
@@ -4785,17 +4782,26 @@ class PortagePlugin(SpmPlugin):
             # do not trust ftype
             if os.path.isdir(unpack_obj):
                 continue
+
             try:
                 if not entropy.tools.is_elf_file(unpack_obj):
                     continue
-                elf_class = entropy.tools.read_elf_class(unpack_obj)
             except IOError as err:
                 self.__output.output("%s: %s => %s" % (
                     _("IOError while reading"), unpack_obj, repr(err),),
                     level = "warning")
                 continue
 
-            provided_libs.add((obj_name, obj, elf_class,))
+            try:
+                elf_meta = entropy.tools.read_elf_metadata(unpack_obj)
+            except FileNotFound:
+                continue
+
+            if elf_meta is None:
+                continue
+
+            if elf_meta['soname']:  # no soname == no shared library
+                provided_libs.add((elf_meta['soname'], obj, elf_meta['class'],))
 
         return provided_libs
 
