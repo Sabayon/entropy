@@ -1,3 +1,99 @@
+commit bb8cb2e354244e3be8b1e667bedc6d63c93489e0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 23 19:03:20 2014 +0200
+
+    Release Entropy 291
+
+commit 5d1aba59b99016ab3b7f36e01cbefe376dc3d2d7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 23 18:00:39 2014 +0200
+
+    [entropy.client.interfaces.dep] use dict comprehension instead of canonical for loop
+
+commit a3abd709a94b72d0bd0e5c11dc881121e265740c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 23 17:56:10 2014 +0200
+
+    [entropy.client.interfaces.dep] exclude non-relevant metadata from library breakage computation
+
+commit 4afda8f02f903fdb8976ea618973dcc0176e9f8d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 23 14:57:59 2014 +0200
+
+    [entropy.client.interfaces.dep] resolve needed libs by also using RPATH
+
+commit 66afa1bdbb95da10324a95d665ef92788572c012
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 23 12:55:40 2014 +0200
+
+    [entropy.tools] collect_linker_paths() returns a tuple() now.
+
+commit 531c769b9b273e6c92a5b8f3b053ed2ff5795866
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 23 12:36:33 2014 +0200
+
+    [entropy.tools] avoid open() races in collect_linker_paths()
+
+commit 8d87024cd0d867113dbb6ae721caea7bce9bc537
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 20 21:38:20 2014 +0200
+
+    [entropy.db.sqlite] do not drop neededreference, keep it for backward compat.
+
+commit 90d6b4bafc728a4d232913dfb4d9e22fc7b809dc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 20 17:10:09 2014 +0200
+
+    [entropy.client.interfaces.dep] extend usage of needed_libs, propagate rpath
+
+commit e04bb66e3d1ba769ac44a11177ab19b1bd651cab
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 20 17:02:17 2014 +0200
+
+    [entropy.client.interfaces.dep] fix usage of new needed_libs metadata
+
+commit 376d8e11cef2c1e6dcb05c1ebf3d0ff899fbf672
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 20 16:41:38 2014 +0200
+
+    [entropy.qa] drop warn_missing_dependencies, no longer used
+
+commit d857d99832680a068b3fae5ce00f7e8051f33c76
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 20 16:35:20 2014 +0200
+
+    [entropy.qa] test_missing_runtime_libraries: migrate to new needed_libs metadata
+
+commit a3de15d3cf13dc77630ce7a109a75b1e1da30d18
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 20 16:09:07 2014 +0200
+
+    [entropy.qa] migrate parts of the module to the new needed_libs metadata
+
+commit 3389374cdb236f0d4f6e7ab8511c51e41d0c9311
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 20 15:47:57 2014 +0200
+
+    [entropy.spm] do not use server-side linker paths to determine provided_libs
+
+commit 9f910e9b09b0cafe2a08131236cf0ff0dcaacdf8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 20 15:17:01 2014 +0200
+
+    [entropy.tools] add helper function: parse_rpath
+
+commit 363c6a175f183e8eace729a0c17e1b5673d280d0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 20 15:04:19 2014 +0200
+
+    [entropy.*] migrate all retrieveNeeded uses to retrieveNeededLibraries
+
+commit 79de77cad6cd34e798723154c9a1ea5a5deebeec
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 18 19:29:50 2014 +0200
+
+    Tagging Entropy version 290
+
 commit 645dec3d941229b0d7091fb1242209e199efcaca
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Oct 18 19:29:50 2014 +0200
