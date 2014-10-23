@@ -2793,7 +2793,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
         def collect_provided(pkg_dir, content):
 
             provided_libs = set()
-            ldpaths = entropy.tools.collect_linker_paths()
+            ldpaths = set(entropy.tools.collect_linker_paths())
             for obj, ftype in list(content.items()):
 
                 if ftype == "dir":

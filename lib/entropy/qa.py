@@ -626,21 +626,18 @@ class QAInterface(TextInterface, EntropyPluginStore):
             else:
                 broken_libs_mask_regexp.append(reg_lib)
 
-        ldpaths = entropy.tools.collect_linker_paths()
-        ldpaths += [x for x in entropy.tools.collect_paths() if \
-            x not in ldpaths]
+        ldpaths = set(entropy.tools.collect_linker_paths())
+        ldpaths.update(entropy.tools.collect_paths())
 
         # some crappy packages put shit here too
-        ldpaths += [x for x in self._settings['extra_ldpaths'] if \
-            x not in ldpaths]
+        ldpaths.update(self._settings['extra_ldpaths'])
 
         # remove duplicated dirs (due to symlinks) to speed up scanning
         for real_dir in list(reverse_symlink_map.keys()):
             syms = reverse_symlink_map[real_dir]
             for sym in syms:
                 if sym in ldpaths:
-                    while (real_dir in ldpaths):
-                        ldpaths.remove(real_dir)
+                    ldpaths.discard(real_dir)
                     if not silent:
                         self.output(
                             "%s: %s, %s: %s" % (

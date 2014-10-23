@@ -13,6 +13,7 @@
 
 """
 import stat
+import collections
 import errno
 import fcntl
 import re
@@ -3151,9 +3152,9 @@ def collect_linker_paths():
     ROOT safe.
 
     @return: list of dynamic linker paths set
-    @rtype: list
+    @rtype: tuple
     """
-    builtin_paths = ["/lib", "/usr/lib"]
+    paths = collections.deque()
 
     ld_confs = ["/etc/ld.so.conf"]
     ld_so_conf_d_base = "etc/ld.so.conf.d"
@@ -3167,7 +3168,6 @@ def collect_linker_paths():
         if err.errno not in (errno.ENOENT, errno.EACCES):
             raise
 
-    paths = []
     enc = etpConst['conf_encoding']
 
     for ld_conf in ld_confs:
@@ -3175,17 +3175,19 @@ def collect_linker_paths():
 
         try:
             with codecs.open(ld_conf, "r", encoding=enc) as ld_f:
-                paths += [os.path.normpath(x.strip()) for x
-                          in ld_f.readlines() if x.startswith("/")]
+                for x in ld_f.readlines():
+                    if x.startswith("/"):
+                        paths.append(os.path.normpath(x.strip()))
+
         except (IOError, OSError) as err:
             if err.errno not in (errno.ENOENT, errno.EACCES):
                 raise
 
-    for b_path in builtin_paths:
-        if b_path not in paths:
-            paths.append(b_path)
+    # Add built-in paths.
+    paths.append("/lib")
+    paths.append("/usr/lib")
 
-    return paths
+    return tuple(paths)
 
 def collect_paths():
     """
