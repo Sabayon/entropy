@@ -1817,9 +1817,13 @@ class CalculatorsMixin:
         inst_repo = self.installed_repository()
         repo = self.open_repository(repository_id)
 
-        repo_needed = set(repo.retrieveNeededLibraries(package_id))
-        installed_needed = set(inst_repo.retrieveNeededLibraries(
-                installed_package_id))
+        # Ignore user library path and user library soname, not relevant.
+        repo_needed = {
+            (soname, elf, rpath) for _usr_path, _usr_soname, soname, elf, rpath
+            in repo.retrieveNeededLibraries(package_id)}
+        installed_needed = {
+            (soname, elf, rpath) for _usr_path, _usr_soname, soname, elf, rpath
+            in inst_repo.retrieveNeededLibraries(installed_package_id)}
 
         # intersect the two dicts and find the libraries that
         # have not changed. We assume that a pkg cannot link
@@ -1832,23 +1836,23 @@ class CalculatorsMixin:
             installed_needed.discard(lib_data)
 
         soname_ext = const_convert_to_unicode(".so")
-        # x[2] is soname.
-        repo_split = {x: tuple(x[2].split(soname_ext)) for x in repo_needed}
-        installed_split = {x: tuple(x[2].split(soname_ext))
-                           for x in installed_needed}
+        # x[0] is soname.
+        repo_split = {x: tuple(x[0].split(soname_ext)) for x in repo_needed}
+        installed_split = {
+            x: tuple(x[0].split(soname_ext)) for x in installed_needed}
 
         inst_lib_dumps = set() # was installed_side
         repo_lib_dumps = set() # was repo_side
         # ^^ library dumps using repository NEEDED metadata
 
         for lib_data, lib_name in installed_split.items():
-            _usr_path, _usr_soname, lib, elfclass, rpath = lib_data
+            lib, elfclass, rpath = lib_data
             if lib_name in repo_split.values():
                 # (library name, elf class)
                 inst_lib_dumps.add((lib, elfclass, rpath))
 
         for lib_data, lib_name in repo_split.items():
-            _usr_path, _usr_soname, lib, elfclass, rpath = lib_data
+            lib, elfclass, rpath = lib_data
             if lib_name in installed_split.values():
                 repo_lib_dumps.add((lib, elfclass, rpath))
 
@@ -1861,7 +1865,7 @@ class CalculatorsMixin:
             # between a library name and its set of full libraries
             reversed_repo_split = {}
             for lib_data, lib_name in repo_split.items():
-                _usr_path, _usr_soname, lib, elfclass, rpath = lib_data
+                lib, elfclass, rpath = lib_data
                 obj = reversed_repo_split.setdefault(lib_name, set())
                 obj.add((lib, elfclass, rpath))
 
