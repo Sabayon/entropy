@@ -1830,7 +1830,6 @@ class CalculatorsMixin:
         # the same SONAME with two different elf classes.
         # but that is what retrieveNeededLibraries() assumes as well
         common_libs = repo_needed & installed_needed
-        # assume that we can in-place change these two dicts
         for lib_data in common_libs:
             repo_needed.discard(lib_data)
             installed_needed.discard(lib_data)
@@ -2068,11 +2067,9 @@ class CalculatorsMixin:
         # drop myself
         installed_package_ids.discard(installed_package_id)
 
-        inst_keyslots = {}
-        for inst_package_id in installed_package_ids:
-            keyslot = inst_repo.retrieveKeySlotAggregated(inst_package_id)
-            if keyslot is not None:
-                inst_keyslots[keyslot] = inst_package_id
+        inst_keyslots = {inst_repo.retrieveKeySlotAggregated(x): x
+                         for x in installed_package_ids}
+        inst_keyslots.pop(None, None)
 
         # these can be pulled in after
         installed_matches = set()
