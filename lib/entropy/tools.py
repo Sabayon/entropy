@@ -3160,21 +3160,26 @@ def collect_linker_paths():
     root = etpConst['systemroot'] + "/"
 
     ld_so_conf_d = os.path.join(root, ld_so_conf_d_base)
-    if os.path.isdir(ld_so_conf_d):
-        ld_confs += ["/" + os.path.join(ld_so_conf_d_base, x) for x \
-                        in os.listdir(ld_so_conf_d)]
+    try:
+        ld_confs += ["/" + os.path.join(ld_so_conf_d_base, x)
+                     for x in os.listdir(ld_so_conf_d)]
+    except (IOError, OSError) as err:
+        if err.errno not in (errno.ENOENT, errno.EACCES):
+            raise
 
     paths = []
     enc = etpConst['conf_encoding']
 
     for ld_conf in ld_confs:
         ld_conf = os.path.join(root, ld_conf.lstrip("/"))
-        if not os.path.isfile(ld_conf):
-            continue
 
-        with codecs.open(ld_conf, "r", encoding=enc) as ld_f:
-            paths += [os.path.normpath(x.strip()) for x in ld_f.readlines() \
-                         if x.startswith("/")]
+        try:
+            with codecs.open(ld_conf, "r", encoding=enc) as ld_f:
+                paths += [os.path.normpath(x.strip()) for x
+                          in ld_f.readlines() if x.startswith("/")]
+        except (IOError, OSError) as err:
+            if err.errno not in (errno.ENOENT, errno.EACCES):
+                raise
 
     for b_path in builtin_paths:
         if b_path not in paths:
