@@ -6665,7 +6665,7 @@ class Server(Client):
             env['PKG_REVISION'] = str(pkg_rev)
             env['PKG_DEPS'] = str("\n".join(pkg_deps))
             env['PKG_NEEDED_LIBS'] = str("\n".join(
-                    ["%s|%s" % (a, b, x, y, c) for a, b, x, y, c in
+                    ["%s|%s|%s|%s|%s" % (a, b, x, y, c) for a, b, x, y, c in
                      pkg_needed]))
             env['PKG_PROVIDED_LIBS'] = str("\n".join(
                 ["%s|%s|%s" % (x, y, z) for x, y, z in \
