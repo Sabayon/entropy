@@ -1,3 +1,21 @@
+commit 6940a64e76c568f0d814798a96706d11c736279d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 24 09:21:08 2014 +0200
+
+    Release Entropy 292
+
+commit bbca80a3ed2bf0c0c48a307b2ea95895611b2ec3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 24 09:20:45 2014 +0200
+
+    [entropy.client.interfaces.server] fix format string
+
+commit bfb5de8ce455ae09195da133aa507441c8f35b27
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 23 19:03:21 2014 +0200
+
+    Tagging Entropy version 291
+
 commit bb8cb2e354244e3be8b1e667bedc6d63c93489e0
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Oct 23 19:03:20 2014 +0200
