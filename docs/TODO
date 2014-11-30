@@ -1,5 +1,8 @@
 Short term:
 
+- preserved_libs table should have an rpath column (and then
+  fix usage of resolveNeeded).
+
 - add repository dependencies and conflicts metadata
 - entropy.client.interfaces code refactoring
 - wrap available repositories usage around a ResourceLock, this will
