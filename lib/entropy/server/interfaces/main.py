@@ -7447,8 +7447,9 @@ class Server(Client):
         new_dependencies = []
         remove_dependencies = set()
 
-        pkg_deps = [(dep_str, dep_val, False) in pkg_meta['pkg_dependencies']]
-        pkg_deps += [(confl, None, True) in pkg_meta['conflicts']]
+        pkg_deps = [(dep_str, dep_val, False) for dep_str, dep_val
+                    in pkg_meta['pkg_dependencies']]
+        pkg_deps += [(confl, None, True) for confl in pkg_meta['conflicts']]
 
         for dep_string, dep_value, is_conflict in pkg_deps:
 
