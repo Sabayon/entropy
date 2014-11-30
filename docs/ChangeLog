@@ -1,3 +1,35 @@
+commit 4e0232f22e9fcd7c8c29a38df2b09c34807b094c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 30 14:57:24 2014 +0000
+
+    Release Entropy 293
+
+commit 12d01a9465e8a2ae7338e195d399fe0aaa86916c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 30 14:54:38 2014 +0000
+
+    [entropy.server] fix typo in list comprehension
+
+commit a67ea012dd3357aee3e686609f5d0569943bdb0b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 30 14:52:21 2014 +0000
+
+    [entropy.server] make dep_rewrite also affect conflicts
+    
+    This makes possible to remove or edit conflict dependencies
+
+commit b7f30dafc8b1f3f2f3ef08e9e015cbb3d6037761
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 30 14:32:01 2014 +0000
+
+    [todo] update TODO
+
+commit 604a43cbc72bca9efc13643f7dcbe4f202e3a6c6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 24 09:21:08 2014 +0200
+
+    Tagging Entropy version 292
+
 commit 6940a64e76c568f0d814798a96706d11c736279d
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Oct 24 09:21:08 2014 +0200
