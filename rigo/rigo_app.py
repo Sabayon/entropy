@@ -1012,10 +1012,7 @@ class Rigo(Gtk.Application):
         self._change_view_state(self._current_state)
         GLib.idle_add(self._permissions_setup)
 
-        GLib.threads_init()
-        Gdk.threads_enter()
         Gtk.main()
-        Gdk.threads_leave()
         entropy.tools.kill_threads()
 
 if __name__ == "__main__":

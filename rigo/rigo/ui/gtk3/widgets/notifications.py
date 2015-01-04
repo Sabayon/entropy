@@ -66,7 +66,7 @@ class NotificationBox(Gtk.HBox):
         Add a Gtk.Button() to this container.
         Return the newly created Gtk.Button().
         """
-        button = Gtk.Button(text)
+        button = Gtk.Button(label=text)
         button.set_use_underline(True)
         button.connect("clicked", clicked_callback)
         self._buttons.append(button)

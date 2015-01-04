@@ -26,7 +26,7 @@ try:
 except ImportError:
     import configparser
 
-from gi.repository import GObject
+from gi.repository import GLib
 
 from entropy.const import etpConst, const_convert_to_rawstring, \
     const_isunicode
@@ -199,7 +199,7 @@ def escape_markup(text):
     from unicode. brrr...
     """
     return \
-        GObject.markup_escape_text(
+        GLib.markup_escape_text(
             prepare_markup(text))
 
 def prepare_markup(text):

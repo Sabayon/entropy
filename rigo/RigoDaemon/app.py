@@ -4175,8 +4175,7 @@ if __name__ == "__main__":
         daemon = RigoDaemonService()
     except dbus.exceptions.DBusException:
         raise SystemExit(1)
-    GLib.threads_init()
-    main_loop = GObject.MainLoop()
+    main_loop = GLib.MainLoop()
     try:
         main_loop.run()
     except KeyboardInterrupt:

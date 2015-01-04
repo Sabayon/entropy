@@ -173,12 +173,12 @@ class WorkViewController(GObject.Object):
         name_box = Gtk.VBox()
 
         action_align = Gtk.Alignment()
-        self._action_label = Gtk.Label("Action")
+        self._action_label = Gtk.Label(label="Action")
         self._action_label.set_alignment(0.0, 0.0)
         action_align.add(self._action_label)
         action_align.set_padding(0, 4, 0, 0)
 
-        self._appname_label = Gtk.Label("App Name")
+        self._appname_label = Gtk.Label(label="App Name")
         self._appname_label.set_line_wrap(True)
         self._appname_label.set_line_wrap_mode(Pango.WrapMode.WORD)
         self._appname_label.set_alignment(0.0, 1.0)

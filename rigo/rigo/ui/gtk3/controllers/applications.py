@@ -600,7 +600,7 @@ class ApplicationsViewController(GObject.Object):
         box_align.set_padding(10, 10, 0, 0)
         box = Gtk.VBox()
         box_align.add(box)
-        label = Gtk.Label(_("Not found"))
+        label = Gtk.Label(label=_("Not found"))
         label.connect("activate-link", self._on_not_found_label_activate_link)
         box.pack_start(label, True, True, 0)
         box_align.show()
