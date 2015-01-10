@@ -1,3 +1,21 @@
+commit 0baa8ffedcc75543643b6c3662360d353fabde01
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 10 07:33:45 2015 +0000
+
+    Release Entropy 294
+
+commit 265eb182f864acbe7ebab32106f8c4c943764e85
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 4 16:13:12 2015 +0000
+
+    [Rigo] fix various deprecation warnings
+
+commit 648aceef2b0f6e6e9fb0021be094b052e4259e5d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 30 14:57:24 2014 +0000
+
+    Tagging Entropy version 293
+
 commit 4e0232f22e9fcd7c8c29a38df2b09c34807b094c
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Nov 30 14:57:24 2014 +0000
