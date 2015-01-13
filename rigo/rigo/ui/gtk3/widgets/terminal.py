@@ -69,9 +69,9 @@ class TerminalWidget(Vte.Terminal):
         fg_rgba = Gdk.RGBA()
         fg_rgba.parse(fg)
 
-        self.set_color_background_rgba(rgba)
-        self.set_color_foreground_rgba(fg_rgba)
-        self.set_color_bold_rgba(fg_rgba)
+        self.set_color_background(rgba)
+        self.set_color_foreground(fg_rgba)
+        self.set_color_bold(fg_rgba)
 
     def black(self):
         """
@@ -86,9 +86,9 @@ class TerminalWidget(Vte.Terminal):
         fg_rgba = Gdk.RGBA()
         fg_rgba.parse(fg)
 
-        self.set_color_background_rgba(rgba)
-        self.set_color_foreground_rgba(fg_rgba)
-        self.set_color_bold_rgba(fg_rgba)
+        self.set_color_background(rgba)
+        self.set_color_foreground(fg_rgba)
+        self.set_color_bold(fg_rgba)
 
     def autoscroll(self, value):
         """
@@ -175,13 +175,11 @@ class TerminalWidget(Vte.Terminal):
                 fg = foreground_color
             self._set_config_colors(bg, fg)
 
-        self.set_color_background_rgba(rgba)
-        self.set_color_foreground_rgba(fg_rgba)
-        self.set_color_bold_rgba(fg_rgba)
+        self.set_color_background(rgba)
+        self.set_color_foreground(fg_rgba)
+        self.set_color_bold(fg_rgba)
 
     def _configure(self):
-        self.set_emulation("xterm")
-        self.set_font_from_string("Monospace 9")
         self.set_scrollback_lines(10000)
         self._configure_colors()
 

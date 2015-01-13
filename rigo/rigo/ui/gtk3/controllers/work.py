@@ -114,7 +114,7 @@ class WorkViewController(GObject.Object):
 
         hbox.pack_start(self._terminal, True, True, 0)
 
-        scrollbar = Gtk.VScrollbar.new(self._terminal.adjustment)
+        scrollbar = Gtk.VScrollbar.new(self._terminal.get_property("vadjustment"))
         hbox.pack_start(scrollbar, False, False, 0)
         self._terminal_expander.add(hbox)
         terminal_align.add(self._terminal_expander)
