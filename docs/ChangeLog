@@ -1,3 +1,21 @@
+commit c875341fa555b20ccf3e647aabd30209d450a71a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 13 10:19:05 2015 +0000
+
+    Release Entropy 295
+
+commit edcd57c9de85d25afce28b7fb444a1036e0f9805
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 13 10:18:46 2015 +0000
+
+    [Rigo] Gtk 3.14 fixes
+
+commit 7cb29fb57b00c876fd460ef65e84af34e888c9c0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 10 07:33:46 2015 +0000
+
+    Tagging Entropy version 294
+
 commit 0baa8ffedcc75543643b6c3662360d353fabde01
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Jan 10 07:33:45 2015 +0000
