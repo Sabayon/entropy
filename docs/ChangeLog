@@ -1,3 +1,21 @@
+commit 1e83c54741c7966535280ab135f7ffd5ce2d9fb5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 17 16:16:54 2015 +0000
+
+    Release Entropy 296
+
+commit 39884e2a6a7fb5809f22a63098e0274bab4fd660
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 17 16:16:05 2015 +0000
+
+    [entropy.tools] add support for "ARM" in elf_class_strtoint
+
+commit fec14117314a3d098a737d047145642fb9e961ba
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 13 10:19:06 2015 +0000
+
+    Tagging Entropy version 295
+
 commit c875341fa555b20ccf3e647aabd30209d450a71a
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Jan 13 10:19:05 2015 +0000
