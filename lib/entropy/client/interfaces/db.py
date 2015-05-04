@@ -395,17 +395,9 @@ class AvailablePackagesRepositoryUpdater(object):
         avail_data = repos_data['available']
         repo_data = avail_data[self._repository_id]
         database_uris = repo_data['databases']
-
-        if repo_data.has_key('username'):
-            basic_user = repo_data['username']
-        else:
-            basic_user = None
-        if repo_data.has_key('password'):
-            basic_pwd = repo_data['password']
-        else:
-            basic_pwd = None
-        if repo_data.has_key('https_validate_cert') and \
-                repo_data['https_validate_cert'] == "false":
+        basic_user = repo_data.get('username');
+        basic_pwd = repo_data.get('password');
+        if repo_data.get('https_validate_cert') == "false":
             https_validate_cert = False
         else:
             https_validate_cert = True
@@ -433,7 +425,7 @@ class AvailablePackagesRepositoryUpdater(object):
 
             repo_uri = uri_meta['uri']
 
-            uri_revision = self._remote_revision(repo_uri, \
+            uri_revision = self._remote_revision(repo_uri,
                 http_basic_user = basic_user,
                 http_basic_pwd = basic_pwd,
                 https_validate_cert = https_validate_cert)
@@ -497,7 +489,7 @@ class AvailablePackagesRepositoryUpdater(object):
                 # skip same URL
                 continue
 
-            revision = self._remote_revision(url, \
+            revision = self._remote_revision(url,
                 http_basic_user = basic_user,
                 http_basic_pwd = basic_pwd,
                 https_validate_cert = https_validate_cert)
@@ -1009,16 +1001,9 @@ class AvailablePackagesRepositoryUpdater(object):
         avail_data = my_repos['available']
         repo_data = avail_data[self._repository_id]
 
-        if repo_data.has_key('username'):
-            basic_user = repo_data['username']
-        else:
-            basic_user = None
-        if repo_data.has_key('password'):
-            basic_pwd = repo_data['password']
-        else:
-            basic_pwd = None
-        if repo_data.has_key('https_validate_cert') and \
-                repo_data['https_validate_cert'] == "false":
+        basic_user = repo_data.get('username')
+        basic_pwd = repo_data.get('password')
+        if repo_data.get('https_validate_cert') == "false":
             https_validate_cert = False
         else:
             https_validate_cert = True
@@ -1956,16 +1941,9 @@ class AvailablePackagesRepositoryUpdater(object):
             rev = -1
             return rev
 
-        if repo_data.has_key('username'):
-            basic_user = repo_data['username']
-        else:
-            basic_user = None
-        if repo_data.has_key('password'):
-            basic_pwd = repo_data['password']
-        else:
-            basic_pwd = None
-        if repo_data.has_key('https_validate_cert') and \
-                repo_data['https_validate_cert'] == "false":
+        basic_user = repo_data.get('username')
+        basic_pwd = repo_data.get('password')
+        if repo_data.get('https_validate_cert') == "false":
             https_validate_cert = False
         else:
             https_validate_cert = True

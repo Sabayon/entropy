@@ -474,15 +474,10 @@ class _PackageMultiFetchAction(_PackageFetchAction):
 
         avail_data = self._settings['repositories']['available']
         repo_data = avail_data[last_repos_id]
-        basic_user = None
-        basic_pwd = None
         https_validate_cert = True
-        if repo_data.has_key('username'):
-            basic_user = repo_data['username']
-        if repo_data.has_key('password'):
-            basic_pwd = repo_data['password']
-        if repo_data.has_key('https_validate_cert') and \
-                repo_data['https_validate_cert'] == "false":
+        basic_user = repo_data.get('username')
+        basic_pwd = repo_data.get('password')
+        if repo_data.get('https_validate_cert') == "false":
             https_validate_cert = False
 
         fetch_abort_function = self._meta.get('fetch_abort_function')

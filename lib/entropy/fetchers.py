@@ -177,7 +177,6 @@ class UrlFetcher(TextInterface):
         self._init_vars()
         self.__init_urllib()
 
-
     @staticmethod
     def _get_url_protocol(url):
         return url.split(":")[0]
@@ -372,7 +371,6 @@ class UrlFetcher(TextInterface):
                 self.__download_context_func,
                 self.__pre_download_hook, self.__post_download_hook)
         )
-
         if downloader is None:
             # return error, protocol not supported
             self._update_speed()
@@ -608,7 +606,6 @@ class UrlFetcher(TextInterface):
                 headers = {'User-Agent': user_agent,}
 
             req = urlmod.Request(url, headers = headers)
-
 
         else:
             req = url

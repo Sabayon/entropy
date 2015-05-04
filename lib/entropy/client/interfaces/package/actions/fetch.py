@@ -456,18 +456,13 @@ class _PackageFetchAction(PackageAction):
             UrlFetcher.GENERIC_FETCH_WARN,
         )
 
-        basic_user = None
-        basic_pwd = None
         https_validate_cert = True
         avail_data = self._settings['repositories']['available']
         repo_data = avail_data[self._repository_id]
 
-        if repo_data.has_key('username'):
-            basic_user = repo_data['username']
-        if repo_data.has_key('password'):
-            basic_pwd = repo_data['password']
-        if repo_data.has_key('https_validate_cert') and \
-                repo_data['https_validate_cert'] == "false":
+        basic_user = repo_data.get('username')
+        basic_pwd = repo_data.get('password')
+        if repo_data.get('https_validate_cert') == "false":
             https_validate_cert = False
 
         for delta_url, delta_save in download_plan:
@@ -570,16 +565,9 @@ class _PackageFetchAction(PackageAction):
         avail_data = self._settings['repositories']['available']
         repo_data = avail_data[self._repository_id]
 
-        if repo_data.has_key('username'):
-            basic_user = repo_data['username']
-        else:
-            basic_user = None
-        if repo_data.has_key('password'):
-            basic_pwd = repo_data['password']
-        else:
-            basic_pwd = None
-        if repo_data.has_key('https_validate_cert') and \
-                repo_data['https_validate_cert'] == "false":
+        basic_user = repo_data.get('username')
+        basic_pwd = repo_data.get('password')
+        if repo_data.get('https_validate_cert') == "false":
             https_validate_cert = False
         else:
             https_validate_cert = True
