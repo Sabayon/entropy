@@ -382,7 +382,7 @@ class _PackageMultiFetchAction(_PackageFetchAction):
 
         return fetched_url_data, data_transfer, 0
 
-    def _download_files(self, url_data, resume = True, repository_id = None):
+    def _download_files(self, url_data, resume = True):
         """
         Effectively fetch the package files.
         """
@@ -449,7 +449,6 @@ class _PackageMultiFetchAction(_PackageFetchAction):
                     validated_download_ids.add(download_id)
 
         url_path_list = []
-        last_repos_id = None
         for pkg_id, repository_id, url, download_path, _cksum, _sig in url_data:
             url_path_list.append((url, download_path))
 
@@ -464,21 +463,9 @@ class _PackageMultiFetchAction(_PackageFetchAction):
                         resume, download_path,
                         repository_id, pkg_id)
 
-                    # This is horrible but probably
-                    # MultipleUrlFetcher must be reimplemented.
-                    last_repos_id = repository_id
-
             finally:
                 if lock is not None:
                     lock.close()
-
-        avail_data = self._settings['repositories']['available']
-        repo_data = avail_data[last_repos_id]
-        https_validate_cert = True
-        basic_user = repo_data.get('username')
-        basic_pwd = repo_data.get('password')
-        if repo_data.get('https_validate_cert') == "false":
-            https_validate_cert = False
 
         fetch_abort_function = self._meta.get('fetch_abort_function')
         fetch_intf = self._entropy._multiple_url_fetcher(
@@ -487,10 +474,7 @@ class _PackageMultiFetchAction(_PackageFetchAction):
             url_fetcher_class = self._entropy._url_fetcher,
             download_context_func = download_context,
             pre_download_hook = pre_download_hook,
-            post_download_hook = post_download_hook,
-            http_basic_user = basic_user,
-            http_basic_pwd = basic_pwd,
-            https_validate_cert = https_validate_cert)
+            post_download_hook = post_download_hook)
         try:
             # make sure that we don't need to abort already
             # doing the check here avoids timeouts
@@ -773,8 +757,7 @@ class _PackageMultiFetchAction(_PackageFetchAction):
                         (exit_st, failed_downloads,
                          data_transfer) = self._download_files(
                              updated_fetch_files_list,
-                             resume = do_resume,
-                             repository_id = repository_id)
+                             resume = do_resume)
 
                 if exit_st == 0:
                     show_successful_download(

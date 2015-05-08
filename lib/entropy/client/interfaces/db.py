@@ -395,12 +395,6 @@ class AvailablePackagesRepositoryUpdater(object):
         avail_data = repos_data['available']
         repo_data = avail_data[self._repository_id]
         database_uris = repo_data['databases']
-        basic_user = repo_data.get('username');
-        basic_pwd = repo_data.get('password');
-        if repo_data.get('https_validate_cert') == "false":
-            https_validate_cert = False
-        else:
-            https_validate_cert = True
 
         ws_revision = self._remote_webservice_revision()
 
@@ -424,11 +418,7 @@ class AvailablePackagesRepositoryUpdater(object):
             )
 
             repo_uri = uri_meta['uri']
-
-            uri_revision = self._remote_revision(repo_uri,
-                http_basic_user = basic_user,
-                http_basic_pwd = basic_pwd,
-                https_validate_cert = https_validate_cert)
+            uri_revision = self._remote_revision(repo_uri)
 
             if uri_revision != -1:
 
@@ -488,11 +478,7 @@ class AvailablePackagesRepositoryUpdater(object):
             if url == uri:
                 # skip same URL
                 continue
-
-            revision = self._remote_revision(url,
-                http_basic_user = basic_user,
-                http_basic_pwd = basic_pwd,
-                https_validate_cert = https_validate_cert)
+            revision = self._remote_revision(url)
             if revision != -1:
                 # found
                 self._entropy.output(
@@ -995,18 +981,7 @@ class AvailablePackagesRepositoryUpdater(object):
         return url, path
 
     def _download_item(self, uri, item, cmethod = None,
-                       disallow_redirect = True, get_signature = False):
-
-        my_repos = self._settings['repositories']
-        avail_data = my_repos['available']
-        repo_data = avail_data[self._repository_id]
-
-        basic_user = repo_data.get('username')
-        basic_pwd = repo_data.get('password')
-        if repo_data.get('https_validate_cert') == "false":
-            https_validate_cert = False
-        else:
-            https_validate_cert = True
+        disallow_redirect = True, get_signature = False):
 
         url, filepath = self._construct_paths(
             uri, item, cmethod, get_signature = get_signature)
@@ -1036,10 +1011,7 @@ class AvailablePackagesRepositoryUpdater(object):
                 url,
                 temp_filepath,
                 resume = False,
-                disallow_redirect = disallow_redirect,
-                http_basic_user = basic_user,
-                http_basic_pwd = basic_pwd,
-                https_validate_cert = https_validate_cert
+                disallow_redirect = disallow_redirect
             )
 
             rc = fetcher.download()
@@ -1941,18 +1913,7 @@ class AvailablePackagesRepositoryUpdater(object):
             rev = -1
             return rev
 
-        basic_user = repo_data.get('username')
-        basic_pwd = repo_data.get('password')
-        if repo_data.get('https_validate_cert') == "false":
-            https_validate_cert = False
-        else:
-            https_validate_cert = True
-
-        rev = self._remote_revision(url,
-            http_basic_user = basic_user,
-            http_basic_pwd = basic_pwd,
-            https_validate_cert = https_validate_cert)
-
+        rev = self._remote_revision(uri)
         return rev
 
     def _remote_webservice_revision(self):
@@ -1978,9 +1939,7 @@ class AvailablePackagesRepositoryUpdater(object):
         # otherwise, fallback to previous EAPI
         self._repo_eapi -= 1
 
-    def _remote_revision(self, uri, http_basic_user = None,
-                         http_basic_pwd = None,
-                         https_validate_cert = True):
+    def _remote_revision(self, uri):
         """
         Return the remote repository revision by downloading
         the revision file from the given uri.
@@ -1994,10 +1953,7 @@ class AvailablePackagesRepositoryUpdater(object):
             tmp_fd, tmp_path = const_mkstemp(
                 prefix = "AvailableEntropyRepository.remote_revision")
             fetcher = self._entropy._url_fetcher(
-                url, tmp_path, resume = False,
-                http_basic_user = http_basic_user,
-                http_basic_pwd = http_basic_pwd,
-                https_validate_cert = https_validate_cert)
+                url, tmp_path, resume = False)
             fetch_rc = fetcher.download()
             if fetch_rc not in self.FETCH_ERRORS:
                 with codecs.open(tmp_path, "r") as tmp_f:
