@@ -456,11 +456,23 @@ class _PackageFetchAction(PackageAction):
             UrlFetcher.GENERIC_FETCH_WARN,
         )
 
+        https_validate_cert = True
+        avail_data = self._settings['repositories']['available']
+        repo_data = avail_data[self._repository_id]
+
+        basic_user = repo_data.get('username')
+        basic_pwd = repo_data.get('password')
+        if repo_data.get('https_validate_cert') == "false":
+            https_validate_cert = False
+
         for delta_url, delta_save in download_plan:
 
             delta_fetcher = self._entropy._url_fetcher(delta_url,
                 delta_save, resume = delta_resume,
-                abort_check_func = fetch_abort_function)
+                abort_check_func = fetch_abort_function,
+                http_basic_user = basic_user,
+                http_basic_pwd = basic_pwd,
+                https_validate_cert = https_validate_cert)
 
             try:
                 # make sure that we don't need to abort already
@@ -550,9 +562,22 @@ class _PackageFetchAction(PackageAction):
         if os.path.isfile(download_path) and os.path.exists(download_path):
             existed_before = True
 
+        avail_data = self._settings['repositories']['available']
+        repo_data = avail_data[self._repository_id]
+
+        basic_user = repo_data.get('username')
+        basic_pwd = repo_data.get('password')
+        if repo_data.get('https_validate_cert') == "false":
+            https_validate_cert = False
+        else:
+            https_validate_cert = True
+
         fetch_intf = self._entropy._url_fetcher(
             url, download_path, resume = resume,
-            abort_check_func = fetch_abort_function)
+            abort_check_func = fetch_abort_function,
+            http_basic_user = basic_user,
+            http_basic_pwd = basic_pwd,
+            https_validate_cert = https_validate_cert)
 
         if (package_id is not None) and (repository_id is not None):
             self._setup_differential_download(
