@@ -24,6 +24,8 @@ import pty
 import subprocess
 import threading
 import contextlib
+import base64
+import ssl
 
 from entropy.const import const_is_python3, const_file_readable
 
@@ -77,7 +79,9 @@ class UrlFetcher(TextInterface):
                  abort_check_func = None, disallow_redirect = False,
                  thread_stop_func = None, speed_limit = None,
                  timeout = None, download_context_func = None,
-                 pre_download_hook = None, post_download_hook = None):
+                 pre_download_hook = None, post_download_hook = None,
+                 http_basic_user = None, http_basic_pwd = None,
+                 https_validate_cert = True):
         """
         Entropy URL downloader constructor.
 
@@ -165,6 +169,12 @@ class UrlFetcher(TextInterface):
         self.__thread_stop_func = thread_stop_func
         self.__disallow_redirect = disallow_redirect
         self.__speedlimit = speed_limit # kbytes/sec
+
+        # HTTP Basic Authentication parameters
+        self.__http_basic_user = http_basic_user
+        self.__http_basic_pwd = http_basic_pwd
+        # SSL Context options
+        self.__https_validate_cert = https_validate_cert
 
         self._init_vars()
         self.__init_urllib()
@@ -583,8 +593,21 @@ class UrlFetcher(TextInterface):
         )
 
         if url_protocol in ("http", "https"):
-            headers = {'User-Agent': user_agent,}
+
+            # Handle HTTP Basic auth
+            if self.__http_basic_user and self.__http_basic_pwd:
+                basic_header = base64.encodestring('%s:%s' % (
+                    self.__http_basic_user, self.__http_basic_pwd)).replace('\n', '')
+
+                headers = {
+                    'User-Agent': user_agent,
+                    'Authorization': 'Basic %s' % basic_header,
+                }
+            else:
+                headers = {'User-Agent': user_agent,}
+
             req = urlmod.Request(url, headers = headers)
+
         else:
             req = url
 
@@ -594,7 +617,18 @@ class UrlFetcher(TextInterface):
 
             # get file size if available
             try:
-                self.__remotefile = urlmod.urlopen(req, None, self.__timeout)
+                if url_protocol in ("https") and \
+                    not self.__https_validate_cert:
+
+                    ctx = ssl.create_default_context()
+                    ctx.check_hostname = False
+                    ctx.verify_mode = ssl.CERT_NONE
+
+                    self.__remotefile = urlmod.urlopen(req, None, self.__timeout,
+                            context=ctx)
+
+                else:
+                    self.__remotefile = urlmod.urlopen(req, None, self.__timeout)
             except KeyboardInterrupt:
                 self.__urllib_close(False)
                 raise
@@ -976,7 +1010,9 @@ class MultipleUrlFetcher(TextInterface):
                  abort_check_func = None, disallow_redirect = False,
                  url_fetcher_class = None, timeout = None,
                  download_context_func = None,
-                 pre_download_hook = None, post_download_hook = None):
+                 pre_download_hook = None, post_download_hook = None,
+                 http_basic_user = None, http_basic_pwd = None,
+                 https_validate_cert = True):
         """
         @param url_path_list: list of tuples composed by url and
             path to save, for eg. [(url,path_to_save,),...]
@@ -1044,6 +1080,12 @@ class MultipleUrlFetcher(TextInterface):
         self.__url_fetcher = url_fetcher_class
         if self.__url_fetcher == None:
             self.__url_fetcher = UrlFetcher
+
+        # HTTP Basic Authentication parameters
+        self.__http_basic_user = http_basic_user
+        self.__http_basic_pwd = http_basic_pwd
+        # SSL Context options
+        self.__https_validate_cert = https_validate_cert
 
     def __handle_threads_stop(self):
         if self.__stop_threads:
@@ -1128,7 +1170,10 @@ class MultipleUrlFetcher(TextInterface):
                 timeout = self.__timeout,
                 download_context_func = self.__download_context_func,
                 pre_download_hook = self.__pre_download_hook,
-                post_download_hook = self.__post_download_hook
+                post_download_hook = self.__post_download_hook,
+                http_basic_user = self.__http_basic_user,
+                http_basic_pwd = self.__http_basic_pwd,
+                https_validate_cert = self.__https_validate_cert
             )
             downloader.set_id(th_id)
 

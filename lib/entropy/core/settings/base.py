@@ -83,9 +83,16 @@ class RepositoryConfigParser(BaseConfigParser):
                  that config files in /etc/entropy/repositories.conf.d/ starting
                  with "_" are considered to contain disabled repositories. This
                  is just provided for convienence.
+    - "username": if set, it used for HTTP Basic Authentication on retrieve
+                  data from remote repository.
+    - "password": if set, it used for HTTP Basic Authentication on retrieve
+                  data from remote repository.
+    - "https_validate_cert": if set to "false" disable ssl certificate
+                  validation of the remote repository.
     """
 
-    _SUPPORTED_KEYS = ("desc", "repo", "pkg", "enabled")
+    _SUPPORTED_KEYS = ("desc", "repo", "pkg", "enabled", \
+            "username", "password", "https_validate_cert")
 
     _DEFAULT_ENABLED_VALUE = True
 
@@ -114,7 +121,8 @@ class RepositoryConfigParser(BaseConfigParser):
             return
         return candidate
 
-    def add(self, repository_id, desc, repos, pkgs, enabled = True):
+    def add(self, repository_id, desc, repos, pkgs, enabled = True,
+            username = None, password = None, https_validate_cert = True):
         """
         Add a repository to the repository configuration files directory.
         Older repository configuration may get overwritten. This method
@@ -146,7 +154,8 @@ class RepositoryConfigParser(BaseConfigParser):
         # while disabled config files start with _
         disabled_conf_file = os.path.join(conf_d_dir, "_" + base_name)
 
-        self.write(enabled_conf_file, repository_id, desc, repos, pkgs)
+        self.write(enabled_conf_file, repository_id, desc, repos, pkgs,
+                   username, password, https_validate_cert)
 
         # if any disabled entry file is around, kill it with fire!
         try:
@@ -275,7 +284,8 @@ class RepositoryConfigParser(BaseConfigParser):
 
         return accomplished
 
-    def write(self, path, repository_id, desc, repos, pkgs, enabled = True):
+    def write(self, path, repository_id, desc, repos, pkgs, enabled = True,
+              username = None, password = None, https_validate_cert = True):
         """
         Write the repository configuration to the given file.
 
@@ -310,11 +320,17 @@ class RepositoryConfigParser(BaseConfigParser):
 desc = %(desc)s
 %(repos)s
 enabled = %(enabled)s
+%(username)s
+%(password)s
+%(https_validate_cert)s
 """ % {
             "repository_id": repository_id,
             "desc": desc,
             "repos": repos_str.rstrip(),
             "enabled": enabled_str,
+            "username": ("", "username = %s" % username)[username],
+            "password": ("", "password = %s" % password)[password],
+            "https_validate_cert" : ("https_validate_cert = false", "")[https_validate_cert]
             }
         for pkg in pkgs:
             config += "pkg = %s\n" % (pkg,)
@@ -397,6 +413,47 @@ enabled = %(enabled)s
         except KeyError:
             return self._DEFAULT_ENABLED_VALUE
 
+    def username(self, repository_id):
+        """
+        Return the username to use with the repository.
+
+        @param repository_id: the repository identifier
+        @type repository_id: string
+        @raise KeyError: if repository_id is not found or
+            metadata is not available
+        @return: the repository username.
+        @rtype: string
+        """
+        return self[repository_id]["username"][0]
+
+    def password(self, repository_id):
+        """
+        Return the password to use with the repository.
+
+        @param repository_id: the repository identifier
+        @type repository_id: string
+        @raise KeyError: if repository_id is not found or
+            metadata is not available
+        @return: the repository password.
+        @rtype: string
+        """
+        return self[repository_id]["password"][0]
+
+    def https_validate_cert(self, repository_id):
+        """
+        Return whether SSL cert validation of remote repository
+        is enabled. It is used only for HTTPS.
+
+        @param repository_id: the repository identifier
+        @type repository_id: string
+        @return: status of ssl certificate validation.
+        @rtype: bool
+        """
+        try:
+            https_validate_cert = self[repository_id]["https_validate_cert"][0]
+            return https_validate_cert.strip().lower() == "true"
+        except KeyError:
+            return True # Default is enabled
 
 class SystemSettings(Singleton, EntropyPluginStore):
 
@@ -1682,7 +1739,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
             name, desc, packages, [database], product, branch)
 
     def _generate_repository_metadata(self, name, desc, packages, databases,
-                                      product, branch):
+                                      product, branch, username = None,
+                                      password = None, https_validate_cert = True):
         """
         Given a set of raw repository metadata information, like name,
         description, a list of package urls and the database url, generate
@@ -1751,6 +1809,13 @@ class SystemSettings(Singleton, EntropyPluginStore):
         data['description'] = desc
         data['packages'] = []
         data['plain_packages'] = []
+
+        if username and password:
+            data['username'] = username
+            data['password'] = password
+
+        if not https_validate_cert:
+            data['https_validate_cert'] = "false"
 
         data['dbpath'] = etpConst['etpdatabaseclientdir'] + os.path.sep + \
             name + os.path.sep + product + os.path.sep + \
@@ -2035,10 +2100,24 @@ class SystemSettings(Singleton, EntropyPluginStore):
                     except KeyError:
                         ini_desc = _("No description")
 
+                    try:
+                        ini_username = ini_parser.username(ini_repository)
+                    except KeyError:
+                        ini_username = None
+
+                    try:
+                        ini_password = ini_parser.password(ini_repository)
+                    except KeyError:
+                        ini_password = None
+
+                    ini_https_validate_cert = ini_parser.https_validate_cert(ini_repository)
+
                     ini_excluded = not ini_parser.enabled(ini_repository)
                     ini_data = self._generate_repository_metadata(
                         ini_repository, ini_desc, ini_pkgs, ini_dbs,
-                        data['product'], data['branch'])
+                        data['product'], data['branch'],
+                        ini_username, ini_password,
+                        ini_https_validate_cert)
                     if ini_excluded or ini_conf_excluded:
                         data['excluded'][ini_repository] = ini_data
                     else:
