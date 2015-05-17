@@ -765,8 +765,13 @@ class SoloManage(SoloCommand):
 
             while True:
 
+                action = _read_lic_selection()
+                if action is None:
+                    # interpret EOF as "reject"
+                    return 1
+
                 try:
-                    choice = int(_read_lic_selection())
+                    choice = int(action)
                 except (ValueError, TypeError):
                     continue
 
