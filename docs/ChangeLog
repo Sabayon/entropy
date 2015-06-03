@@ -1,3 +1,47 @@
+commit dd2e9560a33fadb1627b1db410365a7e546da283
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 3 06:50:08 2015 +0100
+
+    Release Entropy 297
+
+commit 72851f1948d5b9efe819bd833597380ab380d191
+Merge: 1753bc2 d227393
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 3 07:55:46 2015 +0100
+
+    Merge pull request #15 from Enlik/master-more-arches
+    
+    [entropy.tools] add more arches to elf_class_strtoint
+
+commit d2273933e922e717a32986847cbdb5a763f6e254
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Wed May 27 20:20:01 2015 +0200
+
+    [entropy.tools] add more arches to elf_class_strtoint
+
+commit 1753bc2c005fb00e0ffe969780464b22627e753f
+Merge: d92c7ca 1bda075
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 17 12:43:16 2015 +0100
+
+    Merge pull request #14 from Enlik/master-lic-EOF
+    
+    [entropy.client] while asking to accept the license, interpret EOF as "no"
+
+commit 1bda075ad07a4f2a57c8ed73be4daaf6eeb77c5b
+Author: Sławomir Nizio <poczta-sn@gazeta.pl>
+Date:   Sat May 16 00:01:55 2015 +0200
+
+    [entropy.client] while asking to accept the license, interpret EOF as "no"
+    
+    Otherwise it would loop indefinitely (bug 4849).
+
+commit d92c7ca45c3ea64b6d71fe2724cf6b1a3841a196
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 17 16:16:55 2015 +0000
+
+    Tagging Entropy version 296
+
 commit 1e83c54741c7966535280ab135f7ffd5ce2d9fb5
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Mar 17 16:16:54 2015 +0000
