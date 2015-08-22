@@ -1,3 +1,45 @@
+commit da39ba3ad954431ab4fb35cb4f31f37ab0051eb6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 22 23:49:00 2015 +0100
+
+    Release Entropy 298
+
+commit 9a106f81f68aef4eeeaf62f69027bc32315f350e
+Merge: 460adbe bfe8b99
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 11 21:55:30 2015 +0100
+
+    Merge pull request #16 from Enlik/master-more-arches
+    
+    [entropy.tools] add AARCH64 to elf_class_strtoint
+
+commit bfe8b9951cf49105454e272084ae2f30ebc344b1
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Tue Aug 11 22:07:39 2015 +0200
+
+    [entropy.tools] add AARCH64 to elf_class_strtoint
+
+commit 460adbe92f38b5c63d3093fc14e9fdf4506423b6
+Merge: 4d40ea4 38d03dc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 6 13:52:58 2015 +0100
+
+    Merge pull request #13 from geaaru/basic_ssl
+    
+    Add support to Basic Authentication and permit disable of SSL certificate validation
+
+commit 38d03dc200a618a70e6bf297bb8599463d7bf66f
+Author: Geaaru <geaaru@gmail.com>
+Date:   Fri May 8 11:20:43 2015 +0200
+
+    Add support to Basic Authentication and permit disable of SSL certificate validation on https protocol
+
+commit 4d40ea44aa209808db5b99bb964f64f71c38642f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 3 06:50:08 2015 +0100
+
+    Tagging Entropy version 297
+
 commit dd2e9560a33fadb1627b1db410365a7e546da283
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Jun 3 06:50:08 2015 +0100
