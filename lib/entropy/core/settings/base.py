@@ -154,7 +154,7 @@ class RepositoryConfigParser(BaseConfigParser):
         # while disabled config files start with _
         disabled_conf_file = os.path.join(conf_d_dir, "_" + base_name)
 
-        self.write(enabled_conf_file, repository_id, desc, repos, pkgs,
+        self.write(enabled_conf_file, repository_id, desc, repos, pkgs, enabled,
                    username, password, https_validate_cert)
 
         # if any disabled entry file is around, kill it with fire!
@@ -308,6 +308,16 @@ class RepositoryConfigParser(BaseConfigParser):
         else:
             enabled_str = "false"
 
+        if username:
+            username = "username = %s" % username
+        else:
+            username = ""
+
+        if password:
+            password = "password = %s" % password
+        else:
+            password = ""
+
         repos_str = ""
         for repo_meta in repos:
             repos_str += "repo = %(uri)s#%(dbcformat)s\n" % repo_meta
@@ -328,8 +338,8 @@ enabled = %(enabled)s
             "desc": desc,
             "repos": repos_str.rstrip(),
             "enabled": enabled_str,
-            "username": ("", "username = %s" % username)[username],
-            "password": ("", "password = %s" % password)[password],
+            "username": username,
+            "password": password,
             "https_validate_cert" : ("https_validate_cert = false", "")[https_validate_cert]
             }
         for pkg in pkgs:
