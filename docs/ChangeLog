@@ -1,3 +1,21 @@
+commit 5ea91aefd72d7d8e2e43b2fa9383352c14c09209
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 29 19:03:36 2015 +0100
+
+    Release Entropy 300
+
+commit 09ed451247d157d58765346301e9874b54d8344d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 29 19:03:15 2015 +0100
+
+    [entropy.core.settings.base] fix call to .write()
+
+commit 6bb13e1f584ec021f0c6f7652fe2950b0c909050
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 29 18:54:00 2015 +0100
+
+    Tagging Entropy version 299
+
 commit baa30318e17698e6726e464933fca668660ae71c
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Oct 29 18:54:00 2015 +0100
