@@ -155,7 +155,8 @@ class RepositoryConfigParser(BaseConfigParser):
         disabled_conf_file = os.path.join(conf_d_dir, "_" + base_name)
 
         self.write(enabled_conf_file, repository_id, desc, repos, pkgs,
-                   username, password, https_validate_cert)
+                   enabled = enabled, username = username, password = password,
+                   https_validate_cert = https_validate_cert)
 
         # if any disabled entry file is around, kill it with fire!
         try:
