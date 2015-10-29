@@ -1,3 +1,21 @@
+commit baa30318e17698e6726e464933fca668660ae71c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 29 18:54:00 2015 +0100
+
+    Release Entropy 299
+
+commit 6f061406c16f475587057650e91f0707c1c44fc8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 29 18:53:09 2015 +0100
+
+    [entropy.core.settings.base] fix tuple index when value is NoneType
+
+commit ed70e372d5014a62b98fabb9960d361980104f7b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 22 23:49:00 2015 +0100
+
+    Tagging Entropy version 298
+
 commit da39ba3ad954431ab4fb35cb4f31f37ab0051eb6
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Aug 22 23:49:00 2015 +0100
