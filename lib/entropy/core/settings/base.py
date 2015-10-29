@@ -328,8 +328,8 @@ enabled = %(enabled)s
             "desc": desc,
             "repos": repos_str.rstrip(),
             "enabled": enabled_str,
-            "username": ("", "username = %s" % username)[username],
-            "password": ("", "password = %s" % password)[password],
+            "username": ("", "username = %s" % username)[username or 0],
+            "password": ("", "password = %s" % password)[password or 0],
             "https_validate_cert" : ("https_validate_cert = false", "")[https_validate_cert]
             }
         for pkg in pkgs:
