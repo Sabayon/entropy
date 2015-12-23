@@ -52,5 +52,5 @@ pkg = http://ftp.rnl.ist.utl.pt/pub/sabayon ftp://ftp.rnl.ist.utl.pt/pub/sabayon
 pkg = http://mirror.internode.on.net/pub/sabayon/entropy
 pkg = http://mirror.yandex.ru/sabayon/entropy
 pkg = http://cross-lfs.sabayonlinux.org/entropy
-pkg = http://na.mirror.garr.it/mirrors/sabayonlinux/entropy
+pkg = http://mirror1.mirror.garr.it/mirrors/sabayonlinux/entropy
 pkg = http://mirror.de.sabayon.org/entropy

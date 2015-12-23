@@ -119,4 +119,6 @@ pkg = http://mirror.clarkson.edu/sabayon/entropy
 pkg = http://cross-lfs.sabayonlinux.org/entropy
 
 # GARR Network mirror, Italy
-pkg = http://na.mirror.garr.it/mirrors/sabayonlinux/entropy
+pkg = http://mirror1.mirror.garr.it/mirrors/sabayonlinux/entropy
+pkg = http://mirror2.mirror.garr.it/mirrors/sabayonlinux/entropy
+pkg = http://mirror3.mirror.garr.it/mirrors/sabayonlinux/entropy
