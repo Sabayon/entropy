@@ -2610,9 +2610,9 @@ def elf_class_strtoint(elf_class_str):
     @return: ELF class int value
     @rtype: int
     """
-    if elf_class_str in ("X86_64", "ELFCLASS64", "PARISC", "SPARCV9", "AARCH64"):
+    if elf_class_str in ("X86_64", "ELFCLASS64", "PARISC", "SPARCV9", "AARCH64", "PPC64"):
         return 2
-    elif elf_class_str in ("ARM", "386", "ELFCLASS32", "SPARC", "MIPS"):
+    elif elf_class_str in ("ARM", "386", "ELFCLASS32", "SPARC", "MIPS","PPC"):
         return 1
     else:
         raise ValueError('unsupported %s' % (elf_class_str,))
