@@ -339,7 +339,7 @@ System security tools.
 
     def _oscheck_scan_unlocked(self, entropy_client, inst_repo,
                                quiet, verbose, assimilate,
-                               pkg_ids):
+                               mtime_only, pkg_ids):
         """
         Execute the filesystem scan.
         """
@@ -387,7 +387,7 @@ System security tools.
                     paths_unavailable.append(path)
                     continue
 
-                elif not mtime:
+                elif not mtime_only:
                     # verify sha256
                     sha256 = entropy.tools.sha256(path)
                     tainted = sha256 != safety_data['sha256']
@@ -483,7 +483,7 @@ System security tools.
 
             faulty_pkg_ids = self._oscheck_scan_unlocked(
                 entropy_client, inst_repo, quiet,
-                verbose, assimilate, pkg_ids)
+                verbose, assimilate, mtime, pkg_ids)
 
         if not faulty_pkg_ids:
             if not quiet:
