@@ -73,6 +73,9 @@ System security tools.
             help=_("verify installed files using stored checksums"))
         self._setup_verbose_quiet_parser(oscheck_parser)
         oscheck_parser.add_argument(
+            "packages", nargs='*',
+            help=_("name of package to check"))
+        oscheck_parser.add_argument(
             "--mtime", action="store_true", default=False,
             help=_("consider mtime instead of SHA256 "
                    "(false positives ahead)"))
@@ -335,11 +338,11 @@ System security tools.
         print_table(entropy_client, toc, cell_spacing=3)
 
     def _oscheck_scan_unlocked(self, entropy_client, inst_repo,
-                               quiet, verbose, assimilate):
+                               quiet, verbose, assimilate,
+                               pkg_ids):
         """
         Execute the filesystem scan.
         """
-        pkg_ids = inst_repo.listAllPackageIds()
         total = len(pkg_ids)
         faulty_pkg_ids = []
 
@@ -461,6 +464,7 @@ System security tools.
         ask = self._nsargs.ask
         pretend = self._nsargs.pretend
         fetch = self._nsargs.fetch
+        packages = self._nsargs.packages
 
         if not quiet:
             entropy_client.output(
@@ -470,8 +474,16 @@ System security tools.
 
         inst_repo = entropy_client.installed_repository()
         with inst_repo.shared():
+            if packages:
+                packages = entropy_client.packages_expand(packages)
+                pkg_ids = self._scan_installed_packages(
+                    entropy_client, inst_repo, packages)
+            else:
+                pkg_ids = inst_repo.listAllPackageIds()
+
             faulty_pkg_ids = self._oscheck_scan_unlocked(
-                entropy_client, inst_repo, quiet, verbose, assimilate)
+                entropy_client, inst_repo, quiet,
+                verbose, assimilate, pkg_ids)
 
         if not faulty_pkg_ids:
             if not quiet:
