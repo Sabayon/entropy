@@ -1,3 +1,81 @@
+commit 96ed6d3c5e8502f85693e1533747041d599bc24d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 20 19:32:33 2016 +0100
+
+    Release Entropy 301
+
+commit 91ed0f744d246c0f81de3ee957e39993c2a930de
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 20 19:32:01 2016 +0100
+
+    Update translations
+
+commit a305f121eeb2abc9dfcf5d56c7123fbaf2bec025
+Merge: b17686f b434985
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 20 19:29:18 2016 +0100
+
+    Merge pull request #21 from Enlik/oscheck-packages
+    
+    oscheck: add "packages" option support, and repair --mtime
+
+commit b43498596e1eea2eaca281d33940e453551e6b7d
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Mon Mar 7 22:08:18 2016 +0100
+
+    [solo.commands.security] repair --mtime in oscheck
+    
+    While testing the change that adds [package ...] to oscheck, I noticed
+    this bug.
+
+commit 449b1c3fe75fbf0d94ae4ce03231b05be7b708c4
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Mon Mar 7 21:00:06 2016 +0100
+
+    [solo.commands.security] support for package names in oscheck
+
+commit b17686f00812c47b0f614559172ff2253b3c970e
+Merge: b5bbd6d 3ff54e8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 7 11:56:48 2016 +0100
+
+    Merge pull request #20 from mudler/master
+    
+    [entropy.tools] add PPC to elf_class_strtoint
+
+commit 3ff54e824f3f11bf9528b66edd88607076825972
+Author: mudler <mudler@sabayon.org>
+Date:   Thu Jan 21 16:06:40 2016 +0100
+
+    [entropy.tools] add PPC to elf_class_strtoint
+
+commit b5bbd6dcda627e839d6733032765d55c9496ee7b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 23 20:54:06 2015 +0100
+
+    [conf] update GARR mirror URLs
+
+commit d90f406218a6b706271eee715056bfbbeea83127
+Merge: f394eff a20db47
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 30 11:11:31 2015 +0100
+
+    Merge pull request #18 from mudler/patch-2
+    
+    [entropy.tools] add MIPS to elf_class_strtoint
+
+commit a20db47d825bd017d9b2f0c1d9931da76216cd73
+Author: Ettore Di Giacinto <mudler@users.noreply.github.com>
+Date:   Sat Nov 28 15:50:28 2015 +0100
+
+    [entropy.tools] add MIPS to elf_class_strtoint
+
+commit f394eff9255b4aa16b4f0b6f951c973cb7a8a799
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 29 19:03:36 2015 +0100
+
+    Tagging Entropy version 300
+
 commit 5ea91aefd72d7d8e2e43b2fa9383352c14c09209
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Oct 29 19:03:36 2015 +0100
