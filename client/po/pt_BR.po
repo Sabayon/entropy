@@ -11,9 +11,9 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-14 16:08+0100\n"
-"PO-Revision-Date: 2014-02-14 15:14+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Portuguese (Brazil) (http://www.transifex.com/projects/p/sabayon-entropy/language/pt_BR/)\n"
+"PO-Revision-Date: 2014-11-10 22:38+0000\n"
+"Last-Translator: Alberto Federman Neto <mrtabac@gmail.com>\n"
+"Language-Team: Portuguese (Brazil) (http://www.transifex.com/lxnay/sabayon-entropy/language/pt_BR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -346,7 +346,7 @@ msgstr "O arquivo doa pacotes SPM instalados não atualizou"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3413
 msgid "Portage world file is corrupted"
-msgstr " Arquivo global do Portage coorompido"
+msgstr " Arquivo global do Portage corrompido"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3473
 msgid "preserved libraries have been found on system"
@@ -396,7 +396,7 @@ msgstr "não suportado"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4624
 msgid "Probably Portage API has changed"
-msgstr "Provavelmente a API do Portage mudou"
+msgstr "Provávelmente, a API do Portage mudou"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4687
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4780
@@ -703,7 +703,7 @@ msgstr "Revisão do repositório"
 
 #: ../../lib/entropy/client/interfaces/db.py:1250
 msgid "Checking downloaded repository"
-msgstr "Checando a base de dados recebida"
+msgstr "Verificando a base de dados recebida"
 
 #: ../../lib/entropy/client/interfaces/db.py:1264
 msgid "Cannot open digest"
@@ -954,7 +954,7 @@ msgstr "sucesso"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:656
 msgid "Aggregated transfer rate"
-msgstr "Taxa de transferência agredada"
+msgstr "Taxa de transferência agregada média"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:659
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:734
@@ -1829,7 +1829,7 @@ msgstr "Pacote"
 
 #: ../../client/solo/utils.py:402 ../../client/solo/commands/hop.py:57
 msgid "branch"
-msgstr "branch"
+msgstr "ramo"
 
 #: ../../client/solo/utils.py:413
 msgid "Category"
@@ -2029,7 +2029,7 @@ msgstr "Não foi possível escrever no TMPDIR. Por favor, copie e cole o erro e 
 msgid ""
 "Erm... Can I send the error, along with some other information\n"
 "about your hardware to my creators so they can fix me? (Your IP will be logged)"
-msgstr "Envie o erro com alguma informação adicional,⏎ sôbre seu hardware, para que meus criadores possam verificar (Seu IP será identificado)\n "
+msgstr "Envie o erro com alguma informação adicional\n sôbre seu hardware, para que meus criadores possam verificar (Seu IP será identificado)\n "
 
 #: ../../client/solo/main.py:170
 msgid "Ok, ok ok ok... Sorry!"
@@ -3129,12 +3129,12 @@ msgstr "Terminado"
 
 #: ../../client/solo/commands/remove.py:216
 msgid "These are the packages that should be MANUALLY removed"
-msgstr "Estes são os pacotes que devem ser removidos MANUALMENTE"
+msgstr "Estes são os pacotes que poderiam ser removidos, MANUALMENTE"
 
 #: ../../client/solo/commands/remove.py:222
 #: ../../client/solo/commands/install.py:366
 msgid "These are the packages that would be removed"
-msgstr "Estes seriam os pacotes que seriam removidos"
+msgstr "Estes são os pacotes que seriam removidos"
 
 #: ../../client/solo/commands/remove.py:263
 msgid "Packages that would be removed"
@@ -3375,7 +3375,7 @@ msgstr "Senha"
 
 #: ../../client/solo/commands/ugc.py:240
 msgid "Please login against"
-msgstr "Por favor autentique-se em"
+msgstr "Por favor, logar novamente em em"
 
 #: ../../client/solo/commands/ugc.py:248
 msgid "Login aborted. Not logged in."
@@ -4359,13 +4359,13 @@ msgstr "Nada para atualizar"
 msgid ""
 "On the system there are packages that are not available anymore in the "
 "online repositories"
-msgstr "Existem pacotes antigos instalados, que não  estão mais nos repositórios e porisso não  serão mais atualizados"
+msgstr "Existem pacotes antigos instalados que não estão mais nos repositórios e, por isso, não serão mais atualizados"
 
 #: ../../client/solo/commands/upgrade.py:277
 msgid ""
 "Even if they are usually harmless, it is suggested (after proper "
 "verification) to remove them."
-msgstr "Se ficarem, são inofensivos.  Se (após verificação) você os usar, deixe-os. Senão, remova.-os."
+msgstr "Caso fiquem, são inofensivos. Se (após verificação) você os usar, deixe-os, senão remova-os.\n "
 
 #: ../../client/solo/commands/upgrade.py:289
 msgid "To automatically remove them, please run: equo upgrade --purge."
@@ -4541,7 +4541,7 @@ msgstr "apenas mostrar o que seria feito"
 
 #: ../../client/solo/commands/mask.py:125
 msgid "These are the packages that would be handled"
-msgstr "Estes são os pacotes a serem manipulados"
+msgstr "Estes são os pacotes que seriam manipulados"
 
 #: ../../client/solo/commands/mask.py:160
 msgid "Would you like to continue?"

@@ -3,15 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Dušan Kazik <prescott66@gmail.com>, 2014
+# Dušan Kazik <prescott66@gmail.com>, 2014-2015
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-14 16:14+0100\n"
-"PO-Revision-Date: 2014-01-02 21:21+0000\n"
+"PO-Revision-Date: 2015-02-03 23:06+0000\n"
 "Last-Translator: Dušan Kazik <prescott66@gmail.com>\n"
-"Language-Team: Slovak (http://www.transifex.com/projects/p/sabayon-rigo/language/sk/)\n"
+"Language-Team: Slovak (http://www.transifex.com/lxnay/sabayon-rigo/language/sk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -139,7 +139,7 @@ msgstr "Poinštalačné závislosti"
 
 #: ../rigo/models/application.py:1544
 msgid "Staff dependencies"
-msgstr ""
+msgstr "Závislosti vývojárov"
 
 #: ../rigo/models/application.py:1566
 msgid "Click here for more details"
@@ -1077,7 +1077,7 @@ msgstr "Dôležité veci"
 
 #: ../rigo_app.py:177
 msgid "Breaking Stuff"
-msgstr ""
+msgstr "Voľby pre odborníkov"
 
 #: ../rigo_app.py:180
 msgid "Repository Stuff"

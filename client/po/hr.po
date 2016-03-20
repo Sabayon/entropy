@@ -9,9 +9,9 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-14 16:08+0100\n"
-"PO-Revision-Date: 2014-02-20 15:52+0000\n"
+"PO-Revision-Date: 2014-11-28 11:13+0000\n"
 "Last-Translator: Ivica  Kolić <ikoli@yahoo.com>\n"
-"Language-Team: Croatian (http://www.transifex.com/projects/p/sabayon-entropy/language/hr/)\n"
+"Language-Team: Croatian (http://www.transifex.com/lxnay/sabayon-entropy/language/hr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -124,7 +124,7 @@ msgstr ""
 
 #: ../../lib/entropy/core/settings/base.py:2036
 msgid "No description"
-msgstr ""
+msgstr "Nema opisa"
 
 #: ../../lib/kswitch/__init__.py:122
 msgid "has been installed."
@@ -151,7 +151,7 @@ msgstr ""
 
 #: ../../lib/kswitch/__init__.py:125
 msgid "Please reboot your computer now !"
-msgstr ""
+msgstr "Molim ponovno podignite vaš sustav sada !"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:249
 msgid "Accessibility"
@@ -279,7 +279,7 @@ msgstr "greška"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:1182
 msgid "not readable"
-msgstr ""
+msgstr "nije čitljivo"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2637
 msgid "package not available on system"
@@ -328,7 +328,7 @@ msgstr "Ne mogu kompletirati quickpkg za atome"
 #: ../../lib/entropy/client/interfaces/package/actions/_triggers.py:284
 #: ../../lib/entropy/client/interfaces/package/actions/_triggers.py:535
 msgid "QA"
-msgstr ""
+msgstr "QA"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3218
 msgid "Cannot update Portage package metadata"
@@ -461,7 +461,7 @@ msgstr "Samospajanje datoteke"
 
 #: ../../lib/entropy/client/misc.py:284
 msgid "Found update"
-msgstr ""
+msgstr "Neđeno ažuriranje"
 
 #: ../../lib/entropy/client/interfaces/sets.py:240
 msgid "Name already taken"
@@ -563,7 +563,7 @@ msgstr "Uklanjam"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1891
 msgid "Checking speed of"
-msgstr ""
+msgstr "Provjeravam brzinu"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1922
 msgid "Mirror speed"
@@ -579,15 +579,15 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:408
 msgid "Scanning URL"
-msgstr ""
+msgstr "Skeniram URL"
 
 #: ../../lib/entropy/client/interfaces/db.py:426
 msgid "Selected URL"
-msgstr ""
+msgstr "Odabrani URL"
 
 #: ../../lib/entropy/client/interfaces/db.py:450
 msgid "repository is not available at the database URLs"
-msgstr ""
+msgstr "repozitorij nije dostupan na URL-u baze podataka"
 
 #: ../../lib/entropy/client/interfaces/db.py:457
 msgid "Looking for an alternate route using package mirrors"
@@ -595,15 +595,15 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:466
 msgid "Checking repository URL"
-msgstr ""
+msgstr "Provjeravam URL repozitorija"
 
 #: ../../lib/entropy/client/interfaces/db.py:485
 msgid "Found repository at URL"
-msgstr ""
+msgstr "Nađen je repozitorij na URL-u"
 
 #: ../../lib/entropy/client/interfaces/db.py:497
 msgid "Unable to find alternate repository mirrors. Sorry."
-msgstr ""
+msgstr "Nije moguće naći alternativna zrcala repozitorija. Oprostite."
 
 #: ../../lib/entropy/client/interfaces/db.py:519
 #: ../../client/solo/commands/status.py:153
@@ -685,7 +685,7 @@ msgstr "nije dostupno, uredu je"
 
 #: ../../lib/entropy/client/interfaces/db.py:1143
 msgid "not available, not very ok!"
-msgstr ""
+msgstr "nije dostupno, nije baš dobro!"
 
 #: ../../lib/entropy/client/interfaces/db.py:1156
 msgid "available, w00t!"
@@ -722,7 +722,7 @@ msgstr "GREŠKA"
 
 #: ../../lib/entropy/client/interfaces/db.py:1296
 msgid "An error occurred while checking repository integrity"
-msgstr ""
+msgstr "Došlo ke do greške prilikom provjere integriteta repozitorija"
 
 #: ../../lib/entropy/client/interfaces/db.py:1297
 msgid "Giving up"
@@ -1165,7 +1165,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1158
 msgid "Invalid signatures"
-msgstr ""
+msgstr "Neispravni potpisi"
 
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:117
 msgid "Fetch path setup error"
@@ -1173,7 +1173,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:138
 msgid "Source code not available."
-msgstr ""
+msgstr "Izvorni kod nije doastupan."
 
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:187
 msgid "Local path"
@@ -1185,7 +1185,7 @@ msgstr "Dohvaćam izvore"
 
 #: ../../lib/entropy/client/interfaces/package/actions/_manage.py:79
 msgid "Protecting"
-msgstr ""
+msgstr "Štitim"
 
 #: ../../lib/entropy/client/interfaces/package/actions/_manage.py:81
 msgid "library needed by:"
@@ -1193,7 +1193,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/_manage.py:130
 msgid "Removing library"
-msgstr ""
+msgstr "Uklanjam biblioteku"
 
 #: ../../lib/entropy/client/interfaces/package/actions/_manage.py:133
 msgid "Unregistering library"
@@ -1201,7 +1201,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/_manage.py:160
 msgid "Failed to remove the library"
-msgstr ""
+msgstr "Neuspjelo uklanjanje biblioteke"
 
 #: ../../lib/entropy/client/interfaces/package/actions/_manage.py:352
 msgid "Cannot protect broken symlink"
@@ -1299,7 +1299,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1275
 msgid "Updating installed packages repository"
-msgstr ""
+msgstr "Ažuriram repozitorij instaliranih paketa"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1307
 msgid "Installing"
@@ -1323,7 +1323,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1439
 msgid "QA:"
-msgstr ""
+msgstr "QA:"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1441
 msgid "cannot overwrite"
@@ -1336,7 +1336,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1550
 msgid "File moved"
-msgstr ""
+msgstr "Datoteka je pomaknuta"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1572
 msgid "QA: symlink expected, directory found"
@@ -1402,7 +1402,7 @@ msgstr "beskonačno"
 
 #: ../../lib/entropy/fetchers.py:926
 msgid "[F]"
-msgstr ""
+msgstr "[F]"
 
 #: ../../lib/entropy/fetchers.py:927 ../../lib/entropy/fetchers.py:1344
 msgid "ETA"
@@ -1465,7 +1465,7 @@ msgstr ""
 
 #: ../../lib/entropy/security.py:898
 msgid "cannot create temporary directory"
-msgstr ""
+msgstr "ne mogu napraviti privremeni direktorij"
 
 #: ../../lib/entropy/security.py:917
 msgid "updated successfully"
@@ -1710,7 +1710,7 @@ msgstr ""
 
 #: ../../lib/entropy/qa.py:313
 msgid "blacklisted dependencies !!!"
-msgstr ""
+msgstr "zavisnosti na crnoj listi !!!"
 
 #: ../../lib/entropy/qa.py:338
 msgid "requires libraries"
@@ -1879,11 +1879,11 @@ msgstr "Checksum"
 
 #: ../../client/solo/utils.py:482
 msgid "SHA1"
-msgstr ""
+msgstr "SHA1"
 
 #: ../../client/solo/utils.py:484
 msgid "SHA256"
-msgstr ""
+msgstr "SHA256"
 
 #: ../../client/solo/utils.py:490 ../../client/solo/commands/status.py:133
 msgid "GPG"
@@ -2006,7 +2006,7 @@ msgstr ""
 msgid ""
 "Hi. My name is Bug Reporter. I am sorry to inform you that the program "
 "crashed. Well, you know, shit happens."
-msgstr ""
+msgstr "Haj! Moje ime je Bug Reporter. Žao mi je što vam morqam reći da se vaš program srušio. Znate, sranja se događaju."
 
 #: ../../client/solo/main.py:100
 msgid ""
@@ -2120,7 +2120,7 @@ msgstr ""
 #: ../../client/solo/commands/query.py:80
 #: ../../client/solo/commands/query.py:200
 msgid "file path"
-msgstr ""
+msgstr "putanja datoteke"
 
 #: ../../client/solo/commands/query.py:87
 msgid "show package changelog"
@@ -2148,19 +2148,19 @@ msgstr ""
 
 #: ../../client/solo/commands/query.py:107
 msgid "search package by description"
-msgstr ""
+msgstr "traži paket po opisu"
 
 #: ../../client/solo/commands/query.py:110
 msgid "description keyword"
-msgstr ""
+msgstr "ključna riječ opisa"
 
 #: ../../client/solo/commands/query.py:117
 msgid "show files owned by package"
-msgstr ""
+msgstr "pokaži datoteke u vlasništvu paketa"
 
 #: ../../client/solo/commands/query.py:127
 msgid "search installed packages"
-msgstr ""
+msgstr "traži instalirane pakete"
 
 #: ../../client/solo/commands/query.py:137
 msgid "show packages using the given license"
@@ -2168,7 +2168,7 @@ msgstr ""
 
 #: ../../client/solo/commands/query.py:140
 msgid "license name"
-msgstr ""
+msgstr "ime licence"
 
 #: ../../client/solo/commands/query.py:146
 #: ../../client/solo/commands/query.py:153
@@ -2226,7 +2226,7 @@ msgstr ""
 
 #: ../../client/solo/commands/query.py:231
 msgid "library name (example: libdl.so.2)"
-msgstr ""
+msgstr "ime biblioteke (primjer: libdl.so.2)"
 
 #: ../../client/solo/commands/query.py:238
 msgid "search package sets"
@@ -2438,7 +2438,7 @@ msgstr ""
 
 #: ../../client/solo/commands/query.py:1186
 msgid "Checking"
-msgstr ""
+msgstr "Provjeravam"
 
 #: ../../client/solo/commands/query.py:1201
 msgid "Number of total files"
@@ -2466,7 +2466,7 @@ msgstr ""
 
 #: ../../client/solo/commands/query.py:1286
 msgid "Library"
-msgstr ""
+msgstr "Biblioteka"
 
 #: ../../client/solo/commands/query.py:1310
 msgid "Package Set Search"
@@ -2491,19 +2491,19 @@ msgstr "Dostupne dopune"
 
 #: ../../client/solo/commands/query.py:1577
 msgid "Packages to update:"
-msgstr ""
+msgstr "Paketi za ažuriranje:"
 
 #: ../../client/solo/commands/query.py:1580
 msgid "Packages to remove:"
-msgstr ""
+msgstr "Paketi za uklanjanje:"
 
 #: ../../client/solo/commands/query.py:1584
 msgid "Packages already up-to-date:"
-msgstr ""
+msgstr "Paketi koji su već ažurirani:"
 
 #: ../../client/solo/commands/query.py:1587
 msgid "Critical updates found:"
-msgstr ""
+msgstr "Nađena su kritična ažuriranja:"
 
 #: ../../client/solo/commands/config.py:63
 #: ../../client/solo/commands/security.py:90
@@ -2530,7 +2530,7 @@ msgstr "pitaj prije nego što napraviš bilo kakve izmjene"
 #: ../../client/solo/commands/upgrade.py:73
 #: ../../client/solo/commands/download.py:69
 msgid "show what would be done"
-msgstr ""
+msgstr "pokaži što će biti učinjeno"
 
 #: ../../client/solo/commands/config.py:76
 #: ../../client/solo/commands/remove.py:82
@@ -2602,7 +2602,7 @@ msgstr ""
 
 #: ../../client/solo/commands/status.py:175
 msgid "show Repositories status"
-msgstr ""
+msgstr "pokaži status repozitorija"
 
 #: ../../client/solo/commands/cache.py:60
 msgid "manage cache"
@@ -2727,7 +2727,7 @@ msgstr ""
 
 #: ../../client/solo/commands/security.py:116
 msgid "force download"
-msgstr ""
+msgstr "prisili preuzimanje"
 
 #: ../../client/solo/commands/security.py:125
 msgid "list all the available Security Advisories"
@@ -2871,7 +2871,7 @@ msgstr ""
 
 #: ../../client/solo/commands/conf.py:144
 msgid "Scanning filesystem"
-msgstr ""
+msgstr "Skeniram datotečni sustav"
 
 #: ../../client/solo/commands/conf.py:150
 #: ../../client/solo/commands/conf.py:176
@@ -2885,7 +2885,7 @@ msgstr "datoteka"
 #: ../../client/solo/commands/conf.py:187
 #: ../../client/solo/commands/conf.py:633
 msgid "Type a number"
-msgstr ""
+msgstr "Ukucaj broj"
 
 #: ../../client/solo/commands/conf.py:217
 msgid "Please choose a file to update by typing its identification number."
@@ -2957,7 +2957,7 @@ msgstr "Odredišna datoteka"
 
 #: ../../client/solo/commands/conf.py:394
 msgid "Overwrite ?"
-msgstr ""
+msgstr "Prebrisati?"
 
 #: ../../client/solo/commands/conf.py:403
 msgid "Cannot merge"
@@ -2986,7 +2986,7 @@ msgstr "Uređena datoteka"
 
 #: ../../client/solo/commands/conf.py:489
 msgid "showing difference"
-msgstr ""
+msgstr "pokaži razliku"
 
 #: ../../client/solo/commands/conf.py:497
 #: ../../client/solo/commands/conf.py:602
@@ -3074,7 +3074,7 @@ msgstr "Idi k vragu."
 
 #: ../../client/solo/commands/yell.py:46
 msgid "Stop that, you idiot."
-msgstr ""
+msgstr "Zaustavi to, idiote."
 
 #: ../../client/solo/commands/yell.py:117
 msgid "yell at user"
@@ -3166,7 +3166,7 @@ msgstr "Želite li nastaviti?"
 
 #: ../../client/solo/commands/remove.py:381
 msgid "remove packages from system"
-msgstr ""
+msgstr "ukloni pakete iz sustava"
 
 #: ../../client/solo/commands/search.py:68
 msgid "search keyword"
@@ -3203,7 +3203,7 @@ msgstr ""
 #: ../../client/solo/commands/deptest.py:67
 #: ../../client/solo/commands/libtest.py:74 ../kernel-switcher:45
 msgid "just show what would be done"
-msgstr ""
+msgstr "samo pokaži što će biti učinjenoi"
 
 #: ../../client/solo/commands/deptest.py:160
 msgid "Running dependency test"

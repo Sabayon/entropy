@@ -4,18 +4,18 @@
 # 
 # Translators:
 # KarielG0 <karielg0@gmx.com>, 2014
-# Michal Plichta <mplichta@gmail.com>, 2013
-# Michal Plichta <mplichta@gmail.com>, 2012
+# Michał Plichta <mplichta@gmail.com>, 2013-2014
+# Michał Plichta <mplichta@gmail.com>, 2012
 # Enlik <slawomir.nizio@sabayon.org>, 2012
-# RyD0pR3c <prendter@gmail.com>, 2013-2014
+# Zetok <prendter@gmail.com>, 2013-2014
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-14 16:08+0100\n"
-"PO-Revision-Date: 2014-03-23 09:19+0000\n"
-"Last-Translator: RyD0pR3c <prendter@gmail.com>\n"
-"Language-Team: Polish (http://www.transifex.com/projects/p/sabayon-entropy/language/pl/)\n"
+"PO-Revision-Date: 2014-06-11 07:12+0000\n"
+"Last-Translator: Michał Plichta <mplichta@gmail.com>\n"
+"Language-Team: Polish (http://www.transifex.com/lxnay/sabayon-entropy/language/pl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -120,7 +120,7 @@ msgstr "generowanie metadanych provided_libs, proszę czekać!"
 
 #: ../../lib/entropy/db/sql.py:5469
 msgid "Spm error occurred"
-msgstr ""
+msgstr "Wystąpił błąd Spm"
 
 #: ../../lib/entropy/db/sql.py:5482
 msgid "Spm Unique Identifier not found for"
@@ -1173,7 +1173,7 @@ msgstr "Niepoprawne podpisy"
 
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:117
 msgid "Fetch path setup error"
-msgstr ""
+msgstr "Błąd ustawienia ścieżki do pobierania"
 
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:138
 msgid "Source code not available."
@@ -1461,7 +1461,7 @@ msgstr "Uwaga"
 
 #: ../../lib/entropy/security.py:724
 msgid "broken advisory"
-msgstr ""
+msgstr "Błędne recomandacje"
 
 #: ../../lib/entropy/security.py:881
 msgid "getting latest advisories"
@@ -4237,7 +4237,7 @@ msgstr "zwróć dopasowania dla każdego repozytorium"
 
 #: ../../client/solo/commands/match.py:119
 msgid "print download URIs (w/--quiet)"
-msgstr ""
+msgstr "Wypisz URI do ściagania (z --quiet)"
 
 #: ../../client/solo/commands/match.py:123
 msgid "print repository information (w/--quiet)"

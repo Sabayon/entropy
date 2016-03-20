@@ -3,15 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Danilo Riffo <danriffo@gmail.com>, 2012-2013
+# Danilo Riffo <danriffo@gmail.com>, 2012-2014
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-14 16:14+0100\n"
-"PO-Revision-Date: 2013-12-11 14:18+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Spanish (Chile) (http://www.transifex.com/projects/p/sabayon-rigo/language/es_CL/)\n"
+"PO-Revision-Date: 2014-08-28 20:14+0000\n"
+"Last-Translator: Danilo Riffo <danriffo@gmail.com>\n"
+"Language-Team: Spanish (Chile) (http://www.transifex.com/lxnay/sabayon-rigo/language/es_CL/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -28,19 +28,19 @@ msgstr "Cargando"
 
 #: ../RigoDaemon/app.py:935
 msgid "Internal activity in progress"
-msgstr ""
+msgstr "Actividad interna en progreso"
 
 #: ../RigoDaemon/app.py:937
 msgid "Upgrade in progress"
-msgstr ""
+msgstr "Actualización en progreso"
 
 #: ../RigoDaemon/app.py:939
 msgid "Repositories update in progress"
-msgstr ""
+msgstr "Actualización de los repositorios en progreso"
 
 #: ../RigoDaemon/app.py:941
 msgid "Applications management in progress"
-msgstr ""
+msgstr "Administración de aplicaciones en progreso"
 
 #: ../RigoDaemon/app.py:1446 ../rigo_app.py:785
 msgid "Not authorized"
@@ -151,11 +151,11 @@ msgstr "Aplicación no encontrada"
 
 #: ../rigo/models/repository.py:67
 msgid "Enabled"
-msgstr ""
+msgstr "Habilitado"
 
 #: ../rigo/models/repository.py:69
 msgid "Disabled"
-msgstr ""
+msgstr "Deshabilitado"
 
 #: ../rigo/controllers/daemon.py:84
 msgid "Good luck!"
@@ -367,11 +367,11 @@ msgstr "Blanco sobre Negro"
 
 #: ../rigo/ui/gtk3/controllers/work.py:85
 msgid "Enable automatic scrolling"
-msgstr ""
+msgstr "Activar avance automático"
 
 #: ../rigo/ui/gtk3/controllers/work.py:87
 msgid "Disable automatic scrolling"
-msgstr ""
+msgstr "Desactivar avance automático"
 
 #: ../rigo/ui/gtk3/controllers/work.py:104
 msgid "<i>Show <b>Application Management</b> Progress</i>"
@@ -416,7 +416,7 @@ msgstr "Grupos de Aplicaciones"
 
 #: ../rigo/ui/gtk3/controllers/group.py:91
 msgid "Show Application Groups."
-msgstr ""
+msgstr "Mostrar grupos de aplicaciones"
 
 #: ../rigo/ui/gtk3/controllers/application.py:173
 msgid "Clean Entropy Web Service Session"
@@ -589,24 +589,24 @@ msgstr "Cargando comentarios..."
 #: ../rigo/ui/gtk3/controllers/repository.py:81
 #, python-format
 msgid "Cannot disable <b>%s</b>. Sorry!"
-msgstr ""
+msgstr "No se puede deshabilitar <b>%s</s>. "
 
 #: ../rigo/ui/gtk3/controllers/repository.py:83
 #, python-format
 msgid "Cannot enable <b>%s</b>. Sorry!"
-msgstr ""
+msgstr "No se puede habilitar <b>%s</b>."
 
 #: ../rigo/ui/gtk3/controllers/repository.py:89
 msgid "_Ok"
-msgstr ""
+msgstr "_Ok"
 
 #: ../rigo/ui/gtk3/controllers/repository.py:130
 msgid "Manage Repositories"
-msgstr ""
+msgstr "Administrar Repositorios"
 
 #: ../rigo/ui/gtk3/controllers/repository.py:131
 msgid "Enable, disable or rename Repositories."
-msgstr ""
+msgstr "Habilitar, deshabilitar o renombrar Repositorios"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:272
 #: ../rigo/ui/gtk3/controllers/applications.py:333
@@ -661,20 +661,20 @@ msgstr "Realizar Benchmark a los mirrors de descarga para acelerar la instalaci�
 
 #: ../rigo/ui/gtk3/controllers/applications.py:778
 msgid "Show Available Kernels"
-msgstr ""
+msgstr "Mostrar los kernel disponibles"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:779
 msgid "Browse through the available and installable Linux kernel binaries."
-msgstr ""
+msgstr "Mostrar los kernel de Linux disponibles para instalar"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:791
 msgid "Show Available Long-Term-Stable Kernels"
-msgstr ""
+msgstr "Mostrar los kernel de Linux con soporte extendido disponibles"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:792
 msgid ""
 "Browse through the available and installable Linux LTS kernel binaries."
-msgstr ""
+msgstr "Mostrar los kernel de Linux con soporte extendido disponibles para instalar"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:182
 #, python-format
@@ -933,16 +933,16 @@ msgstr "¡<b>No está permitido</b> renombrar el Repositorio!"
 #, python-format
 msgid "There is <b>%d</b> preserved library on the system"
 msgid_plural "There are <b>%d</b> preserved libraries on the system"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Hay <b>%d</b> biblioteca protegida en el sistema"
+msgstr[1] "Hay <b>%d</b> bibliotecas protegidas en el sistema"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1227
 msgid "Preserved libraries detected on the system."
-msgstr ""
+msgstr "Se detectaron bibliotecas protegidas en el sistema"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1231
 msgid "_Update system now"
-msgstr ""
+msgstr "_Actualizar el sistema ahora"
 
 #: ../rigo/ui/gtk3/widgets/stars.py:400
 #, python-format
@@ -994,19 +994,19 @@ msgstr "Ejecutar"
 
 #: ../rigo/ui/gtk3/widgets/repositorytreeview.py:62
 msgid "Enable"
-msgstr ""
+msgstr "Habilitar"
 
 #: ../rigo/ui/gtk3/widgets/repositorytreeview.py:63
 msgid "Disable"
-msgstr ""
+msgstr "Deshabilitar"
 
 #: ../rigo/ui/gtk3/widgets/repositorytreeview.py:69
 msgid "Rename"
-msgstr ""
+msgstr "Renombrar"
 
 #: ../rigo/ui/gtk3/widgets/grouptreeview.py:48
 msgid "View"
-msgstr ""
+msgstr "Ver"
 
 #: ../rigo/ui/gtk3/widgets/noticeboardtreeview.py:55
 msgid "Show"
@@ -1161,7 +1161,7 @@ msgstr "¡Feliz Navidad \\o/!"
 
 #: ../rigo_app.py:954
 msgid "Happy birthday to my authoooooor!"
-msgstr ""
+msgstr "¡Feliz cumple al autooooooor!"
 
 #: ../rigo_app.py:956
 msgid "<=|=< (this is optimistically a fish)"

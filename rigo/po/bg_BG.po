@@ -4,15 +4,16 @@
 # 
 # Translators:
 # Petar Petrov <petrakis.petrov@gmail.com>, 2012
+# tblu <tblu@autistici.org>, 2015
 # tblu <tblu@autistici.org>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-14 16:14+0100\n"
-"PO-Revision-Date: 2013-12-11 14:18+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Bulgarian (Bulgaria) (http://www.transifex.com/projects/p/sabayon-rigo/language/bg_BG/)\n"
+"PO-Revision-Date: 2015-04-13 21:00+0000\n"
+"Last-Translator: tblu <tblu@autistici.org>\n"
+"Language-Team: Bulgarian (Bulgaria) (http://www.transifex.com/lxnay/sabayon-rigo/language/bg_BG/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -21,11 +22,11 @@ msgstr ""
 
 #: ../RigoDaemon/app.py:129
 msgid "Downloading"
-msgstr ""
+msgstr "сваляне"
 
 #: ../RigoDaemon/app.py:131
 msgid "Uploading"
-msgstr ""
+msgstr "качване"
 
 #: ../RigoDaemon/app.py:935
 msgid "Internal activity in progress"
@@ -49,7 +50,7 @@ msgstr "Не е разрешено"
 
 #: ../RigoDaemon/app.py:1480
 msgid "No repositories configured"
-msgstr "No repositories configured"
+msgstr ""
 
 #: ../RigoDaemon/app.py:1485
 msgid "Unhandled Exception"

@@ -4,15 +4,16 @@
 # 
 # Translators:
 # dudumomo <dudumomo@gmail.com>, 2012
+# Nicolas SUFFYS <nsuffys@gmail.com>, 2014
 # PatTheGeek <patrick.liniger@windowslive.com>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-14 16:14+0100\n"
-"PO-Revision-Date: 2013-12-11 14:18+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: French (http://www.transifex.com/projects/p/sabayon-rigo/language/fr/)\n"
+"PO-Revision-Date: 2014-05-18 13:28+0000\n"
+"Last-Translator: Nicolas SUFFYS <nsuffys@gmail.com>\n"
+"Language-Team: French (http://www.transifex.com/lxnay/sabayon-rigo/language/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -33,11 +34,11 @@ msgstr ""
 
 #: ../RigoDaemon/app.py:937
 msgid "Upgrade in progress"
-msgstr ""
+msgstr "Mise à jour en cours"
 
 #: ../RigoDaemon/app.py:939
 msgid "Repositories update in progress"
-msgstr ""
+msgstr "Mise à jour des dépôts en cours"
 
 #: ../RigoDaemon/app.py:941
 msgid "Applications management in progress"
@@ -152,11 +153,11 @@ msgstr "Application non trouvée"
 
 #: ../rigo/models/repository.py:67
 msgid "Enabled"
-msgstr ""
+msgstr "Activé"
 
 #: ../rigo/models/repository.py:69
 msgid "Disabled"
-msgstr ""
+msgstr "Désactivé"
 
 #: ../rigo/controllers/daemon.py:84
 msgid "Good luck!"
@@ -347,7 +348,7 @@ msgstr "<b>Gestionnaire d'Applications</b> en cours..."
 #: ../rigo/ui/gtk3/controllers/notifications.py:242
 #: ../rigo/ui/gtk3/controllers/notifications.py:260
 msgid "Activity"
-msgstr ""
+msgstr "Activité"
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:243
 #: ../rigo/ui/gtk3/controllers/notifications.py:261
@@ -360,11 +361,11 @@ msgstr "<b>La Mise à Niveau du Système</b> en cours..."
 
 #: ../rigo/ui/gtk3/controllers/work.py:75
 msgid "Black on White"
-msgstr ""
+msgstr "Noir sur Blanc"
 
 #: ../rigo/ui/gtk3/controllers/work.py:80
 msgid "White on Black"
-msgstr ""
+msgstr "Blanc sur Noir"
 
 #: ../rigo/ui/gtk3/controllers/work.py:85
 msgid "Enable automatic scrolling"
@@ -603,17 +604,17 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/repository.py:130
 msgid "Manage Repositories"
-msgstr ""
+msgstr "Gérer les dépôts"
 
 #: ../rigo/ui/gtk3/controllers/repository.py:131
 msgid "Enable, disable or rename Repositories."
-msgstr ""
+msgstr "Activer, désactiver ou renommer les dépôts."
 
 #: ../rigo/ui/gtk3/controllers/applications.py:272
 #: ../rigo/ui/gtk3/controllers/applications.py:333
 #, python-format
 msgid "Application <b>%s</b> not found"
-msgstr ""
+msgstr "Application <b>%s</b> non trouvée"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:563
 msgid "Nothing found for"
@@ -630,11 +631,11 @@ msgstr "Introuvable"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:737
 msgid "Update repositories"
-msgstr ""
+msgstr "Mettre à jour les dépôts"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:738
 msgid "Force the update of the available repositories."
-msgstr ""
+msgstr "Forcer la mise à jour des dépôts disponibles."
 
 #: ../rigo/ui/gtk3/controllers/applications.py:748
 msgid "Show Configuration File Updates"
@@ -646,7 +647,7 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/applications.py:758
 msgid "Show Installed Applications"
-msgstr ""
+msgstr "Afficher les applications installées"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:759
 msgid "Browse through the currently Installed Applications."
@@ -654,7 +655,7 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/applications.py:768
 msgid "Optimize Download Speed"
-msgstr ""
+msgstr "Optimiser la vitesse de téléchargement"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:769
 msgid "Benchmark the download mirrors to speed up Application installation."
@@ -662,7 +663,7 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/applications.py:778
 msgid "Show Available Kernels"
-msgstr ""
+msgstr "Afficher les noyaux disponibles"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:779
 msgid "Browse through the available and installable Linux kernel binaries."
@@ -698,7 +699,7 @@ msgstr "Que faire ?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:198
 msgid "Updates available, how about installing them?"
-msgstr ""
+msgstr "Mises à jour disponibles, que diriez-vous de les installer?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:201
 msgid "_Update"
@@ -904,15 +905,15 @@ msgstr[1] ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1077
 msgid "It is <b>extremely</b> important to always read them."
-msgstr ""
+msgstr "Il est <b>extrêmement</b> important de toujours les lire."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1088
 msgid "Stop annoying me"
-msgstr ""
+msgstr "Arrêtez de m'ennuyer"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1136
 msgid "You are about to rename a Repository"
-msgstr ""
+msgstr "Vous êtes sur le point de renommer un dépôt"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1140
 msgid "_Rename"
@@ -920,15 +921,15 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1155
 msgid "Repository name"
-msgstr ""
+msgstr "Nom du dépôt"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1187
 msgid "<b>Invalid</b> Repository name!"
-msgstr ""
+msgstr "Nom du dépôt <b>invalide</b>!"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1197
 msgid "Repository rename <b>not allowed</b>!"
-msgstr ""
+msgstr "Renommage du dépôt <b>non autorisé</b>!"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1217
 #, python-format
@@ -995,27 +996,27 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/repositorytreeview.py:62
 msgid "Enable"
-msgstr ""
+msgstr "Activer"
 
 #: ../rigo/ui/gtk3/widgets/repositorytreeview.py:63
 msgid "Disable"
-msgstr ""
+msgstr "Désactiver"
 
 #: ../rigo/ui/gtk3/widgets/repositorytreeview.py:69
 msgid "Rename"
-msgstr ""
+msgstr "Renommé"
 
 #: ../rigo/ui/gtk3/widgets/grouptreeview.py:48
 msgid "View"
-msgstr ""
+msgstr "Voir"
 
 #: ../rigo/ui/gtk3/widgets/noticeboardtreeview.py:55
 msgid "Show"
-msgstr ""
+msgstr "Montrer"
 
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:83
 msgid "Edit"
-msgstr ""
+msgstr "Éditer"
 
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:89
 msgid "Difference"
@@ -1023,7 +1024,7 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:101
 msgid "Discard"
-msgstr ""
+msgstr "Renoncer"
 
 #: ../rigo/ui/gtk3/widgets/images.py:208
 msgid "Keywords"
@@ -1043,7 +1044,7 @@ msgstr ""
 
 #: ../rigo_app.py:113
 msgid "Rigo is working, are you sure?"
-msgstr ""
+msgstr "Rigo fonctionne, êtes-vous sûr ?"
 
 #: ../rigo_app.py:159
 msgid "Search"
@@ -1085,11 +1086,11 @@ msgstr ""
 
 #: ../rigo_app.py:500
 msgid "Repositories update error"
-msgstr ""
+msgstr "Erreur de mise à jour des dépôts"
 
 #: ../rigo_app.py:504
 msgid "Repositories updated <b>successfully</b>!"
-msgstr ""
+msgstr "Dépôts mis à jour <b>avec succès</b>!"
 
 #: ../rigo_app.py:522
 msgid "Application Management Error"
@@ -1101,11 +1102,11 @@ msgstr ""
 
 #: ../rigo_app.py:526
 msgid "System Upgrade Error"
-msgstr ""
+msgstr "Erreur de mise à jour du système"
 
 #: ../rigo_app.py:527
 msgid "please check the upgrade log"
-msgstr ""
+msgstr "merci de vérifier le journal de mise à jour"
 
 #: ../rigo_app.py:531
 msgid "Applications managed <b>successfully</b>!"
@@ -1113,20 +1114,20 @@ msgstr ""
 
 #: ../rigo_app.py:533
 msgid "System Upgraded <b>successfully</b>!"
-msgstr ""
+msgstr "Système mis à jour <b>avec succès</b>!"
 
 #: ../rigo_app.py:786
 msgid "You are not authorized to run Rigo"
-msgstr ""
+msgstr "Vous n'êtes pas autorisé à exécuter Rigo"
 
 #: ../rigo_app.py:794 ../rigo_app.py:805 ../rigo_app.py:823 ../rigo_app.py:878
 #: ../rigo_app.py:889 ../rigo_app.py:920
 msgid "Rigo"
-msgstr ""
+msgstr "Rigo"
 
 #: ../rigo_app.py:795
 msgid "RigoDaemon service is not available"
-msgstr ""
+msgstr "Le service RigoDaemon n'est pas disponible"
 
 #: ../rigo_app.py:807
 msgid "API mismatch, please update Rigo and RigoDaemon"
@@ -1154,15 +1155,15 @@ msgstr ""
 
 #: ../rigo_app.py:950
 msgid "Happy St. Valentine <3 <3 !"
-msgstr ""
+msgstr "Bonne Saint-Valentin <3 <3 !"
 
 #: ../rigo_app.py:952
 msgid "Merry Xmas \\o/ !"
-msgstr ""
+msgstr "Joyeux Noël \\o/ !"
 
 #: ../rigo_app.py:954
 msgid "Happy birthday to my authoooooor!"
-msgstr ""
+msgstr "Joyeux anniversaire à mon auteeeeeeur!"
 
 #: ../rigo_app.py:956
 msgid "<=|=< (this is optimistically a fish)"

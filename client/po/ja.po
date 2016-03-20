@@ -3,100 +3,101 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# tblu <tblu@autistici.org>, 2015
-# Tsetso Zdravkov <vyrgozunqk@gmail.com>, 2012
+# necrose99 <mike@michaellawrenceit.com>, 2014
+# necrose99 <mike@michaellawrenceit.com>, 2014
+# necrose99 <mike@michaellawrenceit.com>, 2014-2015
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-14 16:08+0100\n"
-"PO-Revision-Date: 2015-04-13 20:55+0000\n"
-"Last-Translator: tblu <tblu@autistici.org>\n"
-"Language-Team: Bulgarian (http://www.transifex.com/lxnay/sabayon-entropy/language/bg/)\n"
+"PO-Revision-Date: 2015-04-02 02:24+0000\n"
+"Last-Translator: necrose99 <mike@michaellawrenceit.com>\n"
+"Language-Team: Japanese (http://www.transifex.com/lxnay/sabayon-entropy/language/ja/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: bg\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: ja\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 #: ../../lib/entropy/db/skel.py:518
 #: ../../lib/entropy/client/interfaces/package/actions/action.py:100
 #: ../../lib/entropy/locks.py:305
 msgid "Acquiring shared lock on"
-msgstr ""
+msgstr "上の共有ロックを取得"
 
 #: ../../lib/entropy/db/skel.py:529
 #: ../../lib/entropy/client/interfaces/package/actions/action.py:115
 msgid "Acquired shared lock on"
-msgstr ""
+msgstr "取得した共有ロック"
 
 #: ../../lib/entropy/db/skel.py:563
 #: ../../lib/entropy/client/interfaces/package/actions/action.py:98
 #: ../../lib/entropy/locks.py:309
 msgid "Acquiring exclusive lock on"
-msgstr ""
+msgstr "の排他ロックを取得"
 
 #: ../../lib/entropy/db/skel.py:574
 #: ../../lib/entropy/client/interfaces/package/actions/action.py:113
 msgid "Acquired exclusive lock on"
-msgstr ""
+msgstr "取得した排他的ロック"
 
 #: ../../lib/entropy/db/skel.py:2502
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:987
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:1013
 msgid "SPM"
-msgstr "SPM"
+msgstr "SPM（ソースパッケージマネージャ） "
 
 #: ../../lib/entropy/db/skel.py:2503
 msgid "Running packages metadata update"
-msgstr "Тече обновяване на метаданните, на пакетите"
+msgstr "実行中のパッケージメタデータの更新"
 
 #: ../../lib/entropy/db/skel.py:2504
 msgid "it could take a while"
-msgstr "може да отнеме известно време"
+msgstr "それはしばらく時間がかかる可能性があり"
 
 #: ../../lib/entropy/db/skel.py:2523 ../../lib/entropy/db/skel.py:2548
 #: ../../lib/entropy/db/skel.py:2559
 msgid "Entropy"
-msgstr "Ентропи"
+msgstr "エントロピー"
 
 #: ../../lib/entropy/db/skel.py:2524
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:988
 msgid "action"
-msgstr "действие"
+msgstr "アクション"
 
 #: ../../lib/entropy/db/skel.py:2549
 msgid "package move actions complete"
-msgstr "преместването на пакетите е завършено"
+msgstr "パッケージの移動アクションを完了し"
 
 #: ../../lib/entropy/db/skel.py:2560
 msgid "package moves completed successfully"
-msgstr ""
+msgstr "パッケージの移動が正常に完了し"
 
 #: ../../lib/entropy/db/skel.py:4582
 msgid "Syncing current database"
-msgstr ""
+msgstr "現在のデータベースの同期"
 
 #: ../../lib/entropy/db/skel.py:4583
 #: ../../lib/entropy/client/interfaces/db.py:311
 msgid "please wait"
-msgstr "моля изчакайте"
+msgstr "お待ちください"
 
 #: ../../lib/entropy/db/skel.py:4598
 msgid "Removing entry"
-msgstr "истриването на записи"
+msgstr "エントリを削除する"
 
 #: ../../lib/entropy/db/skel.py:4617
 msgid "Adding entry"
-msgstr ""
+msgstr "エントリを追加する"
 
 #: ../../lib/entropy/db/sqlite.py:2048
 msgid "Exporting database table"
-msgstr "Изнасяне на базата данни"
+msgstr "データベーステーブルのエクスポート。"
 
 #: ../../lib/entropy/db/sqlite.py:2088
 msgid "Database Export complete."
-msgstr "Изнасянето на базата данни е завършено."
+msgstr "データベース·エクスポート·完全。"
 
 #: ../../lib/entropy/db/sqlite.py:2454 ../../lib/entropy/db/sqlite.py:2558
 #: ../../lib/entropy/db/sqlite.py:2666 ../../lib/entropy/db/sqlite.py:2679
@@ -105,31 +106,31 @@ msgstr "Изнасянето на базата данни е завършено.
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2815
 #: ../../lib/entropy/client/interfaces/client.py:370
 msgid "ATTENTION"
-msgstr "ВНИМАНИЕ"
+msgstr "注目"
 
 #: ../../lib/entropy/db/sqlite.py:2456 ../../lib/entropy/db/sqlite.py:2560
 msgid "updating repository metadata layout, please wait!"
-msgstr "обновяват се данните на хранилището, моля изчакайте!"
+msgstr "リポジトリ·メタデータのレイアウトを更新しています。しばらくお待ちください！"
 
 #: ../../lib/entropy/db/sqlite.py:2667
 msgid "generating provided_libs metadata, please wait!"
-msgstr ""
+msgstr "提供されるライブラリのメタデータを生成しています。しばらくお待ちください！"
 
 #: ../../lib/entropy/db/sql.py:5469
 msgid "Spm error occurred"
-msgstr ""
+msgstr "SPM：ソースパッケージマネージャでエラーが発生しました"
 
 #: ../../lib/entropy/db/sql.py:5482
 msgid "Spm Unique Identifier not found for"
-msgstr ""
+msgstr "SPM（ソースパッケージマネージャ）一意識別子が見つかりません"
 
 #: ../../lib/entropy/core/settings/base.py:2036
 msgid "No description"
-msgstr ""
+msgstr "記載なし"
 
 #: ../../lib/kswitch/__init__.py:122
 msgid "has been installed."
-msgstr ""
+msgstr "インストールされている。"
 
 #: ../../lib/kswitch/__init__.py:123
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3472
@@ -144,119 +145,119 @@ msgstr ""
 #: ../../client/solo/commands/install.py:502
 #: ../../client/solo/commands/install.py:505
 msgid "Attention"
-msgstr "внимание"
+msgstr "注目"
 
 #: ../../lib/kswitch/__init__.py:124
 msgid "some external drivers cannot work across multiple kernels."
-msgstr ""
+msgstr "一部の外部ドライバは、複数のカーネルまたがって動作することはできません。"
 
 #: ../../lib/kswitch/__init__.py:125
 msgid "Please reboot your computer now !"
-msgstr ""
+msgstr "今、コンピュータを再起動してください！"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:249
 msgid "Accessibility"
-msgstr ""
+msgstr "接近できること"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:251
 msgid "Accessibility applications"
-msgstr ""
+msgstr "補助アプリケーション"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:255
 msgid "Office"
-msgstr "Офис"
+msgstr "オフィス"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:256
 msgid "Applications used in office environments"
-msgstr "Приложения използвани в офлайн среда"
+msgstr "オフィス環境で使用されるアプリケーション"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:262
 msgid "Development"
-msgstr "Разработка"
+msgstr "開発"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:263
 msgid "Applications or system libraries"
-msgstr "Приложения или системни библиотеки"
+msgstr "アプリケーションやシステムライブラリ"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:267
 msgid "System"
-msgstr "Система"
+msgstr "システム"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:268
 msgid "System applications or libraries"
-msgstr "Системни приложения или библиотеки"
+msgstr "システムアプリケーションやライブラリ"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:272
 msgid "Games"
-msgstr "Игри"
+msgstr "ゲーム"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:273
 msgid "Games, enjoy your spare time"
-msgstr "Игри, наслаждавайте се на свободното си време"
+msgstr "ゲームは、あなたの暇な時間を楽しむ"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:277
 msgid "GNOME Desktop"
-msgstr "GNOME графична среда"
+msgstr "GNOMEデスクトップ"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:279
 msgid "Applications and libraries for the GNOME Desktop"
-msgstr "Приложения и библиотеки за GNOME "
+msgstr "アプリケーションおよびGNOMEデスクトップ用ライブラリ"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:283
 msgid "KDE Desktop"
-msgstr "KDE графична среда"
+msgstr "KDEデスクトップ"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:285
 msgid "Applications and libraries for the KDE Desktop"
-msgstr "Приложения и библиотеки за KDE графичната среда"
+msgstr "アプリケーションおよび KDE デスクトップ用ライブラリ"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:289
 msgid "XFCE Desktop"
-msgstr "XFCE графична среда"
+msgstr "XFCE デスクトップ"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:291
 msgid "Applications and libraries for the XFCE Desktop"
-msgstr "Приложения и библиотеки за XFCE"
+msgstr "アプリケーションおよび XFCE デスクトップ用ライブラリ"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:295
 msgid "LXDE Desktop"
-msgstr "LXDE графична среда"
+msgstr "LXDE デスクトップ"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:297
 msgid "Applications and libraries for the LXDE Desktop"
-msgstr "Приложения и библиотеки за LXDE "
+msgstr "アプリケーションおよび LXDE デスクトップ用ライブラリ"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:301
 msgid "Multimedia"
-msgstr "Мултимедия"
+msgstr "複合媒体"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:303
 msgid "Applications and libraries for Multimedia"
-msgstr "Мултимедийни приложения и библиотеки"
+msgstr "アプリケーションやマルチメディアのためのライブラリ"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:307
 msgid "Networking"
-msgstr "Мрежи"
+msgstr "ネットワーキング"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:309
 msgid "Applications and libraries for Networking"
-msgstr "Приложения и библиотеки за мрежово свързване"
+msgstr "アプリケーションとネットワークのためのライブラリ"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:313
 msgid "Science"
-msgstr "Наука"
+msgstr "科学"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:315
 msgid "Scientific applications and libraries"
-msgstr "Научни приложения и библиотеки"
+msgstr "科学的なアプリケーションとライブラリ"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:319
 msgid "Security"
-msgstr "Сигурност"
+msgstr "警備"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:321
 msgid "Security oriented applications"
-msgstr "Приложения ориентирани към сигурността"
+msgstr "セキュリティ指向のアプリケーション"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:325
 msgid "X11"
@@ -264,476 +265,476 @@ msgstr "X11"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:327
 msgid "Applications and libraries for X11"
-msgstr "Приложения и библиотеки за X11"
+msgstr "アプリケーションとX11用のライブラリ"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:624
 msgid "Reloading Portage modules"
-msgstr ""
+msgstr "Portageのモジュールをリロードする"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:1014
 msgid "updating metadata"
-msgstr ""
+msgstr "更新メタデータ"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:1180
 msgid "error"
-msgstr ""
+msgstr "エラー"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:1182
 msgid "not readable"
-msgstr ""
+msgstr "読めない"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2637
 msgid "package not available on system"
-msgstr ""
+msgstr "システムで利用できないパッケージ"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2646
 msgid "repackaging"
-msgstr ""
+msgstr "再パッケージ"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2658
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2852
 msgid "WARNING"
-msgstr "ВНИМАНИЕ"
+msgstr "警告"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2659
 msgid "Cannot complete quickpkg for atom"
-msgstr ""
+msgstr "原子が（quickpkg）迅速なパッケージを完成することはできません"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2661
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2855
 msgid "do it manually"
-msgstr ""
+msgstr "手動で行う"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2679
 msgid "package files rebuild did not run properly"
-msgstr ""
+msgstr "パッケージファイルが正しく実行されなかった再構築"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2680
 msgid "Please update packages manually"
-msgstr ""
+msgstr "パッケージを手動で更新してください"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2816
 msgid "forcing package updates"
-msgstr ""
+msgstr "パッケージの更新を強制的に"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2817
 msgid "Syncing with"
-msgstr ""
+msgstr "と同期"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2853
 msgid "Cannot complete quickpkg for atoms"
-msgstr ""
+msgstr "原子のために（クイックパッケージ）quickpkgを完了することはできません"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3217
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4934
 #: ../../lib/entropy/client/interfaces/package/actions/_triggers.py:284
 #: ../../lib/entropy/client/interfaces/package/actions/_triggers.py:535
 msgid "QA"
-msgstr ""
+msgstr "品質保証"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3218
 msgid "Cannot update Portage package metadata"
-msgstr ""
+msgstr "Portageのパッケージのメタデータを更新できません"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3244
 msgid "SPM uid update error"
-msgstr ""
+msgstr "SPMのUIDの更新エラー"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3311
 msgid "Cannot update SPM installed pkgs file"
-msgstr ""
+msgstr "SPMインストールされたパッケージファイルを更新することはできません"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3413
 msgid "Portage world file is corrupted"
-msgstr ""
+msgstr "Portageのワールドファイルが壊れています"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3473
 msgid "preserved libraries have been found on system"
-msgstr ""
+msgstr "保存ライブラリは、システム上で発見されている"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3618
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3766
 msgid "does not exist"
-msgstr ""
+msgstr "存在しません"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3618
 msgid "Overwriting"
-msgstr ""
+msgstr "重ね書き"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3664
 msgid "variable differs"
-msgstr ""
+msgstr "変数が異なる"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3664
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3751
 msgid "Updating"
-msgstr ""
+msgstr "更新"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3679
 msgid "updating critical variables"
-msgstr ""
+msgstr "重要な変数を更新"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3751
 msgid "differs"
-msgstr ""
+msgstr "が異なる"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3766
 msgid "Reverting"
-msgstr ""
+msgstr "元に戻す"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3781
 msgid "Skipping configuration files update, you are not root."
-msgstr ""
+msgstr "Skipping configuration files update, you are not root."
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4064
 msgid "Error calculating dependencies"
-msgstr ""
+msgstr "エラーの依存関係を計算する"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4623
 msgid "not supported"
-msgstr ""
+msgstr "サポートされていません"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4624
 msgid "Probably Portage API has changed"
-msgstr ""
+msgstr "おそらくPortageのAPIが変更されました"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4687
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4780
 msgid "IOError while reading"
-msgstr ""
+msgstr "IOError：（入力/出力エラー）の読み込み中に"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4935
 msgid "illegal Entropy package tag in ebuild"
-msgstr ""
+msgstr "ebuildの違法エントロピーパッケージタグ"
 
 #: ../../lib/entropy/client/services/interfaces.py:61
 msgid "Unknown documents"
-msgstr ""
+msgstr "不明な書類"
 
 #: ../../lib/entropy/client/services/interfaces.py:62
 msgid "Comments"
-msgstr ""
+msgstr "注釈"
 
 #. BBCODE_TYPE_ID: _('BBcode Documents'),
 #: ../../lib/entropy/client/services/interfaces.py:64
 msgid "Images/Screenshots"
-msgstr ""
+msgstr "画像/スクリーンショット"
 
 #: ../../lib/entropy/client/services/interfaces.py:65
 msgid "Generic Files"
-msgstr ""
+msgstr "一般的なファイル"
 
 #: ../../lib/entropy/client/services/interfaces.py:66
 msgid "Videos"
-msgstr ""
+msgstr "ビデオ"
 
 #: ../../lib/entropy/client/services/interfaces.py:67
 msgid "Icons"
-msgstr ""
+msgstr "アイコン"
 
 #: ../../lib/entropy/client/services/interfaces.py:70
 msgid "Unknown document"
-msgstr ""
+msgstr "不明な書類"
 
 #: ../../lib/entropy/client/services/interfaces.py:71
 msgid "Comment"
-msgstr ""
+msgstr "注釈"
 
 #. BBCODE_TYPE_ID: _('BBcode Document'),
 #: ../../lib/entropy/client/services/interfaces.py:73
 msgid "Image/Screenshot"
-msgstr ""
+msgstr "画像/スクリーンショット"
 
 #: ../../lib/entropy/client/services/interfaces.py:74
 msgid "Generic File"
-msgstr ""
+msgstr "一般的なファイル"
 
 #: ../../lib/entropy/client/services/interfaces.py:75
 msgid "Video"
-msgstr ""
+msgstr "ビデオ"
 
 #: ../../lib/entropy/client/services/interfaces.py:76
 msgid "Icon"
-msgstr ""
+msgstr "アイコン"
 
 #: ../../lib/entropy/client/misc.py:250
 msgid "Automerging file"
-msgstr ""
+msgstr "自動マージファイル"
 
 #: ../../lib/entropy/client/misc.py:284
 msgid "Found update"
-msgstr ""
+msgstr "ある更新"
 
 #: ../../lib/entropy/client/interfaces/sets.py:240
 msgid "Name already taken"
-msgstr ""
+msgstr "名前は既に使用されて"
 
 #: ../../lib/entropy/client/interfaces/sets.py:255
 msgid "Cannot create the element"
-msgstr ""
+msgstr "要素を作成できません"
 
 #: ../../lib/entropy/client/interfaces/sets.py:275
 msgid "cannot start with"
-msgstr ""
+msgstr "で始めることはできません。"
 
 #: ../../lib/entropy/client/interfaces/sets.py:280
 msgid "Already removed"
-msgstr ""
+msgstr "既に削除"
 
 #: ../../lib/entropy/client/interfaces/sets.py:284
 msgid "Not defined by user"
-msgstr ""
+msgstr "ユーザーによって定義されていません"
 
 #: ../../lib/entropy/client/interfaces/sets.py:292
 msgid "Set not found or unable to remove"
-msgstr ""
+msgstr "設定し見つからないか、削除することができませんではない"
 
 #: ../../lib/entropy/client/interfaces/methods.py:92
 msgid "Please update your repositories now in order to remove this message!"
-msgstr ""
+msgstr "このメッセージを除去するために、今、あなたのリポジトリを更新してください！"
 
 #: ../../lib/entropy/client/interfaces/methods.py:111
 #: ../../lib/entropy/client/interfaces/methods.py:136
 #: ../../client/solo/commands/upgrade.py:305
 msgid "Repository"
-msgstr ""
+msgstr "リポジトリ"
 
 #: ../../lib/entropy/client/interfaces/methods.py:112
 #: ../../client/solo/commands/pkg.py:189
 #: ../../client/solo/commands/mask.py:101
 msgid "is not available"
-msgstr ""
+msgstr "利用できない"
 
 #: ../../lib/entropy/client/interfaces/methods.py:112
 #: ../../lib/entropy/client/interfaces/methods.py:137
 msgid "Cannot validate"
-msgstr ""
+msgstr "検証できません"
 
 #: ../../lib/entropy/client/interfaces/methods.py:137
 msgid "is corrupted"
-msgstr ""
+msgstr "破損している"
 
 #: ../../lib/entropy/client/interfaces/methods.py:290
 msgid "bad repository id specified"
-msgstr ""
+msgstr "悪いリポジトリIDが指定されました"
 
 #: ../../lib/entropy/client/interfaces/methods.py:315
 #, python-format
 msgid "Repository %s hasn't been downloaded yet."
-msgstr ""
+msgstr "リポジトリ %s がまだダウンロードされていません。"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1070
 msgid "System database not found or corrupted"
-msgstr ""
+msgstr "システムデータベースが見つからないか、破損していない"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1071
 msgid "running in safe mode using temporary, empty repository"
-msgstr ""
+msgstr "一時、空のリポジトリを使用してセーフモードで実行されている"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1259
 msgid "Backing up repository to"
-msgstr ""
+msgstr "に、リポジトリのバックアップ"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1279
 msgid "Repository backed up successfully"
-msgstr ""
+msgstr "リポジトリには、正常にバックアップ"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1288
 #: ../../lib/entropy/client/interfaces/methods.py:1346
 #: ../../lib/entropy/const.py:629
 msgid "All fine"
-msgstr ""
+msgstr "すべての罰金"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1307
 msgid "Restoring backed up repository"
-msgstr ""
+msgstr "バックアップしたリポジトリを復元する"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1325
 msgid "Unable to unpack"
-msgstr ""
+msgstr "解凍することができません"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1335
 msgid "Repository restored successfully"
-msgstr ""
+msgstr "リポジトリ正常に復元"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1477
 #: ../../lib/entropy/client/interfaces/package/actions/remove.py:129
 #: ../../lib/entropy/client/interfaces/package/actions/remove.py:136
 msgid "Removing"
-msgstr ""
+msgstr "削除"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1891
 msgid "Checking speed of"
-msgstr ""
+msgstr "の速度を確認する"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1922
 msgid "Mirror speed"
-msgstr ""
+msgstr "ミラー速度"
 
 #: ../../lib/entropy/client/interfaces/methods.py:2475
 msgid "not a valid method"
-msgstr ""
+msgstr "ではない有効なメソッド"
 
 #: ../../lib/entropy/client/interfaces/db.py:309
 msgid "Injecting downloaded dump"
-msgstr ""
+msgstr "ダウンロードされたダンプを注入"
 
 #: ../../lib/entropy/client/interfaces/db.py:408
 msgid "Scanning URL"
-msgstr ""
+msgstr "スキャンのURL"
 
 #: ../../lib/entropy/client/interfaces/db.py:426
 msgid "Selected URL"
-msgstr ""
+msgstr "選択されたURL"
 
 #: ../../lib/entropy/client/interfaces/db.py:450
 msgid "repository is not available at the database URLs"
-msgstr ""
+msgstr "リポジトリは、データベースのURLで利用できません"
 
 #: ../../lib/entropy/client/interfaces/db.py:457
 msgid "Looking for an alternate route using package mirrors"
-msgstr ""
+msgstr "パッケージミラーを使用して代替ルートを探して"
 
 #: ../../lib/entropy/client/interfaces/db.py:466
 msgid "Checking repository URL"
-msgstr ""
+msgstr "リポジトリのURLをチェックする"
 
 #: ../../lib/entropy/client/interfaces/db.py:485
 msgid "Found repository at URL"
-msgstr ""
+msgstr "URLにあるリポジトリ"
 
 #: ../../lib/entropy/client/interfaces/db.py:497
 msgid "Unable to find alternate repository mirrors. Sorry."
-msgstr ""
+msgstr "別のリポジトリのミラーを見つけることができません。申し訳ありません。"
 
 #: ../../lib/entropy/client/interfaces/db.py:519
 #: ../../client/solo/commands/status.py:153
 msgid "Repository URL"
-msgstr ""
+msgstr "リポジトリURL"
 
 #: ../../lib/entropy/client/interfaces/db.py:529
 msgid "Repository local path"
-msgstr ""
+msgstr "リポジトリのローカルパス"
 
 #: ../../lib/entropy/client/interfaces/db.py:537
 msgid "Repository API"
-msgstr ""
+msgstr "リポジトリAPI"
 
 #: ../../lib/entropy/client/interfaces/db.py:587
 msgid "Downloading repository"
-msgstr ""
+msgstr "ダウンロードリポジトリ"
 
 #: ../../lib/entropy/client/interfaces/db.py:637
 msgid "unable to download the repository"
-msgstr ""
+msgstr "リポジトリをダウンロードすることができません"
 
 #: ../../lib/entropy/client/interfaces/db.py:658
 msgid "Downloading checksum"
-msgstr ""
+msgstr "ダウンロードチェックサム"
 
 #: ../../lib/entropy/client/interfaces/db.py:685
 msgid "Cannot fetch checksum"
-msgstr ""
+msgstr "チェックサムをフェッチできません"
 
 #: ../../lib/entropy/client/interfaces/db.py:686
 #: ../../lib/entropy/client/interfaces/db.py:1265
 msgid "Cannot verify repository integrity"
-msgstr ""
+msgstr "リポジトリの整合性を検証できません"
 
 #: ../../lib/entropy/client/interfaces/db.py:783
 msgid "Unpacking database to"
-msgstr ""
+msgstr "にデータベースを開梱"
 
 #: ../../lib/entropy/client/interfaces/db.py:800
 msgid "Cannot unpack compressed package"
-msgstr ""
+msgstr "圧縮されたパッケージを解凍することはできません"
 
 #: ../../lib/entropy/client/interfaces/db.py:801
 msgid "Skipping repository"
-msgstr ""
+msgstr "スキップリポジトリ"
 
 #: ../../lib/entropy/client/interfaces/db.py:829
 msgid "Repository is invalid"
-msgstr ""
+msgstr "リポジトリが無効です"
 
 #: ../../lib/entropy/client/interfaces/db.py:853
 msgid "Indexing Repository metadata"
-msgstr ""
+msgstr "インデックス作成リポジトリのメタデータ"
 
 #: ../../lib/entropy/client/interfaces/db.py:1070
 msgid "Downloading repository metafile"
-msgstr ""
+msgstr "リポジトリメタファイルのダウンロード"
 
 #: ../../lib/entropy/client/interfaces/db.py:1080
 msgid "Downloading GPG signature of repository metafile"
-msgstr ""
+msgstr "リポジトリメタファイルのダウンロードGPG署名"
 
 #: ../../lib/entropy/client/interfaces/db.py:1090
 msgid "Downloading Notice Board"
-msgstr ""
+msgstr "掲示板のダウンロード"
 
 #: ../../lib/entropy/client/interfaces/db.py:1116
 msgid "unpacked meta file"
-msgstr ""
+msgstr "アンパックメタファイル"
 
 #: ../../lib/entropy/client/interfaces/db.py:1122
 msgid "removed meta file"
-msgstr ""
+msgstr "削除するメタファイル"
 
 #: ../../lib/entropy/client/interfaces/db.py:1139
 msgid "not available, it's ok"
-msgstr ""
+msgstr "利用できないが、それは大丈夫です！"
 
 #: ../../lib/entropy/client/interfaces/db.py:1143
 msgid "not available, not very ok!"
-msgstr ""
+msgstr "利用できない、非常に大丈夫ではない！"
 
 #: ../../lib/entropy/client/interfaces/db.py:1156
 msgid "available, w00t!"
-msgstr ""
+msgstr "利用可能な、やった！"
 
 #: ../../lib/entropy/client/interfaces/db.py:1174
 msgid "cannot be unpacked, not very ok!"
-msgstr ""
+msgstr "非常に大丈夫ではない、アンパックすることはできません！"
 
 #: ../../lib/entropy/client/interfaces/db.py:1227
 msgid "Repository revision"
-msgstr ""
+msgstr "リポジトリのリビジョン"
 
 #: ../../lib/entropy/client/interfaces/db.py:1250
 msgid "Checking downloaded repository"
-msgstr ""
+msgstr "ダウンロードされたリポジトリをチェック"
 
 #: ../../lib/entropy/client/interfaces/db.py:1264
 msgid "Cannot open digest"
-msgstr ""
+msgstr "ダイジェスト開くことができません"
 
 #: ../../lib/entropy/client/interfaces/db.py:1275
 #: ../../lib/entropy/client/interfaces/db.py:1286
 msgid "Downloaded repository status"
-msgstr ""
+msgstr "ダウンロードしたリポジトリのステータス"
 
 #: ../../lib/entropy/client/interfaces/db.py:1276
 msgid "OK"
-msgstr ""
+msgstr "良し"
 
 #: ../../lib/entropy/client/interfaces/db.py:1287
 msgid "ERROR"
-msgstr ""
+msgstr "誤差"
 
 #: ../../lib/entropy/client/interfaces/db.py:1296
 msgid "An error occurred while checking repository integrity"
-msgstr ""
+msgstr "リポジトリの整合性をチェックするときにエラーが発生しました"
 
 #: ../../lib/entropy/client/interfaces/db.py:1297
 msgid "Giving up"
-msgstr ""
+msgstr "断念"
 
 #: ../../lib/entropy/client/interfaces/db.py:1319
 #: ../../lib/entropy/security.py:397
 msgid ""
 "Make sure to verify the imported key and set an appropriate trust level"
-msgstr ""
+msgstr "インポートしたキーを確認し、適切な信頼レベルを設定することを確認します。"
 
 #: ../../lib/entropy/client/interfaces/db.py:1339
 msgid "This repository suports GPG-signed packages"
@@ -746,12 +747,12 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/db.py:1381
 #: ../../lib/entropy/security.py:437
 msgid "GPG key changed for"
-msgstr ""
+msgstr "GPG キーのを変更"
 
 #: ../../lib/entropy/client/interfaces/db.py:1401
 #: ../../lib/entropy/security.py:456
 msgid "GPG key already installed for"
-msgstr ""
+msgstr "GPG キーが既にインストールされています"
 
 #: ../../lib/entropy/client/interfaces/db.py:1414
 msgid "GPG key EXPIRED for repository"
@@ -765,11 +766,11 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/db.py:1477
 #: ../../lib/entropy/security.py:493
 msgid "Error during GPG key installation"
-msgstr ""
+msgstr "GPG キーのインストール時のエラー"
 
 #: ../../lib/entropy/client/interfaces/db.py:1454
 msgid "GPG key seems already installed but not properly recorded, resetting"
-msgstr ""
+msgstr "GPGキーがすでにインストールされていますが、正常にリセットし、記録されていないようです"
 
 #: ../../lib/entropy/client/interfaces/db.py:1489
 msgid "Successfully installed GPG key for repository"
@@ -778,7 +779,7 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/db.py:1498
 #: ../../lib/entropy/security.py:513
 msgid "Fingerprint"
-msgstr ""
+msgstr "指紋"
 
 #: ../../lib/entropy/client/interfaces/db.py:1536
 msgid "Verifying GPG signature of"
@@ -791,12 +792,12 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/db.py:1560
 #: ../../lib/entropy/security.py:541
 msgid "Error during GPG verification of"
-msgstr ""
+msgstr "GPG 検証中のエラー"
 
 #: ../../lib/entropy/client/interfaces/db.py:1569
 #: ../../lib/entropy/security.py:550
 msgid "It could mean a potential security risk"
-msgstr ""
+msgstr "セキュリティ リスクの可能性を意味するかもしれない"
 
 #: ../../lib/entropy/client/interfaces/db.py:1627
 msgid "Web Service"
@@ -862,7 +863,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:1888
 msgid "local"
-msgstr ""
+msgstr "ローカル"
 
 #: ../../lib/entropy/client/interfaces/db.py:1893
 msgid "remote"
@@ -882,15 +883,15 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:2213
 msgid "Configuration files update error, not critical, continuing"
-msgstr ""
+msgstr "設定ファイルの更新エラー、重要ではない、継続的な"
 
 #: ../../lib/entropy/client/interfaces/client.py:371
 msgid "forcing packages metadata update"
-msgstr ""
+msgstr "強制パッケージメタデータの更新"
 
 #: ../../lib/entropy/client/interfaces/client.py:380
 msgid "Updating system database using repository"
-msgstr ""
+msgstr "リポジトリを使用して更新システムデータベース"
 
 #: ../../lib/entropy/client/interfaces/repository.py:194
 msgid "Something bad happened. Please have a look."
@@ -900,13 +901,11 @@ msgstr ""
 msgid "there is"
 msgid_plural "there are"
 msgstr[0] ""
-msgstr[1] ""
 
 #: ../../lib/entropy/client/interfaces/repository.py:215
 msgid "package file that could be removed"
 msgid_plural "package files that could be removed"
 msgstr[0] ""
-msgstr[1] ""
 
 #: ../../lib/entropy/client/interfaces/repository.py:228
 msgid "Packages are stored in"
@@ -940,7 +939,7 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:590
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:671
 msgid "Mirror"
-msgstr ""
+msgstr "ミラー"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:592
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:673
@@ -949,7 +948,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:643
 msgid "success"
-msgstr ""
+msgstr "成功"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:656
 msgid "Aggregated transfer rate"
@@ -959,7 +958,7 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:734
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:176
 msgid "second"
-msgstr ""
+msgstr "セカンド"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:675
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:751
@@ -979,7 +978,7 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:686
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:774
 msgid "not found"
-msgstr ""
+msgstr "見つからない"
 
 #. timeout!
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:689
@@ -1005,7 +1004,7 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:151
 #: ../../client/solo/utils.py:276 ../../client/solo/commands/command.py:353
 msgid "Downloading"
-msgstr ""
+msgstr "ダウンロード"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:809
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:817
@@ -1013,12 +1012,11 @@ msgstr ""
 #: ../../client/solo/commands/_manage.py:558
 msgid "package"
 msgid_plural "packages"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "パッケージ"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:831
 msgid "Some packages cannot be fetched"
-msgstr ""
+msgstr "いくつかのパッケージを取り出すことができません"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:832
 msgid "Try to update your repositories and retry"
@@ -1032,7 +1030,7 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/package/actions/config.py:164
 #: ../../client/solo/commands/rescue.py:204
 msgid "Error"
-msgstr ""
+msgstr "エラー"
 
 #: ../../lib/entropy/client/interfaces/package/actions/_triggers.py:285
 msgid "Cannot run External trigger for"
@@ -1041,7 +1039,7 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/package/actions/_triggers.py:287
 #: ../../lib/entropy/client/interfaces/package/actions/_triggers.py:539
 msgid "Please report it"
-msgstr ""
+msgstr "それを報告してください"
 
 #: ../../lib/entropy/client/interfaces/package/actions/_triggers.py:499
 msgid "Installing info"
@@ -1071,11 +1069,11 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/remove.py:115
 msgid "The requested package is no longer available"
-msgstr ""
+msgstr "要求されたパッケージは利用できなくなりました。"
 
 #: ../../lib/entropy/client/interfaces/package/actions/remove.py:149
 msgid "Removing from Entropy"
-msgstr ""
+msgstr "エントロピーから削除"
 
 #: ../../lib/entropy/client/interfaces/package/actions/remove.py:234
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:866
@@ -1084,7 +1082,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/action.py:221
 msgid "An error occurred. Action aborted."
-msgstr ""
+msgstr "エラーが発生しました。アクションが中止されました。"
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:702
 msgid "Downloading from"
@@ -1107,19 +1105,19 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:768
 msgid "Disabling resume"
-msgstr ""
+msgstr "履歴書を無効にする"
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:780
 msgid "timeout, retrying on this mirror"
-msgstr ""
+msgstr "このミラーのタイムアウト、再試行"
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:783
 msgid "timeout, giving up"
-msgstr ""
+msgstr "タイムアウト、あきらめる"
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:831
 msgid "Package cannot be downloaded. Try to update repositories"
-msgstr ""
+msgstr "パッケージはダウンロードできません。リポジトリを更新しよう"
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1018
 msgid "Package signature verification error for"
@@ -1147,7 +1145,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1098
 msgid "validated"
-msgstr ""
+msgstr "有効な"
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1108
 msgid "Checking package checksum..."
@@ -1155,23 +1153,23 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1126
 msgid "Checksum validation error"
-msgstr ""
+msgstr "チェックサム検証エラー"
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1140
 msgid "Invalid checksum"
-msgstr ""
+msgstr "無効なチェックサム"
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1158
 msgid "Invalid signatures"
-msgstr ""
+msgstr "無効な署名"
 
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:117
 msgid "Fetch path setup error"
-msgstr ""
+msgstr "パス設定エラーをフェッチ"
 
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:138
 msgid "Source code not available."
-msgstr ""
+msgstr "ソースコードは利用できません。"
 
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:187
 msgid "Local path"
@@ -1183,23 +1181,23 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/_manage.py:79
 msgid "Protecting"
-msgstr ""
+msgstr "保護"
 
 #: ../../lib/entropy/client/interfaces/package/actions/_manage.py:81
 msgid "library needed by:"
-msgstr ""
+msgstr "が必要とするライブラリ："
 
 #: ../../lib/entropy/client/interfaces/package/actions/_manage.py:130
 msgid "Removing library"
-msgstr ""
+msgstr "ライブラリの削除"
 
 #: ../../lib/entropy/client/interfaces/package/actions/_manage.py:133
 msgid "Unregistering library"
-msgstr ""
+msgstr "登録解除のライブラリ"
 
 #: ../../lib/entropy/client/interfaces/package/actions/_manage.py:160
 msgid "Failed to remove the library"
-msgstr ""
+msgstr "ライブラリの削除に失敗しました"
 
 #: ../../lib/entropy/client/interfaces/package/actions/_manage.py:352
 msgid "Cannot protect broken symlink"
@@ -1220,7 +1218,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/_manage.py:547
 msgid "remove"
-msgstr ""
+msgstr "退ける"
 
 #: ../../lib/entropy/client/interfaces/package/actions/_manage.py:567
 msgid "This package contains a badly encoded file !!!"
@@ -1245,7 +1243,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:455
 msgid "Unable to unpack package"
-msgstr ""
+msgstr "パッケージを展開することができません"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:526
 msgid "Merging"
@@ -1257,7 +1255,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:565
 msgid "An error occurred while trying to unpack the package"
-msgstr ""
+msgstr "パッケージを展開しようとしたときにエラーが発生しました"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:568
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1262
@@ -1270,7 +1268,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:681
 msgid "Pre-install"
-msgstr ""
+msgstr "プレインストール"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:730
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:744
@@ -1283,7 +1281,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:923
 msgid "Post-install"
-msgstr ""
+msgstr "インストール後"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:950
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:956
@@ -1293,15 +1291,15 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1261
 msgid "An error occurred while trying to install the package"
-msgstr ""
+msgstr "パッケージをインストール中にエラーが発生しました"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1275
 msgid "Updating installed packages repository"
-msgstr ""
+msgstr "インストールされたパッケージのリポジトリを更新"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1307
 msgid "Installing"
-msgstr ""
+msgstr "装着"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1313
 msgid "Installing package"
@@ -1321,7 +1319,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1439
 msgid "QA:"
-msgstr ""
+msgstr "QA:"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1441
 msgid "cannot overwrite"
@@ -1330,15 +1328,15 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1525
 #, python-format
 msgid "QA: %s is a file when it should be a directory"
-msgstr ""
+msgstr "QA：%s それはディレクトリでなければならないときにファイルである"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1550
 msgid "File moved"
-msgstr ""
+msgstr "ファイルを移動"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1572
 msgid "QA: symlink expected, directory found"
-msgstr ""
+msgstr "QA：シンボリックリンクと予想、ディレクトリ発見"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1606
 msgid "Cannot remove symlink"
@@ -1354,19 +1352,19 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1803
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1825
 msgid "QA: circular symlink issue"
-msgstr ""
+msgstr "QA：円形のシンボリックリンクの問題"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1865
 msgid "Fatal: file expected, directory found"
-msgstr ""
+msgstr "致命的：ファイル期待、ディレクトリ発見"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1905
 msgid "QA: file move error"
-msgstr ""
+msgstr "QA：ファイルの移動エラー"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1908
 msgid "please report"
-msgstr ""
+msgstr "報告してください"
 
 #: ../../lib/entropy/client/interfaces/package/actions/config.py:85
 msgid "configuration phase"
@@ -1375,7 +1373,7 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/package/actions/config.py:141
 #: ../../lib/entropy/client/interfaces/package/actions/config.py:161
 msgid "An error occurred while trying to configure the package"
-msgstr ""
+msgstr "パッケージを設定中にエラーが発生しました"
 
 #: ../../lib/entropy/client/interfaces/package/actions/config.py:143
 msgid "Make sure that your system is healthy"
@@ -1387,7 +1385,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/config.py:190
 msgid "The requested package is no longer available."
-msgstr ""
+msgstr "要求されたパッケージは利用できなくなりました。"
 
 #: ../../lib/entropy/client/interfaces/package/actions/config.py:212
 #: ../../lib/entropy/client/interfaces/package/actions/config.py:218
@@ -1396,41 +1394,40 @@ msgstr ""
 
 #: ../../lib/entropy/fetchers.py:854
 msgid "infinite"
-msgstr ""
+msgstr "無限"
 
 #: ../../lib/entropy/fetchers.py:926
 msgid "[F]"
-msgstr ""
+msgstr "[F]"
 
 #: ../../lib/entropy/fetchers.py:927 ../../lib/entropy/fetchers.py:1344
 msgid "ETA"
-msgstr ""
+msgstr "ETA"
 
 #: ../../lib/entropy/fetchers.py:928 ../../lib/entropy/fetchers.py:1345
 msgid "sec"
-msgstr ""
+msgstr "sec"
 
 #: ../../lib/entropy/fetchers.py:1208
 msgid "Aggregated download"
-msgstr ""
+msgstr "集約されたダウンロード"
 
 #: ../../lib/entropy/fetchers.py:1210
 msgid "item"
 msgid_plural "items"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "項目"
 
 #: ../../lib/entropy/security.py:469
 msgid "GPG key EXPIRED for URL"
-msgstr ""
+msgstr "URL の GPG キー期限切れ"
 
 #: ../../lib/entropy/security.py:479
 msgid "Installing GPG key for URL"
-msgstr ""
+msgstr "GPG キー URL をインストールします。"
 
 #: ../../lib/entropy/security.py:504
 msgid "Successfully installed GPG key for URL"
-msgstr ""
+msgstr "GPG キーの URL は正常にインストール"
 
 #: ../../lib/entropy/security.py:561 ../../lib/entropy/security.py:880
 #: ../../lib/entropy/security.py:916 ../../lib/entropy/security.py:921
@@ -1439,142 +1436,142 @@ msgstr ""
 #: ../../lib/entropy/security.py:1061 ../../lib/entropy/security.py:1086
 #: ../../lib/entropy/security.py:1121
 msgid "Security Advisories"
-msgstr ""
+msgstr "セキュリティ アドバイザリ"
 
 #: ../../lib/entropy/security.py:562
 msgid "GPG key verification successful"
-msgstr ""
+msgstr "GPG キー検証の成功"
 
 #: ../../lib/entropy/security.py:722 ../../client/solo/commands/_manage.py:397
 #: ../../client/solo/commands/_manage.py:430
 #: ../../client/solo/commands/pkg.py:187 ../../client/solo/commands/mask.py:99
 #: ../../client/solo/commands/mask.py:172
 msgid "Warning"
-msgstr ""
+msgstr "警告"
 
 #: ../../lib/entropy/security.py:724
 msgid "broken advisory"
-msgstr ""
+msgstr "壊れた顧問"
 
 #: ../../lib/entropy/security.py:881
 msgid "getting latest advisories"
-msgstr ""
+msgstr "最新の勧告を取得"
 
 #: ../../lib/entropy/security.py:898
 msgid "cannot create temporary directory"
-msgstr ""
+msgstr "一時ディレクトリを作成することはできません"
 
 #: ../../lib/entropy/security.py:917
 msgid "updated successfully"
-msgstr ""
+msgstr "正常に更新されました"
 
 #: ../../lib/entropy/security.py:922
 msgid "already up to date"
-msgstr ""
+msgstr "既に最新の状態"
 
 #: ../../lib/entropy/security.py:990
 msgid "cannot download checksum, sorry"
-msgstr ""
+msgstr "チェックサムをダウンロードできません申し訳ありません"
 
 #: ../../lib/entropy/security.py:1019
 msgid "unable to download advisories, sorry"
-msgstr ""
+msgstr "勧告をダウンロードすることができません申し訳ありません"
 
 #: ../../lib/entropy/security.py:1031
 msgid "Verifying checksum"
-msgstr ""
+msgstr "チェックサムの検証"
 
 #: ../../lib/entropy/security.py:1051
 msgid "verification successful"
-msgstr ""
+msgstr "確認が完了しました"
 
 #: ../../lib/entropy/security.py:1062
 msgid "checksum verification failed, sorry"
-msgstr ""
+msgstr "チェックサム検証は申し訳ありませんが、失敗しました。"
 
 #: ../../lib/entropy/security.py:1087
 msgid "GPG service not available"
-msgstr ""
+msgstr "GPG サービスは利用できません。"
 
 #: ../../lib/entropy/security.py:1122
 msgid "digest verification failed, try again later"
-msgstr ""
+msgstr "ダイジェストの検証に失敗しました, もう一度お試しください。"
 
 #: ../../lib/entropy/const.py:607
 msgid "Runtime dependency"
-msgstr ""
+msgstr "実行時の依存関係"
 
 #: ../../lib/entropy/const.py:608
 msgid "Post dependency"
-msgstr ""
+msgstr "依存関係を記事します。"
 
 #: ../../lib/entropy/const.py:609
 msgid "Manually added (by staff) dependency"
-msgstr ""
+msgstr "（スタッフ） を手動で追加した依存関係"
 
 #: ../../lib/entropy/const.py:610
 msgid "Build dependency"
-msgstr ""
+msgstr "依存関係を構築します。"
 
 #: ../../lib/entropy/const.py:630
 msgid "Corrupted Client Repository. Please restore a backup."
-msgstr ""
+msgstr "クライアントが破損してリポジトリ。バックアップを復元してください。"
 
 #: ../../lib/entropy/const.py:662
 msgid "reason not available"
-msgstr ""
+msgstr "利用できない理由"
 
 #: ../../lib/entropy/const.py:663
 msgid "user package.mask"
-msgstr ""
+msgstr "ユーザー package.mask"
 
 #: ../../lib/entropy/const.py:664
 msgid "system keywords"
-msgstr ""
+msgstr "システムのキーワード"
 
 #: ../../lib/entropy/const.py:665
 msgid "user package.unmask"
-msgstr ""
+msgstr "ユーザー にパッケージアンマスク(package.unmask)"
 
 #: ../../lib/entropy/const.py:666
 msgid "user repo package.keywords (all packages)"
-msgstr ""
+msgstr "ユーザー レポ package.keywords (すべてのパッケージ)"
 
 #: ../../lib/entropy/const.py:667
 msgid "user repo package.keywords"
-msgstr ""
+msgstr "ユーザーレポパッケージキーワード（package.keywords）"
 
 #: ../../lib/entropy/const.py:668
 msgid "user package.keywords"
-msgstr ""
+msgstr "ユーザーパッケージのキーワード（package.keywords）"
 
 #: ../../lib/entropy/const.py:669
 msgid "completely masked (by keyword?)"
-msgstr ""
+msgstr "完全にマスク (キーワードか？）"
 
 #: ../../lib/entropy/const.py:670
 msgid "repository general packages.db.mask"
-msgstr ""
+msgstr "リポジトリの一般的な packages.db.mask"
 
 #: ../../lib/entropy/const.py:671
 msgid "repository general packages.db.keywords"
-msgstr ""
+msgstr "リポジトリの一般のパッケージデータベースのキーワード（packages.db.keywords）"
 
 #: ../../lib/entropy/const.py:672
 msgid "user license.mask"
-msgstr ""
+msgstr "ユーザーライセンスマスク（license.mask）"
 
 #: ../../lib/entropy/const.py:673
 msgid "user live unmask"
-msgstr ""
+msgstr "ユーザーがライブの正体を暴露"
 
 #: ../../lib/entropy/const.py:674
 msgid "user live mask"
-msgstr ""
+msgstr "ユーザー ライブ マスク"
 
 #: ../../lib/entropy/output.py:637
 msgid "Entropy needs your attention"
-msgstr ""
+msgstr "エントロピーは、注意が必要"
 
 #: ../../lib/entropy/output.py:780 ../../lib/entropy/output.py:1026
 #: ../../client/solo/utils.py:487 ../../client/solo/commands/ugc.py:656
@@ -1586,7 +1583,7 @@ msgstr ""
 #: ../../client/solo/commands/upgrade.py:300
 #: ../../client/solo/commands/upgrade.py:336
 msgid "Yes"
-msgstr ""
+msgstr "はい"
 
 #: ../../lib/entropy/output.py:780 ../../client/solo/utils.py:489
 #: ../../client/solo/main.py:168 ../../client/solo/commands/config.py:152
@@ -1602,192 +1599,192 @@ msgstr ""
 #: ../../client/solo/commands/upgrade.py:300
 #: ../../client/solo/commands/mask.py:161
 msgid "No"
-msgstr ""
+msgstr "いいえ"
 
 #: ../../lib/entropy/output.py:795
 msgid "Entropy got a question for you"
-msgstr ""
+msgstr "エントロピーはあなたのために質問したい"
 
 #: ../../lib/entropy/output.py:809
 msgid "Interrupted"
-msgstr ""
+msgstr "中断"
 
 #: ../../lib/entropy/output.py:872 ../../lib/entropy/output.py:876
 msgid "Selected number"
-msgstr ""
+msgstr "選択した数"
 
 #: ../../lib/entropy/output.py:893 ../../client/solo/commands/_manage.py:671
 msgid "Please select an option"
-msgstr ""
+msgstr "オプションを選択してください。"
 
 #: ../../lib/entropy/output.py:895
 msgid "Discard all"
-msgstr ""
+msgstr "すべてを捨てる"
 
 #: ../../lib/entropy/output.py:896
 msgid "Confirm"
-msgstr ""
+msgstr "確認する"
 
 #: ../../lib/entropy/output.py:897
 msgid "Add item"
-msgstr ""
+msgstr "アイテムの追加"
 
 #: ../../lib/entropy/output.py:898
 msgid "Edit item"
-msgstr ""
+msgstr "編集項目"
 
 #: ../../lib/entropy/output.py:899
 msgid "Remove item"
-msgstr ""
+msgstr "項目を削除"
 
 #: ../../lib/entropy/output.py:900
 msgid "Show current list"
-msgstr ""
+msgstr "現在のリストを表示する"
 
 #: ../../lib/entropy/output.py:904 ../../client/solo/commands/conf.py:251
 #: ../../client/solo/commands/conf.py:294
 msgid "Your choice (type a number and press enter):"
-msgstr ""
+msgstr "あなたの選択 (入力番号を押します):"
 
 #: ../../lib/entropy/output.py:936
 msgid "You don't have typed a number."
-msgstr ""
+msgstr "数値を入力したはありません。"
 
 #: ../../lib/entropy/output.py:939
 msgid "Invalid action."
-msgstr ""
+msgstr "無効なアクション。"
 
 #: ../../lib/entropy/output.py:949
 msgid "String to add (-1 to go back):"
-msgstr ""
+msgstr "(戻って-1) を追加する文字列:"
 
 #: ../../lib/entropy/output.py:959
 msgid "Invalid string."
-msgstr ""
+msgstr "無効な文字列。"
 
 #: ../../lib/entropy/output.py:967
 msgid "Element number to edit (-1 to go back):"
-msgstr ""
+msgstr "(戻って-1) を編集する要素の数:"
 
 #: ../../lib/entropy/output.py:978
 msgid "old"
-msgstr ""
+msgstr "古い"
 
 #: ../../lib/entropy/output.py:978
 msgid "new value:"
-msgstr ""
+msgstr "新しい値:"
 
 #: ../../lib/entropy/output.py:986 ../../lib/entropy/output.py:1004
 msgid "Invalid element."
-msgstr ""
+msgstr "無効な要素。"
 
 #: ../../lib/entropy/output.py:995
 msgid "Element number to remove (-1 to go back):"
-msgstr ""
+msgstr "(戻って-1) を削除する要素の数:"
 
 #: ../../lib/entropy/qa.py:163
 msgid "Searching for broken reverse dependencies"
-msgstr ""
+msgstr "壊れた逆依存関係を検索する"
 
 #: ../../lib/entropy/qa.py:180
 msgid "scanning for broken reverse dependencies"
-msgstr ""
+msgstr "壊れた逆依存関係をスキャンする"
 
 #: ../../lib/entropy/qa.py:221
 msgid "broken libraries detected"
-msgstr ""
+msgstr "検出された破損したライブラリ"
 
 #: ../../lib/entropy/qa.py:232
 msgid "needs"
-msgstr ""
+msgstr "ニーズに"
 
 #: ../../lib/entropy/qa.py:271
 msgid "scanning"
-msgstr ""
+msgstr "スキャン"
 
 #: ../../lib/entropy/qa.py:313
 msgid "blacklisted dependencies !!!"
-msgstr ""
+msgstr "ブラックリストに載って依存関係！"
 
 #: ../../lib/entropy/qa.py:338
 msgid "requires libraries"
-msgstr ""
+msgstr "ライブラリが必要"
 
 #: ../../lib/entropy/qa.py:356
 msgid "library provided by"
-msgstr ""
+msgstr "ライブラリが提供する"
 
 #: ../../lib/entropy/qa.py:402 ../../lib/entropy/qa.py:629
 msgid "no packages"
-msgstr ""
+msgstr "何のパッケージない"
 
 #: ../../lib/entropy/qa.py:431
 msgid "is potentially missing these dependencies"
-msgstr ""
+msgstr "潜在的にこれらの依存関係を欠落しています"
 
 #: ../../lib/entropy/qa.py:568
 msgid "determining missing libraries"
-msgstr ""
+msgstr "不足しているライブラリを決定する"
 
 #: ../../lib/entropy/qa.py:600
 msgid "requires"
-msgstr ""
+msgstr "が必要です"
 
 #: ../../lib/entropy/qa.py:617 ../../lib/entropy/qa.py:628
 msgid "provided by"
-msgstr ""
+msgstr "によって提供されます。"
 
 #: ../../lib/entropy/qa.py:641
 msgid "no missing runtime libraries found"
-msgstr ""
+msgstr "見つかっミッシング実行時ライブラリません"
 
 #: ../../lib/entropy/qa.py:677
 msgid "Libraries test"
-msgstr ""
+msgstr "ライブラリのテスト"
 
 #: ../../lib/entropy/qa.py:692
 msgid "Broken symbols packages list"
-msgstr ""
+msgstr "壊れたシンボルパッケージ一覧"
 
 #: ../../lib/entropy/qa.py:693
 msgid "Broken executables list"
-msgstr ""
+msgstr "壊れた実行可能プログラムのリスト"
 
 #: ../../lib/entropy/qa.py:695
 msgid "Dumping results into these files"
-msgstr ""
+msgstr "これらのファイルに結果をダンプ"
 
 #: ../../lib/entropy/qa.py:775
 msgid "discarding directory"
-msgstr ""
+msgstr "ディレクトリの破棄"
 
 #: ../../lib/entropy/qa.py:777
 msgid "because it's symlinked on"
-msgstr ""
+msgstr "シンボリック リンク上にあるため"
 
 #: ../../lib/entropy/qa.py:827
 msgid "Collecting broken executables"
-msgstr ""
+msgstr "壊れた実行ファイルの収集"
 
 #: ../../lib/entropy/qa.py:833
 msgid "don't worry about libraries that are shown here but not later."
-msgstr ""
+msgstr "ライブラリがここに示されている心配しないでください。"
 
 #: ../../lib/entropy/qa.py:854
 msgid "Scanning libraries"
-msgstr ""
+msgstr "スキャンライブラリ"
 
 #: ../../lib/entropy/qa.py:964
 msgid "various broken symbols"
-msgstr ""
+msgstr "様々な壊れたシンボル"
 
 #: ../../lib/entropy/qa.py:1003
 msgid "Matching broken libraries/executables"
-msgstr ""
+msgstr "壊れたライブラリ/実行可能プログラムと一致する"
 
 #: ../../lib/entropy/qa.py:1769
 msgid "Not prepared yet"
-msgstr ""
+msgstr "まだ準備されていません"
 
 #: ../../client/solo/utils.py:68
 msgid "directory"
@@ -1805,153 +1802,153 @@ msgstr ""
 #: ../../client/solo/utils.py:481 ../../client/solo/commands/repo.py:505
 #: ../../client/solo/commands/repo.py:560
 msgid "N/A"
-msgstr ""
+msgstr "N/A（適用されない）"
 
 #: ../../client/solo/utils.py:278 ../../client/solo/commands/command.py:355
 msgid "Uploading"
-msgstr ""
+msgstr "アップロード"
 
 #: ../../client/solo/utils.py:338 ../../client/solo/utils.py:374
 #: ../../client/solo/utils.py:375 ../../client/solo/utils.py:579
 msgid "n/a"
-msgstr ""
+msgstr "n/a （該当なし）"
 
 #: ../../client/solo/utils.py:373
 msgid "Not installed"
-msgstr ""
+msgstr "インストールされていません"
 
 #: ../../client/solo/utils.py:400 ../../client/solo/commands/query.py:467
 #: ../../client/solo/commands/query.py:716
 #: ../../client/solo/commands/query.py:1040
 msgid "Package"
-msgstr ""
+msgstr "包み"
 
 #: ../../client/solo/utils.py:402 ../../client/solo/commands/hop.py:57
 msgid "branch"
-msgstr ""
+msgstr "支店"
 
 #: ../../client/solo/utils.py:413
 msgid "Category"
-msgstr ""
+msgstr "カテゴリ"
 
 #: ../../client/solo/utils.py:415
 msgid "Name"
-msgstr ""
+msgstr "名前"
 
 #: ../../client/solo/utils.py:430 ../../client/solo/commands/query.py:581
 msgid "Masked"
-msgstr ""
+msgstr "仮面"
 
 #: ../../client/solo/utils.py:433
 msgid "Available"
-msgstr ""
+msgstr "利用できる"
 
 #: ../../client/solo/utils.py:435 ../../client/solo/utils.py:443
 msgid "Installed"
-msgstr ""
+msgstr "インストル"
 
 #: ../../client/solo/utils.py:438 ../../client/solo/utils.py:444
 msgid "version"
-msgstr ""
+msgstr "バージョン"
 
 #: ../../client/solo/utils.py:439 ../../client/solo/utils.py:446
 msgid "revision"
-msgstr ""
+msgstr "探す"
 
 #: ../../client/solo/utils.py:449
 msgid "Slot"
-msgstr ""
+msgstr "スロット"
 
 #: ../../client/solo/utils.py:470
 msgid "Size"
-msgstr ""
+msgstr "サイズ"
 
 #: ../../client/solo/utils.py:472 ../../client/solo/commands/ugc.py:382
 msgid "Download"
-msgstr ""
+msgstr "ダウンロード"
 
 #: ../../client/solo/utils.py:474
 msgid "Checksum"
-msgstr ""
+msgstr "チェックサム"
 
 #: ../../client/solo/utils.py:482
 msgid "SHA1"
-msgstr ""
+msgstr "SHA1"
 
 #: ../../client/solo/utils.py:484
 msgid "SHA256"
-msgstr ""
+msgstr "SHA256"
 
 #: ../../client/solo/utils.py:490 ../../client/solo/commands/status.py:133
 msgid "GPG"
-msgstr ""
+msgstr "GPG"
 
 #: ../../client/solo/utils.py:495
 msgid "Dependencies"
-msgstr ""
+msgstr "依存関係"
 
 #: ../../client/solo/utils.py:503 ../../client/solo/utils.py:682
 msgid "Legend"
-msgstr ""
+msgstr "凡例"
 
 #: ../../client/solo/utils.py:510
 msgid "Conflicts"
-msgstr ""
+msgstr "競合"
 
 #: ../../client/solo/utils.py:515
 msgid "Homepage"
-msgstr ""
+msgstr "ホームページ"
 
 #: ../../client/solo/utils.py:525 ../../client/solo/commands/security.py:228
 #: ../../client/solo/commands/ugc.py:627
 msgid "Description"
-msgstr ""
+msgstr "記載なし"
 
 #: ../../client/solo/utils.py:534
 msgid "USE flags"
-msgstr ""
+msgstr "フラグを使用"
 
 #: ../../client/solo/utils.py:550
 msgid "CHOST"
-msgstr ""
+msgstr "CHOST"
 
 #: ../../client/solo/utils.py:552
 msgid "CFLAGS"
-msgstr ""
+msgstr "CFLAGS"
 
 #: ../../client/solo/utils.py:554
 msgid "CXXFLAGS"
-msgstr ""
+msgstr "CXXFLAGS"
 
 #: ../../client/solo/utils.py:558
 msgid "Sources"
-msgstr ""
+msgstr "ソース"
 
 #: ../../client/solo/utils.py:563
 msgid "Entry API"
-msgstr ""
+msgstr "エントリーのAPI"
 
 #: ../../client/solo/utils.py:565
 msgid "Compiled with"
-msgstr ""
+msgstr "コンパイル"
 
 #: ../../client/solo/utils.py:570 ../../client/solo/commands/search.py:180
 #: ../../client/solo/commands/ugc.py:375 ../../client/solo/commands/ugc.py:634
 #: ../../client/solo/commands/match.py:236
 msgid "Keywords"
-msgstr ""
+msgstr "キーワード"
 
 #: ../../client/solo/utils.py:585
 msgid "Created"
-msgstr ""
+msgstr "作成"
 
 #: ../../client/solo/utils.py:592 ../../client/solo/commands/_manage.py:730
 msgid "License"
-msgstr ""
+msgstr "認可"
 
 #: ../../client/solo/utils.py:614
 msgid "Reverse graphing installed package"
-msgstr ""
+msgstr "探す"
 
 #: ../../client/solo/utils.py:626 ../../client/solo/utils.py:785
 #: ../../client/solo/commands/config.py:119
@@ -1961,27 +1958,27 @@ msgstr ""
 #: ../../client/solo/commands/download.py:164
 #: ../../client/solo/commands/mask.py:118
 msgid "No packages found"
-msgstr ""
+msgstr "見つかりませんでした"
 
 #: ../../client/solo/utils.py:685
 msgid "packages passed as arguments"
-msgstr ""
+msgstr "引数として渡されたパッケージ"
 
 #: ../../client/solo/utils.py:688
 msgid "packages with no further dependencies"
-msgstr ""
+msgstr "実行時の依存関係"
 
 #: ../../client/solo/utils.py:691
 msgid "packages with further dependencies (node)"
-msgstr ""
+msgstr "実行時の依存関係"
 
 #: ../../client/solo/utils.py:694
 msgid "packages already pulled in as dependency in upper levels (circularity)"
-msgstr ""
+msgstr "上位レベル (循環) の依存関係として既に引込まパッケージ"
 
 #: ../../client/solo/utils.py:773
 msgid "Graphing"
-msgstr ""
+msgstr "グラフ作成"
 
 #: ../../client/solo/main.py:40
 msgid "Installed packages repository corrupted. Please re-generate it"
@@ -2032,70 +2029,70 @@ msgstr ""
 
 #: ../../client/solo/main.py:170
 msgid "Ok, ok ok ok... Sorry!"
-msgstr ""
+msgstr "申し訳ありませんが... OK OK OK、OK！"
 
 #: ../../client/solo/main.py:176
 msgid ""
 "If you want to be contacted back (and actively supported), also answer the "
 "questions below:"
-msgstr ""
+msgstr "あなたが戻って連絡をしたい場合は、（積極的にサポートされている）また、以下の質問に答えてください。 "
 
 #: ../../client/solo/main.py:183
 msgid "Your Full name:"
-msgstr ""
+msgstr "氏名："
 
 #: ../../client/solo/main.py:184
 msgid "Your E-Mail address:"
-msgstr ""
+msgstr "あなたのメールアドレス："
 
 #: ../../client/solo/main.py:185
 msgid "What you were doing:"
-msgstr ""
+msgstr "あなたは何をしていました。"
 
 #: ../../client/solo/main.py:207
 msgid ""
 "Thank you very much. The error has been reported and hopefully, the problem "
 "will be solved as soon as possible."
-msgstr ""
+msgstr "どうもありがとうございました。エラーが報告されており、うまくいけば、問題ができるだけ早く解決されます。"
 
 #: ../../client/solo/main.py:213
 msgid ""
 "Ugh. Cannot send the report. Please mail the file below to "
 "lxnay@sabayon.org."
-msgstr ""
+msgstr "うーん。レポートを送信することはできません。lxnay@sabayon.orgするには、以下のファイルを郵送してください。"
 
 #: ../../client/solo/main.py:233
 msgid "Entropy/Equo version mismatch"
-msgstr ""
+msgstr "エントロピー/ EQUOバージョンの不一致"
 
 #: ../../client/solo/main.py:234
 msgid "it could make your system explode!"
-msgstr ""
+msgstr "それはあなたのシステムが爆発することができます！"
 
 #: ../../client/solo/main.py:243
 msgid "Entropy is running off a Live System"
-msgstr ""
+msgstr "エントロピーはライブシステムをオフに実行されている"
 
 #: ../../client/solo/main.py:245
 msgid "Performance and stability could get severely compromised"
-msgstr ""
+msgstr "パフォーマンスと安定性が著しく損なわれ始める可能性があり"
 
 #: ../../client/solo/main.py:347 ../kernel-switcher:117
 msgid "superuser access required"
-msgstr ""
+msgstr "必要なスペース"
 
 #: ../../client/solo/commands/moo.py:113
 msgid "moo at user"
-msgstr ""
+msgstr "ユーザーでMOO"
 
 #: ../../client/solo/commands/moo.py:120
 msgid "bow to lxnay"
-msgstr ""
+msgstr "lxnayに屈する"
 
 #: ../../client/solo/commands/query.py:72
 #: ../../client/solo/commands/query.py:1598
 msgid "repository query tools"
-msgstr ""
+msgstr "リポジトリ照会ツール"
 
 #: ../../client/solo/commands/query.py:73
 #: ../../client/solo/commands/query.py:154
@@ -2108,11 +2105,11 @@ msgstr ""
 #: ../../client/solo/commands/pkg.py:72
 #: ../../client/solo/commands/preservedlibs.py:68 ../kernel-switcher:49
 msgid "available commands"
-msgstr ""
+msgstr "使用可能なコマンド"
 
 #: ../../client/solo/commands/query.py:77
 msgid "resolve what package a file belongs to"
-msgstr ""
+msgstr "ファイルが属するものをパッケージに解決"
 
 #: ../../client/solo/commands/query.py:80
 #: ../../client/solo/commands/query.py:200
@@ -2294,7 +2291,6 @@ msgstr ""
 msgid "entry"
 msgid_plural "entries"
 msgstr[0] ""
-msgstr[1] ""
 
 #: ../../client/solo/commands/query.py:411
 #: ../../client/solo/commands/query.py:577
@@ -2549,7 +2545,7 @@ msgstr ""
 #: ../../client/solo/commands/install.py:300
 #: ../../client/solo/commands/install.py:386
 msgid "Not available"
-msgstr ""
+msgstr "利用できない"
 
 #: ../../client/solo/commands/config.py:133
 msgid "installed from"
@@ -2562,7 +2558,7 @@ msgstr ""
 #: ../../client/solo/commands/config.py:151
 #: ../../client/solo/commands/install.py:554
 msgid "Would you like to continue ?"
-msgstr ""
+msgstr "続行しますか？"
 
 #: ../../client/solo/commands/config.py:171
 msgid "configure"
@@ -2574,7 +2570,7 @@ msgstr ""
 
 #: ../../client/solo/commands/status.py:105
 msgid "Repository name"
-msgstr ""
+msgstr "リポジトリ名"
 
 #: ../../client/solo/commands/status.py:114
 msgid "Revision"
@@ -2632,7 +2628,7 @@ msgstr ""
 #: ../../client/solo/commands/ugc.py:240
 #: ../../client/solo/commands/notice.py:59
 msgid "repository"
-msgstr ""
+msgstr "リポジトリ"
 
 #: ../../client/solo/commands/update.py:68
 msgid "force update"
@@ -2872,7 +2868,7 @@ msgstr ""
 #: ../../client/solo/commands/conf.py:150
 #: ../../client/solo/commands/conf.py:176
 msgid "All fine baby. Nothing to do!"
-msgstr ""
+msgstr "すべての罰金赤ちゃん。何も行いません！"
 
 #: ../../client/solo/commands/conf.py:171
 msgid "file"
@@ -2885,17 +2881,17 @@ msgstr ""
 
 #: ../../client/solo/commands/conf.py:217
 msgid "Please choose a file to update by typing its identification number."
-msgstr ""
+msgstr "その識別番号を入力して更新するためにファイルを選択してください。"
 
 #: ../../client/solo/commands/conf.py:221
 msgid "Other options are:"
-msgstr ""
+msgstr "その他のオプションは次のとおりです:"
 
 #: ../../client/solo/commands/conf.py:225
 #: ../../client/solo/commands/notice.py:159
 #: ../../magneto/src/magneto/core/interfaces.py:196
 msgid "Exit"
-msgstr ""
+msgstr "出口"
 
 #: ../../client/solo/commands/conf.py:230
 msgid "Automerge all the files asking you one by one"
@@ -2982,13 +2978,13 @@ msgstr ""
 
 #: ../../client/solo/commands/conf.py:489
 msgid "showing difference"
-msgstr ""
+msgstr "違いを示す"
 
 #: ../../client/solo/commands/conf.py:497
 #: ../../client/solo/commands/conf.py:602
 #: ../../client/solo/commands/conf.py:613
 msgid "Automerging"
-msgstr ""
+msgstr "自動マージ"
 
 #: ../../client/solo/commands/conf.py:538
 msgid "Interactive merge"
@@ -3004,11 +3000,11 @@ msgstr ""
 
 #: ../../client/solo/commands/conf.py:571
 msgid "Unable to merge file"
-msgstr ""
+msgstr "ファイルをマージすることができません"
 
 #: ../../client/solo/commands/conf.py:621
 msgid "Selected file"
-msgstr ""
+msgstr "選択したファイル"
 
 #: ../../client/solo/commands/conf.py:643
 #, python-format
@@ -3023,58 +3019,58 @@ msgstr ""
 #: ../../client/solo/commands/conf.py:658
 #, python-format
 msgid "Deleting %s"
-msgstr ""
+msgstr "削除%sの"
 
 #: ../../client/solo/commands/conf.py:664
 #, python-format
 msgid "Cannot remove %s"
-msgstr ""
+msgstr "削除できません %s"
 
 #: ../../client/solo/commands/conf.py:702
 msgid "manage package file updates"
-msgstr ""
+msgstr "パッケージファイルの更新を管理する"
 
 #: ../../client/solo/commands/yell.py:34
 msgid "You should run equo --help"
-msgstr ""
+msgstr "あなたが実行する必要があり EQUO--help"
 
 #: ../../client/solo/commands/yell.py:35
 msgid "You didn't run equo --help, did you?"
-msgstr ""
+msgstr "あなたがしなかった、EQUO--help実行されませんでした？"
 
 #: ../../client/solo/commands/yell.py:36
 msgid "Did you even read equo --help??"
-msgstr ""
+msgstr "あなたもEQUO--help読みました？"
 
 #: ../../client/solo/commands/yell.py:37
 msgid "I give up. Run that equo --help !!!!!!!"
-msgstr ""
+msgstr "私はあきらめる。それを実行し EQUO--help!!!!!!!"
 
 #: ../../client/solo/commands/yell.py:38
 msgid "OH MY GOD. RUN equo --heeeeeeeeeeeeeelp"
-msgstr ""
+msgstr "なんてこった。RUN EQUO--heeeeeeeeeeeeeelp（ヘルプ）"
 
 #: ../../client/solo/commands/yell.py:39
 msgid "Illiteracy is a huge problem in this world"
-msgstr ""
+msgstr "非識字は、この世界では大きな問題である。"
 
 #: ../../client/solo/commands/yell.py:40
 msgid "Ok i give up, you are hopeless"
-msgstr ""
+msgstr "さて私はあなたが絶望的である、あきらめる"
 
 #: ../../client/solo/commands/yell.py:41 ../../client/solo/commands/yell.py:42
 #: ../../client/solo/commands/yell.py:43 ../../client/solo/commands/yell.py:44
 #: ../../client/solo/commands/yell.py:45 ../../client/solo/commands/yell.py:47
 msgid "Go to hell."
-msgstr ""
+msgstr "地獄に行く。"
 
 #: ../../client/solo/commands/yell.py:46
 msgid "Stop that, you idiot."
-msgstr ""
+msgstr "やめて、あなたはバカ。"
 
 #: ../../client/solo/commands/yell.py:117
 msgid "yell at user"
-msgstr ""
+msgstr "ユーザーで叫ぶ"
 
 #: ../../client/solo/commands/remove.py:89
 #: ../../client/solo/commands/source.py:90
@@ -3082,7 +3078,7 @@ msgstr ""
 #: ../../client/solo/commands/upgrade.py:106
 #: ../../client/solo/commands/download.py:89
 msgid "exclude package dependencies"
-msgstr ""
+msgstr "パッケージの依存関係を除外"
 
 #: ../../client/solo/commands/remove.py:95
 #: ../../client/solo/commands/source.py:103
@@ -3090,7 +3086,7 @@ msgstr ""
 #: ../../client/solo/commands/upgrade.py:112
 #: ../../client/solo/commands/download.py:102
 msgid "do not calculate dependencies recursively"
-msgstr ""
+msgstr "再帰的に依存関係を計算していない"
 
 #: ../../client/solo/commands/remove.py:101
 #: ../../client/solo/commands/source.py:109
@@ -3098,37 +3094,37 @@ msgstr ""
 #: ../../client/solo/commands/upgrade.py:118
 #: ../../client/solo/commands/download.py:108
 msgid "include dependencies no longer needed"
-msgstr ""
+msgstr "依存関係は不要になったなどが"
 
 #: ../../client/solo/commands/remove.py:107
 #: ../../client/solo/commands/install.py:136
 #: ../../client/solo/commands/upgrade.py:124
 msgid "when used with --deep, include virtual packages"
-msgstr ""
+msgstr "「--deep,」で使用した場合、仮想パッケージを含める"
 
 #: ../../client/solo/commands/remove.py:113
 #: ../../client/solo/commands/install.py:142
 #: ../../client/solo/commands/upgrade.py:137
 msgid "remove package configuration files no longer needed"
-msgstr ""
+msgstr "不要になったパッケージの設定ファイルを削除しない"
 
 #: ../../client/solo/commands/remove.py:119
 msgid "force system packages removal (dangerous!)"
-msgstr ""
+msgstr "力システムパッケージの削除（危ない！）"
 
 #: ../../client/solo/commands/remove.py:187
 msgid "removal"
-msgstr ""
+msgstr "除去"
 
 #: ../../client/solo/commands/remove.py:204
 #: ../../client/solo/commands/source.py:182
 #: ../../client/solo/commands/download.py:182
 msgid "All done"
-msgstr ""
+msgstr "すべて完了"
 
 #: ../../client/solo/commands/remove.py:216
 msgid "These are the packages that should be MANUALLY removed"
-msgstr ""
+msgstr "これらは手動で削除する必要がありますパッケージです"
 
 #: ../../client/solo/commands/remove.py:222
 #: ../../client/solo/commands/install.py:366
@@ -3150,7 +3146,7 @@ msgstr ""
 
 #: ../../client/solo/commands/remove.py:342
 msgid "Ouch!"
-msgstr ""
+msgstr "痛い！"
 
 #: ../../client/solo/commands/remove.py:343
 msgid "the following system packages were pulled in"
@@ -3199,32 +3195,32 @@ msgstr ""
 #: ../../client/solo/commands/deptest.py:67
 #: ../../client/solo/commands/libtest.py:74 ../kernel-switcher:45
 msgid "just show what would be done"
-msgstr ""
+msgstr "ちょうど行われるであろうものを示して"
 
 #: ../../client/solo/commands/deptest.py:160
 msgid "Running dependency test"
-msgstr ""
+msgstr "依存関係のテストを実行する"
 
 #: ../../client/solo/commands/deptest.py:170
 msgid "No missing dependencies"
-msgstr ""
+msgstr "ミッシング依存しない"
 
 #: ../../client/solo/commands/deptest.py:175
 msgid "These are the dependencies not found"
-msgstr ""
+msgstr "これらが見つからない依存関係である"
 
 #: ../../client/solo/commands/deptest.py:185
 msgid "Needed by"
-msgstr ""
+msgstr "が必要とする"
 
 #: ../../client/solo/commands/deptest.py:196
 msgid "Would you like to install the packages ?"
-msgstr ""
+msgstr "あなたは、パッケージをインストールしますか？"
 
 #: ../../client/solo/commands/deptest.py:203
 #: ../../client/solo/commands/libtest.py:230
 msgid "Installing available packages in"
-msgstr ""
+msgstr "で利用可能なパッケージのインストール"
 
 #: ../../client/solo/commands/deptest.py:204
 #: ../../client/solo/commands/libtest.py:231
@@ -3242,7 +3238,7 @@ msgstr ""
 #: ../../client/solo/commands/command.py:142
 #: ../../client/solo/commands/pkg.py:79
 msgid "not a valid Entropy package file"
-msgstr ""
+msgstr "は有効なエントロピーパッケージファイル"
 
 #: ../../client/solo/commands/command.py:154
 #: ../../client/solo/commands/source.py:83
@@ -3254,11 +3250,11 @@ msgstr ""
 
 #: ../../client/solo/commands/command.py:388
 msgid "Acquiring Entropy Resources Lock, please wait..."
-msgstr ""
+msgstr "エントロピーリソースロックを取得しています。お待ちください..."
 
 #: ../../client/solo/commands/command.py:400
 msgid "Another Entropy is currently running."
-msgstr ""
+msgstr "もう一つのエントロピーは、現在実行されています。"
 
 #: ../../client/solo/commands/command.py:459
 msgid "When you wrote"
@@ -3287,7 +3283,7 @@ msgstr ""
 #: ../../client/solo/commands/repo.py:112
 #: ../../client/solo/commands/repo.py:140
 msgid "repository name"
-msgstr ""
+msgstr "リポジトリ名"
 
 #: ../../client/solo/commands/ugc.py:80 ../../client/solo/commands/ugc.py:90
 msgid "force action"
@@ -3339,7 +3335,7 @@ msgstr ""
 
 #: ../../client/solo/commands/ugc.py:149
 msgid "get vote for the provided package name"
-msgstr ""
+msgstr "提供されるパッケージ名票を取得"
 
 #: ../../client/solo/commands/ugc.py:156
 msgid "add vote to the provided package name"
@@ -3347,14 +3343,14 @@ msgstr ""
 
 #: ../../client/solo/commands/ugc.py:200 ../../client/solo/commands/ugc.py:304
 msgid "Invalid repository"
-msgstr ""
+msgstr "無効なリポジトリ"
 
 #: ../../client/solo/commands/ugc.py:211 ../../client/solo/commands/ugc.py:315
 #: ../../client/solo/commands/ugc.py:439 ../../client/solo/commands/ugc.py:521
 #: ../../client/solo/commands/ugc.py:737 ../../client/solo/commands/ugc.py:854
 #: ../../client/solo/commands/ugc.py:892
 msgid "Repository does not support Entropy Services."
-msgstr ""
+msgstr "リポジトリは、エントロピー·サービスをサポートしていません。"
 
 #: ../../client/solo/commands/ugc.py:221
 msgid "Already logged in as"
@@ -3366,35 +3362,35 @@ msgstr ""
 
 #: ../../client/solo/commands/ugc.py:235
 msgid "Username"
-msgstr ""
+msgstr "ユーザ名"
 
 #: ../../client/solo/commands/ugc.py:236
 msgid "Password"
-msgstr ""
+msgstr "パスワード"
 
 #: ../../client/solo/commands/ugc.py:240
 msgid "Please login against"
-msgstr ""
+msgstr "反対にはログインしてください"
 
 #: ../../client/solo/commands/ugc.py:248
 msgid "Login aborted. Not logged in."
-msgstr ""
+msgstr "ログインは中止。ログインしていません。"
 
 #: ../../client/solo/commands/ugc.py:262
 msgid "Authentication error. Not logged in."
-msgstr ""
+msgstr "認証エラー。ログインしていません。"
 
 #: ../../client/solo/commands/ugc.py:271
 msgid "Communication error. Not logged in."
-msgstr ""
+msgstr "通信エラー。ログインしていません。"
 
 #: ../../client/solo/commands/ugc.py:281
 msgid "Successfully logged in as"
-msgstr ""
+msgstr "に成功としてログイン"
 
 #: ../../client/solo/commands/ugc.py:288
 msgid "From now on, any UGC action will be committed as this user"
-msgstr ""
+msgstr "これからは、どんなUGCアクションは、このユーザーとしてコミットされます"
 
 #: ../../client/solo/commands/ugc.py:325
 msgid "Not logged in."
@@ -3419,11 +3415,11 @@ msgstr ""
 
 #: ../../client/solo/commands/ugc.py:389
 msgid "no votes"
-msgstr ""
+msgstr "全く投票しない"
 
 #: ../../client/solo/commands/ugc.py:395
 msgid "current package vote"
-msgstr ""
+msgstr "現在のパッケージの投票"
 
 #: ../../client/solo/commands/ugc.py:456 ../../client/solo/commands/ugc.py:466
 #: ../../client/solo/commands/ugc.py:483 ../../client/solo/commands/ugc.py:702
@@ -3432,15 +3428,15 @@ msgstr ""
 #: ../../client/solo/commands/ugc.py:867 ../../client/solo/commands/ugc.py:945
 #: ../../client/solo/commands/ugc.py:980 ../../client/solo/commands/ugc.py:991
 msgid "UGC error"
-msgstr ""
+msgstr "UGCエラー"
 
 #: ../../client/solo/commands/ugc.py:495
 msgid "Number of downloads"
-msgstr ""
+msgstr "ダウンロード数"
 
 #: ../../client/solo/commands/ugc.py:502
 msgid "No User Generated Content available."
-msgstr ""
+msgstr "いいえユーザーは、コンテンツが利用可能に生成されません。"
 
 #: ../../client/solo/commands/ugc.py:533 ../../client/solo/commands/ugc.py:904
 msgid "Not logged in, please login first."
@@ -3614,11 +3610,11 @@ msgstr ""
 
 #: ../../client/solo/commands/repo.py:117
 msgid "rename a repository"
-msgstr ""
+msgstr "リポジトリの名前を変更"
 
 #: ../../client/solo/commands/repo.py:123
 msgid "to repository"
-msgstr ""
+msgstr "リポジトリへの"
 
 #: ../../client/solo/commands/repo.py:128
 msgid "list active repositories"
@@ -3811,7 +3807,7 @@ msgstr ""
 #: ../../client/solo/commands/libtest.py:142
 #: ../../client/solo/commands/libtest.py:176
 msgid "System is healthy"
-msgstr ""
+msgstr "システムが健全である"
 
 #: ../../client/solo/commands/libtest.py:182
 msgid "Libraries/Executables statistics"
@@ -3858,7 +3854,6 @@ msgstr ""
 msgid "There is %s configuration file needing update"
 msgid_plural "There are %s configuration files needing update"
 msgstr[0] ""
-msgstr[1] ""
 
 #: ../../client/solo/commands/_manage.py:116
 msgid "Please run"
@@ -3868,8 +3863,7 @@ msgstr ""
 #, python-format
 msgid "There is %s preserved library on the system"
 msgid_plural "There are %s preserved libraries on the system"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "システム上の %s の保存ライブラリがあります。"
 
 #. every package matching app-foo is masked
 #: ../../client/solo/commands/_manage.py:245
@@ -3906,7 +3900,7 @@ msgstr ""
 
 #: ../../client/solo/commands/_manage.py:307
 msgid "Not found"
-msgstr ""
+msgstr "見つかりませんでした"
 
 #: ../../client/solo/commands/_manage.py:316
 msgid "package needed by"
@@ -3916,7 +3910,7 @@ msgstr ""
 #: ../../client/solo/commands/_manage.py:740
 #: ../../client/solo/commands/install.py:391
 msgid "from"
-msgstr ""
+msgstr "から"
 
 #: ../../client/solo/commands/_manage.py:400
 msgid "Skipped"
@@ -3928,7 +3922,7 @@ msgstr ""
 
 #: ../../client/solo/commands/_manage.py:460
 msgid "Calculating dependencies"
-msgstr ""
+msgstr "依存関係を計算します。"
 
 #: ../../client/solo/commands/_manage.py:472
 msgid "Dependencies not found"
@@ -3945,7 +3939,7 @@ msgstr ""
 #: ../../client/solo/commands/_manage.py:551
 #: ../../client/solo/commands/_manage.py:594
 msgid "download"
-msgstr ""
+msgstr "ダウンロード"
 
 #: ../../client/solo/commands/_manage.py:620
 msgid "Repositories are old, please run:"
@@ -4061,7 +4055,7 @@ msgstr ""
 
 #: ../../client/solo/commands/rescue.py:239
 msgid "corrupted"
-msgstr ""
+msgstr "破損しています。"
 
 #: ../../client/solo/commands/rescue.py:248
 msgid "passed"
@@ -4083,11 +4077,11 @@ msgstr ""
 
 #: ../../client/solo/commands/rescue.py:322
 msgid "I am not joking, this is quite disruptive"
-msgstr ""
+msgstr "私はこれは非常に破壊的である、冗談おりません"
 
 #: ../../client/solo/commands/rescue.py:330
 msgid "Understood ?"
-msgstr ""
+msgstr "理解？"
 
 #: ../../client/solo/commands/rescue.py:334
 msgid "Really ?"
@@ -4163,7 +4157,7 @@ msgstr ""
 #: ../../client/solo/commands/rescue.py:666
 #: ../../client/solo/commands/rescue.py:705
 msgid "Continue ?"
-msgstr ""
+msgstr "続行しますか？"
 
 #: ../../client/solo/commands/rescue.py:685
 msgid "Removal complete"
@@ -4294,7 +4288,7 @@ msgstr ""
 
 #: ../../client/solo/commands/install.py:448
 msgid "Download size"
-msgstr ""
+msgstr "ダウンロードサイズ"
 
 #: ../../client/solo/commands/install.py:455
 msgid "Used disk space"
@@ -4368,7 +4362,7 @@ msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:289
 msgid "To automatically remove them, please run: equo upgrade --purge."
-msgstr ""
+msgstr "それらを自動的に削除するには、実行してください： equo upgrade --purge。"
 
 #: ../../client/solo/commands/upgrade.py:300
 msgid "Selective"
@@ -4479,7 +4473,7 @@ msgstr ""
 
 #: ../../client/solo/commands/unused.py:77
 msgid "include packages installed by user"
-msgstr ""
+msgstr "ユーザーによってインストールされたパッケージが含まれ"
 
 #: ../../client/solo/commands/unused.py:117
 msgid ""
@@ -4560,281 +4554,279 @@ msgstr ""
 
 #: ../../client/solo/commands/preservedlibs.py:67
 msgid "manage preserved libraries"
-msgstr ""
+msgstr "管理、保存、ライブラリ"
 
 #: ../../client/solo/commands/preservedlibs.py:71
 msgid "list the currently preserved libraries"
-msgstr ""
+msgstr "現在保存されたライブラリを一覧表示"
 
 #: ../../client/solo/commands/preservedlibs.py:77
 msgid "show libraries that could be garbage collected"
-msgstr ""
+msgstr "ガベージコレクションすることができたショーライブラリ"
 
 #: ../../client/solo/commands/preservedlibs.py:128
 msgid "No preserved libraries found"
-msgstr ""
+msgstr "見つかりませ保たライブラリません"
 
 #: ../../client/solo/commands/preservedlibs.py:182
 msgid "No preserved libraries to garbage collect"
-msgstr ""
+msgstr "ごみのない保存図書館は収集しませ"
 
 #: ../../client/solo/commands/preservedlibs.py:204
 msgid "but owned by"
-msgstr ""
+msgstr "しかしによって所有"
 
 #: ../../client/solo/commands/preservedlibs.py:206
 msgid "then just unregister the library"
-msgstr ""
+msgstr "そしてちょうどライブラリの登録を解除"
 
 #: ../../client/solo/commands/preservedlibs.py:219
 msgid "Tools to manage the preserved libraries on the system"
-msgstr ""
+msgstr "システム上で保存されたライブラリを管理するためのツール"
 
 #: ../../magneto/src/magneto/kde/interfaces.py:74
 msgid "Magneto Entropy Updates Applet"
-msgstr ""
+msgstr "磁気エントロピーアップデートアプレット"
 
 #: ../../magneto/src/magneto/kde/interfaces.py:248
 #: ../../magneto/src/magneto/gtk/interfaces.py:220
 msgid "Your system currently has an outdated version of"
-msgstr ""
+msgstr "お使いのシステムは、現在の古いバージョンを持っている"
 
 #: ../../magneto/src/magneto/kde/interfaces.py:249
 #: ../../magneto/src/magneto/gtk/interfaces.py:221
 msgid "installed"
-msgstr ""
+msgstr "インストル"
 
 #: ../../magneto/src/magneto/kde/interfaces.py:250
 #: ../../magneto/src/magneto/gtk/interfaces.py:222
 msgid "the latest available version is"
-msgstr ""
+msgstr "利用可能な最新バージョンです"
 
 #: ../../magneto/src/magneto/kde/interfaces.py:252
 #: ../../magneto/src/magneto/gtk/interfaces.py:224
 msgid ""
 "It is recommended that you upgrade to the latest before updating any other "
 "packages"
-msgstr ""
+msgstr "これは、他のパッケージをアップデートする前に、最新のものにアップグレードすることをお勧めします"
 
 #: ../../magneto/src/magneto/kde/components.py:48
 msgid "Close"
-msgstr ""
+msgstr "出口"
 
 #: ../../magneto/src/magneto/kde/components.py:49
 msgid "Launch Application Browser"
-msgstr ""
+msgstr "起動アプリケーションブラウザ"
 
 #: ../../magneto/src/magneto/kde/components.py:59
 msgid "Application updates"
-msgstr ""
+msgstr "アプリケーションのアップデート"
 
 #: ../../magneto/src/magneto/gtk/interfaces.py:147
 msgid "System Updates"
-msgstr ""
+msgstr "システム更新"
 
 #: ../../magneto/src/magneto/gtk/components.py:52
 msgid "Application"
-msgstr ""
+msgstr "アプリケーション"
 
 #: ../../magneto/src/magneto/gtk/components.py:54
 msgid "Latest version"
-msgstr ""
+msgstr "最新バージョン"
 
 #: ../../magneto/src/magneto/gtk/components.py:96
 msgid "Critical Information"
-msgstr ""
+msgstr "重要情報"
 
 #: ../../magneto/src/magneto/core/interfaces.py:183
 msgid "_Disable Notification Applet"
-msgstr ""
+msgstr "_無効にする通知アプレット"
 
 #: ../../magneto/src/magneto/core/interfaces.py:184
 msgid "Disable Notification Applet"
-msgstr ""
+msgstr "無効にする通知アプレット"
 
 #: ../../magneto/src/magneto/core/interfaces.py:185
 msgid "_Enable Notification Applet"
-msgstr ""
+msgstr "_通知アプレットを有効にする"
 
 #: ../../magneto/src/magneto/core/interfaces.py:186
 msgid "Enable Notification Applet"
-msgstr ""
+msgstr "通知アプレットを有効にする"
 
 #: ../../magneto/src/magneto/core/interfaces.py:187
 msgid "_Check for updates"
-msgstr ""
+msgstr "_更新プログラムの確認"
 
 #: ../../magneto/src/magneto/core/interfaces.py:188
 msgid "Check for updates"
-msgstr ""
+msgstr "更新プログラムの確認"
 
 #: ../../magneto/src/magneto/core/interfaces.py:189
 msgid "_Launch Package Manager"
-msgstr ""
+msgstr "_パッケージマネージャを起動します"
 
 #: ../../magneto/src/magneto/core/interfaces.py:190
 msgid "Launch Package Manager"
-msgstr ""
+msgstr "パッケージマネージャをロード"
 
 #: ../../magneto/src/magneto/core/interfaces.py:191
 msgid "_Packages Website"
-msgstr ""
+msgstr "_パッケージのウェブサイト"
 
 #: ../../magneto/src/magneto/core/interfaces.py:192
 msgid "Use Packages web interface"
-msgstr ""
+msgstr "使用しているパッケージのWebインターフェイス"
 
 #: ../../magneto/src/magneto/core/interfaces.py:193
 msgid "_Sabayon Linux Website"
-msgstr ""
+msgstr "_ｻﾊﾞﾖﾝのLinuxのウェブサイト"
 
 #: ../../magneto/src/magneto/core/interfaces.py:194
 msgid "Launch Sabayon Linux Website"
-msgstr ""
+msgstr "ｻﾊﾞﾖﾝのLinuxのウェブサイトを立ち上げる"
 
 #: ../../magneto/src/magneto/core/interfaces.py:196
 msgid "_Exit"
-msgstr ""
+msgstr "_出口"
 
 #: ../../magneto/src/magneto/core/interfaces.py:335
 msgid "System restart needed"
-msgstr ""
+msgstr "システムの再起動に必要な"
 
 #: ../../magneto/src/magneto/core/interfaces.py:336
 msgid "This system should be restarted at your earliest convenience"
-msgstr ""
+msgstr "このシステムは、できるだけ早い時期に再起動する必要があります"
 
 #: ../../magneto/src/magneto/core/interfaces.py:343
 msgid "Cannot monitor Sabayon updates"
-msgstr ""
+msgstr "サバヨンの更新を監視することはできません"
 
 #: ../../magneto/src/magneto/core/interfaces.py:345
 msgid "Entropy DBus service not available"
-msgstr ""
+msgstr "利用できないエントロピーDバスサービス"
 
 #: ../../magneto/src/magneto/core/interfaces.py:346
 msgid "unable to communicate with the updates service"
-msgstr ""
+msgstr "アップデートサービスと通信することができません"
 
 #: ../../magneto/src/magneto/core/interfaces.py:364
 #, python-format
 msgid "There is %s update available"
 msgid_plural "There are %s updates available"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%s があります利用可能な更新"
 
 #: ../../magneto/src/magneto/core/interfaces.py:370
 msgid "Sabayon updates available"
-msgstr ""
+msgstr "サバイヨンアップデート利用可能"
 
 #: ../../magneto/src/magneto/core/interfaces.py:371
 #, python-format
 msgid "There is <b>%s</b> update available"
 msgid_plural "There are <b>%s</b> updates available"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] " <b>%s</b> があります利用可能な更新"
 
 #: ../../magneto/src/magneto/core/interfaces.py:376
 msgid "Upgrade now"
-msgstr ""
+msgstr "今すぐアップグレードし"
 
 #. all fine, no updates
 #: ../../magneto/src/magneto/core/interfaces.py:380
 #: ../../magneto/src/magneto/core/interfaces.py:382
 msgid "Your Sabayon is up-to-date"
-msgstr ""
+msgstr "あなたのサバヨンのは最新のです"
 
 #: ../../magneto/src/magneto/core/interfaces.py:383
 msgid "No updates available at this time, cool!"
-msgstr ""
+msgstr "この時点で利用可能なアップデートがありません、かっこいい！"
 
 #. all fine, no updates
 #: ../../magneto/src/magneto/core/interfaces.py:394
 msgid "Repositories are being updated"
-msgstr ""
+msgstr "リポジトリは更新されています"
 
 #: ../../magneto/src/magneto/core/interfaces.py:395
 msgid "Sabayon repositories status"
-msgstr ""
+msgstr "ｻﾊﾞﾖﾝのリポジトリの状態"
 
 #: ../../magneto/src/magneto/core/interfaces.py:396
 msgid "Repositories are being updated automatically"
-msgstr ""
+msgstr "リポジトリは自動的に更新されています"
 
 #. all fine, no updates
 #: ../../magneto/src/magneto/core/interfaces.py:404
 #: ../../magneto/src/magneto/core/interfaces.py:405
 msgid "System upgrade started"
-msgstr ""
+msgstr "システムのアップグレードが開始"
 
 #: ../../magneto/src/magneto/core/interfaces.py:406
 msgid "Do not shutdown nor reboot the computer!"
-msgstr ""
+msgstr "シャットダウンしないかを実行したり、コンピュータを再起動してください！"
 
 #: ../../magneto/src/magneto/core/interfaces.py:499
 msgid "Updates Notification Applet Disabled"
-msgstr ""
+msgstr "アップデートの通知アプレット無効"
 
 #: ../../magneto/src/magneto/core/interfaces.py:509
 msgid "Updates Notification Applet Enabled"
-msgstr ""
+msgstr "アップデート通知アプレットが有効"
 
 #: ../kernel-switcher:28
 msgid "Sabayon Kernel Switcher"
-msgstr ""
+msgstr "ｻﾊﾞﾖﾝのカーネルスイッチャー"
 
 #: ../kernel-switcher:35
 msgid "quiet mode"
-msgstr ""
+msgstr "クワイエット·モード"
 
 #: ../kernel-switcher:38
 msgid "verbose mode"
-msgstr ""
+msgstr "冗長モード"
 
 #: ../kernel-switcher:42
 msgid "ask confirmation"
-msgstr ""
+msgstr "確認を求める"
 
 #: ../kernel-switcher:92
 msgid "Package does not exist"
-msgstr ""
+msgstr "パッケージが存在しません"
 
 #: ../kernel-switcher:100
 msgid "Not a kernel"
-msgstr ""
+msgstr "未カーネル"
 
 #: ../kernel-switcher:110
 msgid "Cannot find your currently running kernel."
-msgstr ""
+msgstr "あなたの現在実行中のカーネルを見つけることができません。"
 
 #: ../kernel-switcher:112
 msgid "Try without --from-running."
-msgstr ""
+msgstr "--fromランニングなしで試してみてください。"
 
 #: ../kernel-switcher:127
 msgid "No kernel packages found"
-msgstr ""
+msgstr "いいえカーネルパッケージが見つかりませんでした"
 
 #: ../kernel-switcher:145
 msgid "install a new or just another kernel"
-msgstr ""
+msgstr "新規またはちょうど別のカーネルをインストール"
 
 #: ../kernel-switcher:150
 msgid "use 'uname -r' to determine the running kernel"
-msgstr ""
+msgstr "実行中のカーネルを決定するために」は、'uname-r'を使用"
 
 #: ../kernel-switcher:153
 msgid "the new kernel package dependency name"
-msgstr ""
+msgstr "新しいカーネルパッケージの依存関係名"
 
 #: ../kernel-switcher:157
 msgid "list kernels"
-msgstr ""
+msgstr "リストのカーネル"
 
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:1
 msgid "Magneto Application Updates Notifier"
-msgstr ""
+msgstr "磁気アプリケーションの更新通知機能"
 
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:3
 msgid "_Load Package Manager"
-msgstr ""
+msgstr "_パッケージマネージャをロード"

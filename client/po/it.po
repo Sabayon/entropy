@@ -3,9 +3,9 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# elvis <angelaccioelvis@libero.it>, 2013-2014
-# elvis <angelaccioelvis@libero.it>, 2012
-# belcocco <belcocco@gmail.com>, 2012
+# Elvis Angelaccio <angelaccioelvis@libero.it>, 2013-2014
+# Elvis Angelaccio <angelaccioelvis@libero.it>, 2012
+# Sergio <belcocco@gmail.com>, 2012
 # lxnay <lxnay@sabayon.org>, 2013
 # lxnay <lxnay@sabayon.org>, 2012
 msgid ""
@@ -15,7 +15,7 @@ msgstr ""
 "POT-Creation-Date: 2014-02-14 16:08+0100\n"
 "PO-Revision-Date: 2014-02-14 15:14+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Italian (http://www.transifex.com/projects/p/sabayon-entropy/language/it/)\n"
+"Language-Team: Italian (http://www.transifex.com/lxnay/sabayon-entropy/language/it/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"

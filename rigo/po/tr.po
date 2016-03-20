@@ -3,10 +3,10 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# ertan <ertangvn@gmail.com>, 2013
-# fthpl <fthpl@hotmail.com>, 2012
-# husam <hsmertk@gmail.com>, 2013
-# 80s <onder.y@msn.com>, 2012
+# Ertan Güven <ertangvn@gmail.com>, 2013
+# Talha Fatih Pala <fthpl@hotmail.com>, 2012
+# Hüsamettin Ertürk <hsmertk@gmail.com>, 2013
+# Önder Yıldırım <onder.y@msn.com>, 2012
 # Dombra <sozturk42@yandex.com>, 2013
 msgid ""
 msgstr ""
@@ -15,7 +15,7 @@ msgstr ""
 "POT-Creation-Date: 2014-02-14 16:14+0100\n"
 "PO-Revision-Date: 2013-12-11 14:18+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Turkish (http://www.transifex.com/projects/p/sabayon-rigo/language/tr/)\n"
+"Language-Team: Turkish (http://www.transifex.com/lxnay/sabayon-rigo/language/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"

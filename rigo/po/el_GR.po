@@ -3,14 +3,16 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Giannis Giannakopoulos <giannakopoulosj@gmail.com>, 2015
+# Theofilos Intzoglou <int.teo@gmail.com>, 2014-2015
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-14 16:14+0100\n"
-"PO-Revision-Date: 2013-12-11 14:18+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Greek (Greece) (http://www.transifex.com/projects/p/sabayon-rigo/language/el_GR/)\n"
+"PO-Revision-Date: 2015-05-19 20:40+0000\n"
+"Last-Translator: Theofilos Intzoglou <int.teo@gmail.com>\n"
+"Language-Team: Greek (Greece) (http://www.transifex.com/lxnay/sabayon-rigo/language/el_GR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,118 +21,118 @@ msgstr ""
 
 #: ../RigoDaemon/app.py:129
 msgid "Downloading"
-msgstr ""
+msgstr "Κατέβασμα"
 
 #: ../RigoDaemon/app.py:131
 msgid "Uploading"
-msgstr ""
+msgstr "Ανέβασμα"
 
 #: ../RigoDaemon/app.py:935
 msgid "Internal activity in progress"
-msgstr ""
+msgstr "Εσωτερική δραστηριότητα σε εξέλιξη"
 
 #: ../RigoDaemon/app.py:937
 msgid "Upgrade in progress"
-msgstr ""
+msgstr "Ενημέρωση σε εξέλιξη"
 
 #: ../RigoDaemon/app.py:939
 msgid "Repositories update in progress"
-msgstr ""
+msgstr "Ενημέρωση αποθετηρίων σε εξέλιξη"
 
 #: ../RigoDaemon/app.py:941
 msgid "Applications management in progress"
-msgstr ""
+msgstr "Διαχείριση εφαρμογών σε εξέλιξη"
 
 #: ../RigoDaemon/app.py:1446 ../rigo_app.py:785
 msgid "Not authorized"
-msgstr ""
+msgstr "Μη εξουσιοδοτημένος"
 
 #: ../RigoDaemon/app.py:1480
 msgid "No repositories configured"
-msgstr ""
+msgstr "Δεν έχουν ρυθμιστεί αποθετήρια"
 
 #: ../RigoDaemon/app.py:1485
 msgid "Unhandled Exception"
-msgstr ""
+msgstr "Ανεπίλυτη εξαίρεση"
 
 #: ../RigoDaemon/app.py:2044
 msgid "Application Removal"
-msgstr ""
+msgstr "Αφαίρεση Εφαρμογής"
 
 #: ../RigoDaemon/app.py:2468
 msgid "Application download"
-msgstr ""
+msgstr "Λήψη εφαρμογής"
 
 #: ../RigoDaemon/app.py:2571
 msgid "Application Install"
-msgstr ""
+msgstr "Εγκατάσταση εφαρμογής"
 
 #: ../rigo/models/configupdate.py:102
 msgid "Cannot save configuration file"
-msgstr ""
+msgstr "Δεν είναι δυνατή η αποθήκευση αρχείου ρυθμίσεων"
 
 #: ../rigo/models/configupdate.py:299
 msgid "Destination"
-msgstr ""
+msgstr "Προορισμός"
 
 #: ../rigo/models/configupdate.py:302
 msgid "Applications"
-msgstr ""
+msgstr "Εφαρμογές"
 
 #: ../rigo/models/application.py:1005 ../rigo/models/application.py:1362
 #: ../rigo/models/application.py:1404 ../rigo/models/application.py:1436
 #: ../rigo/models/application.py:1506
 msgid "N/A"
-msgstr ""
+msgstr "Μ/Δ"
 
 #: ../rigo/models/application.py:1370 ../rigo/models/application.py:1427
 msgid "No description"
-msgstr ""
+msgstr "Καμία περιγραφή"
 
 #: ../rigo/models/application.py:1443
 msgid "Installed"
-msgstr ""
+msgstr "Εγκατεστημένο"
 
 #: ../rigo/models/application.py:1449
 #, python-format
 msgid "<b>%s</b> is installed"
-msgstr ""
+msgstr "Το <b>%s</b> έχει εγκατασταθεί"
 
 #: ../rigo/models/application.py:1451
 msgid "from"
-msgstr ""
+msgstr "από"
 
 #: ../rigo/models/application.py:1483
 msgid "License"
-msgstr ""
+msgstr "Άδεια"
 
 #: ../rigo/models/application.py:1494
 msgid "Required space"
-msgstr ""
+msgstr "Απαιτούμενος χώρος"
 
 #: ../rigo/models/application.py:1501
 msgid "Download size"
-msgstr ""
+msgstr "Μέγεθος λήψης"
 
 #: ../rigo/models/application.py:1508
 msgid "Checksum"
-msgstr ""
+msgstr "Άθροισμα ελέγχου"
 
 #: ../rigo/models/application.py:1519
 msgid "USE flags"
-msgstr ""
+msgstr "Σημαίες USE"
 
 #: ../rigo/models/application.py:1523
 msgid "No use flags"
-msgstr ""
+msgstr "Χωρίς σημαίες use"
 
 #: ../rigo/models/application.py:1541
 msgid "Runtime dependencies"
-msgstr ""
+msgstr "Απαιτήσεις χρόνου εκτέλεσης"
 
 #: ../rigo/models/application.py:1542
 msgid "Build dependencies"
-msgstr ""
+msgstr "Απαιτήσεις χτισίματος"
 
 #: ../rigo/models/application.py:1543
 msgid "Post dependencies"
@@ -138,99 +140,99 @@ msgstr ""
 
 #: ../rigo/models/application.py:1544
 msgid "Staff dependencies"
-msgstr ""
+msgstr "Εξαρτήσεις προσωπικού"
 
 #: ../rigo/models/application.py:1566
 msgid "Click here for more details"
-msgstr ""
+msgstr "Πατήστε εδώ για περισσότερες λεπτομέρειες"
 
 #: ../rigo/models/application.py:1809
 msgid "Application not found"
-msgstr ""
+msgstr "Η εφαρμογή δεν βρέθηκε"
 
 #: ../rigo/models/repository.py:67
 msgid "Enabled"
-msgstr ""
+msgstr "Ενεργοποιημένο"
 
 #: ../rigo/models/repository.py:69
 msgid "Disabled"
-msgstr ""
+msgstr "Απενεργοποιημένο"
 
 #: ../rigo/controllers/daemon.py:84
 msgid "Good luck!"
-msgstr ""
+msgstr "Καλή τύχη!"
 
 #: ../rigo/controllers/daemon.py:639
 msgid "Repositories Settings <b>could not</b> be changed. Sorry."
-msgstr ""
+msgstr "Οι Ρυθμίσεις Αποθετηρίων <b>δεν ήταν δυνατό</b> να τροποποιηθούν. Λυπάμαι."
 
 #: ../rigo/controllers/daemon.py:685
 #, python-format
 msgid "<b>%s</b> action enqueued"
-msgstr ""
+msgstr "Η ενέργεια <b>%s</b> έχει τοποθετηθεί στην ουρά"
 
 #: ../rigo/controllers/daemon.py:689
 #, python-format
 msgid ", <b>%i</b> Application enqueued so far..."
 msgid_plural ", <b>%i</b> Applications enqueued so far..."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] ", <b>%i</b> Εφαρμογή στην ουρά μέχρι στιγμής..."
+msgstr[1] ", <b>%i</b> Εφαρμογές στην ουρά μέχρι στιγμής..."
 
 #: ../rigo/controllers/daemon.py:790 ../rigo_app.py:165
 msgid "Application"
-msgstr ""
+msgstr "Εφαρμογή"
 
 #: ../rigo/controllers/daemon.py:793
 msgid "An <b>unknown error</b> occurred"
-msgstr ""
+msgstr "Προέκυψε ένα <b>άγνωστο σφάλμα</b>"
 
 #: ../rigo/controllers/daemon.py:795
 #, python-format
 msgid "<b>%s</b> download failed"
-msgstr ""
+msgstr "Η λήψη του <b>%s</b> απέτυχε"
 
 #: ../rigo/controllers/daemon.py:798
 #, python-format
 msgid "<b>%s</b> install failed"
-msgstr ""
+msgstr "Η εγκατάσταση του <b>%s</b> απέτυχε"
 
 #: ../rigo/controllers/daemon.py:801
 #, python-format
 msgid "<b>%s</b> removal failed"
-msgstr ""
+msgstr "Η αφαίρεση του <b>%s</b> απέτυχε"
 
 #: ../rigo/controllers/daemon.py:805
 #, python-format
 msgid "<b>%s</b>, not authorized"
-msgstr ""
+msgstr "<b>%s</b>, μη εξουσιοδοτημένος"
 
 #: ../rigo/controllers/daemon.py:808
 #, python-format
 msgid "<b>%s</b>, internal error"
-msgstr ""
+msgstr "<b>%s</b>, εσωτερικό σφάλμα"
 
 #: ../rigo/controllers/daemon.py:813
 #, python-format
 msgid "<b>%s</b> dependencies not found"
-msgstr ""
+msgstr "Οι εξαρτήσεις του <b>%s</b> δεν βρέθηκαν"
 
 #: ../rigo/controllers/daemon.py:818
 #, python-format
 msgid "<b>%s</b> dependencies collision error"
-msgstr ""
+msgstr "Σφάλμα αλληλοαποκλειόμενων εξαρτήσεων για το <b>%s</b>"
 
 #: ../rigo/controllers/daemon.py:823
 #, python-format
 msgid "<b>%s</b> dependencies not removable error"
-msgstr ""
+msgstr "Σφάλμα. Οι εξαρτήσεις του <b>%s</b> δεν μπορούν να αφαιρεθούν"
 
 #: ../rigo/controllers/daemon.py:828
 msgid "Disk full, cannot download nor unpack Applications"
-msgstr ""
+msgstr "Ο δίσκος είναι γεμάτος, δεν είναι δυνατή η λήψη και η αποσυμπίεση των Εφαρμογών"
 
 #: ../rigo/controllers/daemon.py:832
 msgid "An error occurred"
-msgstr ""
+msgstr "Ένα σφάλμα προέκυψε"
 
 #: ../rigo/controllers/daemon.py:837
 #: ../rigo/ui/gtk3/controllers/application.py:412
@@ -238,25 +240,25 @@ msgstr ""
 #: ../rigo/ui/gtk3/controllers/application.py:582 ../rigo_app.py:510
 #: ../rigo_app.py:539
 msgid "Ok, thanks"
-msgstr ""
+msgstr "Οκ, ευχαριστώ"
 
 #: ../rigo/controllers/daemon.py:838
 #: ../rigo/ui/gtk3/controllers/notifications.py:225
 #: ../rigo/ui/gtk3/controllers/notifications.py:241
 #: ../rigo/ui/gtk3/controllers/notifications.py:259 ../rigo_app.py:540
 msgid "Show me"
-msgstr ""
+msgstr "Δείξε μου"
 
 #: ../rigo/controllers/daemon.py:940
 msgid "<b>System Upgrade</b> Activity is being <i>restarted</i>"
-msgstr ""
+msgstr "Η Δραστηριότητα <b>Αναβάθμιση Συστήματος</b> <i>επανεκκινείται</i>"
 
 #: ../rigo/controllers/daemon.py:941
 #, python-format
 msgid "There is <b>%i</b> more update"
 msgid_plural "There are <b>%i</b> more updates"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Υπάρχει ακόμη <b>%i</b> ενημερώσεις"
+msgstr[1] "Υπάρχουν ακόμη <b>%i</b> ενημερώσεις"
 
 #: ../rigo/controllers/daemon.py:1165
 msgid "Congratulations, mirrors have been <b>optimized</b>!"
@@ -276,146 +278,146 @@ msgstr ""
 
 #: ../rigo/controllers/daemon.py:1929
 msgid "Waiting for <b>RigoDaemon</b>, please wait..."
-msgstr ""
+msgstr "Αναμονή για τον <b>RigoDaemon</b>, παρακαλώ περιμένετε..."
 
 #: ../rigo/controllers/daemon.py:2000 ../rigo/controllers/daemon.py:2665
 #: ../rigo/controllers/daemon.py:2892
 msgid "Another activity is currently in progress"
-msgstr ""
+msgstr "Μια άλλη δραστηριότητα είναι αυτή τη στιγμή σε εξέλιξη"
 
 #: ../rigo/controllers/daemon.py:2003 ../rigo/controllers/daemon.py:2669
 #: ../rigo/controllers/daemon.py:2896
 msgid "K thanks"
-msgstr ""
+msgstr "Κ ευχαριστώ"
 
 #: ../rigo/controllers/daemon.py:2142
 msgid "Yes, thanks"
-msgstr ""
+msgstr "Ναι, ευχαριστώ"
 
 #: ../rigo/controllers/daemon.py:2143
 msgid "No, sorry"
-msgstr ""
+msgstr "Όχι, λυπάμαι"
 
 #: ../rigo/controllers/daemon.py:2160
 msgid "Ok then"
-msgstr ""
+msgstr "Οκ τότε"
 
 #: ../rigo/controllers/daemon.py:2236
 #, python-format
 msgid ""
 "<b>%s</b>\n"
 "is part of the Base System and <b>cannot</b> be removed"
-msgstr ""
+msgstr "Το <b>%s</b>\nείναι μέρος του Βασικού Συστήματος και <b>δεν μπορεί</b> να αφαιρεθεί"
 
 #: ../rigo/controllers/daemon.py:2289
 #, python-format
 msgid ""
 "<b>%s</b>\n"
 "cannot be installed at this time due to <b>missing/masked</b> dependencies or dependency <b>conflict</b>"
-msgstr ""
+msgstr "Το <b>%s</b>\nδεν μπορεί να εγκατασταθεί αυτή τη στιγμή εξαιτίας εξαρτήσεων που <b>λείπουν/είναι masked</b> ή <b>συγκρούονται</b>"
 
 #: ../rigo/controllers/daemon.py:2351
 #, python-format
 msgid ""
 "Installing <b>%s</b> would cause the removal of the following Applications: "
 "%s"
-msgstr ""
+msgstr "Η εγκατάσταση του <b>%s</b> θα προκαλέσει την αφαίρεση των παρακάτω Εφαρμογών: %s"
 
 #: ../rigo/controllers/daemon.py:2543
 #, python-format
 msgid "Package Install Error: <i>%s</i>"
-msgstr ""
+msgstr "Σφάλμα Εγκατάστασης Πακέτου: <i>%s</i>"
 
 #: ../rigo/controllers/daemon.py:2548
 msgid "Okay"
-msgstr ""
+msgstr "Εντάξη"
 
 #: ../rigo/controllers/daemon.py:2812
 msgid "<b>System Upgrade</b> has begun, now go make some coffee"
-msgstr ""
+msgstr "Η <b>Ενημέρωση του Συστήματος</b> έχει ξεκινήσει, τώρα απολαύστε έναν καφέ"
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:221
 msgid "Repositories Update in <b>progress</b>..."
-msgstr ""
+msgstr "Ενημέρωση Αποθετηρίων σε <b>εξέλιξη</b>..."
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:233
 msgid "<b>Application Management</b> in progress..."
-msgstr ""
+msgstr "<b>Διαχείριση Εφαρμογών</b> σε εξέλιξη..."
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:242
 #: ../rigo/ui/gtk3/controllers/notifications.py:260
 msgid "Activity"
-msgstr ""
+msgstr "Δραστηριότητα"
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:243
 #: ../rigo/ui/gtk3/controllers/notifications.py:261
 msgid "Interrupt"
-msgstr ""
+msgstr "Διακοπή"
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:251
 msgid "<b>System Upgrade</b> in progress..."
-msgstr ""
+msgstr "<b>Αναβάθμιση Συστήματος</b> σε εξέλιξη..."
 
 #: ../rigo/ui/gtk3/controllers/work.py:75
 msgid "Black on White"
-msgstr ""
+msgstr "Μαύρο σε Άσπρο"
 
 #: ../rigo/ui/gtk3/controllers/work.py:80
 msgid "White on Black"
-msgstr ""
+msgstr "Άσπρο σε Μαύρο"
 
 #: ../rigo/ui/gtk3/controllers/work.py:85
 msgid "Enable automatic scrolling"
-msgstr ""
+msgstr "Ενεργοποίηση αυτόματης κύλισης"
 
 #: ../rigo/ui/gtk3/controllers/work.py:87
 msgid "Disable automatic scrolling"
-msgstr ""
+msgstr "Απενεργοποίηση αυτόματης κύλισης"
 
 #: ../rigo/ui/gtk3/controllers/work.py:104
 msgid "<i>Show <b>Application Management</b> Progress</i>"
-msgstr ""
+msgstr "<i>Εμφάνιση Προόδου <b>Διαχείρισης Εφαρμογών</b></i>"
 
 #: ../rigo/ui/gtk3/controllers/work.py:296
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:82
 msgid "Installing"
-msgstr ""
+msgstr "Εγκατάσταση"
 
 #: ../rigo/ui/gtk3/controllers/work.py:298
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:83
 msgid "Removing"
-msgstr ""
+msgstr "Αφαίρεση"
 
 #: ../rigo/ui/gtk3/controllers/work.py:306
 #, python-format
 msgid ", and <b>%d</b> <i>more in queue</i>"
 msgid_plural ", and <b>%d</b> <i>more in queue</i>"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] ", και <b>%d</b> <i>ακόμη σε ουρά</i>"
+msgstr[1] ", και <b>%d</b> <i>ακόμη σε ουρά</i>"
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:93
 msgid "Cannot <b>edit</b> configuration file"
-msgstr ""
+msgstr "Δεν είναι δυνατή <b>η επεξεργασία</b> του αρχείου ρυθμίσεων"
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:112
 msgid "Cannot <b>show</b> configuration files difference"
-msgstr ""
+msgstr "Δεν είναι δυνατή <b>η εμφάνιση</b> των διαφορών των αρχείων ρυθμίσεων"
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:132
 msgid "Cannot <b>merge</b> configuration file"
-msgstr ""
+msgstr "Δεν είναι δυνατή <b>η συγχώνευση</b> του αρχείου ρυθμίσεων"
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:154
 msgid "Cannot <b>discard</b> configuration file"
-msgstr ""
+msgstr "Δεν είναι δυνατή <b>η απόρριψη</b> του αρχείου ρυθμίσεων"
 
 #: ../rigo/ui/gtk3/controllers/group.py:90 ../rigo_app.py:183
 msgid "Application Groups"
-msgstr ""
+msgstr "Ομάδες Εφαρμογών"
 
 #: ../rigo/ui/gtk3/controllers/group.py:91
 msgid "Show Application Groups."
-msgstr ""
+msgstr "Εμφάνιση Ομάδων Εφαρμογών."
 
 #: ../rigo/ui/gtk3/controllers/application.py:173
 msgid "Clean Entropy Web Service Session"
@@ -429,28 +431,28 @@ msgstr ""
 #: ../rigo/ui/gtk3/controllers/application.py:313
 #, python-format
 msgid "Logged in as <b>%s</b>! How about your <b>vote</b>?"
-msgstr ""
+msgstr "Συνδεδεμένος ως <b>%s</b>! Τι θα λέγατε για μια <b>ψήφο</b>;"
 
 #: ../rigo/ui/gtk3/controllers/application.py:320
 msgid "_Vote now"
-msgstr ""
+msgstr "_Ψήφησε Τωρα"
 
 #: ../rigo/ui/gtk3/controllers/application.py:322
 #: ../rigo/ui/gtk3/controllers/application.py:358
 #: ../rigo/ui/gtk3/controllers/application.py:522
 #: ../rigo/ui/gtk3/controllers/application.py:644
 msgid "_Later"
-msgstr ""
+msgstr "_Μετά"
 
 #: ../rigo/ui/gtk3/controllers/application.py:330
 msgid "Login failed. Your <b>vote</b> hasn't been added"
-msgstr ""
+msgstr "Η σύνδεση απέτυχε. Η <b>ψήφος<b> σας δεν προστέθηκε"
 
 #: ../rigo/ui/gtk3/controllers/application.py:333
 #: ../rigo/ui/gtk3/controllers/application.py:655
 #: ../rigo/ui/gtk3/widgets/comments.py:98
 msgid "_Ok, thanks"
-msgstr ""
+msgstr "_Οκ, ευχαριστώ"
 
 #: ../rigo/ui/gtk3/controllers/application.py:340
 #, python-format
@@ -467,25 +469,25 @@ msgstr ""
 #: ../rigo/ui/gtk3/controllers/application.py:356
 #: ../rigo/ui/gtk3/controllers/application.py:520
 msgid "_No, logout!"
-msgstr ""
+msgstr "Ό_χι, αποσύνδεση!"
 
 #: ../rigo/ui/gtk3/controllers/application.py:394
 msgid "Your vote has been added!"
-msgstr ""
+msgstr "Η ψήφος σας έχει προστεθεί!"
 
 #: ../rigo/ui/gtk3/controllers/application.py:397
 #: ../rigo/ui/gtk3/controllers/application.py:573
 msgid "Ok, great!"
-msgstr ""
+msgstr "Οκ, τέλεια!"
 
 #: ../rigo/ui/gtk3/controllers/application.py:404
 msgid "You already voted this <b>Application</b>"
-msgstr ""
+msgstr "Έχετε ήδη ψηφίσει αυτή την <b>Εφαρμογή</b>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:409
 #, python-format
 msgid "Vote error: <i>%s</i>"
-msgstr ""
+msgstr "Σφάλμα ψήφου: <i>%s</i>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:495
 msgid "Entropy Web Services not available for repository"
@@ -494,141 +496,141 @@ msgstr ""
 #: ../rigo/ui/gtk3/controllers/application.py:507
 #, python-format
 msgid "You are about to add a <b>comment</b> as <b>%s</b>."
-msgstr ""
+msgstr "Είστε έτοιμοι να προσθέσετε ένα <b>σχόλιο</b> ως <b>%s</b>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:570
 msgid "Your comment has been submitted!"
-msgstr ""
+msgstr "Το σχόλιό σας έχει υποβληθεί!"
 
 #: ../rigo/ui/gtk3/controllers/application.py:579
 #, python-format
 msgid "Comment submit error: <i>%s</i>"
-msgstr ""
+msgstr "Σφάλμα υποβολής σχολίου: <i>%s</i>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:637
 #, python-format
 msgid "Logged in as <b>%s</b>! How about your <b>comment</b>?"
-msgstr ""
+msgstr "Σύνδεδεμένος ως <b>%s</b>! Τι θα λέγατε για ένα <b>σχόλιο</b>;"
 
 #: ../rigo/ui/gtk3/controllers/application.py:643
 msgid "_Send now"
-msgstr ""
+msgstr "_Αποστολή τώρα"
 
 #: ../rigo/ui/gtk3/controllers/application.py:652
 msgid "Login failed. Your <b>comment</b> hasn't been added"
-msgstr ""
+msgstr "Η σύνδεση απέτυχε. Το <b>σχόλιό<b> σας δεν προστέθηκε"
 
 #: ../rigo/ui/gtk3/controllers/application.py:675
 msgid "<i>No <b>comments</b> for this Application, yet!</i>"
-msgstr ""
+msgstr "<i>Κανένα <b>σχόλιο</b> για αυτή την Εφαρμογή, ακόμη!</i>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:724
 msgid "Older comments"
-msgstr ""
+msgstr "Παλιότερα σχόλια"
 
 #: ../rigo/ui/gtk3/controllers/application.py:731
 msgid "Loading older comments..."
-msgstr ""
+msgstr "Φόρτωση παλιότερων σχολίων..."
 
 #: ../rigo/ui/gtk3/controllers/application.py:775
 msgid "<i>No <b>images</b> for this Application, yet!</i>"
-msgstr ""
+msgstr "<i>Καμία <b>εικόνα</b> για αυτή την Εφαρμογή, ακόμη!</i>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:783
 msgid "Older images"
-msgstr ""
+msgstr "Παλιότερες εικόνες"
 
 #: ../rigo/ui/gtk3/controllers/application.py:789
 msgid "Loading older images..."
-msgstr ""
+msgstr "Φόρτωση παλαιότερων εικόνων..."
 
 #: ../rigo/ui/gtk3/controllers/application.py:869
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:81
 msgid "Update"
-msgstr ""
+msgstr "Ενημέρωση"
 
 #: ../rigo/ui/gtk3/controllers/application.py:879
 msgid "Reinstall"
-msgstr ""
+msgstr "Επανεγκατάσταση"
 
 #: ../rigo/ui/gtk3/controllers/application.py:889
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:80
 msgid "Remove"
-msgstr ""
+msgstr "Αφαίρεση"
 
 #: ../rigo/ui/gtk3/controllers/application.py:899
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:79
 msgid "Install"
-msgstr ""
+msgstr "Εγκατάσταση"
 
 #: ../rigo/ui/gtk3/controllers/application.py:914
 msgid "Not available"
-msgstr ""
+msgstr "Μη διαθέσιμη"
 
 #: ../rigo/ui/gtk3/controllers/application.py:916
 msgid "Never downloaded"
-msgstr ""
+msgstr "Δεν έγινε λήψη ποτέ"
 
 #: ../rigo/ui/gtk3/controllers/application.py:920
 msgid "downloads"
-msgstr ""
+msgstr "λήψεις"
 
 #: ../rigo/ui/gtk3/controllers/application.py:968
 msgid "Want to add images, etc?"
-msgstr ""
+msgstr "Επιθυμείτε να προσθέσετε εικόνες, κλπ;"
 
 #: ../rigo/ui/gtk3/controllers/application.py:970
 msgid "click here!"
-msgstr ""
+msgstr "πατήστε εδώ!"
 
 #: ../rigo/ui/gtk3/controllers/application.py:981
 msgid "Loading comments..."
-msgstr ""
+msgstr "Φόρτωση σχολίων..."
 
 #: ../rigo/ui/gtk3/controllers/repository.py:81
 #, python-format
 msgid "Cannot disable <b>%s</b>. Sorry!"
-msgstr ""
+msgstr "Δεν μπορώ να απενεργοποιήσω το <b>%s</b>. Συγνώμη!"
 
 #: ../rigo/ui/gtk3/controllers/repository.py:83
 #, python-format
 msgid "Cannot enable <b>%s</b>. Sorry!"
-msgstr ""
+msgstr "Δεν μπορώ να ενεργοποιήσω το <b>%s</b>. Συγνώμη!"
 
 #: ../rigo/ui/gtk3/controllers/repository.py:89
 msgid "_Ok"
-msgstr ""
+msgstr "_Οκ"
 
 #: ../rigo/ui/gtk3/controllers/repository.py:130
 msgid "Manage Repositories"
-msgstr ""
+msgstr "Διαχείριση Αποθετηρίων"
 
 #: ../rigo/ui/gtk3/controllers/repository.py:131
 msgid "Enable, disable or rename Repositories."
-msgstr ""
+msgstr "Ενεργοποίηση, απενεργοποίηση ή μετονομασία Αποθετηρίων."
 
 #: ../rigo/ui/gtk3/controllers/applications.py:272
 #: ../rigo/ui/gtk3/controllers/applications.py:333
 #, python-format
 msgid "Application <b>%s</b> not found"
-msgstr ""
+msgstr "Η Εφαρμογή <b>%s</b> δεν βρέθηκε"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:563
 msgid "Nothing found for"
-msgstr ""
+msgstr "Δεν βρέθηκε τίποτε για"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:573
 #, python-format
 msgid "did you mean <a href=\"%s\">%s</a>?"
-msgstr ""
+msgstr "μήπως εννοείτε <a href=\"%s\">%s</a>;"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:603
 msgid "Not found"
-msgstr ""
+msgstr "Δεν βρέθηκε"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:737
 msgid "Update repositories"
-msgstr ""
+msgstr "Ενημέρωση αποθετηρίων"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:738
 msgid "Force the update of the available repositories."
@@ -636,23 +638,23 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/applications.py:748
 msgid "Show Configuration File Updates"
-msgstr ""
+msgstr "Εμφάνιση Ενημερώσεων Αρχείων Ρυθμίσεων"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:749
 msgid "Show (if any) the list of pending configuration file updates."
-msgstr ""
+msgstr "Εμφάνιση (αν υπάρχει) λίστας των επικείμενων ενημερώσεων αρχείων ρυθμίσεων"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:758
 msgid "Show Installed Applications"
-msgstr ""
+msgstr "Εμφάνιση Εγκατεστημένων Εφαρμογών"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:759
 msgid "Browse through the currently Installed Applications."
-msgstr ""
+msgstr "Πλοήγηση στις τρέχουσες Εγκατεστημένες Εφαρμογές"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:768
 msgid "Optimize Download Speed"
-msgstr ""
+msgstr "Βελτιστοποίηση Ταχύτητας Λήψης"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:769
 msgid "Benchmark the download mirrors to speed up Application installation."
@@ -660,7 +662,7 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/applications.py:778
 msgid "Show Available Kernels"
-msgstr ""
+msgstr "Εμφάνησε τους διαθέσημους Kernel"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:779
 msgid "Browse through the available and installable Linux kernel binaries."
@@ -679,61 +681,61 @@ msgstr ""
 #, python-format
 msgid "There is <b>%d</b> update"
 msgid_plural "There are <b>%d</b> updates"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Υπάρχει <b>%d</b> ενημέρωση"
+msgstr[1] "Υπάρχουν <b>%d</b> ενημερώσεις"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:188
 #, python-format
 msgid "and <b>%d</b> security update"
 msgid_plural "and <b>%d</b> security updates"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "και <b>%d</b> ενημέρωση ασφαλείας"
+msgstr[1] "και <b>%d</b> ενημερώσεις ασφαλείας"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:194
 #: ../rigo/ui/gtk3/widgets/notifications.py:1222
 msgid "What to do?"
-msgstr ""
+msgstr "Τι να κάνω;"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:198
 msgid "Updates available, how about installing them?"
-msgstr ""
+msgstr "Διαθέσιμες ενημερώσεις, μήπως να τις εγκαταστήσουμε;"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:201
 msgid "_Update"
-msgstr ""
+msgstr "_Ενημέρωσε"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:202
 msgid "_Show"
-msgstr ""
+msgstr "_Εμφάνησε"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:203
 #: ../rigo/ui/gtk3/widgets/notifications.py:1232
 msgid "_Ignore"
-msgstr ""
+msgstr "_Παράληψε"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:204
 msgid "Srsly, ignore!"
-msgstr ""
+msgstr "Σοβαρά, αγνόησε!"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:256
 msgid "The list of available Applications is old, <b>update now</b>?"
-msgstr ""
+msgstr "Η λίστα των διαθέσιμων Εφαρμογών είναι παλιά, να γίνει <b>ενημέρωση τώρα</b>;"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:259
 msgid "Repositories should be downloaded, <b>update now</b>?"
-msgstr ""
+msgstr "Τα αποθετήρια θα πρέπει να γίνουν λήψη, να γίνει <b>ενημέρωση τώρα</b>;"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:262
 msgid "I dunno dude, I'd say Yes"
-msgstr ""
+msgstr "Δεν ξέρω φίλε, θα έλεγα Ναι"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:265
 msgid "_Yes, why not?"
-msgstr ""
+msgstr "_Ναι, γιατί όχι;"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:266
 msgid "_No, thanks"
-msgstr ""
+msgstr "_Όχι, ευχαριστώ"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:306
 msgid "You need to login to Entropy Web Services"
@@ -741,28 +743,28 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:310
 msgid "_Login"
-msgstr ""
+msgstr "_Σύνδεση"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:311
 msgid "Register"
-msgstr ""
+msgstr "Εγγραφή"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:316
 #: ../rigo/ui/gtk3/widgets/notifications.py:1145
 msgid "_Cancel"
-msgstr ""
+msgstr "_Ακύρωση"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:327
 msgid "Username"
-msgstr ""
+msgstr "Όνομα χρήστη"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:337
 msgid "Password"
-msgstr ""
+msgstr "Κωδικός"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:370
 msgid "Login <b>error</b>!"
-msgstr ""
+msgstr "<b>Σφάλμα</b> σύνδεσης!"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:424
 msgid ""
@@ -772,11 +774,11 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:428
 msgid "Don't ask me..."
-msgstr ""
+msgstr "Μην με ρωτάς..."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:431
 msgid "_Of course not"
-msgstr ""
+msgstr "_Σίγουρα όχι"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:439
 msgid "A watched pot never boils"
@@ -787,33 +789,33 @@ msgstr ""
 msgid ""
 "You are required to <b>review</b> and <b>accept</b> the following licenses "
 "before continuing: %s"
-msgstr ""
+msgstr "Απαιτείται να <b>εξετάσετε</b> και να <b>αποδεχτείτε</b> τις ακόλουθες άδειες πριν συνεχίσουμε: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:503
 #, python-format
 msgid ""
 "<b>%s</b> Application or one of its dependencies is distributed with the "
 "following licenses: %s"
-msgstr ""
+msgstr "Η <b>%s</b> Εφαρμογή ή μία από τις απαιτήσεις της διανέμεται με τις ακόλουθες άδειες: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:521
 msgid "Make sure to review all the licenses"
-msgstr ""
+msgstr "Σιγουρευτείτε ότι εξετάσατε όλες τις άδειες"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:525
 #: ../rigo/ui/gtk3/widgets/notifications.py:815
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:95
 msgid "Accept"
-msgstr ""
+msgstr "Αποδοχή"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:526
 msgid "Accept forever"
-msgstr ""
+msgstr "Αποδοχή για πάντα"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:528
 #: ../rigo/ui/gtk3/widgets/notifications.py:816
 msgid "Decline"
-msgstr ""
+msgstr "Απόρριψη"
 
 #. if apps:
 #. self.add_button(_("Remove safe"), self._on_remove_safe)
@@ -821,18 +823,18 @@ msgstr ""
 #: ../rigo/ui/gtk3/widgets/notifications.py:652
 #: ../rigo/ui/gtk3/widgets/notifications.py:1089
 msgid "Close"
-msgstr ""
+msgstr "Κλείσιμο"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:669
 msgid ""
 "Several <b>Applications</b>, no longer maintained by this distribution, have"
 " been found on your <b>System</b>. Some of them might require <b>manual "
 "review</b> before being uninstalled. Click on the Apps to expand."
-msgstr ""
+msgstr "Αρκετές <b>Εφαρμογές</b>, που δεν συντηρούνται από αυτή τη διανομή, βρέθηκαν στο <b>Σύστημά</b> σας. Ορισμένες από αυτές μπορεί να απαιτούν <b>χειροκίνητο έλεγχο</b> πριν απεγκατασταθούν. Πατήστε στις Εφαρμογές για περισσότερα."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:677
 msgid "Manual review"
-msgstr ""
+msgstr "Χειροκίνητος έλεγχος"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:681
 msgid "Safe to drop"
@@ -843,25 +845,25 @@ msgstr ""
 msgid ""
 "<b>%s</b> Application requires the installation of the following "
 "Applications: %s"
-msgstr ""
+msgstr "Η <b>%s</b> Εφαρμογή απαιτεί την εγκατάσταση των παρακάτω Εφαρμογών: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:798
 msgid "Show full list"
-msgstr ""
+msgstr "Εμφάνιση πλήρης λίστας"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:858
 #, python-format
 msgid ""
 "<b>%s</b> Application requires the removal of the following Applications: %s"
-msgstr ""
+msgstr "Η <b>%s</b> Εφαρμογή απαιτεί την αφαίρεση των παρακάτων Εφαρμογών: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:907
 msgid "Confirm"
-msgstr ""
+msgstr "Επιβεβαίωση"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:908
 msgid "Undo"
-msgstr ""
+msgstr "Αναίρεση"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:969
 #, python-format
@@ -875,73 +877,73 @@ msgstr[1] ""
 #, python-format
 msgid "There is <b>%d</b> configuration file update"
 msgid_plural "There are <b>%d</b> configuration file updates"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Υπάρχει <b>%d</b> ενημέρωση αρχείου ρυθμίσεων"
+msgstr[1] "Υπάρχουν <b>%d</b> ενημερώσεις αρχείων ρυθμίσεων"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1026
 msgid ""
 "It is <b>extremely</b> important to update these configuration files before "
 "<b>rebooting</b> the System."
-msgstr ""
+msgstr "Είναι <b>ιδιαίτερα</b> σημαντικό να ενημερώσετε αυτά τα αρχεία ρυθμίσεων πριν την <b>επανεκκίνηση</b> του Συστήματος."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1037
 #: ../rigo/ui/gtk3/widgets/notifications.py:1087
 msgid "Let me see"
-msgstr ""
+msgstr "Για να δω"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1038
 msgid "Happily ignore"
-msgstr ""
+msgstr "Μετά χαράς αγνόησε"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1071
 #, python-format
 msgid "There is <b>%d</b> notice from a repository"
 msgid_plural "There are <b>%d</b> notices from repositories"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Υπάρχει <b>%d</b> σημείωση από ένα αποθετήριο"
+msgstr[1] "Υπάρχουν <b>%d</b> σημειώσεις από τα αποθετήρια"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1077
 msgid "It is <b>extremely</b> important to always read them."
-msgstr ""
+msgstr "Είναι <b>ιδιαίτερα</b> σημαντικό να τα διαβάζετε πάντα."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1088
 msgid "Stop annoying me"
-msgstr ""
+msgstr "Σταμάτα να μ' ενοχλείς"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1136
 msgid "You are about to rename a Repository"
-msgstr ""
+msgstr "Είστε έτοιμοι να μετονομάσετε ένα Αποθετήριο"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1140
 msgid "_Rename"
-msgstr ""
+msgstr "_Μετονομασία"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1155
 msgid "Repository name"
-msgstr ""
+msgstr "Όνομα αποθετηρίου"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1187
 msgid "<b>Invalid</b> Repository name!"
-msgstr ""
+msgstr "<b>Μη έγκυρο</b> όνομα Αποθετηρίου!"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1197
 msgid "Repository rename <b>not allowed</b>!"
-msgstr ""
+msgstr "Η μετονομασία του Αποθετηρίου <b>δεν επιτρέπεται</b>!"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1217
 #, python-format
 msgid "There is <b>%d</b> preserved library on the system"
 msgid_plural "There are <b>%d</b> preserved libraries on the system"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Υπάρχει <b>%d</b> διατηρημένη βιβλιοθήκη στο σύστημα"
+msgstr[1] "Υπάρχουν <b>%d</b> διατηρημένες βιβλιοθήκες στο σύστημα"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1227
 msgid "Preserved libraries detected on the system."
-msgstr ""
+msgstr "Εντοπίστηκαν διατηρημένες βιβλιοθήκες στο σύστημα."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1231
 msgid "_Update system now"
-msgstr ""
+msgstr "_Ενημέρωσε το σύστημα τώρα"
 
 #: ../rigo/ui/gtk3/widgets/stars.py:400
 #, python-format
@@ -957,79 +959,79 @@ msgstr ""
 #. unrated caption
 #: ../rigo/ui/gtk3/widgets/stars.py:501
 msgid "Awful"
-msgstr ""
+msgstr "Χάλια"
 
 #. 1 star rating
 #: ../rigo/ui/gtk3/widgets/stars.py:502
 msgid "Poor"
-msgstr ""
+msgstr "Φτωχή"
 
 #. 2 star rating
 #: ../rigo/ui/gtk3/widgets/stars.py:503
 msgid "Adequate"
-msgstr ""
+msgstr "Επαρκής"
 
 #. 3 star rating
 #: ../rigo/ui/gtk3/widgets/stars.py:504
 msgid "Good"
-msgstr ""
+msgstr "Καλή"
 
 #. 4 star rating
 #: ../rigo/ui/gtk3/widgets/stars.py:505
 msgid "Excellent"
-msgstr ""
+msgstr "Εξαιρετική"
 
 #: ../rigo/ui/gtk3/widgets/comments.py:91
 msgid "Cannot remove comment"
-msgstr ""
+msgstr "Δεν είναι δυνατή η αφαίρεση του σχολίου"
 
 #: ../rigo/ui/gtk3/widgets/comments.py:128
 msgid "remove"
-msgstr ""
+msgstr "αφαίρεση"
 
 #: ../rigo/ui/gtk3/widgets/preferencestreeview.py:48
 msgid "Run"
-msgstr ""
+msgstr "Εκτέλεση"
 
 #: ../rigo/ui/gtk3/widgets/repositorytreeview.py:62
 msgid "Enable"
-msgstr ""
+msgstr "Ενεργοποίηση"
 
 #: ../rigo/ui/gtk3/widgets/repositorytreeview.py:63
 msgid "Disable"
-msgstr ""
+msgstr "Απενεργοποίηση"
 
 #: ../rigo/ui/gtk3/widgets/repositorytreeview.py:69
 msgid "Rename"
-msgstr ""
+msgstr "Μετονομασία"
 
 #: ../rigo/ui/gtk3/widgets/grouptreeview.py:48
 msgid "View"
-msgstr ""
+msgstr "Προβολή"
 
 #: ../rigo/ui/gtk3/widgets/noticeboardtreeview.py:55
 msgid "Show"
-msgstr ""
+msgstr "Εμφάνισε"
 
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:83
 msgid "Edit"
-msgstr ""
+msgstr "Επεξεργασία"
 
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:89
 msgid "Difference"
-msgstr ""
+msgstr "Διαφορά"
 
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:101
 msgid "Discard"
-msgstr ""
+msgstr "Απόρριψη"
 
 #: ../rigo/ui/gtk3/widgets/images.py:208
 msgid "Keywords"
-msgstr ""
+msgstr "Λέξεις κλειδιά"
 
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:74
 msgid "More Info"
-msgstr ""
+msgstr "Περισσότερες Πληροφορίες"
 
 #: ../rigo/ui/gtk3/widgets/welcome.py:39
 msgid "<i>Browse <b>Applications</b> with ease</i>"
@@ -1041,15 +1043,15 @@ msgstr ""
 
 #: ../rigo_app.py:113
 msgid "Rigo is working, are you sure?"
-msgstr ""
+msgstr "Το Rigo εργάζεται, είστε σίγουρος;"
 
 #: ../rigo_app.py:159
 msgid "Search"
-msgstr ""
+msgstr "Αναζήτηση"
 
 #: ../rigo_app.py:162 ../rigo_app.py:896 ../data/ui/gtk3/rigo.ui.h:1
 msgid "Rigo Application Browser"
-msgstr ""
+msgstr "Πλοηγός Εφαρμογών Rigo"
 
 #: ../rigo_app.py:168
 msgid "Working Hard"
@@ -1057,11 +1059,11 @@ msgstr ""
 
 #: ../rigo_app.py:171
 msgid "Wake Up"
-msgstr ""
+msgstr "Ξύπνα"
 
 #: ../rigo_app.py:174
 msgid "Important Stuff"
-msgstr ""
+msgstr "Σημαντικά Πράγματα"
 
 #: ../rigo_app.py:177
 msgid "Breaking Stuff"
@@ -1083,88 +1085,88 @@ msgstr ""
 
 #: ../rigo_app.py:500
 msgid "Repositories update error"
-msgstr ""
+msgstr "Σφάλμα ενημέρωσης αποθετηρίων"
 
 #: ../rigo_app.py:504
 msgid "Repositories updated <b>successfully</b>!"
-msgstr ""
+msgstr "Τα αποθετήρια ενημερώθηκαν <b>επιτυχώς</b>!"
 
 #: ../rigo_app.py:522
 msgid "Application Management Error"
-msgstr ""
+msgstr "Σφάλμα Διαχείρισης Εφαρμογής"
 
 #: ../rigo_app.py:523
 msgid "please check the management log"
-msgstr ""
+msgstr "παρακαλούμε ελέγξτε την καταγραφή διαχείρισης"
 
 #: ../rigo_app.py:526
 msgid "System Upgrade Error"
-msgstr ""
+msgstr "Σφάλμα Αναβάθμισης Συστήματος"
 
 #: ../rigo_app.py:527
 msgid "please check the upgrade log"
-msgstr ""
+msgstr "παρακαλούμε ελέγξτε την καταγραφή αναβάθμισης"
 
 #: ../rigo_app.py:531
 msgid "Applications managed <b>successfully</b>!"
-msgstr ""
+msgstr "Οι Εφαρμογές διαχειρίστικαν <b>επιτυχώς</b>!"
 
 #: ../rigo_app.py:533
 msgid "System Upgraded <b>successfully</b>!"
-msgstr ""
+msgstr "Το Σύστημα Αναβαθμίστηκε <b>επιτυχώς</b>!"
 
 #: ../rigo_app.py:786
 msgid "You are not authorized to run Rigo"
-msgstr ""
+msgstr "Δεν έχετε εξουσιοδότηση για την εκτέλεση του Rigo"
 
 #: ../rigo_app.py:794 ../rigo_app.py:805 ../rigo_app.py:823 ../rigo_app.py:878
 #: ../rigo_app.py:889 ../rigo_app.py:920
 msgid "Rigo"
-msgstr ""
+msgstr "Rigo"
 
 #: ../rigo_app.py:795
 msgid "RigoDaemon service is not available"
-msgstr ""
+msgstr "Η υπηρεσία RigoDaemon δεν είναι διαθέσιμη"
 
 #: ../rigo_app.py:807
 msgid "API mismatch, please update Rigo and RigoDaemon"
-msgstr ""
+msgstr "Διαφωνία API, παρακαλώ ενημερώστε Rigo και RigoDaemon"
 
 #: ../rigo_app.py:824
 msgid "Another Application Manager is active"
-msgstr ""
+msgstr "Ένας άλλος Διαχειριστής Εφαρμογών είναι ενεργός"
 
 #: ../rigo_app.py:841
 msgid "Background Service is currently not available"
-msgstr ""
+msgstr "Η Υπηρεσία Υπόβαθρου δεν είναι διαθέσιμη αυτή τη στιγμή"
 
 #: ../rigo_app.py:871
 msgid "Background Service is currently busy"
-msgstr ""
+msgstr "Η Υπηρεσία Υπόβαθρου είναι αυτή τη στιγμή απασχολημένη"
 
 #: ../rigo_app.py:873
 msgid "Background Service is incompatible with Rigo"
-msgstr ""
+msgstr "Η Υπηρεσία Υπόβαθρου δεν είναι συμβατή με το Rigo"
 
 #: ../rigo_app.py:885
 msgid "Background Service is currently unavailable"
-msgstr ""
+msgstr "Η Υπηρεσία Υπόβαθρου δεν είναι διαθέσιμη αυτή τη στιγμή"
 
 #: ../rigo_app.py:950
 msgid "Happy St. Valentine <3 <3 !"
-msgstr ""
+msgstr "Άγ. Βαλεντίνος <3 <3 ! Χρόνια πολλά!"
 
 #: ../rigo_app.py:952
 msgid "Merry Xmas \\o/ !"
-msgstr ""
+msgstr "Καλά Χριστούγεννα \\o/ !"
 
 #: ../rigo_app.py:954
 msgid "Happy birthday to my authoooooor!"
-msgstr ""
+msgstr "Χρόνια πολλά στον δημιουργό μου!"
 
 #: ../rigo_app.py:956
 msgid "<=|=< (this is optimistically a fish)"
-msgstr ""
+msgstr "<=|=< (αυτό με πολύ αισιοδοξία είναι ένα ψάρι)"
 
 #: ../rigo_app.py:961
 msgid "Woot, thanks"
@@ -1172,4 +1174,4 @@ msgstr ""
 
 #: ../data/ui/gtk3/rigo.ui.h:2
 msgid "_Write a <b>comment</b>"
-msgstr ""
+msgstr "_Γράψε ένα <b>σχόλιο</b>"

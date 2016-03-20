@@ -8,109 +8,109 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Server\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-12-26 22:54+0100\n"
+"POT-Creation-Date: 2014-02-14 16:15+0100\n"
 "PO-Revision-Date: 2013-12-26 21:54+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Croatian (Croatia) (http://www.transifex.com/projects/p/sabayon-entropy-server/language/hr_HR/)\n"
+"Language-Team: Croatian (Croatia) (http://www.transifex.com/lxnay/sabayon-entropy-server/language/hr_HR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: hr_HR\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 
-#: ../../lib/entropy/db/skel.py:495 ../../lib/entropy/locks.py:301
+#: ../../lib/entropy/db/skel.py:518 ../../lib/entropy/locks.py:305
 msgid "Acquiring shared lock on"
 msgstr ""
 
-#: ../../lib/entropy/db/skel.py:506
+#: ../../lib/entropy/db/skel.py:529
 msgid "Acquired shared lock on"
 msgstr ""
 
-#: ../../lib/entropy/db/skel.py:540 ../../lib/entropy/locks.py:305
+#: ../../lib/entropy/db/skel.py:563 ../../lib/entropy/locks.py:309
 msgid "Acquiring exclusive lock on"
 msgstr ""
 
-#: ../../lib/entropy/db/skel.py:551
+#: ../../lib/entropy/db/skel.py:574
 msgid "Acquired exclusive lock on"
 msgstr ""
 
-#: ../../lib/entropy/db/skel.py:2464
+#: ../../lib/entropy/db/skel.py:2502
 msgid "SPM"
 msgstr "SPM"
 
-#: ../../lib/entropy/db/skel.py:2465
+#: ../../lib/entropy/db/skel.py:2503
 msgid "Running packages metadata update"
 msgstr ""
 
-#: ../../lib/entropy/db/skel.py:2466
+#: ../../lib/entropy/db/skel.py:2504
 msgid "it could take a while"
 msgstr "to može potrajati"
 
-#: ../../lib/entropy/db/skel.py:2485 ../../lib/entropy/db/skel.py:2510
-#: ../../lib/entropy/db/skel.py:2521
+#: ../../lib/entropy/db/skel.py:2523 ../../lib/entropy/db/skel.py:2548
+#: ../../lib/entropy/db/skel.py:2559
 msgid "Entropy"
 msgstr "Entropy"
 
-#: ../../lib/entropy/db/skel.py:2486
+#: ../../lib/entropy/db/skel.py:2524
 msgid "action"
 msgstr "radnja"
 
-#: ../../lib/entropy/db/skel.py:2511
+#: ../../lib/entropy/db/skel.py:2549
 msgid "package move actions complete"
 msgstr "dovršene radnje premještanja paketa"
 
-#: ../../lib/entropy/db/skel.py:2522
+#: ../../lib/entropy/db/skel.py:2560
 msgid "package moves completed successfully"
 msgstr "uspješno dovršeno premještanje paketa"
 
-#: ../../lib/entropy/db/skel.py:4544
+#: ../../lib/entropy/db/skel.py:4582
 msgid "Syncing current database"
 msgstr "Sinkroniziram trenutnu bazu podataka"
 
-#: ../../lib/entropy/db/skel.py:4545
+#: ../../lib/entropy/db/skel.py:4583
 msgid "please wait"
 msgstr "molim pričekajte"
 
-#: ../../lib/entropy/db/skel.py:4560
+#: ../../lib/entropy/db/skel.py:4598
 msgid "Removing entry"
 msgstr "Uklanjam unos"
 
-#: ../../lib/entropy/db/skel.py:4579
+#: ../../lib/entropy/db/skel.py:4617
 msgid "Adding entry"
 msgstr "Dodajem unos"
 
-#: ../../lib/entropy/db/sqlite.py:2009
+#: ../../lib/entropy/db/sqlite.py:2048
 msgid "Exporting database table"
 msgstr "Izvozim tablicu baze podataka"
 
-#: ../../lib/entropy/db/sqlite.py:2049
+#: ../../lib/entropy/db/sqlite.py:2088
 msgid "Database Export complete."
 msgstr " Izvoz baze podataka je kompletiran."
 
-#: ../../lib/entropy/db/sqlite.py:2415 ../../lib/entropy/db/sqlite.py:2519
-#: ../../lib/entropy/db/sqlite.py:2627 ../../lib/entropy/db/sqlite.py:2640
-#: ../../lib/entropy/db/sql.py:5469 ../../lib/entropy/db/sql.py:5482
+#: ../../lib/entropy/db/sqlite.py:2454 ../../lib/entropy/db/sqlite.py:2558
+#: ../../lib/entropy/db/sqlite.py:2666 ../../lib/entropy/db/sqlite.py:2679
+#: ../../lib/entropy/db/sql.py:5468 ../../lib/entropy/db/sql.py:5481
 msgid "ATTENTION"
 msgstr "POZOR"
 
-#: ../../lib/entropy/db/sqlite.py:2417 ../../lib/entropy/db/sqlite.py:2521
+#: ../../lib/entropy/db/sqlite.py:2456 ../../lib/entropy/db/sqlite.py:2560
 msgid "updating repository metadata layout, please wait!"
 msgstr ""
 
-#: ../../lib/entropy/db/sqlite.py:2628
+#: ../../lib/entropy/db/sqlite.py:2667
 msgid "generating provided_libs metadata, please wait!"
 msgstr ""
 
-#: ../../lib/entropy/db/sql.py:5470
+#: ../../lib/entropy/db/sql.py:5469
 msgid "Spm error occurred"
 msgstr ""
 
-#: ../../lib/entropy/db/sql.py:5483
+#: ../../lib/entropy/db/sql.py:5482
 msgid "Spm Unique Identifier not found for"
 msgstr ""
 
-#: ../../lib/entropy/core/settings/base.py:2086
-#: ../../lib/entropy/server/interfaces/main.py:1367
+#: ../../lib/entropy/core/settings/base.py:2036
+#: ../../lib/entropy/server/interfaces/main.py:1330
 msgid "No description"
 msgstr "Nema opisa"
 
@@ -191,116 +191,116 @@ msgstr ""
 msgid "Repository updated anyway"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:1679
+#: ../../lib/entropy/server/interfaces/main.py:1642
 msgid "package has no keyword set, it will be masked !"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:1816
-#: ../../lib/entropy/server/interfaces/main.py:5413
+#: ../../lib/entropy/server/interfaces/main.py:1779
+#: ../../lib/entropy/server/interfaces/main.py:5377
 msgid "repository not configured"
 msgstr "repozitorij nije konfiguriran"
 
-#: ../../lib/entropy/server/interfaces/main.py:1822
+#: ../../lib/entropy/server/interfaces/main.py:1785
 msgid "protected repository id, can't use this, sorry dude..."
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:2198
+#: ../../lib/entropy/server/interfaces/main.py:2161
 msgid "invalid repository revision"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:2200
+#: ../../lib/entropy/server/interfaces/main.py:2163
 msgid "defaulting to 0"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:2310
-#: ../../lib/entropy/server/interfaces/main.py:5660
-#: ../../lib/entropy/server/interfaces/main.py:5941
+#: ../../lib/entropy/server/interfaces/main.py:2273
+#: ../../lib/entropy/server/interfaces/main.py:5624
+#: ../../lib/entropy/server/interfaces/main.py:5909
 msgid "repository"
 msgstr "repozitorij"
 
-#: ../../lib/entropy/server/interfaces/main.py:2311
+#: ../../lib/entropy/server/interfaces/main.py:2274
 msgid "syncing package sets"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:2355
+#: ../../lib/entropy/server/interfaces/main.py:2318
 #: ../../lib/entropy/qa.py:832
 msgid "Attention"
 msgstr "Pažnja"
 
-#: ../../lib/entropy/server/interfaces/main.py:2356
+#: ../../lib/entropy/server/interfaces/main.py:2319
 msgid "cannot match"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:2462
+#: ../../lib/entropy/server/interfaces/main.py:2425
 msgid "initializing repository"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:2472
+#: ../../lib/entropy/server/interfaces/main.py:2435
 msgid "do you really want to initialize this repository ?"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:2475
-#: ../../lib/entropy/server/interfaces/main.py:2669
-#: ../../lib/entropy/server/interfaces/main.py:3339
-#: ../../lib/entropy/server/interfaces/main.py:3594
-#: ../../lib/entropy/server/interfaces/main.py:4136
-#: ../../lib/entropy/server/interfaces/main.py:5452
+#: ../../lib/entropy/server/interfaces/main.py:2438
+#: ../../lib/entropy/server/interfaces/main.py:2632
+#: ../../lib/entropy/server/interfaces/main.py:3302
+#: ../../lib/entropy/server/interfaces/main.py:3558
+#: ../../lib/entropy/server/interfaces/main.py:4100
+#: ../../lib/entropy/server/interfaces/main.py:5416
 #: ../../lib/entropy/server/interfaces/mirrors.py:1813
 #: ../../lib/entropy/server/interfaces/mirrors.py:2418
 #: ../../lib/entropy/output.py:780 ../../server/eit/utils.py:196
 msgid "No"
 msgstr "Ne"
 
-#: ../../lib/entropy/server/interfaces/main.py:2497
+#: ../../lib/entropy/server/interfaces/main.py:2460
 msgid "Cannot create store directory"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:2510
+#: ../../lib/entropy/server/interfaces/main.py:2473
 msgid "Cannot create upload directory"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:2536
+#: ../../lib/entropy/server/interfaces/main.py:2499
 msgid "Invalid tag specified"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:2582
+#: ../../lib/entropy/server/interfaces/main.py:2545
 msgid "flushing back selected packages from branches"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:2608
+#: ../../lib/entropy/server/interfaces/main.py:2571
 msgid "nothing to do"
 msgstr "ništa za učiniti"
 
-#: ../../lib/entropy/server/interfaces/main.py:2632
+#: ../../lib/entropy/server/interfaces/main.py:2595
 msgid "these are the packages that will be flushed"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:2668
-#: ../../lib/entropy/server/interfaces/main.py:3338
-#: ../../lib/entropy/server/interfaces/main.py:3593
-#: ../../lib/entropy/server/interfaces/main.py:4135
+#: ../../lib/entropy/server/interfaces/main.py:2631
+#: ../../lib/entropy/server/interfaces/main.py:3301
+#: ../../lib/entropy/server/interfaces/main.py:3557
+#: ../../lib/entropy/server/interfaces/main.py:4099
 #: ../../lib/entropy/server/interfaces/mirrors.py:2417
 msgid "Would you like to continue ?"
 msgstr "Želite li nastaviti ?"
 
-#: ../../lib/entropy/server/interfaces/main.py:2718
+#: ../../lib/entropy/server/interfaces/main.py:2681
 msgid "checking package hash"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:2737
+#: ../../lib/entropy/server/interfaces/main.py:2700
 msgid "hash does not match for"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:2747
+#: ../../lib/entropy/server/interfaces/main.py:2710
 msgid "wrong md5"
 msgstr "pogrešni md5"
 
-#: ../../lib/entropy/server/interfaces/main.py:2759
+#: ../../lib/entropy/server/interfaces/main.py:2722
 #: ../../lib/entropy/server/interfaces/mirrors.py:1588
 msgid "download errors"
 msgstr "greške preuzimanja"
 
-#: ../../lib/entropy/server/interfaces/main.py:2760
+#: ../../lib/entropy/server/interfaces/main.py:2723
 #: ../../lib/entropy/server/interfaces/mirrors.py:1515
 #: ../../lib/entropy/server/interfaces/mirrors.py:1590
 #: ../../lib/entropy/server/interfaces/mirrors.py:2484
@@ -309,157 +309,157 @@ msgstr "greške preuzimanja"
 msgid "reason"
 msgstr "razlog"
 
-#: ../../lib/entropy/server/interfaces/main.py:2777
+#: ../../lib/entropy/server/interfaces/main.py:2740
 #: ../../lib/entropy/server/interfaces/mirrors.py:1604
 msgid "download completed successfully"
 msgstr "preuzimanje uspješno završeno"
 
-#: ../../lib/entropy/server/interfaces/main.py:2791
+#: ../../lib/entropy/server/interfaces/main.py:2754
 msgid "error downloading packages from mirrors"
 msgstr "greška pri preuzimanju paketa sa zrcala"
 
-#: ../../lib/entropy/server/interfaces/main.py:2806
+#: ../../lib/entropy/server/interfaces/main.py:2769
 msgid "working on branch"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:2822
+#: ../../lib/entropy/server/interfaces/main.py:2785
 msgid "updating package"
 msgstr "šaljem paket"
 
-#: ../../lib/entropy/server/interfaces/main.py:2860
+#: ../../lib/entropy/server/interfaces/main.py:2823
 msgid "package flushed"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:2963
+#: ../../lib/entropy/server/interfaces/main.py:2926
 msgid "switching"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:2983
+#: ../../lib/entropy/server/interfaces/main.py:2946
 msgid "cannot switch, package not found, skipping"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:3065
+#: ../../lib/entropy/server/interfaces/main.py:3028
 msgid "moving file"
 msgstr "premještam datoteku"
 
-#: ../../lib/entropy/server/interfaces/main.py:3081
+#: ../../lib/entropy/server/interfaces/main.py:3044
 msgid "loading data from source repository"
 msgstr "učitavam podatke iz izvornog repozitorija"
 
-#: ../../lib/entropy/server/interfaces/main.py:3111
+#: ../../lib/entropy/server/interfaces/main.py:3074
 msgid "GPG key was available in"
 msgstr "GPG ključ je bio dostupan u "
 
-#: ../../lib/entropy/server/interfaces/main.py:3136
+#: ../../lib/entropy/server/interfaces/main.py:3099
 msgid "injecting data to destination repository"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:3156
+#: ../../lib/entropy/server/interfaces/main.py:3119
 msgid "removing entry from source repository"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:3175
+#: ../../lib/entropy/server/interfaces/main.py:3138
 msgid "successfully handled atom"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:3201
+#: ../../lib/entropy/server/interfaces/main.py:3164
 msgid "Cannot touch system repository"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:3216
+#: ../../lib/entropy/server/interfaces/main.py:3179
 msgid "Preparing to move selected packages to"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:3218
+#: ../../lib/entropy/server/interfaces/main.py:3181
 msgid "Preparing to copy selected packages to"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:3230
+#: ../../lib/entropy/server/interfaces/main.py:3193
 msgid "Note"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:3231
+#: ../../lib/entropy/server/interfaces/main.py:3194
 msgid ""
 "all old packages with conflicting scope will be removed from destination "
 "repo unless injected"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:3241
+#: ../../lib/entropy/server/interfaces/main.py:3204
 msgid "new tag"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:3281
+#: ../../lib/entropy/server/interfaces/main.py:3244
 #: ../../lib/entropy/server/interfaces/mirrors.py:1032
 #: ../../lib/entropy/server/interfaces/mirrors.py:2200
 #: ../../lib/entropy/server/interfaces/mirrors.py:2360
 msgid "remove"
 msgstr "ukloni"
 
-#: ../../lib/entropy/server/interfaces/main.py:3313
+#: ../../lib/entropy/server/interfaces/main.py:3276
 msgid "reverse dependency"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:3324
+#: ../../lib/entropy/server/interfaces/main.py:3287
 msgid "dependency"
 msgstr "zavisnost"
 
-#: ../../lib/entropy/server/interfaces/main.py:3368
+#: ../../lib/entropy/server/interfaces/main.py:3331
 msgid "Injecting entropy metadata into built packages"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:3384
+#: ../../lib/entropy/server/interfaces/main.py:3347
 msgid "JFYI, GPG infrastructure failed to load"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:3438
+#: ../../lib/entropy/server/interfaces/main.py:3402
 msgid "injecting entropy metadata"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:3498
+#: ../../lib/entropy/server/interfaces/main.py:3462
 msgid "injection complete"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:3525
+#: ../../lib/entropy/server/interfaces/main.py:3489
 msgid "removing package"
 msgstr "uklanjam paket"
 
-#: ../../lib/entropy/server/interfaces/main.py:3539
+#: ../../lib/entropy/server/interfaces/main.py:3503
 #: ../../lib/entropy/server/interfaces/mirrors.py:1433
 msgid "removal complete"
 msgstr "uklanjanje završeno"
 
-#: ../../lib/entropy/server/interfaces/main.py:3551
-#: ../../lib/entropy/server/interfaces/main.py:3754
+#: ../../lib/entropy/server/interfaces/main.py:3515
+#: ../../lib/entropy/server/interfaces/main.py:3718
 msgid "Integrity verification of the selected packages"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:3566
-#: ../../lib/entropy/server/interfaces/main.py:3765
+#: ../../lib/entropy/server/interfaces/main.py:3530
+#: ../../lib/entropy/server/interfaces/main.py:3729
 msgid "All the packages in repository will be checked."
 msgstr "Svi paketi u repozitoriju će biti provjereni."
 
-#: ../../lib/entropy/server/interfaces/main.py:3573
+#: ../../lib/entropy/server/interfaces/main.py:3537
 msgid "This is the list of the packages that would be checked"
 msgstr "Ovo je lista paketa koji trebaju biti provjereni"
 
-#: ../../lib/entropy/server/interfaces/main.py:3607
+#: ../../lib/entropy/server/interfaces/main.py:3571
 msgid "Working on mirror"
 msgstr "Radim na zrcalu"
 
-#: ../../lib/entropy/server/interfaces/main.py:3634
+#: ../../lib/entropy/server/interfaces/main.py:3598
 msgid "checking hash"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:3649
+#: ../../lib/entropy/server/interfaces/main.py:3613
 msgid "digest verification of"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:3651
+#: ../../lib/entropy/server/interfaces/main.py:3615
 msgid "not supported"
 msgstr "nije podržano"
 
-#: ../../lib/entropy/server/interfaces/main.py:3667
-#: ../../lib/entropy/server/interfaces/main.py:3810
+#: ../../lib/entropy/server/interfaces/main.py:3631
+#: ../../lib/entropy/server/interfaces/main.py:3774
 #: ../../lib/entropy/server/interfaces/mirrors.py:562
 #: ../../lib/entropy/server/interfaces/mirrors.py:581
 #: ../../lib/entropy/server/interfaces/mirrors.py:613
@@ -468,515 +468,515 @@ msgstr "nije podržano"
 msgid "package"
 msgstr "paket"
 
-#: ../../lib/entropy/server/interfaces/main.py:3669
+#: ../../lib/entropy/server/interfaces/main.py:3633
 msgid "NOT healthy"
 msgstr "NIJE zdravo"
 
-#: ../../lib/entropy/server/interfaces/main.py:3682
-#: ../../lib/entropy/server/interfaces/main.py:3822
+#: ../../lib/entropy/server/interfaces/main.py:3646
+#: ../../lib/entropy/server/interfaces/main.py:3786
 msgid "This is the list of broken packages"
 msgstr "Ovo je lista slomljenih paketa"
 
-#: ../../lib/entropy/server/interfaces/main.py:3691
+#: ../../lib/entropy/server/interfaces/main.py:3655
 msgid "Mirror"
 msgstr "Zrcalo"
 
-#: ../../lib/entropy/server/interfaces/main.py:3710
+#: ../../lib/entropy/server/interfaces/main.py:3674
 msgid "Statistics"
 msgstr "Statistika"
 
-#: ../../lib/entropy/server/interfaces/main.py:3719
+#: ../../lib/entropy/server/interfaces/main.py:3683
 msgid "Number of checked packages"
 msgstr "Broj provjerenih paketa"
 
-#: ../../lib/entropy/server/interfaces/main.py:3729
+#: ../../lib/entropy/server/interfaces/main.py:3693
 msgid "Number of healthy packages"
 msgstr "Broj zdravih paketa"
 
-#: ../../lib/entropy/server/interfaces/main.py:3739
+#: ../../lib/entropy/server/interfaces/main.py:3703
 msgid "Number of broken packages"
 msgstr "Broj slomljenih paketa"
 
-#: ../../lib/entropy/server/interfaces/main.py:3753
-#: ../../lib/entropy/server/interfaces/main.py:3910
+#: ../../lib/entropy/server/interfaces/main.py:3717
+#: ../../lib/entropy/server/interfaces/main.py:3874
 msgid "local"
 msgstr "lokalno"
 
-#: ../../lib/entropy/server/interfaces/main.py:3790
+#: ../../lib/entropy/server/interfaces/main.py:3754
 msgid "checking status of"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:3812
+#: ../../lib/entropy/server/interfaces/main.py:3776
 msgid "is corrupted, stored checksum"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:3849
+#: ../../lib/entropy/server/interfaces/main.py:3813
 msgid "checked packages"
 msgstr "provjereni paketi"
 
-#: ../../lib/entropy/server/interfaces/main.py:3859
+#: ../../lib/entropy/server/interfaces/main.py:3823
 msgid "healthy packages"
 msgstr "zdravi paketi"
 
-#: ../../lib/entropy/server/interfaces/main.py:3869
-#: ../../lib/entropy/server/interfaces/main.py:4052
+#: ../../lib/entropy/server/interfaces/main.py:3833
+#: ../../lib/entropy/server/interfaces/main.py:4016
 msgid "broken packages"
 msgstr "slomljeni paketi"
 
-#: ../../lib/entropy/server/interfaces/main.py:3879
-#: ../../lib/entropy/server/interfaces/main.py:4062
+#: ../../lib/entropy/server/interfaces/main.py:3843
+#: ../../lib/entropy/server/interfaces/main.py:4026
 msgid "downloaded packages"
 msgstr "preuzeti paketi"
 
-#: ../../lib/entropy/server/interfaces/main.py:3889
-#: ../../lib/entropy/server/interfaces/main.py:4072
+#: ../../lib/entropy/server/interfaces/main.py:3853
+#: ../../lib/entropy/server/interfaces/main.py:4036
 msgid "failed downloads"
 msgstr "neuspjela preuzimanja"
 
-#: ../../lib/entropy/server/interfaces/main.py:3911
+#: ../../lib/entropy/server/interfaces/main.py:3875
 msgid "GPG signing packages for repository"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:3923
+#: ../../lib/entropy/server/interfaces/main.py:3887
 msgid "All the missing packages in repository will be downloaded."
 msgstr "Biti će preuzeti svi paketi koji nedostraju u repozitoriju."
 
-#: ../../lib/entropy/server/interfaces/main.py:3939
+#: ../../lib/entropy/server/interfaces/main.py:3903
 msgid "GnuPG not available"
 msgstr "GnuPG nije dostupan"
 
-#: ../../lib/entropy/server/interfaces/main.py:3957
+#: ../../lib/entropy/server/interfaces/main.py:3921
 #: ../../lib/entropy/server/interfaces/db.py:377
 msgid "Keys for repository are expired"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:3965
+#: ../../lib/entropy/server/interfaces/main.py:3929
 msgid "Keys not available for"
 msgstr "Ključevi nisu dostupni za"
 
-#: ../../lib/entropy/server/interfaces/main.py:3996
+#: ../../lib/entropy/server/interfaces/main.py:3960
 msgid "signing package"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:4011
+#: ../../lib/entropy/server/interfaces/main.py:3975
 msgid "Unknown error signing package"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:4042
+#: ../../lib/entropy/server/interfaces/main.py:4006
 msgid "signed packages"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:4101
+#: ../../lib/entropy/server/interfaces/main.py:4065
 msgid "available"
 msgstr "dostupno"
 
-#: ../../lib/entropy/server/interfaces/main.py:4113
+#: ../../lib/entropy/server/interfaces/main.py:4077
 msgid "upload/ignored"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:4124
-#: ../../lib/entropy/server/interfaces/main.py:5662
+#: ../../lib/entropy/server/interfaces/main.py:4088
+#: ../../lib/entropy/server/interfaces/main.py:5626
 #: ../../lib/entropy/server/interfaces/mirrors.py:1004
 #: ../../lib/entropy/server/interfaces/db.py:735
 msgid "download"
 msgstr "preuzimanje"
 
-#: ../../lib/entropy/server/interfaces/main.py:4148
+#: ../../lib/entropy/server/interfaces/main.py:4112
 msgid "Starting to download missing files"
 msgstr "Počinjem preuzimati datoteke koje nedostaju"
 
-#: ../../lib/entropy/server/interfaces/main.py:4159
+#: ../../lib/entropy/server/interfaces/main.py:4123
 msgid "Searching missing/broken files on another mirror"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:4180
+#: ../../lib/entropy/server/interfaces/main.py:4144
 msgid "Binary packages downloaded successfully."
 msgstr "Binarni paketi su uspješno preuzeti."
 
-#: ../../lib/entropy/server/interfaces/main.py:4189
+#: ../../lib/entropy/server/interfaces/main.py:4153
 msgid "These are the packages that cannot be found online"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:4205
+#: ../../lib/entropy/server/interfaces/main.py:4169
 msgid "They won't be checked"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:4219
+#: ../../lib/entropy/server/interfaces/main.py:4183
 msgid "Please setup your branch to"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:4221
+#: ../../lib/entropy/server/interfaces/main.py:4185
 msgid "and retry"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:4231
+#: ../../lib/entropy/server/interfaces/main.py:4195
 msgid "Copying repository (if not exists)"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:4264
+#: ../../lib/entropy/server/interfaces/main.py:4228
 msgid "Switching packages"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:4299
+#: ../../lib/entropy/server/interfaces/main.py:4263
 msgid "Ignoring"
 msgstr "Ignoriram"
 
-#: ../../lib/entropy/server/interfaces/main.py:4301
+#: ../../lib/entropy/server/interfaces/main.py:4265
 msgid "already in branch"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:4335
+#: ../../lib/entropy/server/interfaces/main.py:4299
 msgid "migration loop completed"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:4353
+#: ../../lib/entropy/server/interfaces/main.py:4317
 msgid "Running orphaned SPM packages test"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:4369
+#: ../../lib/entropy/server/interfaces/main.py:4333
 msgid "Scanning package"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:4395
+#: ../../lib/entropy/server/interfaces/main.py:4359
 msgid "not found anymore"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:4407
-#: ../../lib/entropy/server/interfaces/main.py:5312
+#: ../../lib/entropy/server/interfaces/main.py:4371
+#: ../../lib/entropy/server/interfaces/main.py:5276
 msgid "Packages string"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:4429
+#: ../../lib/entropy/server/interfaces/main.py:4393
 msgid "scanning dependencies"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:4525
+#: ../../lib/entropy/server/interfaces/main.py:4489
 msgid "checking repository"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:4618
+#: ../../lib/entropy/server/interfaces/main.py:4582
 msgid "Calculating dependencies"
 msgstr "Računam zavisnosti"
 
-#: ../../lib/entropy/server/interfaces/main.py:4626
+#: ../../lib/entropy/server/interfaces/main.py:4590
 msgid "if these repositories were merged"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:4633
+#: ../../lib/entropy/server/interfaces/main.py:4597
 msgid "and if these repositories were drained"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:4653
+#: ../../lib/entropy/server/interfaces/main.py:4617
 msgid "missing dependencies"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:4748
+#: ../../lib/entropy/server/interfaces/main.py:4712
 msgid "There are broken injected packages. Please fix."
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:4754
+#: ../../lib/entropy/server/interfaces/main.py:4718
 msgid "Injected packages are healthy. You lucky..."
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:4874
-#: ../../lib/entropy/server/interfaces/main.py:5009
+#: ../../lib/entropy/server/interfaces/main.py:4838
+#: ../../lib/entropy/server/interfaces/main.py:4973
 msgid "test"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:4875
+#: ../../lib/entropy/server/interfaces/main.py:4839
 msgid "these packages haven't been removed yet"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:4907
-#: ../../lib/entropy/server/interfaces/main.py:5169
+#: ../../lib/entropy/server/interfaces/main.py:4871
+#: ../../lib/entropy/server/interfaces/main.py:5133
 msgid "Needed by"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:4916
+#: ../../lib/entropy/server/interfaces/main.py:4880
 msgid "corrupted entry"
 msgstr ""
 
 #. this means that user is asking to remove dep_pattern
-#: ../../lib/entropy/server/interfaces/main.py:4921
-#: ../../lib/entropy/server/interfaces/main.py:7413
-#: ../../lib/entropy/server/interfaces/main.py:7518
+#: ../../lib/entropy/server/interfaces/main.py:4885
+#: ../../lib/entropy/server/interfaces/main.py:7381
+#: ../../lib/entropy/server/interfaces/main.py:7486
 msgid "removed"
 msgstr "uklonjen"
 
-#: ../../lib/entropy/server/interfaces/main.py:5010
+#: ../../lib/entropy/server/interfaces/main.py:4974
 msgid "these packages have lower than expected revisions"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:5102
+#: ../../lib/entropy/server/interfaces/main.py:5066
 msgid "Running dependencies test"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:5162
+#: ../../lib/entropy/server/interfaces/main.py:5126
 msgid "These are the dependencies not found"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:5187
+#: ../../lib/entropy/server/interfaces/main.py:5151
 msgid "by repo"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:5196
+#: ../../lib/entropy/server/interfaces/main.py:5160
 msgid "Every dependency is satisfied. It's all fine."
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:5225
+#: ../../lib/entropy/server/interfaces/main.py:5189
 msgid "Broken and matched packages list"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:5227
+#: ../../lib/entropy/server/interfaces/main.py:5191
 #: ../../lib/entropy/qa.py:695
 msgid "Dumping results into these files"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:5253
+#: ../../lib/entropy/server/interfaces/main.py:5217
 msgid "System is healthy"
 msgstr "Sustav je zdrav"
 
-#: ../../lib/entropy/server/interfaces/main.py:5262
+#: ../../lib/entropy/server/interfaces/main.py:5226
 msgid "Matching libraries with Spm, please wait"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:5276
+#: ../../lib/entropy/server/interfaces/main.py:5240
 msgid "These are the matched packages"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:5321
+#: ../../lib/entropy/server/interfaces/main.py:5285
 msgid "No matched packages"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:5439
+#: ../../lib/entropy/server/interfaces/main.py:5403
 msgid "Your default repository is not initialized"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:5451
+#: ../../lib/entropy/server/interfaces/main.py:5415
 msgid "Do you want to initialize your default repository ?"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:5454
+#: ../../lib/entropy/server/interfaces/main.py:5418
 msgid "Continuing with an uninitialized repository"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:5619
+#: ../../lib/entropy/server/interfaces/main.py:5583
 msgid "Entropy repository is already locked by you :-)"
 msgstr ""
 
 #. check if the database is locked REMOTELY
-#: ../../lib/entropy/server/interfaces/main.py:5626
+#: ../../lib/entropy/server/interfaces/main.py:5590
 msgid "Locking and Syncing Entropy repository"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:5640
+#: ../../lib/entropy/server/interfaces/main.py:5604
 msgid "Mirrors status table"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:5649
-#: ../../lib/entropy/server/interfaces/main.py:5652
+#: ../../lib/entropy/server/interfaces/main.py:5613
+#: ../../lib/entropy/server/interfaces/main.py:5616
 msgid "Unlocked"
 msgstr "Otključano"
 
-#: ../../lib/entropy/server/interfaces/main.py:5651
-#: ../../lib/entropy/server/interfaces/main.py:5654
+#: ../../lib/entropy/server/interfaces/main.py:5615
+#: ../../lib/entropy/server/interfaces/main.py:5618
 msgid "Locked"
 msgstr "Zaključano"
 
-#: ../../lib/entropy/server/interfaces/main.py:5671
+#: ../../lib/entropy/server/interfaces/main.py:5635
 msgid "cannot lock mirror"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:5928
+#: ../../lib/entropy/server/interfaces/main.py:5896
 msgid "Repository is corrupted!"
 msgstr "Repozitorij je oštećen!"
 
-#: ../../lib/entropy/server/interfaces/main.py:5942
+#: ../../lib/entropy/server/interfaces/main.py:5910
 msgid "indexing repository"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:5980
+#: ../../lib/entropy/server/interfaces/main.py:5948
 msgid "Initializing an empty repository"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:5993
+#: ../../lib/entropy/server/interfaces/main.py:5961
 msgid "Entropy repository file"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:5995
+#: ../../lib/entropy/server/interfaces/main.py:5963
 msgid "successfully initialized"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:6078
-#: ../../lib/entropy/server/interfaces/main.py:6839
+#: ../../lib/entropy/server/interfaces/main.py:6046
+#: ../../lib/entropy/server/interfaces/main.py:6807
 msgid "adding package"
 msgstr "dodajem paket"
 
-#: ../../lib/entropy/server/interfaces/main.py:6212
+#: ../../lib/entropy/server/interfaces/main.py:6180
 msgid "added package"
 msgstr "dodani paket"
 
-#: ../../lib/entropy/server/interfaces/main.py:6214
+#: ../../lib/entropy/server/interfaces/main.py:6182
 msgid "rev"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:6228
+#: ../../lib/entropy/server/interfaces/main.py:6196
 msgid "manual dependencies for"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:6317
+#: ../../lib/entropy/server/interfaces/main.py:6285
 msgid "these are the missing dependencies"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:6474
+#: ../../lib/entropy/server/interfaces/main.py:6442
 msgid "no missing dependencies !"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:6489
+#: ../../lib/entropy/server/interfaces/main.py:6457
 msgid "Do you agree?"
 msgstr "Slažete li se?"
 
-#: ../../lib/entropy/server/interfaces/main.py:6491
-#: ../../lib/entropy/server/interfaces/main.py:6497
+#: ../../lib/entropy/server/interfaces/main.py:6459
+#: ../../lib/entropy/server/interfaces/main.py:6465
 #: ../../lib/entropy/output.py:780 ../../lib/entropy/output.py:1026
 #: ../../server/eit/utils.py:194
 msgid "Yes"
 msgstr "Da"
 
-#: ../../lib/entropy/server/interfaces/main.py:6491
+#: ../../lib/entropy/server/interfaces/main.py:6459
 msgid "Repeat"
 msgstr "Ponovi"
 
-#: ../../lib/entropy/server/interfaces/main.py:6614
+#: ../../lib/entropy/server/interfaces/main.py:6582
 msgid "metadata QA hook"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:6616
+#: ../../lib/entropy/server/interfaces/main.py:6584
 msgid "not owned by uid and gid = 0"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:6629
+#: ../../lib/entropy/server/interfaces/main.py:6597
 msgid "using metadata QA hook"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:6656
+#: ../../lib/entropy/server/interfaces/main.py:6624
 msgid "metadata QA check for"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:6705
+#: ../../lib/entropy/server/interfaces/main.py:6673
 msgid "cannot execute metadata QA hook for"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:6731
+#: ../../lib/entropy/server/interfaces/main.py:6699
 msgid "attention, QA hook returned a warning"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:6753
+#: ../../lib/entropy/server/interfaces/main.py:6721
 msgid "attention, QA hook returned an error"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:6770
+#: ../../lib/entropy/server/interfaces/main.py:6738
 msgid "metadata QA check complete"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:6853
+#: ../../lib/entropy/server/interfaces/main.py:6821
 msgid "injected package, no separate debug package"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:6871
+#: ../../lib/entropy/server/interfaces/main.py:6839
 msgid "Exception caught, closing tasks"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:6962
+#: ../../lib/entropy/server/interfaces/main.py:6930
 msgid "server-side repository"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:6965
+#: ../../lib/entropy/server/interfaces/main.py:6933
 msgid "community repository"
 msgstr "repozitorij zajednice"
 
 #. ..on repository: <repository_name>
-#: ../../lib/entropy/server/interfaces/main.py:6967
+#: ../../lib/entropy/server/interfaces/main.py:6935
 msgid "Entropy Server Interface Instance on repository"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:6978
+#: ../../lib/entropy/server/interfaces/main.py:6946
 msgid "current branch"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:6980
+#: ../../lib/entropy/server/interfaces/main.py:6948
 msgid "type"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:6989
+#: ../../lib/entropy/server/interfaces/main.py:6957
 msgid "Currently configured repositories"
 msgstr "Trenutno konfigurirani repozitoriji"
 
-#: ../../lib/entropy/server/interfaces/main.py:7025
+#: ../../lib/entropy/server/interfaces/main.py:6993
 msgid "GPG key expired"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:7027
+#: ../../lib/entropy/server/interfaces/main.py:6995
 msgid "please frigging fix"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:7038
+#: ../../lib/entropy/server/interfaces/main.py:7006
 msgid "GPG got unexpected error"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:7040
+#: ../../lib/entropy/server/interfaces/main.py:7008
 msgid "skipping"
 msgstr "preskačem"
 
-#: ../../lib/entropy/server/interfaces/main.py:7057
-#: ../../lib/entropy/server/interfaces/main.py:7071
+#: ../../lib/entropy/server/interfaces/main.py:7025
+#: ../../lib/entropy/server/interfaces/main.py:7039
 msgid "config files"
 msgstr "konfiguracijake datoteke"
 
 #. something short please
-#: ../../lib/entropy/server/interfaces/main.py:7058
+#: ../../lib/entropy/server/interfaces/main.py:7026
 msgid "checking system"
 msgstr "provjeravam sustav"
 
 #. something short please
-#: ../../lib/entropy/server/interfaces/main.py:7072
+#: ../../lib/entropy/server/interfaces/main.py:7040
 msgid "there are configuration files not updated yet"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:7398
+#: ../../lib/entropy/server/interfaces/main.py:7366
 msgid "found available dep_rewrites for this package"
 msgstr ""
 
 #. this means that user is asking to add dep_pattern
 #. as a dependency to package
-#: ../../lib/entropy/server/interfaces/main.py:7410
+#: ../../lib/entropy/server/interfaces/main.py:7378
 msgid "added"
 msgstr "dodan"
 
-#: ../../lib/entropy/server/interfaces/main.py:7507
+#: ../../lib/entropy/server/interfaces/main.py:7475
 msgid "replaced"
 msgstr "zamjenjen"
 
-#: ../../lib/entropy/server/interfaces/main.py:7529
-#: ../../lib/entropy/server/interfaces/main.py:7543
+#: ../../lib/entropy/server/interfaces/main.py:7497
+#: ../../lib/entropy/server/interfaces/main.py:7511
 msgid "No dependency rewrite made for"
 msgstr ""
 
+#: ../../lib/entropy/server/interfaces/main.py:7600
+#: ../../lib/entropy/server/interfaces/main.py:7620
 #: ../../lib/entropy/server/interfaces/main.py:7632
-#: ../../lib/entropy/server/interfaces/main.py:7652
-#: ../../lib/entropy/server/interfaces/main.py:7664
 msgid "sets"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:7633
+#: ../../lib/entropy/server/interfaces/main.py:7601
 msgid "updating package sets"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:7653
+#: ../../lib/entropy/server/interfaces/main.py:7621
 msgid "adding package set"
 msgstr ""
 
-#: ../../lib/entropy/server/interfaces/main.py:7665
+#: ../../lib/entropy/server/interfaces/main.py:7633
 msgid "removing package set"
 msgstr ""
 

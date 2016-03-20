@@ -4,17 +4,17 @@
 # 
 # Translators:
 # Daniel Halens Rodriguez <DanielHalens@gmail.com>, 2011
-# Danilo Riffo <danriffo@gmail.com>, 2012-2013
+# Danilo Riffo <danriffo@gmail.com>, 2012-2014
 # neo2drummer <the_neo_2@hotmail.com>, 2012
-# tutan_kbron <the.darkspider@gmail.com>, 2014
+# Uriel Velázquez <the.darkspider@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-14 16:14+0100\n"
-"PO-Revision-Date: 2014-01-04 17:15+0000\n"
-"Last-Translator: tutan_kbron <the.darkspider@gmail.com>\n"
-"Language-Team: Spanish (http://www.transifex.com/projects/p/sabayon-rigo/language/es/)\n"
+"PO-Revision-Date: 2014-08-28 19:55+0000\n"
+"Last-Translator: Danilo Riffo <danriffo@gmail.com>\n"
+"Language-Team: Spanish (http://www.transifex.com/lxnay/sabayon-rigo/language/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -43,7 +43,7 @@ msgstr "Actualización de repositorios en progreso"
 
 #: ../RigoDaemon/app.py:941
 msgid "Applications management in progress"
-msgstr ""
+msgstr "Administración de aplicaciones en progreso"
 
 #: ../RigoDaemon/app.py:1446 ../rigo_app.py:785
 msgid "Not authorized"
@@ -668,16 +668,16 @@ msgstr "Mostrar Kernels disponibles"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:779
 msgid "Browse through the available and installable Linux kernel binaries."
-msgstr ""
+msgstr "Mostrar los kernel de Linux disponibles e instalables"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:791
 msgid "Show Available Long-Term-Stable Kernels"
-msgstr ""
+msgstr "Mostrar Kernels de soporte extendido disponibles"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:792
 msgid ""
 "Browse through the available and installable Linux LTS kernel binaries."
-msgstr ""
+msgstr "Mostrar los kernel LTS de Linux disponibles e instalables"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:182
 #, python-format
@@ -936,12 +936,12 @@ msgstr "¡<b>No está permitido</b> renombrar el Repositorio!"
 #, python-format
 msgid "There is <b>%d</b> preserved library on the system"
 msgid_plural "There are <b>%d</b> preserved libraries on the system"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Hay <b>%d</b> biblioteca protegida en el sistema"
+msgstr[1] "Hay <b>%d</b> bibliotecas protegidas en el sistema"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1227
 msgid "Preserved libraries detected on the system."
-msgstr ""
+msgstr "Se han detectado bibliotecas protegidas en el sistema"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1231
 msgid "_Update system now"
@@ -1164,7 +1164,7 @@ msgstr "¡Feliz Navidad \\o/!"
 
 #: ../rigo_app.py:954
 msgid "Happy birthday to my authoooooor!"
-msgstr ""
+msgstr "¡Feliz cumpleaños a mi autooooooooor!"
 
 #: ../rigo_app.py:956
 msgid "<=|=< (this is optimistically a fish)"

@@ -3,241 +3,242 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Sergio <belcocco@gmail.com>, 2012
+# necrose99 <mike@michaellawrenceit.com>, 2014
+# necrose99 <mike@michaellawrenceit.com>, 2014-2015
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Server\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-14 16:15+0100\n"
-"PO-Revision-Date: 2013-12-26 21:54+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Italian (http://www.transifex.com/lxnay/sabayon-entropy-server/language/it/)\n"
+"PO-Revision-Date: 2015-04-02 02:23+0000\n"
+"Last-Translator: necrose99 <mike@michaellawrenceit.com>\n"
+"Language-Team: Japanese (http://www.transifex.com/lxnay/sabayon-entropy-server/language/ja/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: it\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: ja\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 #: ../../lib/entropy/db/skel.py:518 ../../lib/entropy/locks.py:305
 msgid "Acquiring shared lock on"
-msgstr ""
+msgstr "上の共有ロックを取得"
 
 #: ../../lib/entropy/db/skel.py:529
 msgid "Acquired shared lock on"
-msgstr ""
+msgstr "取得した共有ロック"
 
 #: ../../lib/entropy/db/skel.py:563 ../../lib/entropy/locks.py:309
 msgid "Acquiring exclusive lock on"
-msgstr ""
+msgstr "の排他ロックを取得"
 
 #: ../../lib/entropy/db/skel.py:574
 msgid "Acquired exclusive lock on"
-msgstr ""
+msgstr "取得した排他的ロック"
 
 #: ../../lib/entropy/db/skel.py:2502
 msgid "SPM"
-msgstr "SPM"
+msgstr "SPM（ソースパッケージマネージャ） "
 
 #: ../../lib/entropy/db/skel.py:2503
 msgid "Running packages metadata update"
-msgstr "Aggiornamento metadati pacchetti in corso"
+msgstr "実行中のパッケージメタデータの更新"
 
 #: ../../lib/entropy/db/skel.py:2504
 msgid "it could take a while"
-msgstr "potrebbe metterci un po'"
+msgstr "それはしばらく時間がかかる可能性があり"
 
 #: ../../lib/entropy/db/skel.py:2523 ../../lib/entropy/db/skel.py:2548
 #: ../../lib/entropy/db/skel.py:2559
 msgid "Entropy"
-msgstr ""
+msgstr "エントロピー"
 
 #: ../../lib/entropy/db/skel.py:2524
 msgid "action"
-msgstr "azione"
+msgstr "アクション"
 
 #: ../../lib/entropy/db/skel.py:2549
 msgid "package move actions complete"
-msgstr "azioni di spostamento pacchetti completate"
+msgstr "パッケージの移動アクションを完了し"
 
 #: ../../lib/entropy/db/skel.py:2560
 msgid "package moves completed successfully"
-msgstr "spostamento pacchetti completato con successo"
+msgstr "パッケージの移動が正常に完了し"
 
 #: ../../lib/entropy/db/skel.py:4582
 msgid "Syncing current database"
-msgstr "Sincronizzazione database corrente"
+msgstr "現在のデータベースの同期"
 
 #: ../../lib/entropy/db/skel.py:4583
 msgid "please wait"
-msgstr "attendere prego"
+msgstr "お待ちください"
 
 #: ../../lib/entropy/db/skel.py:4598
 msgid "Removing entry"
-msgstr "Rimozione voce"
+msgstr "エントリを削除する"
 
 #: ../../lib/entropy/db/skel.py:4617
 msgid "Adding entry"
-msgstr "Aggiunta voce"
+msgstr "エントリを追加する"
 
 #: ../../lib/entropy/db/sqlite.py:2048
 msgid "Exporting database table"
-msgstr "Esportazione tabella database"
+msgstr "データベーステーブルのエクスポート。"
 
 #: ../../lib/entropy/db/sqlite.py:2088
 msgid "Database Export complete."
-msgstr "Esportazione database completata."
+msgstr "データベース·エクスポート·完全。"
 
 #: ../../lib/entropy/db/sqlite.py:2454 ../../lib/entropy/db/sqlite.py:2558
 #: ../../lib/entropy/db/sqlite.py:2666 ../../lib/entropy/db/sqlite.py:2679
 #: ../../lib/entropy/db/sql.py:5468 ../../lib/entropy/db/sql.py:5481
 msgid "ATTENTION"
-msgstr "ATTENZIONE"
+msgstr "注目"
 
 #: ../../lib/entropy/db/sqlite.py:2456 ../../lib/entropy/db/sqlite.py:2560
 msgid "updating repository metadata layout, please wait!"
-msgstr "aggiornamento layout metadati della repository, attendere prego!"
+msgstr "リポジトリ·メタデータのレイアウトを更新しています。しばらくお待ちください！"
 
 #: ../../lib/entropy/db/sqlite.py:2667
 msgid "generating provided_libs metadata, please wait!"
-msgstr "Generazione metadati provided_libs, attendere!"
+msgstr "提供されるライブラリのメタデータを生成しています。しばらくお待ちください！"
 
 #: ../../lib/entropy/db/sql.py:5469
 msgid "Spm error occurred"
-msgstr ""
+msgstr "SPM：ソースパッケージマネージャでエラーが発生しました"
 
 #: ../../lib/entropy/db/sql.py:5482
 msgid "Spm Unique Identifier not found for"
-msgstr "Identificativo univoco in SPM non trovato per"
+msgstr "SPM（ソースパッケージマネージャ）一意識別子が見つかりません"
 
 #: ../../lib/entropy/core/settings/base.py:2036
 #: ../../lib/entropy/server/interfaces/main.py:1330
 msgid "No description"
-msgstr ""
+msgstr "記載なし"
 
 #: ../../lib/entropy/server/transceivers.py:91
 msgid "verifying upload (if supported)"
-msgstr "verifica upload (se supportato)"
+msgstr "検証のアップロード（サポートされている場合)"
 
 #: ../../lib/entropy/server/transceivers.py:114
 #: ../../lib/entropy/server/transceivers.py:132
 #: ../../lib/entropy/server/transceivers.py:147
 msgid "digest verification"
-msgstr "verifica firma"
+msgstr "検証ダイジェスト"
 
 #: ../../lib/entropy/server/transceivers.py:116
 msgid "so far, so good!"
-msgstr "molto bene!"
+msgstr "これまで、とても良い！"
 
 #: ../../lib/entropy/server/transceivers.py:134
 msgid "malformed md5 provided to function"
-msgstr "md5 fornito alla funzione è malformato"
+msgstr "不正な形式のMD5関数に提供"
 
 #: ../../lib/entropy/server/transceivers.py:149
 msgid "remote md5 is invalid"
-msgstr "md5 remoto valido"
+msgstr "リモートMD5が無効です"
 
 #: ../../lib/entropy/server/transceivers.py:265
 msgid "successful"
-msgstr "sucesso"
+msgstr "成功した"
 
 #: ../../lib/entropy/server/transceivers.py:283
 msgid "failed, retrying"
-msgstr "fallito, riprovo"
+msgstr "失敗し、再試行"
 
 #: ../../lib/entropy/server/transceivers.py:303
 #: ../../lib/entropy/server/interfaces/mirrors.py:1883
 #: ../../lib/entropy/server/interfaces/mirrors.py:1905
 #: ../../lib/entropy/server/interfaces/db.py:1182
 msgid "error"
-msgstr "errore"
+msgstr "エラー"
 
 #: ../../lib/entropy/server/transceivers.py:317
 msgid "not critical"
-msgstr "non critico"
+msgstr "重要ではない"
 
 #: ../../lib/entropy/server/transceivers.py:319
 msgid "continuing"
-msgstr "continuo"
+msgstr "連続"
 
 #: ../../lib/entropy/server/transceivers.py:415
 msgid "connecting to mirror"
-msgstr "connessione al mirror"
+msgstr "ミラーへの接続"
 
 #: ../../lib/entropy/server/transceivers.py:426
 msgid "setting directory to"
-msgstr "impostazione directory a"
+msgstr "にディレクトリを設定する"
 
 #: ../../lib/entropy/server/interfaces/main.py:159
 msgid "mirrors have not been unlocked. Sync them."
-msgstr "Mirror non sbloccati. Sincronizzali."
+msgstr "ミラーはロックが解除されていない。それらを同期します。"
 
 #: ../../lib/entropy/server/interfaces/main.py:250
 msgid "cannot store updates RSS cache"
-msgstr "impossibile aggiornare cache RSS"
+msgstr "アップデートのRSSキャッシュを格納することはできません"
 
 #: ../../lib/entropy/server/interfaces/main.py:402
 msgid "INJECT"
-msgstr "INIETTA"
+msgstr "注入する"
 
 #: ../../lib/entropy/server/interfaces/main.py:404
 msgid "has been injected"
-msgstr "è stato iniettato"
+msgstr "注入された"
 
 #: ../../lib/entropy/server/interfaces/main.py:405
 msgid "quickpkg manually to update embedded db"
-msgstr "esegui quickpkg manualmente per aggiornare il database embedded"
+msgstr "quickpkgを（クイックパッケージ）を手動で埋め込まれたDBを更新する"
 
 #: ../../lib/entropy/server/interfaces/main.py:406
 msgid "Repository updated anyway"
-msgstr "Repository aggiornata comunque"
+msgstr "リポジトリとにかく更新された"
 
 #: ../../lib/entropy/server/interfaces/main.py:1642
 msgid "package has no keyword set, it will be masked !"
-msgstr "pacchetto senza keywords, sarà mascherato!"
+msgstr "パッケージは、noキーワードセットは、それがマスクされませんしました！"
 
 #: ../../lib/entropy/server/interfaces/main.py:1779
 #: ../../lib/entropy/server/interfaces/main.py:5377
 msgid "repository not configured"
-msgstr "repository non configurata"
+msgstr "リポジトリ構成されていません"
 
 #: ../../lib/entropy/server/interfaces/main.py:1785
 msgid "protected repository id, can't use this, sorry dude..."
-msgstr "repository id protetto, impossibile usarlo, mi dispiace..."
+msgstr "保護されたリポジトリID、これを使用することはできません、申し訳ありません男..."
 
 #: ../../lib/entropy/server/interfaces/main.py:2161
 msgid "invalid repository revision"
-msgstr "revisione repository non valida"
+msgstr "無効なリポジトリのリビジョン"
 
 #: ../../lib/entropy/server/interfaces/main.py:2163
 msgid "defaulting to 0"
-msgstr "impostazione a 0"
+msgstr "デフォルトは0です"
 
 #: ../../lib/entropy/server/interfaces/main.py:2273
 #: ../../lib/entropy/server/interfaces/main.py:5624
 #: ../../lib/entropy/server/interfaces/main.py:5909
 msgid "repository"
-msgstr "repository"
+msgstr "リポジトリ"
 
 #: ../../lib/entropy/server/interfaces/main.py:2274
 msgid "syncing package sets"
-msgstr "sincronizzazione package sets"
+msgstr "パッケージセットを同期"
 
 #: ../../lib/entropy/server/interfaces/main.py:2318
 #: ../../lib/entropy/qa.py:832
 msgid "Attention"
-msgstr "Attenzione"
+msgstr "注目"
 
 #: ../../lib/entropy/server/interfaces/main.py:2319
 msgid "cannot match"
-msgstr "impossibile risolvere"
+msgstr "一致させることはできません"
 
 #: ../../lib/entropy/server/interfaces/main.py:2425
 msgid "initializing repository"
-msgstr "Inizializzazione repository"
+msgstr "初期化リポジトリ"
 
 #: ../../lib/entropy/server/interfaces/main.py:2435
 msgid "do you really want to initialize this repository ?"
-msgstr "vuoi davvero inizializzare questa repository ?"
+msgstr "あなたは本当にこのリポジトリを初期化したいのですか？"
 
 #: ../../lib/entropy/server/interfaces/main.py:2438
 #: ../../lib/entropy/server/interfaces/main.py:2632
@@ -249,31 +250,31 @@ msgstr "vuoi davvero inizializzare questa repository ?"
 #: ../../lib/entropy/server/interfaces/mirrors.py:2418
 #: ../../lib/entropy/output.py:780 ../../server/eit/utils.py:196
 msgid "No"
-msgstr "No"
+msgstr "いいえ"
 
 #: ../../lib/entropy/server/interfaces/main.py:2460
 msgid "Cannot create store directory"
-msgstr "Impossibile creare una directory per il caricamento"
+msgstr "ストアディレクトリを作成できません"
 
 #: ../../lib/entropy/server/interfaces/main.py:2473
 msgid "Cannot create upload directory"
-msgstr "Impossibile creare una directory per il trasferimento"
+msgstr "アップロードディレクトリを作成できません"
 
 #: ../../lib/entropy/server/interfaces/main.py:2499
 msgid "Invalid tag specified"
-msgstr "Tag specificata non valida"
+msgstr "無効なタグ指定"
 
 #: ../../lib/entropy/server/interfaces/main.py:2545
 msgid "flushing back selected packages from branches"
-msgstr "inglobamento dei pacchetti selezionati dalle branch"
+msgstr "枝から戻って選択されたパッケージをフラッシュ"
 
 #: ../../lib/entropy/server/interfaces/main.py:2571
 msgid "nothing to do"
-msgstr "niente da fare"
+msgstr "何も行いませんように"
 
 #: ../../lib/entropy/server/interfaces/main.py:2595
 msgid "these are the packages that will be flushed"
-msgstr "questi sono i pacchetti che saranno inglobati"
+msgstr "これらがフラッシュされますパッケージです"
 
 #: ../../lib/entropy/server/interfaces/main.py:2631
 #: ../../lib/entropy/server/interfaces/main.py:3301
@@ -281,24 +282,24 @@ msgstr "questi sono i pacchetti che saranno inglobati"
 #: ../../lib/entropy/server/interfaces/main.py:4099
 #: ../../lib/entropy/server/interfaces/mirrors.py:2417
 msgid "Would you like to continue ?"
-msgstr "Vuoi continuare ?"
+msgstr "続行しますか？"
 
 #: ../../lib/entropy/server/interfaces/main.py:2681
 msgid "checking package hash"
-msgstr "controllo hash pacchetto"
+msgstr "パッケージのハッシュをチェックする"
 
 #: ../../lib/entropy/server/interfaces/main.py:2700
 msgid "hash does not match for"
-msgstr "hash non combacia per"
+msgstr "のために一致しないハッシュ"
 
 #: ../../lib/entropy/server/interfaces/main.py:2710
 msgid "wrong md5"
-msgstr "md5 errato"
+msgstr "間違っmd5の"
 
 #: ../../lib/entropy/server/interfaces/main.py:2722
 #: ../../lib/entropy/server/interfaces/mirrors.py:1588
 msgid "download errors"
-msgstr "errori di download"
+msgstr "ダウンロードエラー"
 
 #: ../../lib/entropy/server/interfaces/main.py:2723
 #: ../../lib/entropy/server/interfaces/mirrors.py:1515
@@ -307,156 +308,156 @@ msgstr "errori di download"
 #: ../../lib/entropy/server/interfaces/db.py:789
 #: ../../lib/entropy/server/interfaces/db.py:1662
 msgid "reason"
-msgstr "motivo"
+msgstr "理由"
 
 #: ../../lib/entropy/server/interfaces/main.py:2740
 #: ../../lib/entropy/server/interfaces/mirrors.py:1604
 msgid "download completed successfully"
-msgstr "download completato con successo"
+msgstr "ダウンロードが正常に完了し"
 
 #: ../../lib/entropy/server/interfaces/main.py:2754
 msgid "error downloading packages from mirrors"
-msgstr "errore scaricando i pacchetti dai mirror"
+msgstr "ミラーからのエラーのダウンロードパッケージ"
 
 #: ../../lib/entropy/server/interfaces/main.py:2769
 msgid "working on branch"
-msgstr "esecuzione su branch"
+msgstr "ブランチで作業"
 
 #: ../../lib/entropy/server/interfaces/main.py:2785
 msgid "updating package"
-msgstr "aggiornamento pacchetto"
+msgstr "更新パッケージ"
 
 #: ../../lib/entropy/server/interfaces/main.py:2823
 msgid "package flushed"
-msgstr "pacchetto inglobato"
+msgstr "パッケージにフラッシュ"
 
 #: ../../lib/entropy/server/interfaces/main.py:2926
 msgid "switching"
-msgstr "migrazione"
+msgstr "切り替え"
 
 #: ../../lib/entropy/server/interfaces/main.py:2946
 msgid "cannot switch, package not found, skipping"
-msgstr "impossibile migrare, pacchetto non trovato, salto"
+msgstr "、パッケージが見つからない、切り替えのスキップができない"
 
 #: ../../lib/entropy/server/interfaces/main.py:3028
 msgid "moving file"
-msgstr "spostamento file"
+msgstr "動画ファイル"
 
 #: ../../lib/entropy/server/interfaces/main.py:3044
 msgid "loading data from source repository"
-msgstr "caricamento dati da repository sorgente"
+msgstr "ソースリポジトリからのデータのロード"
 
 #: ../../lib/entropy/server/interfaces/main.py:3074
 msgid "GPG key was available in"
-msgstr "La chiave GPG era disponibile in"
+msgstr "GPG key was available in"
 
 #: ../../lib/entropy/server/interfaces/main.py:3099
 msgid "injecting data to destination repository"
-msgstr "iniettamento dati nella repository di destinazione"
+msgstr "先リポジトリにデータを注入する"
 
 #: ../../lib/entropy/server/interfaces/main.py:3119
 msgid "removing entry from source repository"
-msgstr "rimozione voce da repository sorgente"
+msgstr "ソースリポジトリから削除するエントリ"
 
 #: ../../lib/entropy/server/interfaces/main.py:3138
 msgid "successfully handled atom"
-msgstr "atomo gestito con successo"
+msgstr "うまく処理アトム"
 
 #: ../../lib/entropy/server/interfaces/main.py:3164
 msgid "Cannot touch system repository"
-msgstr "Impossibile toccare la repository di sistema"
+msgstr "システムリポジトリに触れることができない"
 
 #: ../../lib/entropy/server/interfaces/main.py:3179
 msgid "Preparing to move selected packages to"
-msgstr "Preparazione allo spostamento dei pacchetti selezionati a"
+msgstr "に選択したパッケージを移動するための準備"
 
 #: ../../lib/entropy/server/interfaces/main.py:3181
 msgid "Preparing to copy selected packages to"
-msgstr "Preparazione alla copia dei pacchetti selezionati"
+msgstr "に選択したパッケージをコピーするための準備"
 
 #: ../../lib/entropy/server/interfaces/main.py:3193
 msgid "Note"
-msgstr "Note"
+msgstr "ノート"
 
 #: ../../lib/entropy/server/interfaces/main.py:3194
 msgid ""
 "all old packages with conflicting scope will be removed from destination "
 "repo unless injected"
-msgstr "tutti i pacchetti vecchi con scope in conflitto saranno rimossi dalla destinazione a meno che non siano iniettati"
+msgstr "注入されない限り、スコープの競合を持つすべての古いパッケージは、送信先のレポから削除されます"
 
 #: ../../lib/entropy/server/interfaces/main.py:3204
 msgid "new tag"
-msgstr "nuova tag"
+msgstr "新しいタグ"
 
 #: ../../lib/entropy/server/interfaces/main.py:3244
 #: ../../lib/entropy/server/interfaces/mirrors.py:1032
 #: ../../lib/entropy/server/interfaces/mirrors.py:2200
 #: ../../lib/entropy/server/interfaces/mirrors.py:2360
 msgid "remove"
-msgstr "rimozione"
+msgstr "退ける"
 
 #: ../../lib/entropy/server/interfaces/main.py:3276
 msgid "reverse dependency"
-msgstr "dipendenza inversa"
+msgstr "逆依存関係"
 
 #: ../../lib/entropy/server/interfaces/main.py:3287
 msgid "dependency"
-msgstr "dipendenza"
+msgstr "依存関係"
 
 #: ../../lib/entropy/server/interfaces/main.py:3331
 msgid "Injecting entropy metadata into built packages"
-msgstr "Iniezione metadati entropy all'interno dei pacchetti creati"
+msgstr "構築されたパッケージにエントロピーのメタデータを注入"
 
 #: ../../lib/entropy/server/interfaces/main.py:3347
 msgid "JFYI, GPG infrastructure failed to load"
-msgstr "Per tua informazione, il sistema GPG non è stato caricato"
+msgstr "JFYI、GPGインフラストラクチャは、読み込みに失敗しました"
 
 #: ../../lib/entropy/server/interfaces/main.py:3402
 msgid "injecting entropy metadata"
-msgstr "iniezione metadati entropy"
+msgstr "エントロピーのメタデータを注入する"
 
 #: ../../lib/entropy/server/interfaces/main.py:3462
 msgid "injection complete"
-msgstr "iniezione completata"
+msgstr "完全な注射"
 
 #: ../../lib/entropy/server/interfaces/main.py:3489
 msgid "removing package"
-msgstr "rimozione pacchetto"
+msgstr "パッケージを削除"
 
 #: ../../lib/entropy/server/interfaces/main.py:3503
 #: ../../lib/entropy/server/interfaces/mirrors.py:1433
 msgid "removal complete"
-msgstr "rimozione completata"
+msgstr "完全除去"
 
 #: ../../lib/entropy/server/interfaces/main.py:3515
 #: ../../lib/entropy/server/interfaces/main.py:3718
 msgid "Integrity verification of the selected packages"
-msgstr "Verifica integrità dei pacchetti selezionati"
+msgstr "選択したパッケージの整合性の検証"
 
 #: ../../lib/entropy/server/interfaces/main.py:3530
 #: ../../lib/entropy/server/interfaces/main.py:3729
 msgid "All the packages in repository will be checked."
-msgstr "Tutti i pacchetti nella repository saranno controllati."
+msgstr "リポジトリ内のすべてのパッケージがチェックされます。"
 
 #: ../../lib/entropy/server/interfaces/main.py:3537
 msgid "This is the list of the packages that would be checked"
-msgstr "Questa è la list dei pacchetti che vorrebbero essere controllati"
+msgstr "これがチェックされることになるパッケージのリストです。"
 
 #: ../../lib/entropy/server/interfaces/main.py:3571
 msgid "Working on mirror"
-msgstr "Lavoro sul mirror"
+msgstr "ミラーでの作業"
 
 #: ../../lib/entropy/server/interfaces/main.py:3598
 msgid "checking hash"
-msgstr "controllo firma"
+msgstr "チェックハッシュ"
 
 #: ../../lib/entropy/server/interfaces/main.py:3613
 msgid "digest verification of"
-msgstr "verifica firma di"
+msgstr "検証ダイジェスト"
 
 #: ../../lib/entropy/server/interfaces/main.py:3615
 msgid "not supported"
-msgstr "non supportato"
+msgstr "サポートされていません"
 
 #: ../../lib/entropy/server/interfaces/main.py:3631
 #: ../../lib/entropy/server/interfaces/main.py:3774
@@ -466,355 +467,355 @@ msgstr "non supportato"
 #: ../../lib/entropy/server/interfaces/mirrors.py:628
 #: ../../lib/entropy/server/interfaces/mirrors.py:645
 msgid "package"
-msgstr "pacchetti"
+msgstr "パッケージ"
 
 #: ../../lib/entropy/server/interfaces/main.py:3633
 msgid "NOT healthy"
-msgstr "NON sano"
+msgstr "健康ではない"
 
 #: ../../lib/entropy/server/interfaces/main.py:3646
 #: ../../lib/entropy/server/interfaces/main.py:3786
 msgid "This is the list of broken packages"
-msgstr "Questo è l'elenco dei pacchetti danneggiati"
+msgstr "これは壊れたパッケージのリストです"
 
 #: ../../lib/entropy/server/interfaces/main.py:3655
 msgid "Mirror"
-msgstr "Mirror"
+msgstr "ミラー"
 
 #: ../../lib/entropy/server/interfaces/main.py:3674
 msgid "Statistics"
-msgstr "Statistiche"
+msgstr "統計"
 
 #: ../../lib/entropy/server/interfaces/main.py:3683
 msgid "Number of checked packages"
-msgstr "Numero di pacchetti controllati"
+msgstr "チェックされたパッケージの数"
 
 #: ../../lib/entropy/server/interfaces/main.py:3693
 msgid "Number of healthy packages"
-msgstr "Numero di pacchetti sani"
+msgstr "健康的なパッケージの数"
 
 #: ../../lib/entropy/server/interfaces/main.py:3703
 msgid "Number of broken packages"
-msgstr "Numero di pacchetti danneggiati"
+msgstr "壊れたパッケージの数"
 
 #: ../../lib/entropy/server/interfaces/main.py:3717
 #: ../../lib/entropy/server/interfaces/main.py:3874
 msgid "local"
-msgstr "locale"
+msgstr "ローカル"
 
 #: ../../lib/entropy/server/interfaces/main.py:3754
 msgid "checking status of"
-msgstr "controllo stato di"
+msgstr "の状態をチェックする"
 
 #: ../../lib/entropy/server/interfaces/main.py:3776
 msgid "is corrupted, stored checksum"
-msgstr "è corrotto, firma immagazzinata"
+msgstr "破損している、格納されたチェックサム"
 
 #: ../../lib/entropy/server/interfaces/main.py:3813
 msgid "checked packages"
-msgstr "pacchetti controllati"
+msgstr "検査済みパッケージ"
 
 #: ../../lib/entropy/server/interfaces/main.py:3823
 msgid "healthy packages"
-msgstr "pacchetti sani"
+msgstr "健康的なパッケージ"
 
 #: ../../lib/entropy/server/interfaces/main.py:3833
 #: ../../lib/entropy/server/interfaces/main.py:4016
 msgid "broken packages"
-msgstr "pacchetti corrotti"
+msgstr "壊れたパッケージ"
 
 #: ../../lib/entropy/server/interfaces/main.py:3843
 #: ../../lib/entropy/server/interfaces/main.py:4026
 msgid "downloaded packages"
-msgstr "pacchetti scaricati"
+msgstr "ダウンロードしたパッケージ"
 
 #: ../../lib/entropy/server/interfaces/main.py:3853
 #: ../../lib/entropy/server/interfaces/main.py:4036
 msgid "failed downloads"
-msgstr "scaricamenti falliti"
+msgstr "失敗したダウンロード"
 
 #: ../../lib/entropy/server/interfaces/main.py:3875
 msgid "GPG signing packages for repository"
-msgstr "Firma pacchetti con chiave GPG per la repository"
+msgstr "リポジトリのGPG署名のパッケージ"
 
 #: ../../lib/entropy/server/interfaces/main.py:3887
 msgid "All the missing packages in repository will be downloaded."
-msgstr "Tutti i pacchetti mancanti nella repository saranno scaricati."
+msgstr "リポジトリ内のすべての不足しているパッケージがダウンロードされます。"
 
 #: ../../lib/entropy/server/interfaces/main.py:3903
 msgid "GnuPG not available"
-msgstr "GnuPG non disponibile"
+msgstr "利用できないGnuPGの"
 
 #: ../../lib/entropy/server/interfaces/main.py:3921
 #: ../../lib/entropy/server/interfaces/db.py:377
 msgid "Keys for repository are expired"
-msgstr "Le chavi per la repository sono scadute"
+msgstr "リポジトリのキーの有効期限が切れている"
 
 #: ../../lib/entropy/server/interfaces/main.py:3929
 msgid "Keys not available for"
-msgstr "Chiavi non disponibili per"
+msgstr "には使用できませんキーズ"
 
 #: ../../lib/entropy/server/interfaces/main.py:3960
 msgid "signing package"
-msgstr "firma pacchetto"
+msgstr "パッケージに署名します。"
 
 #: ../../lib/entropy/server/interfaces/main.py:3975
 msgid "Unknown error signing package"
-msgstr "Errore sconosciuto durante firma pacchetto"
+msgstr "不明なエラー署名パッケージ"
 
 #: ../../lib/entropy/server/interfaces/main.py:4006
 msgid "signed packages"
-msgstr "pacchetti firmati"
+msgstr "署名付きパッケージ"
 
 #: ../../lib/entropy/server/interfaces/main.py:4065
 msgid "available"
-msgstr "disponibile"
+msgstr "利用できる"
 
 #: ../../lib/entropy/server/interfaces/main.py:4077
 msgid "upload/ignored"
-msgstr "upload/ignorato"
+msgstr "アップロード/無視"
 
 #: ../../lib/entropy/server/interfaces/main.py:4088
 #: ../../lib/entropy/server/interfaces/main.py:5626
 #: ../../lib/entropy/server/interfaces/mirrors.py:1004
 #: ../../lib/entropy/server/interfaces/db.py:735
 msgid "download"
-msgstr "download"
+msgstr "ダウンロード"
 
 #: ../../lib/entropy/server/interfaces/main.py:4112
 msgid "Starting to download missing files"
-msgstr "Inizio scaricamento file mancanti"
+msgstr "不足しているファイルをダウンロードするために起動する"
 
 #: ../../lib/entropy/server/interfaces/main.py:4123
 msgid "Searching missing/broken files on another mirror"
-msgstr "Ricerca file mancanti/corrotti su un altro mirror"
+msgstr "別のミラーに不足している/壊れたファイルを検索する"
 
 #: ../../lib/entropy/server/interfaces/main.py:4144
 msgid "Binary packages downloaded successfully."
-msgstr "Pacchetti binari scaricati con successo."
+msgstr "バイナリパッケージは、正常にダウンロード。"
 
 #: ../../lib/entropy/server/interfaces/main.py:4153
 msgid "These are the packages that cannot be found online"
-msgstr "Questi sono i pacchetti che non sono stati trovati online"
+msgstr "これらは、オンラインで見つけることができないパッケージです"
 
 #: ../../lib/entropy/server/interfaces/main.py:4169
 msgid "They won't be checked"
-msgstr "Non saranno controllati"
+msgstr "彼らはチェックされません"
 
 #: ../../lib/entropy/server/interfaces/main.py:4183
 msgid "Please setup your branch to"
-msgstr "Per favore, configura la tua branch a"
+msgstr "ブランチを設定してください。"
 
 #: ../../lib/entropy/server/interfaces/main.py:4185
 msgid "and retry"
-msgstr "e riprova"
+msgstr "再試行してください。"
 
 #: ../../lib/entropy/server/interfaces/main.py:4195
 msgid "Copying repository (if not exists)"
-msgstr "Copia repository (se non esiste)"
+msgstr "リポジトリのコピー (存在しない場合)"
 
 #: ../../lib/entropy/server/interfaces/main.py:4228
 msgid "Switching packages"
-msgstr "Migrazione pacchetti"
+msgstr "パッケージの切り替え"
 
 #: ../../lib/entropy/server/interfaces/main.py:4263
 msgid "Ignoring"
-msgstr "Ignoro"
+msgstr "無視します。"
 
 #: ../../lib/entropy/server/interfaces/main.py:4265
 msgid "already in branch"
-msgstr "già in branch"
+msgstr "すでに支店内"
 
 #: ../../lib/entropy/server/interfaces/main.py:4299
 msgid "migration loop completed"
-msgstr "ciclo di migrazione completato"
+msgstr "完了した移行ループ"
 
 #: ../../lib/entropy/server/interfaces/main.py:4317
 msgid "Running orphaned SPM packages test"
-msgstr "Esecuzione test pacchetti SPM orfani"
+msgstr "孤立した SPM を実行しているパッケージのテスト"
 
 #: ../../lib/entropy/server/interfaces/main.py:4333
 msgid "Scanning package"
-msgstr "Scansione pacchetto"
+msgstr "パッケージをスキャン"
 
 #: ../../lib/entropy/server/interfaces/main.py:4359
 msgid "not found anymore"
-msgstr "non più trovato"
+msgstr "もう見つからない"
 
 #: ../../lib/entropy/server/interfaces/main.py:4371
 #: ../../lib/entropy/server/interfaces/main.py:5276
 msgid "Packages string"
-msgstr "Stringa pacchetti"
+msgstr "パッケージの文字列"
 
 #: ../../lib/entropy/server/interfaces/main.py:4393
 msgid "scanning dependencies"
-msgstr ""
+msgstr "スキャンの依存関係"
 
 #: ../../lib/entropy/server/interfaces/main.py:4489
 msgid "checking repository"
-msgstr ""
+msgstr "リポジトリをチェック"
 
 #: ../../lib/entropy/server/interfaces/main.py:4582
 msgid "Calculating dependencies"
-msgstr ""
+msgstr "依存関係を計算します。"
 
 #: ../../lib/entropy/server/interfaces/main.py:4590
 msgid "if these repositories were merged"
-msgstr ""
+msgstr "これらのリポジトリにマージされた場合"
 
 #: ../../lib/entropy/server/interfaces/main.py:4597
 msgid "and if these repositories were drained"
-msgstr ""
+msgstr "これらのリポジトリに排水された場合"
 
 #: ../../lib/entropy/server/interfaces/main.py:4617
 msgid "missing dependencies"
-msgstr ""
+msgstr "依存関係の欠落"
 
 #: ../../lib/entropy/server/interfaces/main.py:4712
 msgid "There are broken injected packages. Please fix."
-msgstr ""
+msgstr "投入パッケージが壊れています。修正してください。"
 
 #: ../../lib/entropy/server/interfaces/main.py:4718
 msgid "Injected packages are healthy. You lucky..."
-msgstr ""
+msgstr "挿入したパッケージは健康です。運がよけれ."
 
 #: ../../lib/entropy/server/interfaces/main.py:4838
 #: ../../lib/entropy/server/interfaces/main.py:4973
 msgid "test"
-msgstr ""
+msgstr "テスト"
 
 #: ../../lib/entropy/server/interfaces/main.py:4839
 msgid "these packages haven't been removed yet"
-msgstr "questi pacchetti non sono ancora stati rimossi"
+msgstr "これらのパッケージはまだ削除されていません。"
 
 #: ../../lib/entropy/server/interfaces/main.py:4871
 #: ../../lib/entropy/server/interfaces/main.py:5133
 msgid "Needed by"
-msgstr "Richiesto da"
+msgstr "が必要とする"
 
 #: ../../lib/entropy/server/interfaces/main.py:4880
 msgid "corrupted entry"
-msgstr ""
+msgstr "破損したエントリ"
 
 #. this means that user is asking to remove dep_pattern
 #: ../../lib/entropy/server/interfaces/main.py:4885
 #: ../../lib/entropy/server/interfaces/main.py:7381
 #: ../../lib/entropy/server/interfaces/main.py:7486
 msgid "removed"
-msgstr "rimossi"
+msgstr "下げる"
 
 #: ../../lib/entropy/server/interfaces/main.py:4974
 msgid "these packages have lower than expected revisions"
-msgstr ""
+msgstr "これらのパッケージが予想されるリビジョンより低いがあります。"
 
 #: ../../lib/entropy/server/interfaces/main.py:5066
 msgid "Running dependencies test"
-msgstr "Esecuzione test dipendenze"
+msgstr "実行中の依存関係のテスト"
 
 #: ../../lib/entropy/server/interfaces/main.py:5126
 msgid "These are the dependencies not found"
-msgstr "Queste sono le dipendenze non trovate"
+msgstr "これらが見つからない依存関係である"
 
 #: ../../lib/entropy/server/interfaces/main.py:5151
 msgid "by repo"
-msgstr "dalla repo"
+msgstr "repo によって"
 
 #: ../../lib/entropy/server/interfaces/main.py:5160
 msgid "Every dependency is satisfied. It's all fine."
-msgstr "Ogni dipendenza è soddisfatta. Tutto a posto."
+msgstr "すべての依存関係が満たされます。それはすべての罰金です。"
 
 #: ../../lib/entropy/server/interfaces/main.py:5189
 msgid "Broken and matched packages list"
-msgstr "Lista di pacchetti rotti ed accoppiati"
+msgstr "壊れたと一致するパッケージのリスト"
 
 #: ../../lib/entropy/server/interfaces/main.py:5191
 #: ../../lib/entropy/qa.py:695
 msgid "Dumping results into these files"
-msgstr "Riversamento risultati dentro questi file"
+msgstr "これらのファイルに結果をダンプ"
 
 #: ../../lib/entropy/server/interfaces/main.py:5217
 msgid "System is healthy"
-msgstr "Il Sistema è sano"
+msgstr "システムが健全である"
 
 #: ../../lib/entropy/server/interfaces/main.py:5226
 msgid "Matching libraries with Spm, please wait"
-msgstr "Accoppiamento librerie con Spm, attendere prego"
+msgstr "Spm と一致するライブラリお待ちください。"
 
 #: ../../lib/entropy/server/interfaces/main.py:5240
 msgid "These are the matched packages"
-msgstr "Questi sono i pacchetti accoppiati"
+msgstr "これらは一致したパッケージ"
 
 #: ../../lib/entropy/server/interfaces/main.py:5285
 msgid "No matched packages"
-msgstr "Nessun pacchetto accoppiato"
+msgstr "一致するパッケージはありません。"
 
 #: ../../lib/entropy/server/interfaces/main.py:5403
 msgid "Your default repository is not initialized"
-msgstr "La tua repository di default non è inizializzata"
+msgstr "デフォルト リポジトリは初期化されていません"
 
 #: ../../lib/entropy/server/interfaces/main.py:5415
 msgid "Do you want to initialize your default repository ?"
-msgstr "Vuoi inizializzare la tua repository di default ?"
+msgstr "デフォルトのリポジトリを初期化しますか。"
 
 #: ../../lib/entropy/server/interfaces/main.py:5418
 msgid "Continuing with an uninitialized repository"
-msgstr "Elaborazione con repository non inizializzata"
+msgstr "初期化されていないリポジトリと継続"
 
 #: ../../lib/entropy/server/interfaces/main.py:5583
 msgid "Entropy repository is already locked by you :-)"
-msgstr "Repository Entropy già bloccata da te :-)"
+msgstr "エントロピー リポジトリが既にロックされているあなたが:-)"
 
 #. check if the database is locked REMOTELY
 #: ../../lib/entropy/server/interfaces/main.py:5590
 msgid "Locking and Syncing Entropy repository"
-msgstr "Blocco e sincronizzazione repository Entropy"
+msgstr "ロックと同期のエントロピー リポジトリ"
 
 #: ../../lib/entropy/server/interfaces/main.py:5604
 msgid "Mirrors status table"
-msgstr "Tabella stato dei mirror"
+msgstr "ミラー状態テーブル"
 
 #: ../../lib/entropy/server/interfaces/main.py:5613
 #: ../../lib/entropy/server/interfaces/main.py:5616
 msgid "Unlocked"
-msgstr "Sbloccato"
+msgstr "ロックを解除"
 
 #: ../../lib/entropy/server/interfaces/main.py:5615
 #: ../../lib/entropy/server/interfaces/main.py:5618
 msgid "Locked"
-msgstr "Bloccato"
+msgstr "ロックされています。"
 
 #: ../../lib/entropy/server/interfaces/main.py:5635
 msgid "cannot lock mirror"
-msgstr "impossibile bloccare mirror"
+msgstr "ミラーをロックできません。"
 
 #: ../../lib/entropy/server/interfaces/main.py:5896
 msgid "Repository is corrupted!"
-msgstr "Repository corrotta!"
+msgstr "リポジトリが破損している ！"
 
 #: ../../lib/entropy/server/interfaces/main.py:5910
 msgid "indexing repository"
-msgstr "indicizzazione repository"
+msgstr "インデックス作成リポジトリ"
 
 #: ../../lib/entropy/server/interfaces/main.py:5948
 msgid "Initializing an empty repository"
-msgstr "Inizializzazione repository vuota"
+msgstr "空のリポジトリを初期化しています"
 
 #: ../../lib/entropy/server/interfaces/main.py:5961
 msgid "Entropy repository file"
-msgstr "File repository Entropy"
+msgstr "エントロピー リポジトリ ファイル"
 
 #: ../../lib/entropy/server/interfaces/main.py:5963
 msgid "successfully initialized"
-msgstr "inizializzato con successo"
+msgstr "正常に初期化しました"
 
 #: ../../lib/entropy/server/interfaces/main.py:6046
 #: ../../lib/entropy/server/interfaces/main.py:6807
 msgid "adding package"
-msgstr "aggiunta pacchetto"
+msgstr "パッケージを追加します。"
 
 #: ../../lib/entropy/server/interfaces/main.py:6180
 msgid "added package"
-msgstr "pacchetto aggiunto"
+msgstr "パッケージを追加"
 
 #: ../../lib/entropy/server/interfaces/main.py:6182
 msgid "rev"
@@ -822,363 +823,363 @@ msgstr "rev"
 
 #: ../../lib/entropy/server/interfaces/main.py:6196
 msgid "manual dependencies for"
-msgstr "dipendenze manuali per"
+msgstr "手動の依存関係"
 
 #: ../../lib/entropy/server/interfaces/main.py:6285
 msgid "these are the missing dependencies"
-msgstr "queste sono le dipendenze mancanti"
+msgstr "これらは依存関係の欠落"
 
 #: ../../lib/entropy/server/interfaces/main.py:6442
 msgid "no missing dependencies !"
-msgstr "nessuna dipendenza mancante !"
+msgstr "依存関係の欠落なし ！"
 
 #: ../../lib/entropy/server/interfaces/main.py:6457
 msgid "Do you agree?"
-msgstr "Sei d'accordo?"
+msgstr "同意しますか？"
 
 #: ../../lib/entropy/server/interfaces/main.py:6459
 #: ../../lib/entropy/server/interfaces/main.py:6465
 #: ../../lib/entropy/output.py:780 ../../lib/entropy/output.py:1026
 #: ../../server/eit/utils.py:194
 msgid "Yes"
-msgstr "Si"
+msgstr "はい"
 
 #: ../../lib/entropy/server/interfaces/main.py:6459
 msgid "Repeat"
-msgstr "Ripeti"
+msgstr "繰り返し"
 
 #: ../../lib/entropy/server/interfaces/main.py:6582
 msgid "metadata QA hook"
-msgstr "hook QA metadati"
+msgstr "メタデータ QA フック"
 
 #: ../../lib/entropy/server/interfaces/main.py:6584
 msgid "not owned by uid and gid = 0"
-msgstr "non posseduto da uid e gid = 0"
+msgstr "uid と gid を所有しない = 0"
 
 #: ../../lib/entropy/server/interfaces/main.py:6597
 msgid "using metadata QA hook"
-msgstr "utilizzo hook QA metadati"
+msgstr "メタデータの QA のフックを使用してください。"
 
 #: ../../lib/entropy/server/interfaces/main.py:6624
 msgid "metadata QA check for"
-msgstr "controllo QA metadati per"
+msgstr "メタデータ QA チェック"
 
 #: ../../lib/entropy/server/interfaces/main.py:6673
 msgid "cannot execute metadata QA hook for"
-msgstr "impossibile eseguire hook QA metadata per"
+msgstr "メタデータを QA にフックを実行できません。"
 
 #: ../../lib/entropy/server/interfaces/main.py:6699
 msgid "attention, QA hook returned a warning"
-msgstr "attenzione, hook QA ha ritornato un warning"
+msgstr "注目は、QA フック返す警告"
 
 #: ../../lib/entropy/server/interfaces/main.py:6721
 msgid "attention, QA hook returned an error"
-msgstr "attenzione, hook QA ha ritornato un errore"
+msgstr "注目は、QA フックがエラーを返しました"
 
 #: ../../lib/entropy/server/interfaces/main.py:6738
 msgid "metadata QA check complete"
-msgstr "controllo QA metadati completato"
+msgstr "メタデータ QA チェック完了"
 
 #: ../../lib/entropy/server/interfaces/main.py:6821
 msgid "injected package, no separate debug package"
-msgstr "pacchetto iniettato, nessun pacchetto debug separato"
+msgstr "注入されたパッケージ、ない別のデバッグ"
 
 #: ../../lib/entropy/server/interfaces/main.py:6839
 msgid "Exception caught, closing tasks"
-msgstr "Eccezione catturata, chiusura processi"
+msgstr "例外がキャッチ、タスクの終了"
 
 #: ../../lib/entropy/server/interfaces/main.py:6930
 msgid "server-side repository"
-msgstr "repository lato server"
+msgstr "サーバー側リポジトリ"
 
 #: ../../lib/entropy/server/interfaces/main.py:6933
 msgid "community repository"
-msgstr "community repository"
+msgstr "コミュニティ リポジトリ"
 
 #. ..on repository: <repository_name>
 #: ../../lib/entropy/server/interfaces/main.py:6935
 msgid "Entropy Server Interface Instance on repository"
-msgstr "Istanza Interfaccia Server Entropy su repository"
+msgstr "リポジトリに関するエントロピー サーバー インターフェイス インスタンス"
 
 #: ../../lib/entropy/server/interfaces/main.py:6946
 msgid "current branch"
-msgstr "branch corrente"
+msgstr "現在のブランチ"
 
 #: ../../lib/entropy/server/interfaces/main.py:6948
 msgid "type"
-msgstr "tipo"
+msgstr "タイプ"
 
 #: ../../lib/entropy/server/interfaces/main.py:6957
 msgid "Currently configured repositories"
-msgstr "Repository correntemente configurate"
+msgstr "現在構成されているリポジトリ"
 
 #: ../../lib/entropy/server/interfaces/main.py:6993
 msgid "GPG key expired"
-msgstr "Chiave GPG scaduta"
+msgstr "GPG キーの有効期限が切れてください。"
 
 #: ../../lib/entropy/server/interfaces/main.py:6995
 msgid "please frigging fix"
-msgstr "per favore correggere"
+msgstr "ください修正をいまいましい"
 
 #: ../../lib/entropy/server/interfaces/main.py:7006
 msgid "GPG got unexpected error"
-msgstr "Errore GPG inaspettato"
+msgstr "GPG は予期しないエラーを得た"
 
 #: ../../lib/entropy/server/interfaces/main.py:7008
 msgid "skipping"
-msgstr "ignoro"
+msgstr "スキップ"
 
 #: ../../lib/entropy/server/interfaces/main.py:7025
 #: ../../lib/entropy/server/interfaces/main.py:7039
 msgid "config files"
-msgstr "file di config"
+msgstr "設定ファイル"
 
 #. something short please
 #: ../../lib/entropy/server/interfaces/main.py:7026
 msgid "checking system"
-msgstr "controllo sistema"
+msgstr "システムをチェック"
 
 #. something short please
 #: ../../lib/entropy/server/interfaces/main.py:7040
 msgid "there are configuration files not updated yet"
-msgstr "ci sono file di configurazione non ancora aggiornati"
+msgstr "まだ更新されていない構成ファイルがあります。"
 
 #: ../../lib/entropy/server/interfaces/main.py:7366
 msgid "found available dep_rewrites for this package"
-msgstr "trovati dep_rewrites per questo pacchetto"
+msgstr "このパッケージの利用可能な dep_rewrites が見つかりました"
 
 #. this means that user is asking to add dep_pattern
 #. as a dependency to package
 #: ../../lib/entropy/server/interfaces/main.py:7378
 msgid "added"
-msgstr "aggiunto"
+msgstr "追加"
 
 #: ../../lib/entropy/server/interfaces/main.py:7475
 msgid "replaced"
-msgstr "sostituito"
+msgstr "置き換え"
 
 #: ../../lib/entropy/server/interfaces/main.py:7497
 #: ../../lib/entropy/server/interfaces/main.py:7511
 msgid "No dependency rewrite made for"
-msgstr "Nessun rewrite di dipendenza effettuato per"
+msgstr "ない依存書き換えのために作られました。"
 
 #: ../../lib/entropy/server/interfaces/main.py:7600
 #: ../../lib/entropy/server/interfaces/main.py:7620
 #: ../../lib/entropy/server/interfaces/main.py:7632
 msgid "sets"
-msgstr "sets"
+msgstr "セット"
 
 #: ../../lib/entropy/server/interfaces/main.py:7601
 msgid "updating package sets"
-msgstr "aggiornamento package set"
+msgstr "更新パッケージ セット"
 
 #: ../../lib/entropy/server/interfaces/main.py:7621
 msgid "adding package set"
-msgstr "aggiunta package set"
+msgstr "追加するパッケージ セット"
 
 #: ../../lib/entropy/server/interfaces/main.py:7633
 msgid "removing package set"
-msgstr "rimozione package set"
+msgstr "削除するパッケージ セット"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:59
 msgid "Entropy Server Mirrors Interface loaded"
-msgstr "Interfaccia Mirror Entropy caricata"
+msgstr "エントロピーサーバミラーインタフェースをロード"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:67
 msgid "repository mirror"
-msgstr "mirror repository"
+msgstr "リポジトリのミラー"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:76
 msgid "packages mirror"
-msgstr "mirror pacchetti"
+msgstr "パッケージミラー"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:114
 msgid "looking for file in mirror"
-msgstr "ricerca file su mirror"
+msgstr "鏡の中のファイルを探して"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:201
 #: ../../lib/entropy/server/interfaces/mirrors.py:286
 msgid "unlocking"
-msgstr "sbloccaggio"
+msgstr "ロック解除"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:203
 #: ../../lib/entropy/server/interfaces/mirrors.py:288
 #: ../../lib/entropy/server/interfaces/mirrors.py:847
 #: ../../lib/entropy/server/interfaces/mirrors.py:867
 msgid "locking"
-msgstr "bloccaggio"
+msgstr "施錠"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:209
 msgid "mirror"
-msgstr "mirror"
+msgstr "ミラー"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:294
 msgid "mirror for download"
-msgstr "mirror in download"
+msgstr "ダウンロード用ミラー"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:326
 msgid "mirror already locked for download"
-msgstr "mirror già bloccato in download"
+msgstr "ミラーはすでにダウンロードのためにロックされて"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:339
 msgid "mirror already unlocked for download"
-msgstr "mirror già sbloccato in download"
+msgstr "ミラーはすでにダウンロードのためにロック解除"
 
 #. locking/unlocking mirror1 for download
 #: ../../lib/entropy/server/interfaces/mirrors.py:387
 msgid "for download"
-msgstr "in download"
+msgstr "ダウンロードする"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:402
 msgid "mirror successfully locked"
-msgstr "mirror bloccato con successo"
+msgstr "ミラーは正常にロック"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:416
 msgid "mirror not locked"
-msgstr "mirror non bloccato"
+msgstr "ミラーロックされていない"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:464
 msgid "mirror successfully unlocked"
-msgstr "mirror sbloccato con successo"
+msgstr "ミラーを正常ロック解除"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:483
 msgid "unlock error"
-msgstr "errore sbloccaggio"
+msgstr "エラーのロックを解除"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:485
 msgid "mirror not unlocked"
-msgstr "mirror non bloccato"
+msgstr "ミラーアンロックされない"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:522
 msgid "connecting to download package"
-msgstr "connessione per scaricamento database"
+msgstr "パッケージをダウンロードするために接続する"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:544
 msgid "downloading package"
-msgstr "scaricamemento database"
+msgstr "ダウンロードパッケージ"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:564
 msgid "does not exist"
-msgstr "non esiste"
+msgstr "存在しません"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:583
 msgid "is not listed in the repository !"
-msgstr "non è elencato nella repository !"
+msgstr "リポジトリにリストされていません！"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:597
 msgid "verifying checksum of package"
-msgstr "verifica firma pacchetto"
+msgstr "パッケージの検証チェックサム"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:615
 msgid "downloaded successfully"
-msgstr "scaricato con successo"
+msgstr "正常にダウンロード"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:630
 msgid "checksum does not match. re-downloading..."
-msgstr "firma non combaciante. riscaricamento..."
+msgstr "チェックサムが一致しません。再ダウンロード..."
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:647
 msgid "seems broken. Consider to re-package it. Giving up!"
-msgstr "sembra corrotto. Prendi in considerazione di ripacchettizzarlo. Mi arrendo!"
+msgstr "壊れたようです。それを再パッケージ化することを検討してください。あきらめる！"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:708
 msgid "mirror hasn't valid repository revision file"
-msgstr "mirror non ha un file di revisione repository valido"
+msgstr "ミラーが有効なリポジトリ リビジョンのファイル"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:727
 msgid "unable to download repository revision"
-msgstr "impossibile scaricare revisione repository"
+msgstr "リポジトリのリビジョンをダウンロードすることができません。"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:741
 msgid "mirror doesn't have valid revision file"
-msgstr "mirror senza un file revisione valido"
+msgstr "ミラーが有効なリビジョンのファイルを持っていません。"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:848
 msgid "mirror already locked"
-msgstr "mirror già bloccato"
+msgstr "ミラーは既にロック"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:849
 msgid "waiting up to 2 minutes before giving up"
-msgstr "attendo fino a 2 minuti prima di arrendermi"
+msgstr "あきらめる前に最大 2 分間待っています。"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:868
 msgid "mirror unlocked"
-msgstr "mirror sbloccato"
+msgstr "ミラーロック解除"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:948
 msgid "Local statistics"
-msgstr "Statistiche locali"
+msgstr "局所統計量"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:956
 msgid "upload directory"
-msgstr "cartella di upload"
+msgstr "ディレクトリをアップロードします。"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:958
 #: ../../lib/entropy/server/interfaces/mirrors.py:969
 msgid "files ready"
-msgstr "file pronti"
+msgstr "準備ができたファイル"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:967
 msgid "packages directory"
-msgstr "cartella pacchetti"
+msgstr "パッケージ ディレクトリ"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:988
 #: ../../lib/entropy/server/interfaces/db.py:1474
 #: ../../lib/entropy/server/interfaces/db.py:1494
 msgid "upload"
-msgstr "upload"
+msgstr "アップロード"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1018
 msgid "copy"
-msgstr "copia"
+msgstr "コピー"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1043
 msgid "Packages to be removed"
-msgstr "Pacchetti da rimuovere"
+msgstr "パッケージを削除するには"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1052
 msgid "Packages to be moved locally"
-msgstr "Pacchetti da spostare localmente"
+msgstr "パッケージをローカルで移動するには"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1061
 msgid "Packages to be downloaded"
-msgstr ""
+msgstr "パッケージをダウンロードします。"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1070
 msgid "Packages to be uploaded"
-msgstr "Pacchetti da inviare"
+msgstr "パッケージをアップロードするには"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1080
 msgid "Total removal size"
-msgstr "Dimensione totale rimozione"
+msgstr "総除去サイズ"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1092
 msgid "Total upload size"
-msgstr "Dimensione totale upload"
+msgstr "アップロード サイズの合計"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1101
 msgid "Total download size"
-msgstr "Dimensione totale download"
+msgstr "総ダウンロードサイズ"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1155
 msgid "Remote statistics for"
-msgstr "Statistiche remote per"
+msgstr "リモート統計"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1169
 msgid "remote packages"
-msgstr "pacchetti remoti"
+msgstr "リモート パッケージ"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1171
 msgid "files stored"
-msgstr "file immagazzinati"
+msgstr "保存されているファイル"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1179
 msgid "Calculating queues"
-msgstr "Calcolo code"
+msgstr "計算キュー"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1414
 msgid "removing package+hash"
-msgstr "rimozione pacchetto+firma"
+msgstr "パッケージ + ハッシュの削除"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1431
 #: ../../lib/entropy/server/interfaces/mirrors.py:1586
@@ -1202,300 +1203,300 @@ msgstr "rimozione pacchetto+firma"
 #: ../../lib/entropy/server/interfaces/db.py:1878
 #: ../../lib/entropy/server/interfaces/db.py:1892
 msgid "sync"
-msgstr "sync"
+msgstr "同期する"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1455
 msgid "copying file+hash to repository"
-msgstr "copia file+firma nella repository"
+msgstr "リポジトリへのファイル + ハッシュのコピー"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1513
 msgid "upload errors"
-msgstr "problemi di upload"
+msgstr "アップロード エラー"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1527
 msgid "upload completed successfully"
-msgstr "upload completato con successo"
+msgstr "アップロードが正常に完了しました"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1625
 msgid "QA checking package file"
-msgstr "Controllo QA file di pacchetto"
+msgstr "QA チェック パッケージ ファイル"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1645
 msgid "faulty package file, please fix"
-msgstr "file di pacchetto fallato, correggere per favore"
+msgstr "障害のあるパッケージ、してください修正プログラム ファイル"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1701
 msgid "starting packages sync"
-msgstr "inizio sincronizzazione pacchetti"
+msgstr "出発パッケージが同期する"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1727
 msgid "packages sync"
-msgstr "sincronizzazione paccheti"
+msgstr "パッケージは同期"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1745
 msgid "socket error"
-msgstr "errore socket"
+msgstr "ソケットエラー"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1747
 msgid "on"
-msgstr "su"
+msgstr "オン"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1763
 msgid "nothing to do on"
-msgstr "niente da fare su"
+msgstr "上は何の関係もない"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1774
 msgid "Expanding queues"
-msgstr "Espansione code"
+msgstr "拡大するキュー"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1795
 msgid "nothing to sync for"
-msgstr "niente da sincronizzare per"
+msgstr "のために同期することは何もない"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1812
 msgid "Would you like to run the steps above ?"
-msgstr "Vuoi eseguire i passi di cui sopra ?"
+msgstr "上記の手順を実行しますか？"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1862
 msgid "keyboard interrupt !"
-msgstr "interruzione tastiera!"
+msgstr "キーボード割り込み ！"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1881
 msgid "you must package them again"
-msgstr "devi pacchettizzarli di nuovo"
+msgstr "あなたがそれらを再度パッケージ化する必要があります"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1903
 msgid "exception caught"
-msgstr "eccezione catturata"
+msgstr "例外がキャッチされました"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1930
 msgid "at least one mirror synced properly!"
-msgstr "almeno un mirror è stato sincronizzato correttamente!"
+msgstr "少なくとも 1 つのミラーが正しく同期 ！"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2069
 #: ../../lib/entropy/server/interfaces/mirrors.py:2382
 msgid "expire"
-msgstr ""
+msgstr "有効期限が切れる"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2146
 #: ../../lib/entropy/server/interfaces/mirrors.py:2404
 msgid "weaken"
-msgstr ""
+msgstr "弱める"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2243
 msgid "tidy"
-msgstr "pulizia"
+msgstr "奇麗な"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2245
 msgid "collecting expired packages"
-msgstr "raccolta pacchetti scaduti"
+msgstr "期限切れのパッケージを集める"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2259
 msgid "collecting expired packages in the selected branches"
-msgstr "raccolta paccheti scaduti nelle branch selezionate"
+msgstr "選択されたブランチに失効したパッケージを収集"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2338
 msgid "nothing to clean on this branch"
-msgstr ""
+msgstr "何もこのブランチをきれいにする"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2350
 msgid "these will be removed"
-msgstr ""
+msgstr "これらは削除されます。"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2372
 msgid "these will be marked as expired"
-msgstr ""
+msgstr "これらは、有効期限切れとしてマークされます。"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2394
 msgid "these will be removed and marked as weak"
-msgstr ""
+msgstr "これらは削除して弱いとしてマーク"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2450
 msgid "removing packages remotely"
-msgstr "rimozione pacchetti remoti"
+msgstr "パッケージをリモートで削除します。"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2482
 msgid "remove errors"
-msgstr "errori di rimozione"
+msgstr "エラーを削除します。"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2496
 msgid "removing packages locally"
-msgstr "rimozione pacchetti locali"
+msgstr "パッケージをローカルでの削除"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2535
 msgid "downloading notice board from mirrors to"
-msgstr "scaricamento notice board dai mirror a"
+msgstr "掲示板にミラーサイトからダウンロードします。"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2562
 msgid "notice board downloaded successfully from"
-msgstr "notice board scaricata con successo da"
+msgstr "掲示板から正常にダウンロード"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2595
 msgid "removing notice board from"
-msgstr "rimozione notice board da"
+msgstr "お知らせボードの取り外し"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2624
 msgid "notice board removal failed on"
-msgstr "rimozione notice board fallito su"
+msgstr "掲示板の削除に失敗しました"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2635
 msgid "notice board removal success"
-msgstr "rimozione notice board eseguita con successo"
+msgstr "掲示板削除成功"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2660
 msgid "uploading notice board from"
-msgstr "upload notice board da"
+msgstr "アップロード掲示板"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2687
 msgid "notice board upload failed on"
-msgstr "upload notice board fallito su"
+msgstr "掲示板のアップロードに失敗しました"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2698
 msgid "notice board upload success"
-msgstr "upload notice board eseguito con successo"
+msgstr "掲示板はアップロード成功"
 
 #: ../../lib/entropy/server/interfaces/db.py:736
 msgid "preparing to download repository from mirror"
-msgstr "preparazione per il download dai mirror"
+msgstr "ミラーからのリポジトリのダウンロードの準備"
 
 #: ../../lib/entropy/server/interfaces/db.py:745
 msgid "download path"
-msgstr "path download"
+msgstr "ダウンロードのパス"
 
 #: ../../lib/entropy/server/interfaces/db.py:781
 #: ../../lib/entropy/server/interfaces/db.py:846
 #: ../../lib/entropy/server/interfaces/db.py:1649
 msgid "errors"
-msgstr "errori"
+msgstr "エラー"
 
 #: ../../lib/entropy/server/interfaces/db.py:782
 msgid "failed to download from mirror"
-msgstr "download da mirror fallito"
+msgstr "ミラーからダウンロードに失敗しました"
 
 #: ../../lib/entropy/server/interfaces/db.py:847
 msgid "failed to unpack"
-msgstr "scompattamento fallito"
+msgstr "展開に失敗しました"
 
 #: ../../lib/entropy/server/interfaces/db.py:1181
 msgid "Troubles with treeupdates"
-msgstr "Problemi con treeupdates"
+msgstr "ツリー更新とのトラブル"
 
 #: ../../lib/entropy/server/interfaces/db.py:1184
 msgid "Bumping old data back"
-msgstr "Reinserimento vecchie informazioni"
+msgstr "古いデータを返すをバンピング"
 
 #: ../../lib/entropy/server/interfaces/db.py:1198
 msgid "configured package sets"
-msgstr "package sets configurati"
+msgstr "パッケージ セットの構成"
 
 #: ../../lib/entropy/server/interfaces/db.py:1208
 msgid "None configured"
-msgstr "Nessuno configurato"
+msgstr "構成なし"
 
 #: ../../lib/entropy/server/interfaces/db.py:1248
 msgid "creating compressed repository dump + checksum"
-msgstr "creazione dump repository compressa + firma"
+msgstr "圧縮されたリポジトリ ダンプ + チェックサムを作成します。"
 
 #: ../../lib/entropy/server/interfaces/db.py:1255
 #: ../../lib/entropy/server/interfaces/db.py:1303
 #: ../../lib/entropy/server/interfaces/db.py:1357
 msgid "repository path"
-msgstr "path repository"
+msgstr "リポジトリのパス"
 
 #: ../../lib/entropy/server/interfaces/db.py:1262
 msgid "dump light"
-msgstr "dump leggero"
+msgstr "ダンプ光"
 
 #: ../../lib/entropy/server/interfaces/db.py:1271
 msgid "dump light checksum"
-msgstr "checksum dump leggero"
+msgstr "ダンプ光チェックサム"
 
 #: ../../lib/entropy/server/interfaces/db.py:1280
 #: ../../lib/entropy/server/interfaces/db.py:1336
 msgid "opener"
-msgstr "istanziatore"
+msgstr "開幕戦"
 
 #: ../../lib/entropy/server/interfaces/db.py:1295
 msgid "compressing repository + checksum"
-msgstr "compressione repository + firma"
+msgstr "リポジトリ + チェックサムを圧縮します。"
 
 #: ../../lib/entropy/server/interfaces/db.py:1310
 msgid "compressed repository path"
-msgstr "path repository compressa"
+msgstr "圧縮されたリポジトリのパス"
 
 #: ../../lib/entropy/server/interfaces/db.py:1319
 msgid "repository checksum"
-msgstr "checksum repository"
+msgstr "リポジトリのチェックサム"
 
 #: ../../lib/entropy/server/interfaces/db.py:1328
 msgid "compressed checksum"
-msgstr "firma compressa"
+msgstr "圧縮されたチェックサム"
 
 #: ../../lib/entropy/server/interfaces/db.py:1350
 msgid "preparing uncompressed repository for the upload"
-msgstr "preparazione repository non compressa per upload"
+msgstr "圧縮されていないリポジトリ、アップロードの準備"
 
 #: ../../lib/entropy/server/interfaces/db.py:1475
 msgid "disabled EAPI"
-msgstr "EAPI disabilitato"
+msgstr "無効になっている EAPI"
 
 #: ../../lib/entropy/server/interfaces/db.py:1495
 msgid "preparing to upload repository to mirror"
-msgstr "preparazione per l'upload della repository su mirror"
+msgstr "リポジトリをミラーのアップロードの準備"
 
 #: ../../lib/entropy/server/interfaces/db.py:1650
 msgid "upload failed, locking and continuing"
-msgstr "upload fallito, bloccaggio e continuazione"
+msgstr "アップロードに失敗しました、ロックおよび継続"
 
 #. something short please
 #: ../../lib/entropy/server/interfaces/db.py:1721
 msgid "repository already in sync"
-msgstr "repository già sincronizzate"
+msgstr "既に同期リポジトリ"
 
 #. something short please
 #: ../../lib/entropy/server/interfaces/db.py:1734
 msgid "remote repository newer than local, please pull."
-msgstr "il repository remoto è più recente di quello locale, si prega di usare il comando pull."
+msgstr "ローカルより新しいリモート リポジトリを抜いてください。"
 
 #: ../../lib/entropy/server/interfaces/db.py:1752
 #: ../../lib/entropy/server/interfaces/db.py:1879
 msgid "repository sync failed"
-msgstr "sync repository fallito"
+msgstr "リポジトリの同期が失敗しました"
 
 #: ../../lib/entropy/server/interfaces/db.py:1753
 msgid "download issues"
-msgstr "problemi di download"
+msgstr "ダウンロードの問題"
 
 #. something short please
 #: ../../lib/entropy/server/interfaces/db.py:1766
 msgid "local repository newer than remote, please push."
-msgstr "il repository locale è più recente di quello remoto, si prega di usare il comando push."
+msgstr "リモートより新しいローカル リポジトリを押してください。"
 
 #: ../../lib/entropy/server/interfaces/db.py:1816
 #: ../../lib/entropy/server/interfaces/db.py:1843
 #: ../../lib/entropy/server/interfaces/db.py:1861
 msgid "repository sync forbidden"
-msgstr "sincronizzazione repository non permesso"
+msgstr "リポジトリの同期が禁止されています"
 
 #: ../../lib/entropy/server/interfaces/db.py:1817
 msgid "missing package sets"
-msgstr "package set mancanti"
+msgstr "行方不明のパッケージ セット"
 
 #: ../../lib/entropy/server/interfaces/db.py:1844
 msgid "dependencies test reported errors"
-msgstr "il test delle dipendenze ha riportato errori"
+msgstr "依存関係が報告されたエラーをテストします。"
 
 #: ../../lib/entropy/server/interfaces/db.py:1880
 msgid "upload issues"
-msgstr "problemi di upload"
+msgstr "アップロードに関する問題"
 
 #: ../../lib/entropy/server/interfaces/db.py:1893
 msgid "repository sync completed"
-msgstr "Comando sync su repository completato"
+msgstr "リポジトリの同期が完了しました"
 
 #: ../../lib/entropy/fetchers.py:854
 msgid "infinite"
-msgstr "infinito"
+msgstr "無限"
 
 #: ../../lib/entropy/fetchers.py:926
 msgid "[F]"
@@ -1511,54 +1512,53 @@ msgstr "sec"
 
 #: ../../lib/entropy/fetchers.py:1208
 msgid "Aggregated download"
-msgstr "Download aggregato"
+msgstr "集約されたダウンロード"
 
 #: ../../lib/entropy/fetchers.py:1210
 msgid "item"
 msgid_plural "items"
-msgstr[0] "elemento"
-msgstr[1] "elementi"
+msgstr[0] "項目"
 
 #: ../../lib/entropy/security.py:397
 msgid ""
 "Make sure to verify the imported key and set an appropriate trust level"
-msgstr "Accertati di verificare le chiavi importate ed impostare un livello di trust appropriato"
+msgstr "インポートしたキーを確認し、適切な信頼レベルを設定することを確認します。"
 
 #: ../../lib/entropy/security.py:437
 msgid "GPG key changed for"
-msgstr "Chiave GPG cambiata per"
+msgstr "GPG キーのを変更"
 
 #: ../../lib/entropy/security.py:456
 msgid "GPG key already installed for"
-msgstr "Chiave GPG già installata per"
+msgstr "GPG キーが既にインストールされています"
 
 #: ../../lib/entropy/security.py:469
 msgid "GPG key EXPIRED for URL"
-msgstr "Chiave GPG SCADUTA per URL"
+msgstr "URL の GPG キー期限切れ"
 
 #: ../../lib/entropy/security.py:479
 msgid "Installing GPG key for URL"
-msgstr "Installazione chiave GPG per URL"
+msgstr "GPG キー URL をインストールします。"
 
 #: ../../lib/entropy/security.py:493
 msgid "Error during GPG key installation"
-msgstr "Errore durante l'installazione della chiave GPG"
+msgstr "GPG キーのインストール時のエラー"
 
 #: ../../lib/entropy/security.py:504
 msgid "Successfully installed GPG key for URL"
-msgstr "Chiave GPG installata con successo per URL"
+msgstr "GPG キーの URL は正常にインストール"
 
 #: ../../lib/entropy/security.py:513
 msgid "Fingerprint"
-msgstr "Fingerprint"
+msgstr "指紋"
 
 #: ../../lib/entropy/security.py:541
 msgid "Error during GPG verification of"
-msgstr "Errore durante la verifica della chiave GPG"
+msgstr "GPG 検証中のエラー"
 
 #: ../../lib/entropy/security.py:550
 msgid "It could mean a potential security risk"
-msgstr "Potrebbe significare un potenziale rischio di sicurezza"
+msgstr "セキュリティ リスクの可能性を意味するかもしれない"
 
 #: ../../lib/entropy/security.py:561 ../../lib/entropy/security.py:880
 #: ../../lib/entropy/security.py:916 ../../lib/entropy/security.py:921
@@ -1567,425 +1567,425 @@ msgstr "Potrebbe significare un potenziale rischio di sicurezza"
 #: ../../lib/entropy/security.py:1061 ../../lib/entropy/security.py:1086
 #: ../../lib/entropy/security.py:1121
 msgid "Security Advisories"
-msgstr "Avvisi di sicurezza"
+msgstr "セキュリティ アドバイザリ"
 
 #: ../../lib/entropy/security.py:562
 msgid "GPG key verification successful"
-msgstr "verifica chiave GPG avvenuta con successo"
+msgstr "GPG キー検証の成功"
 
 #: ../../lib/entropy/security.py:722
 msgid "Warning"
-msgstr "Attenzione"
+msgstr "警告"
 
 #: ../../lib/entropy/security.py:724
 msgid "broken advisory"
-msgstr ""
+msgstr "壊れた顧問"
 
 #: ../../lib/entropy/security.py:881
 msgid "getting latest advisories"
-msgstr "scaricamento ultimi avvisi"
+msgstr "最新の勧告を取得"
 
 #: ../../lib/entropy/security.py:898
 msgid "cannot create temporary directory"
-msgstr ""
+msgstr "一時ディレクトリを作成することはできません"
 
 #: ../../lib/entropy/security.py:917
 msgid "updated successfully"
-msgstr "aggiornato con successo"
+msgstr "正常に更新されました"
 
 #: ../../lib/entropy/security.py:922
 msgid "already up to date"
-msgstr "già aggiornato"
+msgstr "既に最新の状態"
 
 #: ../../lib/entropy/security.py:990
 msgid "cannot download checksum, sorry"
-msgstr "impossibile scaricare la firma, mi dispiace"
+msgstr "チェックサムをダウンロードできません申し訳ありません"
 
 #: ../../lib/entropy/security.py:1019
 msgid "unable to download advisories, sorry"
-msgstr "impossibile scaricare gli avvisi, mi dispiace"
+msgstr "勧告をダウンロードすることができません申し訳ありません"
 
 #: ../../lib/entropy/security.py:1031
 msgid "Verifying checksum"
-msgstr "Verifica firma"
+msgstr "チェックサムの検証"
 
 #: ../../lib/entropy/security.py:1051
 msgid "verification successful"
-msgstr "verifica avvenuta con successo"
+msgstr "確認が完了しました"
 
 #: ../../lib/entropy/security.py:1062
 msgid "checksum verification failed, sorry"
-msgstr ""
+msgstr "チェックサム検証は申し訳ありませんが、失敗しました。"
 
 #: ../../lib/entropy/security.py:1087
 msgid "GPG service not available"
-msgstr "Servizio GPG non disponibile"
+msgstr "GPG サービスは利用できません。"
 
 #: ../../lib/entropy/security.py:1122
 msgid "digest verification failed, try again later"
-msgstr "verifica firma fallita, riprova più tardi"
+msgstr "ダイジェストの検証に失敗しました, もう一度お試しください。"
 
 #: ../../lib/entropy/const.py:607
 msgid "Runtime dependency"
-msgstr "Dipendenza runtime"
+msgstr "実行時の依存関係"
 
 #: ../../lib/entropy/const.py:608
 msgid "Post dependency"
-msgstr "Dipendenza successiva"
+msgstr "依存関係を記事します。"
 
 #: ../../lib/entropy/const.py:609
 msgid "Manually added (by staff) dependency"
-msgstr "Dipendenza aggiunta manualmente (dallo staff)"
+msgstr "（スタッフ） を手動で追加した依存関係"
 
 #: ../../lib/entropy/const.py:610
 msgid "Build dependency"
-msgstr "Dipendenza di compilazione"
+msgstr "依存関係を構築します。"
 
 #: ../../lib/entropy/const.py:629
 msgid "All fine"
-msgstr "Tutto fatto"
+msgstr "すべての罰金"
 
 #: ../../lib/entropy/const.py:630
 msgid "Corrupted Client Repository. Please restore a backup."
-msgstr "Repository Client corrotta. Per favore ripristinare un backup."
+msgstr "クライアントが破損してリポジトリ。バックアップを復元してください。"
 
 #: ../../lib/entropy/const.py:662
 msgid "reason not available"
-msgstr "motivo non disponibile"
+msgstr "利用できない理由"
 
 #: ../../lib/entropy/const.py:663
 msgid "user package.mask"
-msgstr "package.mask lato utente"
+msgstr "ユーザー package.mask"
 
 #: ../../lib/entropy/const.py:664
 msgid "system keywords"
-msgstr "Keywords di sistema"
+msgstr "システムのキーワード"
 
 #: ../../lib/entropy/const.py:665
 msgid "user package.unmask"
-msgstr "package.unmask lato utente"
+msgstr "ユーザー にパッケージアンマスク(package.unmask)"
 
 #: ../../lib/entropy/const.py:666
 msgid "user repo package.keywords (all packages)"
-msgstr "package.keywords repository lato utente (tutti i pacchetti)"
+msgstr "ユーザー レポ package.keywords (すべてのパッケージ)"
 
 #: ../../lib/entropy/const.py:667
 msgid "user repo package.keywords"
-msgstr "package.keywords repository lato utente"
+msgstr "ユーザーレポパッケージキーワード（package.keywords）"
 
 #: ../../lib/entropy/const.py:668
 msgid "user package.keywords"
-msgstr "package.keywords lato utente"
+msgstr "ユーザーパッケージのキーワード（package.keywords）"
 
 #: ../../lib/entropy/const.py:669
 msgid "completely masked (by keyword?)"
-msgstr "mascherato completamente (per keyword?)"
+msgstr "完全にマスク (キーワードか？）"
 
 #: ../../lib/entropy/const.py:670
 msgid "repository general packages.db.mask"
-msgstr "generale repository packages.db.mask"
+msgstr "リポジトリの一般的な packages.db.mask"
 
 #: ../../lib/entropy/const.py:671
 msgid "repository general packages.db.keywords"
-msgstr "generale repository packages.db.keywords"
+msgstr "リポジトリの一般のパッケージデータベースのキーワード（packages.db.keywords）"
 
 #: ../../lib/entropy/const.py:672
 msgid "user license.mask"
-msgstr "license.mask lato utente"
+msgstr "ユーザーライセンスマスク（license.mask）"
 
 #: ../../lib/entropy/const.py:673
 msgid "user live unmask"
-msgstr "live unmask lato utente"
+msgstr "ユーザーがライブの正体を暴露"
 
 #: ../../lib/entropy/const.py:674
 msgid "user live mask"
-msgstr "live mask lato utente"
+msgstr "ユーザー ライブ マスク"
 
 #: ../../lib/entropy/output.py:637
 msgid "Entropy needs your attention"
-msgstr "Entropy richiede la tua attenzione"
+msgstr "エントロピーは、注意が必要"
 
 #: ../../lib/entropy/output.py:795
 msgid "Entropy got a question for you"
-msgstr "Entropy ha una domanda per te"
+msgstr "エントロピーはあなたのために質問したい"
 
 #: ../../lib/entropy/output.py:809
 msgid "Interrupted"
-msgstr "Interrotto"
+msgstr "中断"
 
 #: ../../lib/entropy/output.py:872 ../../lib/entropy/output.py:876
 msgid "Selected number"
-msgstr "Numero selezionato"
+msgstr "選択した数"
 
 #: ../../lib/entropy/output.py:893
 msgid "Please select an option"
-msgstr "Per favore seleziona un'opzione"
+msgstr "オプションを選択してください。"
 
 #: ../../lib/entropy/output.py:895
 msgid "Discard all"
-msgstr "Scarta tutto"
+msgstr "すべてを捨てる"
 
 #: ../../lib/entropy/output.py:896
 msgid "Confirm"
-msgstr "Conferma"
+msgstr "確認する"
 
 #: ../../lib/entropy/output.py:897
 msgid "Add item"
-msgstr "Aggiungi elemento"
+msgstr "アイテムの追加"
 
 #: ../../lib/entropy/output.py:898
 msgid "Edit item"
-msgstr "Modifica elemento"
+msgstr "編集項目"
 
 #: ../../lib/entropy/output.py:899
 msgid "Remove item"
-msgstr "Rimuovi elemento"
+msgstr "項目を削除"
 
 #: ../../lib/entropy/output.py:900
 msgid "Show current list"
-msgstr "VIsualizza lista corrente"
+msgstr "現在のリストを表示する"
 
 #: ../../lib/entropy/output.py:904
 msgid "Your choice (type a number and press enter):"
-msgstr "La tua scelta (scrivi un numero e premi Invio):"
+msgstr "あなたの選択 (入力番号を押します):"
 
 #: ../../lib/entropy/output.py:936
 msgid "You don't have typed a number."
-msgstr "Non hai scritto un numero."
+msgstr "数値を入力したはありません。"
 
 #: ../../lib/entropy/output.py:939
 msgid "Invalid action."
-msgstr "Azione non valida"
+msgstr "無効なアクション。"
 
 #: ../../lib/entropy/output.py:949
 msgid "String to add (-1 to go back):"
-msgstr "Stringa da aggiungere (-1 per tornare indietro):"
+msgstr "(戻って-1) を追加する文字列:"
 
 #: ../../lib/entropy/output.py:959
 msgid "Invalid string."
-msgstr "Stringa non valida"
+msgstr "無効な文字列。"
 
 #: ../../lib/entropy/output.py:967
 msgid "Element number to edit (-1 to go back):"
-msgstr "Numero elemento da rimuovere (-1 per tornare indietro):"
+msgstr "(戻って-1) を編集する要素の数:"
 
 #: ../../lib/entropy/output.py:978
 msgid "old"
-msgstr "vecchio"
+msgstr "古い"
 
 #: ../../lib/entropy/output.py:978
 msgid "new value:"
-msgstr "nuovo valore:"
+msgstr "新しい値:"
 
 #: ../../lib/entropy/output.py:986 ../../lib/entropy/output.py:1004
 msgid "Invalid element."
-msgstr "Elemento non valido."
+msgstr "無効な要素。"
 
 #: ../../lib/entropy/output.py:995
 msgid "Element number to remove (-1 to go back):"
-msgstr "Numero elemento da rimuovere (-1 per tornare indietro):"
+msgstr "(戻って-1) を削除する要素の数:"
 
 #: ../../lib/entropy/qa.py:163
 msgid "Searching for broken reverse dependencies"
-msgstr "Ricarca di dipendenze inverse non valide"
+msgstr "壊れた逆依存関係を検索する"
 
 #: ../../lib/entropy/qa.py:180
 msgid "scanning for broken reverse dependencies"
-msgstr "scansione dipendenze inverse rotte"
+msgstr "壊れた逆依存関係をスキャンする"
 
 #: ../../lib/entropy/qa.py:221
 msgid "broken libraries detected"
-msgstr "rilevate librarie danneggiate"
+msgstr "検出された破損したライブラリ"
 
 #: ../../lib/entropy/qa.py:232
 msgid "needs"
-msgstr "richiede"
+msgstr "ニーズに"
 
 #: ../../lib/entropy/qa.py:271
 msgid "scanning"
-msgstr "scansione"
+msgstr "スキャン"
 
 #: ../../lib/entropy/qa.py:313
 msgid "blacklisted dependencies !!!"
-msgstr "dipendenze blacklistate !!!"
+msgstr "ブラックリストに載って依存関係！"
 
 #: ../../lib/entropy/qa.py:338
 msgid "requires libraries"
-msgstr ""
+msgstr "ライブラリが必要"
 
 #: ../../lib/entropy/qa.py:356
 msgid "library provided by"
-msgstr ""
+msgstr "ライブラリが提供する"
 
 #: ../../lib/entropy/qa.py:402 ../../lib/entropy/qa.py:629
 msgid "no packages"
-msgstr "nessun pacchetto"
+msgstr "何のパッケージない"
 
 #: ../../lib/entropy/qa.py:431
 msgid "is potentially missing these dependencies"
-msgstr "richiede potenzialmente queste dipendenze mancanti"
+msgstr "潜在的にこれらの依存関係を欠落しています"
 
 #: ../../lib/entropy/qa.py:568
 msgid "determining missing libraries"
-msgstr "determinazione librerie mancanti"
+msgstr "不足しているライブラリを決定する"
 
 #: ../../lib/entropy/qa.py:600
 msgid "requires"
-msgstr "richiede"
+msgstr "が必要です"
 
 #: ../../lib/entropy/qa.py:617 ../../lib/entropy/qa.py:628
 msgid "provided by"
-msgstr "fornito da"
+msgstr "によって提供されます。"
 
 #: ../../lib/entropy/qa.py:641
 msgid "no missing runtime libraries found"
-msgstr "nessuna libreria runtime mancante trovata"
+msgstr "見つかっミッシング実行時ライブラリません"
 
 #: ../../lib/entropy/qa.py:677
 msgid "Libraries test"
-msgstr "Test librerie"
+msgstr "ライブラリのテスト"
 
 #: ../../lib/entropy/qa.py:692
 msgid "Broken symbols packages list"
-msgstr "Lista di simboli rotti per pacchetti"
+msgstr "壊れたシンボルパッケージ一覧"
 
 #: ../../lib/entropy/qa.py:693
 msgid "Broken executables list"
-msgstr "Lista di eseguibili rotti"
+msgstr "壊れた実行可能プログラムのリスト"
 
 #: ../../lib/entropy/qa.py:775
 msgid "discarding directory"
-msgstr "ignoramento directory"
+msgstr "ディレクトリの破棄"
 
 #: ../../lib/entropy/qa.py:777
 msgid "because it's symlinked on"
-msgstr "perché ha un link simbolico su"
+msgstr "シンボリック リンク上にあるため"
 
 #: ../../lib/entropy/qa.py:827
 msgid "Collecting broken executables"
-msgstr "Collezione eseguibili danneggiati"
+msgstr "壊れた実行ファイルの収集"
 
 #: ../../lib/entropy/qa.py:833
 msgid "don't worry about libraries that are shown here but not later."
-msgstr "non preoccuparti di librerie segnalate qui ma non successivamente."
+msgstr "ライブラリがここに示されている心配しないでください。"
 
 #: ../../lib/entropy/qa.py:854
 msgid "Scanning libraries"
-msgstr "Scansione librerie"
+msgstr "スキャンライブラリ"
 
 #: ../../lib/entropy/qa.py:964
 msgid "various broken symbols"
-msgstr "diversi simboli non validi"
+msgstr "様々な壊れたシンボル"
 
 #: ../../lib/entropy/qa.py:1003
 msgid "Matching broken libraries/executables"
-msgstr "Accoppiamento librerie/eseguibili danneggiati"
+msgstr "壊れたライブラリ/実行可能プログラムと一致する"
 
 #: ../../lib/entropy/qa.py:1769
 msgid "Not prepared yet"
-msgstr "Non ancora preparato"
+msgstr "まだ準備されていません"
 
 #: ../../server/eit/utils.py:30 ../../server/eit/utils.py:89
 #: ../../server/eit/utils.py:90 ../../server/eit/utils.py:186
 #: ../../server/eit/utils.py:188
 msgid "N/A"
-msgstr "N/A"
+msgstr "N/A（適用されない）"
 
 #: ../../server/eit/utils.py:47
 msgid "corrupted"
-msgstr "corrotto"
+msgstr "破損しています。"
 
 #: ../../server/eit/utils.py:88
 msgid "Not installed"
-msgstr "Non installato"
+msgstr "インストールされていません"
 
 #: ../../server/eit/utils.py:114
 msgid "Package"
-msgstr "Pacchetto"
+msgstr "包み"
 
 #: ../../server/eit/utils.py:116
 msgid "branch"
-msgstr "branch"
+msgstr "支店"
 
 #: ../../server/eit/utils.py:123
 msgid "Category"
-msgstr "Categoria"
+msgstr "カテゴリ"
 
 #: ../../server/eit/utils.py:125
 msgid "Name"
-msgstr "Nome"
+msgstr "名前"
 
 #: ../../server/eit/utils.py:141
 msgid "Masked"
-msgstr "Mascherato"
+msgstr "仮面"
 
 #: ../../server/eit/utils.py:144
 msgid "Available"
-msgstr "Disponibile"
+msgstr "利用できる"
 
 #: ../../server/eit/utils.py:146 ../../server/eit/utils.py:154
 msgid "Installed"
-msgstr "Installato"
+msgstr "インストル"
 
 #: ../../server/eit/utils.py:149 ../../server/eit/utils.py:155
 msgid "version"
-msgstr "versione"
+msgstr "バージョン"
 
 #: ../../server/eit/utils.py:150 ../../server/eit/utils.py:157
 msgid "revision"
-msgstr "revisione"
+msgstr "探す"
 
 #: ../../server/eit/utils.py:160
 msgid "Slot"
-msgstr "Slot"
+msgstr "スロット"
 
 #: ../../server/eit/utils.py:177
 msgid "Size"
-msgstr "Dimensione"
+msgstr "サイズ"
 
 #: ../../server/eit/utils.py:179
 msgid "Download"
-msgstr "Download"
+msgstr "ダウンロード"
 
 #: ../../server/eit/utils.py:181
 msgid "Checksum"
-msgstr "Firma"
+msgstr "チェックサム"
 
 #: ../../server/eit/utils.py:189
 msgid "SHA1"
-msgstr ""
+msgstr "SHA1"
 
 #: ../../server/eit/utils.py:191
 msgid "SHA256"
-msgstr ""
+msgstr "SHA256"
 
 #: ../../server/eit/utils.py:197
 msgid "GPG"
-msgstr ""
+msgstr "GPG"
 
 #: ../../server/eit/utils.py:202
 msgid "Dependencies"
-msgstr "Dipendenze"
+msgstr "依存関係"
 
 #: ../../server/eit/utils.py:211 ../../server/eit/utils.py:488
 msgid "Legend"
-msgstr "Legenda"
+msgstr "凡例"
 
 #: ../../server/eit/utils.py:219
 msgid "Conflicts"
-msgstr "Conflitti"
+msgstr "競合"
 
 #: ../../server/eit/utils.py:224
 msgid "Homepage"
-msgstr "Homepage"
+msgstr "ホームページ"
 
 #: ../../server/eit/utils.py:234
 msgid "Description"
-msgstr "Descrizione"
+msgstr "記載なし"
 
 #: ../../server/eit/utils.py:243
 msgid "USE flags"
-msgstr "USE flag"
+msgstr "フラグを使用"
 
 #: ../../server/eit/utils.py:263
 msgid "CHOST"
@@ -2001,56 +2001,56 @@ msgstr "CXXFLAGS"
 
 #: ../../server/eit/utils.py:271
 msgid "Sources"
-msgstr "Sorgenti"
+msgstr "ソース"
 
 #: ../../server/eit/utils.py:276
 msgid "Entry API"
-msgstr "API della voce"
+msgstr "エントリーのAPI"
 
 #: ../../server/eit/utils.py:278
 msgid "Compiled with"
-msgstr "Compilato con"
+msgstr "コンパイル"
 
 #: ../../server/eit/utils.py:283
 msgid "Keywords"
-msgstr "Keyword"
+msgstr "キーワード"
 
 #: ../../server/eit/utils.py:298
 msgid "Created"
-msgstr "Creato"
+msgstr "作成"
 
 #: ../../server/eit/utils.py:304
 msgid "License"
-msgstr "Licenza"
+msgstr "認可"
 
 #: ../../server/eit/utils.py:420
 msgid "Reverse graphing installed package"
-msgstr "Renderizzazione delle dipendenze inverse"
+msgstr "探す"
 
 #: ../../server/eit/utils.py:432 ../../server/eit/utils.py:591
 msgid "No packages found"
-msgstr "Nessun pacchetto trovato"
+msgstr "見つかりませんでした"
 
 #: ../../server/eit/utils.py:491
 msgid "packages passed as arguments"
-msgstr "pacchetti passati come argomenti"
+msgstr "引数として渡されたパッケージ"
 
 #: ../../server/eit/utils.py:494
 msgid "packages with no further dependencies"
-msgstr "pacchetti senza ulteriori dipendenze"
+msgstr "実行時の依存関係"
 
 #: ../../server/eit/utils.py:497
 msgid "packages with further dependencies (node)"
-msgstr "pacchetti con ulteriori dipendenze (nodo)"
+msgstr "実行時の依存関係"
 
 #: ../../server/eit/utils.py:500
 msgid "packages already pulled in as dependency in upper levels (circularity)"
-msgstr "pacchetti già inclusi come dipendenze in livelli più alti (circolarità)"
+msgstr "上位レベル (循環) の依存関係として既に引込まパッケージ"
 
 #: ../../server/eit/utils.py:579
 msgid "Graphing"
-msgstr "Renderizzazione"
+msgstr "グラフ作成"
 
 #: ../../server/eit/main.py:117
 msgid "superuser access required"
-msgstr "accesso super-utente richiesto"
+msgstr "必要なスペース"

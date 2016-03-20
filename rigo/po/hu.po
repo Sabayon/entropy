@@ -9,9 +9,9 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-14 16:14+0100\n"
-"PO-Revision-Date: 2014-01-22 19:25+0000\n"
+"PO-Revision-Date: 2014-05-17 12:11+0000\n"
 "Last-Translator: andrewtranslates <andrewtranslates@aol.com>\n"
-"Language-Team: Hungarian (http://www.transifex.com/projects/p/sabayon-rigo/language/hu/)\n"
+"Language-Team: Hungarian (http://www.transifex.com/lxnay/sabayon-rigo/language/hu/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -48,7 +48,7 @@ msgstr "Nem engedélyezett"
 
 #: ../RigoDaemon/app.py:1480
 msgid "No repositories configured"
-msgstr ""
+msgstr "Nincs beállítva csomagtár"
 
 #: ../RigoDaemon/app.py:1485
 msgid "Unhandled Exception"
@@ -99,11 +99,11 @@ msgstr "<b>%s</b> telepítve van"
 
 #: ../rigo/models/application.py:1451
 msgid "from"
-msgstr ""
+msgstr "tól"
 
 #: ../rigo/models/application.py:1483
 msgid "License"
-msgstr ""
+msgstr "Jogosítvány"
 
 #: ../rigo/models/application.py:1494
 msgid "Required space"
@@ -127,11 +127,11 @@ msgstr "Ne használj flag-eket"
 
 #: ../rigo/models/application.py:1541
 msgid "Runtime dependencies"
-msgstr ""
+msgstr "Futásidejű függőségek"
 
 #: ../rigo/models/application.py:1542
 msgid "Build dependencies"
-msgstr ""
+msgstr "Szerkezeti függőségek"
 
 #: ../rigo/models/application.py:1543
 msgid "Post dependencies"
@@ -139,7 +139,7 @@ msgstr ""
 
 #: ../rigo/models/application.py:1544
 msgid "Staff dependencies"
-msgstr ""
+msgstr "Állomány függőségek"
 
 #: ../rigo/models/application.py:1566
 msgid "Click here for more details"
@@ -168,14 +168,14 @@ msgstr "Programcsomagok Beállításait <b>nem lehet</b> megváltoztatni. Bocsi.
 #: ../rigo/controllers/daemon.py:685
 #, python-format
 msgid "<b>%s</b> action enqueued"
-msgstr ""
+msgstr "<b>%s</b> tevékenység várakozási sorba helyezve"
 
 #: ../rigo/controllers/daemon.py:689
 #, python-format
 msgid ", <b>%i</b> Application enqueued so far..."
 msgid_plural ", <b>%i</b> Applications enqueued so far..."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "<b>%i</b> alkalmazás van sorba helyezve eddig..."
+msgstr[1] "<b>%i</b> alkalmazás van sorba helyezve eddig..."
 
 #: ../rigo/controllers/daemon.py:790 ../rigo_app.py:165
 msgid "Application"
@@ -213,21 +213,21 @@ msgstr "<b>%s</b>, belső hiba"
 #: ../rigo/controllers/daemon.py:813
 #, python-format
 msgid "<b>%s</b> dependencies not found"
-msgstr ""
+msgstr "<b>%s</b> függőségek nem találhatók"
 
 #: ../rigo/controllers/daemon.py:818
 #, python-format
 msgid "<b>%s</b> dependencies collision error"
-msgstr ""
+msgstr "<b>%s</b> függőségek ütközési hiba"
 
 #: ../rigo/controllers/daemon.py:823
 #, python-format
 msgid "<b>%s</b> dependencies not removable error"
-msgstr ""
+msgstr "<b>%s</b> függőségek nem eltávolíthatóak hiba"
 
 #: ../rigo/controllers/daemon.py:828
 msgid "Disk full, cannot download nor unpack Applications"
-msgstr ""
+msgstr "Megtelt a merevlemez, az alkalmazások így nem tölthetőek le és csomagolhatóak ki"
 
 #: ../rigo/controllers/daemon.py:832
 msgid "An error occurred"
@@ -250,14 +250,14 @@ msgstr "Mutasd"
 
 #: ../rigo/controllers/daemon.py:940
 msgid "<b>System Upgrade</b> Activity is being <i>restarted</i>"
-msgstr ""
+msgstr "<b>Rendszer frissítés</b> tevékenység <i>újraindítás</i> alatt"
 
 #: ../rigo/controllers/daemon.py:941
 #, python-format
 msgid "There is <b>%i</b> more update"
 msgid_plural "There are <b>%i</b> more updates"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Van még <b>%i</b> frissítés"
+msgstr[1] "Van még <b>%i</b> frissítés"
 
 #: ../rigo/controllers/daemon.py:1165
 msgid "Congratulations, mirrors have been <b>optimized</b>!"
@@ -277,17 +277,17 @@ msgstr ""
 
 #: ../rigo/controllers/daemon.py:1929
 msgid "Waiting for <b>RigoDaemon</b>, please wait..."
-msgstr ""
+msgstr "Várakozás a <b>RigoDaemon</b>-ra, kérlek várj te is..."
 
 #: ../rigo/controllers/daemon.py:2000 ../rigo/controllers/daemon.py:2665
 #: ../rigo/controllers/daemon.py:2892
 msgid "Another activity is currently in progress"
-msgstr ""
+msgstr "Jelenleg egy másik tevékenység is folyamatban van"
 
 #: ../rigo/controllers/daemon.py:2003 ../rigo/controllers/daemon.py:2669
 #: ../rigo/controllers/daemon.py:2896
 msgid "K thanks"
-msgstr ""
+msgstr "Ok, köszönöm"
 
 #: ../rigo/controllers/daemon.py:2142
 msgid "Yes, thanks"
@@ -306,7 +306,7 @@ msgstr "Akkor rendben"
 msgid ""
 "<b>%s</b>\n"
 "is part of the Base System and <b>cannot</b> be removed"
-msgstr ""
+msgstr "<b>%s</b>\nrésze az alap rendszernek és <b>nem</b> eltávolítható"
 
 #: ../rigo/controllers/daemon.py:2289
 #, python-format
@@ -337,11 +337,11 @@ msgstr "<b>Rendszer Frissítés</b> elkezdődött, most elmehetsz kávészünetr
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:221
 msgid "Repositories Update in <b>progress</b>..."
-msgstr ""
+msgstr "Csomagtárak frissítése <b>folyamatban/b>..."
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:233
 msgid "<b>Application Management</b> in progress..."
-msgstr ""
+msgstr "<b>Alkalmazás kezelés</b> folyamatban..."
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:242
 #: ../rigo/ui/gtk3/controllers/notifications.py:260
@@ -355,7 +355,7 @@ msgstr "Megszakítás"
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:251
 msgid "<b>System Upgrade</b> in progress..."
-msgstr ""
+msgstr "<b>Rendszer frissítés</b> folyamatban..."
 
 #: ../rigo/ui/gtk3/controllers/work.py:75
 msgid "Black on White"
@@ -391,24 +391,24 @@ msgstr "Eltávolítás"
 #, python-format
 msgid ", and <b>%d</b> <i>more in queue</i>"
 msgid_plural ", and <b>%d</b> <i>more in queue</i>"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] ", és <b>%d</b> <i>várakozik még a sorban</i>"
+msgstr[1] ", és <b>%d</b> <i>várakozik még a sorban</i>"
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:93
 msgid "Cannot <b>edit</b> configuration file"
-msgstr ""
+msgstr "Nem <b>szerkeszthető</b> konfigurációs fájl"
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:112
 msgid "Cannot <b>show</b> configuration files difference"
-msgstr ""
+msgstr "Nem <b>bemutatható</b> a konfigurációs fájlok különbözete"
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:132
 msgid "Cannot <b>merge</b> configuration file"
-msgstr ""
+msgstr "Nem <b>egybevonható</b> konfigurációs fájl"
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:154
 msgid "Cannot <b>discard</b> configuration file"
-msgstr ""
+msgstr "Nem <b>félretehető</b> konfigurációs fájl"
 
 #: ../rigo/ui/gtk3/controllers/group.py:90 ../rigo_app.py:183
 msgid "Application Groups"
@@ -420,7 +420,7 @@ msgstr "Alkalmazás Csoportok megjelenítése."
 
 #: ../rigo/ui/gtk3/controllers/application.py:173
 msgid "Clean Entropy Web Service Session"
-msgstr ""
+msgstr "Üres Entropy web szolgáltatás munkamenet"
 
 #: ../rigo/ui/gtk3/controllers/application.py:174
 msgid ""
@@ -430,11 +430,11 @@ msgstr "Elvet minden regisztrált belépési jogosultságot amivel eddig szavazo
 #: ../rigo/ui/gtk3/controllers/application.py:313
 #, python-format
 msgid "Logged in as <b>%s</b>! How about your <b>vote</b>?"
-msgstr ""
+msgstr "Bejelentkezve mint <b>%s</b>! Mit szólnál egy kis <b>szavazáshoz</b>?"
 
 #: ../rigo/ui/gtk3/controllers/application.py:320
 msgid "_Vote now"
-msgstr ""
+msgstr "_Most szavazok"
 
 #: ../rigo/ui/gtk3/controllers/application.py:322
 #: ../rigo/ui/gtk3/controllers/application.py:358
@@ -445,7 +445,7 @@ msgstr "_Később"
 
 #: ../rigo/ui/gtk3/controllers/application.py:330
 msgid "Login failed. Your <b>vote</b> hasn't been added"
-msgstr ""
+msgstr "Sikertelen bejelentkezés. A <b>szavazatod</b> nem lett bejegyezve"
 
 #: ../rigo/ui/gtk3/controllers/application.py:333
 #: ../rigo/ui/gtk3/controllers/application.py:655
@@ -472,7 +472,7 @@ msgstr "_Nem, kilépés!"
 
 #: ../rigo/ui/gtk3/controllers/application.py:394
 msgid "Your vote has been added!"
-msgstr ""
+msgstr "A szavazatod bejegyzésre került!"
 
 #: ../rigo/ui/gtk3/controllers/application.py:397
 #: ../rigo/ui/gtk3/controllers/application.py:573
@@ -481,16 +481,16 @@ msgstr "Ok, nagyszerű!"
 
 #: ../rigo/ui/gtk3/controllers/application.py:404
 msgid "You already voted this <b>Application</b>"
-msgstr ""
+msgstr "Te már szavaztál erre az <b>alkalmazásra</b>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:409
 #, python-format
 msgid "Vote error: <i>%s</i>"
-msgstr ""
+msgstr "Szavazási hiba:  <i>%s</i>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:495
 msgid "Entropy Web Services not available for repository"
-msgstr ""
+msgstr "Entropy webes szolgáltatások nem elérhetőek ehhez a csomagtárhoz"
 
 #: ../rigo/ui/gtk3/controllers/application.py:507
 #, python-format
@@ -533,15 +533,15 @@ msgstr "Régebbi hozzászólások betöltése..."
 
 #: ../rigo/ui/gtk3/controllers/application.py:775
 msgid "<i>No <b>images</b> for this Application, yet!</i>"
-msgstr ""
+msgstr "<i>Nincs még <b>kép</b> ehhez az alkalmazáshoz!</i>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:783
 msgid "Older images"
-msgstr ""
+msgstr "Régebbi képek"
 
 #: ../rigo/ui/gtk3/controllers/application.py:789
 msgid "Loading older images..."
-msgstr ""
+msgstr "Régebbi képek betöltése..."
 
 #: ../rigo/ui/gtk3/controllers/application.py:869
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:81
@@ -568,7 +568,7 @@ msgstr "Nem elérhető"
 
 #: ../rigo/ui/gtk3/controllers/application.py:916
 msgid "Never downloaded"
-msgstr ""
+msgstr "Még nem volt sosem letöltve"
 
 #: ../rigo/ui/gtk3/controllers/application.py:920
 msgid "downloads"
@@ -576,7 +576,7 @@ msgstr "letöltések"
 
 #: ../rigo/ui/gtk3/controllers/application.py:968
 msgid "Want to add images, etc?"
-msgstr ""
+msgstr "Hozzáadnál képeket, ilyesmit?"
 
 #: ../rigo/ui/gtk3/controllers/application.py:970
 msgid "click here!"
@@ -612,11 +612,11 @@ msgstr "Programcsomagok engedélyezése, letiltása vagy átnevezése."
 #: ../rigo/ui/gtk3/controllers/applications.py:333
 #, python-format
 msgid "Application <b>%s</b> not found"
-msgstr ""
+msgstr "A <b>%s</b> alkalmazás nem található"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:563
 msgid "Nothing found for"
-msgstr ""
+msgstr "Nincs találat a következére"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:573
 #, python-format
@@ -633,11 +633,11 @@ msgstr "Programcsomagok frissítése"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:738
 msgid "Force the update of the available repositories."
-msgstr ""
+msgstr "Az elérhető csomagtárak frissítésének kényszerítése."
 
 #: ../rigo/ui/gtk3/controllers/applications.py:748
 msgid "Show Configuration File Updates"
-msgstr ""
+msgstr "Konfigurációs fájlok módosulásának mutatása"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:749
 msgid "Show (if any) the list of pending configuration file updates."
@@ -680,15 +680,15 @@ msgstr ""
 #, python-format
 msgid "There is <b>%d</b> update"
 msgid_plural "There are <b>%d</b> updates"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Van <b>%d</b> frissítés"
+msgstr[1] "Van <b>%d</b> frissítés"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:188
 #, python-format
 msgid "and <b>%d</b> security update"
 msgid_plural "and <b>%d</b> security updates"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "és <b>%d</b> biztonsági frissítés"
+msgstr[1] "és <b>%d</b> biztonsági frissítés"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:194
 #: ../rigo/ui/gtk3/widgets/notifications.py:1222
@@ -769,7 +769,7 @@ msgstr "Belépési <b>hiba</b>!"
 msgid ""
 "Cannot connect to Entropy Web Services, are you connected to the "
 "<b>interweb</b>?"
-msgstr ""
+msgstr "Nem lehet az Entropy webes szolgáltatáshoz csatlakozni, biztos rajta vagy az <b>interneten</b>?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:428
 msgid "Don't ask me..."
@@ -799,7 +799,7 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:521
 msgid "Make sure to review all the licenses"
-msgstr ""
+msgstr "Rendesen nézd át a jogosítványokat"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:525
 #: ../rigo/ui/gtk3/widgets/notifications.py:815
@@ -833,18 +833,18 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:677
 msgid "Manual review"
-msgstr ""
+msgstr "Manuális áttekintés"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:681
 msgid "Safe to drop"
-msgstr ""
+msgstr "Nyugodtan dobható"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:784
 #, python-format
 msgid ""
 "<b>%s</b> Application requires the installation of the following "
 "Applications: %s"
-msgstr ""
+msgstr "<b>%s</b> alkalmazás megköveteli a következő alkalmazások telepítését: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:798
 msgid "Show full list"
@@ -898,12 +898,12 @@ msgstr "Boldogan ignorálom"
 #, python-format
 msgid "There is <b>%d</b> notice from a repository"
 msgid_plural "There are <b>%d</b> notices from repositories"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Van <b>%d</b> megjegyzés a csomagtáraktól"
+msgstr[1] "Van <b>%d</b> megjegyzés a csomagtáraktól"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1077
 msgid "It is <b>extremely</b> important to always read them."
-msgstr ""
+msgstr "<b>Nagyon fontos</b> ezeket mindig átolvasni."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1088
 msgid "Stop annoying me"
@@ -953,7 +953,7 @@ msgstr[1] ""
 
 #: ../rigo/ui/gtk3/widgets/stars.py:500
 msgid "Hint: Click a star to rate this app"
-msgstr ""
+msgstr "Súgó: kattints a csillagra, hogy értékelhesd a progit"
 
 #. unrated caption
 #: ../rigo/ui/gtk3/widgets/stars.py:501
@@ -1034,7 +1034,7 @@ msgstr "Több információ"
 
 #: ../rigo/ui/gtk3/widgets/welcome.py:39
 msgid "<i>Browse <b>Applications</b> with ease</i>"
-msgstr ""
+msgstr "<i>Könnyed böngészés az <b>alkalmazások</b> között</i>"
 
 #: ../rigo_app.py:112
 msgid "Hey hey hey!"

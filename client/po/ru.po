@@ -11,12 +11,12 @@ msgstr ""
 "POT-Creation-Date: 2014-02-14 16:08+0100\n"
 "PO-Revision-Date: 2014-02-14 15:14+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Russian (http://www.transifex.com/projects/p/sabayon-entropy/language/ru/)\n"
+"Language-Team: Russian (http://www.transifex.com/lxnay/sabayon-entropy/language/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: ru\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
 
 #: ../../lib/entropy/db/skel.py:518
 #: ../../lib/entropy/client/interfaces/package/actions/action.py:100
@@ -901,6 +901,7 @@ msgid_plural "there are"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: ../../lib/entropy/client/interfaces/repository.py:215
 msgid "package file that could be removed"
@@ -908,6 +909,7 @@ msgid_plural "package files that could be removed"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: ../../lib/entropy/client/interfaces/repository.py:228
 msgid "Packages are stored in"
@@ -1017,6 +1019,7 @@ msgid_plural "packages"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:831
 msgid "Some packages cannot be fetched"
@@ -1422,6 +1425,7 @@ msgid_plural "items"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: ../../lib/entropy/security.py:469
 msgid "GPG key EXPIRED for URL"
@@ -2299,6 +2303,7 @@ msgid_plural "entries"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: ../../client/solo/commands/query.py:411
 #: ../../client/solo/commands/query.py:577
@@ -3864,6 +3869,7 @@ msgid_plural "There are %s configuration files needing update"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: ../../client/solo/commands/_manage.py:116
 msgid "Please run"
@@ -3876,6 +3882,7 @@ msgid_plural "There are %s preserved libraries on the system"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #. every package matching app-foo is masked
 #: ../../client/solo/commands/_manage.py:245
@@ -4729,6 +4736,7 @@ msgid_plural "There are %s updates available"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:370
 msgid "Sabayon updates available"
@@ -4741,6 +4749,7 @@ msgid_plural "There are <b>%s</b> updates available"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:376
 msgid "Upgrade now"

@@ -3,8 +3,8 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# fthpl <fthpl@hotmail.com>, 2012
-# SabayonTR <sabayontr@gmail.com>, 2012
+# Talha Fatih Pala <fthpl@hotmail.com>, 2012
+# Sabayon Turkey <sabayontr@gmail.com>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
@@ -12,7 +12,7 @@ msgstr ""
 "POT-Creation-Date: 2014-02-14 16:08+0100\n"
 "PO-Revision-Date: 2014-02-14 15:14+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Turkish (http://www.transifex.com/projects/p/sabayon-entropy/language/tr/)\n"
+"Language-Team: Turkish (http://www.transifex.com/lxnay/sabayon-entropy/language/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
