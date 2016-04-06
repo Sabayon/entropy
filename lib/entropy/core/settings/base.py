@@ -1611,7 +1611,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
             'spm_backend': None,
         }
 
-        if const_file_readable(etp_conf):
+        if not const_file_readable(etp_conf):
             return data
 
         const_secure_config_file(etp_conf)
