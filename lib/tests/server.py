@@ -9,7 +9,8 @@ from entropy.server.interfaces import Server
 from entropy.const import etpConst, initconfig_entropy_constants, etpSys
 from entropy.core.settings.base import SystemSettings
 from entropy.db import EntropyRepository
-from entropy.db.cache import EntropyRepositoryCacher
+from entropy.db.cache import EntropyRepositoryCacher, \
+    EntropyRepositoryCachePolicies
 from entropy.exceptions import RepositoryError
 import entropy.tools
 import tests._misc as _misc
@@ -27,6 +28,11 @@ class EntropyRepositoryTest(unittest.TestCase):
         foo_db = self.Server.open_server_repository(self.default_repo,
             read_only = False, lock_remote = False, is_new = True)
         foo_db.initializeRepository()
+
+        # force cache policy to avoid system dependent behaviour (memory size
+        # detection)
+        EntropyRepositoryCachePolicies.DEFAULT_CACHE_POLICY = \
+                EntropyRepositoryCachePolicies.ALL
 
 
     def tearDown(self):
