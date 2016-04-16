@@ -2872,26 +2872,24 @@ def read_elf_broken_symbols(elf_file):
     proc = None
     args = ("/usr/bin/ldd", "-r", elf_file)
     output = None
-    stdout = None
 
     try:
-        stdout = open(os.devnull, "wb")
-
         proc = subprocess.Popen(
-            args, stdout = stdout,
-            stderr = subprocess.PIPE)
+            args,
+            stdout = subprocess.PIPE,
+            stderr = subprocess.STDOUT)
 
         output = const_convert_to_unicode("")
 
         while True:
 
-            err = proc.stderr.read()
-            if not err:
+            out = proc.stdout.read()
+            if not out:
                 break
 
             if const_is_python3():
-                err = const_convert_to_unicode(err)
-            output += err
+                out = const_convert_to_unicode(out)
+            output += out
 
         exit_st = proc.wait()
         if exit_st != 0:
@@ -2904,9 +2902,7 @@ def read_elf_broken_symbols(elf_file):
 
     finally:
         if proc is not None:
-            proc.stderr.close()
-        if stdout is not None:
-            stdout.close()
+            proc.stdout.close()
 
     outcome = set()
     if output is not None:
