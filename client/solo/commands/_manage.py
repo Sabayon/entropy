@@ -510,7 +510,10 @@ class SoloManage(SoloCommand):
                 for pkg_id, pkg_repo in pkg_matches:
                     repo = entropy_client.open_repository(pkg_repo)
                     entropy_client.output(
-                        teal(repo.retrieveAtom(pkg_id)),
+                        "%s%s%s" % (
+                            teal(repo.retrieveAtom(pkg_id)),
+                            darkred(etpConst['entropyrepoprefix']),
+                            purple(pkg_repo),),
                         header=brown("  # "),
                         level="warning")
                 entropy_client.output("", level="warning")
