@@ -737,10 +737,14 @@ class SoloManage(SoloCommand):
         # that the user accepts their licenses
         licenses = entropy_client.get_licenses_to_accept(
             package_matches)
+
         # ACCEPT_LICENSE env var support
         accept_license = os.getenv("ACCEPT_LICENSE", "").split()
-        for mylic in accept_license:
-            licenses.pop(mylic, None)
+        if "*" in accept_license:
+            licenses.clear()
+        else:
+            for mylic in accept_license:
+                licenses.pop(mylic, None)
 
         if licenses:
             entropy_client.output(
