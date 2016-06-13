@@ -64,7 +64,7 @@ pkg = http://ftp.kddilabs.jp/Linux/packages/sabayonlinux/entropy
 pkg = http://ftp.sh.cvut.cz/MIRRORS/sabayon/entropy
 
 # UPC Česká republika, a.s., 2Gbit/sec, Czech Republic
-pkg = http://debian.mirror.dkm.cz/sabayon/entropy
+pkg = http://mirror.dkm.cz/sabayon/entropy
 
 # KLID, Denmark, 1Gbit/sec
 pkg = ftp://ftp.klid.dk/sabayonlinux/entropy
