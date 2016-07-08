@@ -17,7 +17,7 @@ import errno
 import json
 import threading
 import hashlib
-
+import ssl
 import socket
 
 from entropy.const import const_is_python3, const_convert_to_rawstring, \
@@ -42,6 +42,7 @@ from entropy.core.settings.base import SystemSettings
 from entropy.exceptions import EntropyException
 import entropy.tools
 import entropy.dep
+
 
 class WebServiceFactory(object):
     """
@@ -512,8 +513,12 @@ class WebService(object):
                 connection = httplib.HTTPConnection(self._request_host,
                     timeout = timeout)
             elif self._request_protocol == "https":
-                connection = httplib.HTTPSConnection(self._request_host,
-                    timeout = timeout)
+                ssl_context = None
+                if hasattr(ssl, 'create_default_context'):
+                    ssl_context = ssl.create_default_context(
+                        purpose = ssl.Purpose.CLIENT_AUTH)
+                connection = httplib.HTTPSConnection(
+                    self._request_host, timeout = timeout, context = ssl_context)
             else:
                 raise WebService.RequestError("invalid request protocol",
                     method = function_name)
