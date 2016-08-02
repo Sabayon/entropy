@@ -7,8 +7,9 @@
 #
 # It is used by Entropy Server QA routines to perform package metadata
 # validation.
-# Metadata is export in environmental variables form, and include:
+# Metadata is exported as environmental variables and stdin.
 #
+# Metadata from environment:
 # REPOSITORY_ID = repository identifier
 # PKG_ID = package identifier
 # PKG_ATOM = package atom
@@ -32,13 +33,17 @@
 # PKG_SIZE = package size, in bytes
 # PKG_REVISION = package entropy revision
 # PKG_DEPS = list (\n separated) of package dependencies and conflicts
-# PKG_NEEDED_LIBS = list (\n separated) of SONAMES required by package,
-#    including ELF class, so each item will look like this:
-#     <soname>|<elfclass>
-# PKG_PROVIDED_LIBS = list (\n separated) of SONAMES provided by package,
-#    note: elf class and path are also provided,
-#    so each item will look like this:
-#     <soname>|<path of soname>|<elfclass>
+
+# Metadata on stdin (more can be added in the future, so it's advisable
+# to ignore entries well formed but with unknown prefix):
+# PKG_NEEDED_LIB:
+#	SONAME required by package (one per line), including ELF class,
+#	so each line will look like this:
+#     PKG_NEEDED_LIB|<soname>|<elfclass>
+# PKG_PROVIDED_LIB:
+#	SONAME provided by package (one per line), note: elf class
+#	and path are also provided, so each line will look like this:
+#     PKG_PROVIDED_LIB|<soname>|<path of soname>|<elfclass>
 #
 # The executable must return 0 for success, 1 for warning, 2 for critical error
 
@@ -67,8 +72,12 @@ echo "PKG_DATE = ${PKG_DATE}"
 echo "PKG_SIZE = ${PKG_SIZE}"
 echo "PKG_REVISION = ${PKG_REVISION}"
 echo "PKG_DEPS = ${PKG_DEPS}"
-echo "PKG_NEEDED_LIBS = ${PKG_NEEDED_LIBS}"
-echo "PKG_PROVIDED_LIBS = ${PKG_PROVIDED_LIBS}"
+
+stdin=$(cat)
+echo "PKG_NEEDED_LIB = "
+echo "${stdin}" | sed -n 's/^PKG_NEEDED_LIB|//p'
+echo "PKG_PROVIDED_LIB = "
+echo "${stdin}" | sed -n 's/^PKG_PROVIDED_LIB|//p'
 echo
 
 exit 0
