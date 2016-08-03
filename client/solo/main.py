@@ -55,8 +55,8 @@ def handle_exception(exc_class, exc_instance, exc_tb):
     if exc_class is SystemExit:
         return
 
-    if exc_class is IOError:
-        if exc_instance.errno != errno.EPIPE:
+    if issubclass(exc_class, IOError): # in Python 3.3+ it's BrokenPipeError
+        if exc_instance.errno == errno.EPIPE:
             return
 
     if exc_class is KeyboardInterrupt:
@@ -70,7 +70,7 @@ def handle_exception(exc_class, exc_instance, exc_tb):
         entropy.tools.print_exception(tb_data = exc_tb)
         pdb.set_trace()
 
-    if exc_class is OSError:
+    if exc_class in (IOError, OSError):
         if exc_instance.errno == errno.ENOSPC:
             print_generic(t_back)
             _text.output(
