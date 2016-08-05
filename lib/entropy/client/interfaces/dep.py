@@ -2287,6 +2287,7 @@ class CalculatorsMixin:
 
         # now check and report dependencies with colliding scope and in case,
         # raise DependenciesCollision, containing information about collisions
+        # and what requires the packages involved
         _dup_deps_collisions = {}
         for _level, _deps in deptree.items():
             for pkg_id, pkg_repo in _deps:
@@ -2295,9 +2296,16 @@ class CalculatorsMixin:
                 ks_set.add((pkg_id, pkg_repo))
         _colliding_deps = [x for x in _dup_deps_collisions.values() if \
             len(x) > 1]
+
         if _colliding_deps:
+            _pkg_revdeps = {}
+            for _pkg_matches in _colliding_deps:
+                for _pkg_match in _pkg_matches:
+                    _pkg_node = graph.get_node(_pkg_match)
+                    _pkg_revdeps[_pkg_match] = [x.origin().item() for x in _pkg_node.arches()]
+
             graph.destroy()
-            raise DependenciesCollision(_colliding_deps)
+            raise DependenciesCollision((_colliding_deps, _pkg_revdeps))
 
         # now use the ASAP herustic to anticipate post-dependencies
         # as much as possible
@@ -3806,8 +3814,10 @@ class CalculatorsMixin:
         @raise DependenciesCollision: packages pulled in conflicting depedencies
             perhaps sharing the same key and slot (but different version).
             In this case, user should mask one or the other by hand.
-            The value encapsulated .value object attribute contains the list of
-            colliding package (list of lists).
+            The value encapsulated .value object attribute contains tuple of two
+            elements: the list of colliding package (list of lists), and a
+            dictionary with information about each package's (first level) reverse
+            dependencies
         @raise DependenciesNotFound: one or more dependencies required are not
             found. The encapsulated .value object attribute contains a list of
             not found dependencies.

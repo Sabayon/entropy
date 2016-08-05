@@ -1914,7 +1914,7 @@ class RigoDaemonService(dbus.service.Object):
         except DependenciesCollision as dcol:
             write_output(
                 "_process_upgrade_merge_action, DependenciesCollision: "
-                "%s" % (dcol,))
+                "%s" % (dcol[0],))
             outcome = \
                 AppTransactionOutcome.DEPENDENCIES_COLLISION_ERROR
             return outcome
@@ -2241,7 +2241,7 @@ class RigoDaemonService(dbus.service.Object):
             except DependenciesCollision as dcol:
                 write_output(
                     "_process_install_action, DependenciesCollision: "
-                    "%s" % (dcol,))
+                    "%s" % (dcol[0],))
                 # this should never happen since client executes this
                 # before us
                 outcome = \
