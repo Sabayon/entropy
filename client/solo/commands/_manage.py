@@ -518,9 +518,22 @@ class SoloManage(SoloCommand):
                         header=brown("  # "),
                         level="warning")
 
+                    if not pkg_revdeps[pkg_match]:
+                        entropy_client.output(
+                            "(%s: %s)" % (
+                                green(_("required by")),
+                                # Conflicting dependencies could have been
+                                # specified by user, in which case they were
+                                # not pulled in by anything.
+                                teal(_("(no reverse dependencies)")),),
+                            header=blue("    "),
+                            level="info")
+                        continue
+
                     for pkg_revdep in pkg_revdeps[pkg_match]:
                         pkg_revdep_id, pkg_revdep_repo = pkg_revdep
-                        revdep_repo = entropy_client.open_repository(pkg_revdep_repo)
+                        revdep_repo = \
+                                entropy_client.open_repository(pkg_revdep_repo)
 
                         entropy_client.output(
                             "(%s: %s%s%s)" % (
@@ -530,6 +543,7 @@ class SoloManage(SoloCommand):
                                 purple(pkg_revdep_repo),),
                             header=blue("    "),
                             level="info")
+
                 entropy_client.output("", level="warning")
 
             entropy_client.output(

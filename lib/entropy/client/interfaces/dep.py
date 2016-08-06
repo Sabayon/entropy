@@ -2302,7 +2302,9 @@ class CalculatorsMixin:
             for _pkg_matches in _colliding_deps:
                 for _pkg_match in _pkg_matches:
                     _pkg_node = graph.get_node(_pkg_match)
-                    _pkg_revdeps[_pkg_match] = [x.origin().item() for x in _pkg_node.arches()]
+                    _pkg_revdeps[_pkg_match] = [x.origin().item() for \
+                        x in _pkg_node.arches() if \
+                        not _pkg_node.is_arch_outgoing(x)]
 
             graph.destroy()
             raise DependenciesCollision((_colliding_deps, _pkg_revdeps))
