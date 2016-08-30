@@ -6664,18 +6664,22 @@ class Server(Client):
             env['PKG_SIZE'] = str(pkg_size)
             env['PKG_REVISION'] = str(pkg_rev)
             env['PKG_DEPS'] = str("\n".join(pkg_deps))
-            env['PKG_NEEDED_LIBS'] = str("\n".join(
-                    ["%s|%s|%s|%s|%s" % (a, b, x, y, c) for a, b, x, y, c in
-                     pkg_needed]))
-            env['PKG_PROVIDED_LIBS'] = str("\n".join(
-                ["%s|%s|%s" % (x, y, z) for x, y, z in \
-                    pkg_provided_libs]))
+
+            # These two are not exposed in environment because they can be large;
+            # avoid "Argument list too long."
+            stdin_lines = []
+            stdin_lines += ["PKG_NEEDED_LIB|%s|%s|%s|%s|%s" % (a, b, x, y, c) \
+                            for a, b, x, y, c in pkg_needed]
+            stdin_lines += ["PKG_PROVIDED_LIB|%s|%s|%s" % (x, y, z) \
+                            for x, y, z in pkg_provided_libs]
+            stdin = const_convert_to_rawstring("\n".join(stdin_lines))
 
             # now call the script
             try:
                 proc = subprocess.Popen(
                     [qa_exec], stdout = sys.stdout, stderr = sys.stderr,
-                    stdin = sys.stdin, env = env)
+                    stdin = subprocess.PIPE, env = env)
+                proc.communicate(input=stdin)
                 rc = proc.wait()
             except OSError as err:
                 self.output(
