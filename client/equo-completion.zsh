@@ -6,7 +6,7 @@ typeset -A opt_args
 
 _equo_get_mirrors()
 {
-  cmds=( ${(f)"$(equo $1 --help | grep -P '^  (?!(-h|<package>))' | sed -r 's/^  (-*\w+)(, -\w|)  +(\w.*)/\1:\3/')"} )
+  mirrors=( ${(f)"$(equo status | grep Repository\ name | cut -d: -f2 | sed 's/^\ *//')"} )
   _describe -t packages 'mirrors' mirrors
 }
 
