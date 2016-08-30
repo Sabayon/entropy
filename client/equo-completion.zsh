@@ -31,8 +31,7 @@ _equo_get_available_packages()
 _arguments -C \
   "--help[print help]" \
   "--version[print version]" \
-  "--nocolor[dont use colors]" \
-  "--color[use colors(default)]" \
+  "--color[force colored output]" \
   "--bashcomp[print bash completion script]"\
   '1:command:->cmds' \
   '*:subcommand:->args'
