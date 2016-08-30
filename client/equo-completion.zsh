@@ -47,7 +47,7 @@ case $state in
         _equo_get_cmds $line[1] && return 0
         _equo_get_installed_packages
       ;;
-      install|fetch|search|source|mask|unmask)
+      install|i|fetch|download|search|s|source|src|mask|unmask)
         _equo_get_cmds $line[1] && return 0
         _equo_get_available_packages $line[-1]
       ;;
@@ -63,7 +63,7 @@ case $state in
           ;;
         esac
       ;;
-      query)
+      query|q)
         case $line[2] in
           changelog|revdeps|files|needed|removal|graph|revgraph)
             _equo_get_installed_packages
@@ -91,7 +91,7 @@ case $state in
       notice)
         _equo_get_mirrors
       ;;
-      cleanup|status)
+      cleanup|status|st|--info|hop)
       ;;
       *)
         _equo_get_cmds $line[1]
