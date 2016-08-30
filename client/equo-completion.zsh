@@ -18,7 +18,7 @@ _equo_get_cmds()
 
 _equo_get_installed_packages()
 {
-  packages=( ${(f)"$(equo query list installed | equo query list installed | sed 's/.*\///')"}  )
+  packages=( ${(f)"$(equo query list installed | sed 's/.*\///')"}  )
   _describe -t packages 'installed packages' packages
 }
 
