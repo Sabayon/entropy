@@ -20,7 +20,7 @@ from entropy.const import const_convert_to_unicode, etpConst, \
     const_debug_write, const_mkstemp
 from entropy.i18n import _, ngettext
 from entropy.output import darkgreen, blue, purple, teal, brown, bold, \
-    darkred, readtext, is_interactive
+    darkred, green, readtext, is_interactive
 from entropy.exceptions import EntropyPackageException, \
     DependenciesCollision, DependenciesNotFound
 from entropy.services.client import WebService
@@ -498,7 +498,7 @@ class SoloManage(SoloCommand):
             return None, None
 
         except DependenciesCollision as exc:
-            col_deps = exc.value
+            col_deps, pkg_revdeps = exc.value
 
             entropy_client.output(
                 "%s:" % (blue(_("Conflicting packages were pulled in")),),
@@ -507,7 +507,8 @@ class SoloManage(SoloCommand):
             entropy_client.output("", level="warning")
 
             for pkg_matches in col_deps:
-                for pkg_id, pkg_repo in pkg_matches:
+                for pkg_match in pkg_matches:
+                    pkg_id, pkg_repo = pkg_match
                     repo = entropy_client.open_repository(pkg_repo)
                     entropy_client.output(
                         "%s%s%s" % (
@@ -516,6 +517,33 @@ class SoloManage(SoloCommand):
                             purple(pkg_repo),),
                         header=brown("  # "),
                         level="warning")
+
+                    if not pkg_revdeps[pkg_match]:
+                        entropy_client.output(
+                            "(%s: %s)" % (
+                                green(_("required by")),
+                                # Conflicting dependencies could have been
+                                # specified by user, in which case they were
+                                # not pulled in by anything.
+                                teal(_("(no reverse dependencies)")),),
+                            header=blue("    "),
+                            level="info")
+                        continue
+
+                    for pkg_revdep in pkg_revdeps[pkg_match]:
+                        pkg_revdep_id, pkg_revdep_repo = pkg_revdep
+                        revdep_repo = \
+                                entropy_client.open_repository(pkg_revdep_repo)
+
+                        entropy_client.output(
+                            "(%s: %s%s%s)" % (
+                                green(_("required by")),
+                                teal(revdep_repo.retrieveAtom(pkg_revdep_id)),
+                                darkred(etpConst['entropyrepoprefix']),
+                                purple(pkg_revdep_repo),),
+                            header=blue("    "),
+                            level="info")
+
                 entropy_client.output("", level="warning")
 
             entropy_client.output(
