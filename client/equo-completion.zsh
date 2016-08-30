@@ -12,7 +12,7 @@ _equo_get_mirrors()
 
 _equo_get_cmds()
 {
-  cmds=( ${(f)"$(equo $1 --help | tr "\t" ":" | grep "^:[^:]" | sed 's/^:\([^:\ ]*\)[^:]*:*/\1:/')"} )
+  cmds=( ${(f)"$(equo $1 --help | sed 's/--multifetch/--multifetch  can be/' | sed -r -e '/^(positional|action:)/ {N; d;}' | grep -P '^  (?!-h|<package>|{|   )' | sed -r 's/^ {2,4}(-*[a-zA-z0-9-]+)(, -\w|)  +(\w.*)/\1:\3/')"} )
   _describe -t commands 'command params' cmds
 }
 
