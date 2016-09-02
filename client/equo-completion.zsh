@@ -12,13 +12,17 @@ _equo_get_mirrors()
 
 _equo_get_cmds()
 {
-  cmds=( ${(f)"$(equo $1 --help | tr "\t" ":" | grep "^:[^:]" | sed 's/^:\([^:\ ]*\)[^:]*:*/\1:/')"} )
+  cmds=( ${(f)"$(equo $1 --help |
+    sed 's/--multifetch/--multifetch  can be/' |
+    sed -r -e '/^(positional|action:)/ {N; d;}' |
+    grep -P '^  (?!-h|<package>|{|   )' |
+    sed -r 's/^ {2,4}(-*[a-zA-z0-9-]+)(, -\w|)  +(\w.*)/\1:\3/')"} )
   _describe -t commands 'command params' cmds
 }
 
 _equo_get_installed_packages()
 {
-  packages=( ${(f)"$(equo query list installed | equo query list installed | sed 's/.*\///')"}  )
+  packages=( ${(f)"$(equo query list installed | sed 's/.*\///')"}  )
   _describe -t packages 'installed packages' packages
 }
 
@@ -31,15 +35,16 @@ _equo_get_available_packages()
 _arguments -C \
   "--help[print help]" \
   "--version[print version]" \
-  "--nocolor[dont use colors]" \
-  "--color[use colors(default)]" \
+  "--color[force colored output]" \
   "--bashcomp[print bash completion script]"\
   '1:command:->cmds' \
   '*:subcommand:->args'
 
 case $state in
   cmds)
-    cmds=( ${(f)"$(equo --help |tr "\t" ":" | grep "^:[^:-]" | sed 's/^:\(\w*\).*:\+/\1:/')"} )
+    cmds=( ${(f)"$(equo --help |
+      grep -P '^  (?!(-h|--color|available))' |
+      sed -r 's/^  (\w+)( \[.*\]|)  +(\w.*)/\1:\3/')"} )
     _describe -t commands 'equo command' cmds
   ;;
   args)
@@ -48,7 +53,7 @@ case $state in
         _equo_get_cmds $line[1] && return 0
         _equo_get_installed_packages
       ;;
-      install|fetch|search|source|mask|unmask)
+      install|i|fetch|download|search|s|source|src|mask|unmask)
         _equo_get_cmds $line[1] && return 0
         _equo_get_available_packages $line[-1]
       ;;
@@ -64,7 +69,7 @@ case $state in
           ;;
         esac
       ;;
-      query)
+      query|q)
         case $line[2] in
           changelog|revdeps|files|needed|removal|graph|revgraph)
             _equo_get_installed_packages
@@ -92,7 +97,7 @@ case $state in
       notice)
         _equo_get_mirrors
       ;;
-      cleanup|status)
+      cleanup|status|st|--info|hop)
       ;;
       *)
         _equo_get_cmds $line[1]
