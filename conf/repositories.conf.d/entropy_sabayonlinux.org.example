@@ -122,3 +122,8 @@ pkg = http://cross-lfs.sabayonlinux.org/entropy
 pkg = http://mirror1.mirror.garr.it/mirrors/sabayonlinux/entropy
 pkg = http://mirror2.mirror.garr.it/mirrors/sabayonlinux/entropy
 pkg = http://mirror3.mirror.garr.it/mirrors/sabayonlinux/entropy
+
+# CICKU's FOSS Mirror
+pkg = http://mirrors.cicku.me/sabayon/entropy
+# pkg = https://mirrors.cicku.me/sabayon/entropy
+# pkg = rsync://rsync.belnet.be/sabayon/entropy
