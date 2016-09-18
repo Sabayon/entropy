@@ -1,3 +1,149 @@
+commit 4a0488bd41f875df1fb29d355ddc32f0326f9791
+Author: mudler <mudler@sabayon.org>
+Date:   Sun Sep 18 16:54:55 2016 +0200
+
+    Release Entropy 304
+
+commit 76f8fd1b92ac01c1f539079b228159d03f80b23e
+Author: mudler <mudler@sabayon.org>
+Date:   Sat Sep 17 14:09:06 2016 +0200
+
+    add CICKU's FOSS Mirror
+
+commit 0d778e8b397cb55fca0a4a0778124bedc9f1690b
+Merge: b8007c3 3fc1de1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 2 09:40:42 2016 +0200
+
+    Merge pull request #32 from freeboson/equo-zsh-updates
+    
+    Equo zsh completion updates
+
+commit 3fc1de1e748b7c813d881c38de5c611cf7694bbd
+Author: Sujeet Akula <sujeet@freeboson.org>
+Date:   Wed Aug 31 07:49:02 2016 +1000
+
+    break up the long text processing pipes
+
+commit b8007c3445c344f4bd807487c1d2129931d3347c
+Merge: 5ae09bf c530299
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 30 20:19:46 2016 +0200
+
+    Merge pull request #23 from rdnetto/bugfix_read_settings
+    
+    [entropy.core] _system_parser: Actually read the file
+
+commit 5ae09bf9c30315c1d1d4df1be3378786956f7d09
+Merge: bf5e00d 37d15af
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 30 20:18:38 2016 +0200
+
+    Merge pull request #30 from Enlik/exc-handler-fix
+    
+    [entropy.client] fixes to exception handler
+
+commit bf5e00d01488d19e692ccbbb159d69eed06210db
+Merge: abde25f f4d09bc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 30 20:17:57 2016 +0200
+
+    Merge pull request #24 from skwerlman/patch-1
+    
+    [solo.commands.moo] fix `lxnay` speech bubble
+
+commit abde25f9181fd78ea57d202f3ecce6847d71afb4
+Merge: b38fc48 706d6bc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 30 20:17:35 2016 +0200
+
+    Merge pull request #31 from Enlik/conflict-print-revdeps
+    
+    [solo.commands,lib] display packages that pull in conflicting ones
+
+commit b38fc48ac33c8fafa09fbe342c836e9be1d34d6a
+Merge: 28d16ff 12a7bdd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 30 20:16:23 2016 +0200
+
+    Merge pull request #29 from Enlik/large-qa-env
+    
+    [entropy.client,conf] avoid "Argument list too long"
+
+commit 0b7efb5be935a152e79c68e445b69c2c085b96f1
+Author: Sujeet Akula <sujeet@freeboson.org>
+Date:   Tue Aug 30 23:50:37 2016 +1000
+
+    update aliases in subcommand switch
+
+commit 50f7796fea6b77665db1401c9be96c405b286915
+Author: Sujeet Akula <sujeet@freeboson.org>
+Date:   Tue Aug 30 23:49:19 2016 +1000
+
+    get all the pathological subcommand -h cases
+
+commit d6ad7780fa46ae8f25e3d88272d33219ad148c5f
+Author: Sujeet Akula <sujeet@freeboson.org>
+Date:   Tue Aug 30 23:48:44 2016 +1000
+
+    should not have edited this line
+
+commit 3844653ee511eb6596fa63cc7e5f27945a21fadd
+Author: Sujeet Akula <sujeet@freeboson.org>
+Date:   Tue Aug 30 17:00:32 2016 +1000
+
+    change equo -h parsing
+
+commit cbc9a2d602b56e566a55380259777731b73fc9d6
+Author: Sujeet Akula <sujeet@freeboson.org>
+Date:   Tue Aug 30 16:59:25 2016 +1000
+
+    equo query list called twice for no reason
+
+commit 8c3308cf91f6ffb2499032debabbfe3597bb938e
+Author: Sujeet Akula <sujeet@freeboson.org>
+Date:   Tue Aug 30 16:59:06 2016 +1000
+
+    Remove --nocolor, update --color desc
+
+commit 706d6bca554febbd28d74518e38bf8ce502f2480
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Sat Aug 6 20:41:27 2016 +0200
+
+    [solo.commands,lib] improve message about conflicted packages
+    
+    Don't show the package itself. If there are no revdeps, nothing would be
+    shown so a custom "(no reverse dependencies)" message will appear, which
+    is clearer.
+
+commit e96db09ad70b4698826a69e27332f2c8f6f4a2b7
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Fri Aug 5 20:00:21 2016 +0200
+
+    [solo.commands,lib] display packages that pull in conflicting ones
+
+commit 37d15af8bf81d3ba418507923fa36e6643fbdd1a
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Thu Aug 4 01:30:22 2016 +0200
+
+    [entropy.client] fixes to exception handler
+    
+    - correct negated logic in EPIPE hanling
+    - correct ENOSPC handling (it's IOError, but OSError was catched)
+    - support Python 3.3+ which got reworked exceptions
+
+commit 12a7bdd2becf7c163485ac502d84afeb036298cc
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Tue Aug 2 09:04:50 2016 +0200
+
+    [entropy.client,conf] avoid "Argument list too long"
+
+commit 28d16ff8647a0d69bc611e4efaa234e4aa580709
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 8 09:04:30 2016 +0200
+
+    Tagging Entropy version 303
+
 commit aeaf05fe4d875ff4963f2cc3530c442fa8e458bc
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Jul 8 09:04:30 2016 +0200
@@ -94,6 +240,23 @@ Date:   Thu Apr 14 22:37:10 2016 +0200
     
     When ran in a chroot in environment where entropy.tools.total_memory()
     would return 0, the test failed.
+
+commit f4d09bcef080071ba69e464e64dfaee8346fae51
+Author: skwerlman <skwerlman@users.noreply.github.com>
+Date:   Fri Apr 8 15:48:24 2016 -0400
+
+    [solo.commands.moo] fix `lxnay` speech bubble
+
+commit c530299fb5084367fde35953bbe27e55bf120a83
+Author: Reuben D'Netto <rdnetto@gmail.com>
+Date:   Wed Apr 6 21:54:12 2016 +1000
+
+    [entropy.core] _system_parser: Actually read the file
+    
+    Fixed bug introduced in: a2315b1 [entropy.core] _system_parser: drop access() usage
+    
+    This ensures that /etc/entropy/entropy.conf is read, instead of being
+    ignored.
 
 commit b12a25e72d119ae4c137ffc66a52cce6c115558b
 Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
@@ -3757,7 +3920,7 @@ Date:   Fri Dec 6 15:57:45 2013 +0100
     [Rigo] add "in:exact" command to allow users to match packages, use it for lts kernels
     
     Conflicts:
-    	rigo/rigo/ui/gtk3/controllers/applications.py
+            rigo/rigo/ui/gtk3/controllers/applications.py
 
 commit 0184dac61733525b62b31e70b37f888020507d52
 Author: Fabio Erculiani <lxnay@sabayon.org>
@@ -10072,35 +10235,35 @@ Date:   Tue Nov 6 22:35:01 2012 +0100
     Merge remote-tracking branch 'origin/solo'
     
     Conflicts:
-    	client/po/bg.po
-    	client/po/ca.po
-    	client/po/cs.po
-    	client/po/da.po
-    	client/po/de.po
-    	client/po/entropy.pot
-    	client/po/es.po
-    	client/po/es_CL.po
-    	client/po/fr.po
-    	client/po/fr_CA.po
-    	client/po/it.po
-    	client/po/nl.po
-    	client/po/pl.po
-    	client/po/pt.po
-    	client/po/pt_BR.po
-    	client/po/ru.po
-    	client/po/sk.po
-    	client/po/sv.po
-    	client/po/uk.po
-    	client/po/zh_TW.po
-    	client/revision
-    	docs/ChangeLog
-    	docs/TODO
-    	lib/entropy/cache.py
-    	lib/entropy/client/interfaces/db.py
-    	lib/entropy/const.py
-    	lib/entropy/revision
-    	lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py
-    	server/revision
+            client/po/bg.po
+            client/po/ca.po
+            client/po/cs.po
+            client/po/da.po
+            client/po/de.po
+            client/po/entropy.pot
+            client/po/es.po
+            client/po/es_CL.po
+            client/po/fr.po
+            client/po/fr_CA.po
+            client/po/it.po
+            client/po/nl.po
+            client/po/pl.po
+            client/po/pt.po
+            client/po/pt_BR.po
+            client/po/ru.po
+            client/po/sk.po
+            client/po/sv.po
+            client/po/uk.po
+            client/po/zh_TW.po
+            client/revision
+            docs/ChangeLog
+            docs/TODO
+            lib/entropy/cache.py
+            lib/entropy/client/interfaces/db.py
+            lib/entropy/const.py
+            lib/entropy/revision
+            lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py
+            server/revision
 
 commit 659ad992d558535b69e61b9d0881110d05aa887a
 Author: Fabio Erculiani <lxnay@sabayon.org>
@@ -35327,7 +35490,7 @@ Date:   Thu Mar 4 22:19:28 2010 +0100
     
     Conflicts:
     
-    	libraries/entropy/const.py
+            libraries/entropy/const.py
 
 commit ae9f5e4dadce7607fff0492ee21d3fd7edb49fcf
 Author: Fabio Erculiani <lxnay@sabayon.org>
