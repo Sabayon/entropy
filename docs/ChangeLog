@@ -1,3 +1,21 @@
+commit b95b0d80b4680cf83b6186b599c7c99b3b554737
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 19 21:16:27 2016 +0100
+
+    Release Entropy 305
+
+commit 98cd2b2b9f98fe183e429a0f1fae657f4e23ea45
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 19 21:14:41 2016 +0100
+
+    [rigo] Force terminal expansion, fixes bug #5305
+
+commit 04c46ce17c2dd2c1784d71bd6cdb4b50094e47de
+Author: mudler <mudler@sabayon.org>
+Date:   Sun Sep 18 16:54:55 2016 +0200
+
+    Tagging Entropy version 304
+
 commit 4a0488bd41f875df1fb29d355ddc32f0326f9791
 Author: mudler <mudler@sabayon.org>
 Date:   Sun Sep 18 16:54:55 2016 +0200
