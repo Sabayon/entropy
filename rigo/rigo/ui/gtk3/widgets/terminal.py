@@ -181,6 +181,8 @@ class TerminalWidget(Vte.Terminal):
 
     def _configure(self):
         self.set_scrollback_lines(10000)
+        self.set_rewrap_on_resize(True)
+        self.set_property("expand", True)
         self._configure_colors()
 
     def reset(self):
