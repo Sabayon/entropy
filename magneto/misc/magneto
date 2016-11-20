@@ -1,2 +1,2 @@
 #!/bin/bash
-python /usr/lib/entropy/magneto/magneto.py "$@"
+exec python /usr/lib/entropy/magneto/magneto.py "$@"
