@@ -1,3 +1,57 @@
+commit c611f76a33420dd8064ca0ec103683d18a31bbdf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 20 08:07:36 2016 +0100
+
+    Release Entropy 306
+
+commit 6de1430d76058824ca085abe31e52dac556db259
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 20 08:06:52 2016 +0100
+
+    [magneto] make updates notifications go away after the default timeout.
+    
+    In the recent versions of GNOME, this became super annoying.
+
+commit 9c300b0a3c30f48ce79c64937f8b87b21afd8f80
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 20 08:00:09 2016 +0100
+
+    [client] update translations
+
+commit ff0938611a79a0e3cf7367a69847a9cf6de0c014
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 20 07:54:55 2016 +0100
+
+    [client] update entropy.pot
+
+commit 117100b18cadc95c65fe6d7820e4f6badca0d9dc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 20 07:52:17 2016 +0100
+
+    [magneto] fix Gir related warnings when loading Magneto
+
+commit a9ae8128a231e1d00846be3b76ee1b6e822b3e73
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 20 07:44:38 2016 +0100
+
+    [magneto] Just show an "Updates are available" notification, drop the count.
+    
+    This will prevent us from piling up notifications.
+
+commit aa362bc92c02d0c06e7750152f2b46e2a71ec524
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 20 07:38:05 2016 +0100
+
+    [magneto] exec python rather than calling it.
+    
+    No need to keep one more bash alive on every respawn.
+
+commit 2ab95aaae465f37caea6806d1492f7f8a889ccca
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 19 21:16:27 2016 +0100
+
+    Tagging Entropy version 305
+
 commit b95b0d80b4680cf83b6186b599c7c99b3b554737
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Nov 19 21:16:27 2016 +0100
