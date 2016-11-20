@@ -152,8 +152,12 @@ class Magneto(MagnetoCore):
 
             if urgency == 'critical':
                 n.set_urgency(Notify.Urgency.CRITICAL)
+            if urgency == 'normal':
+                n.set_urgency(Notify.Urgency.NORMAL)
+                n.set_timeout(Notify.EXPIRES_DEFAULT)
             elif urgency == 'low':
                 n.set_urgency(Notify.Urgency.LOW)
+                n.set_timeout(Notify.EXPIRES_DEFAULT)
             self.last_alert = (title, text)
 
             if buttons:

@@ -369,7 +369,7 @@ class MagnetoCore(MagnetoCoreUI):
             self.show_alert(
                 _("Sabayon updates available"),
                 _("Updates are available"),
-                urgency = "critical",
+                urgency = "normal",
                 force = self.manual_check_triggered,
                 buttons = [("upgrade", _("Upgrade now"), upgrade_cb,)]
             )
@@ -389,10 +389,9 @@ class MagnetoCore(MagnetoCoreUI):
             return
 
         self.update_tooltip(_("Repositories are being updated"))
-        # This does not seem to be extremely useful:
-        # self.show_alert(_("Sabayon repositories status"),
-        #     _("Repositories are being updated automatically")
-        # )
+        self.show_alert(_("Sabayon repositories status"),
+            _("Repositories are being updated automatically")
+        )
 
     def upgrading_signal(self):
         if not config.settings['APPLET_ENABLED']:
