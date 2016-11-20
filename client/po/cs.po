@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-14 16:08+0100\n"
-"PO-Revision-Date: 2014-02-14 15:14+0000\n"
+"POT-Creation-Date: 2016-11-20 07:54+0100\n"
+"PO-Revision-Date: 2016-11-20 06:54+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: Czech (http://www.transifex.com/lxnay/sabayon-entropy/language/cs/)\n"
 "MIME-Version: 1.0\n"
@@ -41,89 +41,89 @@ msgstr ""
 msgid "Acquired exclusive lock on"
 msgstr ""
 
-#: ../../lib/entropy/db/skel.py:2502
+#: ../../lib/entropy/db/skel.py:2537
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:987
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:1013
 msgid "SPM"
 msgstr "SZB"
 
-#: ../../lib/entropy/db/skel.py:2503
+#: ../../lib/entropy/db/skel.py:2538
 msgid "Running packages metadata update"
 msgstr "Spouštím aktualizaci metadat balíčků"
 
-#: ../../lib/entropy/db/skel.py:2504
+#: ../../lib/entropy/db/skel.py:2539
 msgid "it could take a while"
 msgstr "může to chvíli trvat"
 
-#: ../../lib/entropy/db/skel.py:2523 ../../lib/entropy/db/skel.py:2548
-#: ../../lib/entropy/db/skel.py:2559
+#: ../../lib/entropy/db/skel.py:2558 ../../lib/entropy/db/skel.py:2583
+#: ../../lib/entropy/db/skel.py:2594
 msgid "Entropy"
 msgstr "Entropy"
 
-#: ../../lib/entropy/db/skel.py:2524
+#: ../../lib/entropy/db/skel.py:2559
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:988
 msgid "action"
 msgstr "činnost"
 
-#: ../../lib/entropy/db/skel.py:2549
+#: ../../lib/entropy/db/skel.py:2584
 msgid "package move actions complete"
 msgstr "činnosti přesunu balíčku dokončeny"
 
-#: ../../lib/entropy/db/skel.py:2560
+#: ../../lib/entropy/db/skel.py:2595
 msgid "package moves completed successfully"
 msgstr "přesuny balíčku úspěšně dokončeny"
 
-#: ../../lib/entropy/db/skel.py:4582
+#: ../../lib/entropy/db/skel.py:4604
 msgid "Syncing current database"
 msgstr "Synchronizuji současnou databázi"
 
-#: ../../lib/entropy/db/skel.py:4583
+#: ../../lib/entropy/db/skel.py:4605
 #: ../../lib/entropy/client/interfaces/db.py:311
 msgid "please wait"
 msgstr "čekejte prosím"
 
-#: ../../lib/entropy/db/skel.py:4598
+#: ../../lib/entropy/db/skel.py:4620
 msgid "Removing entry"
 msgstr "Odebírám záznam"
 
-#: ../../lib/entropy/db/skel.py:4617
+#: ../../lib/entropy/db/skel.py:4639
 msgid "Adding entry"
 msgstr "Přidávám záznam"
 
-#: ../../lib/entropy/db/sqlite.py:2048
+#: ../../lib/entropy/db/sqlite.py:2076
 msgid "Exporting database table"
 msgstr "Exportuji tabulku databáze"
 
-#: ../../lib/entropy/db/sqlite.py:2088
+#: ../../lib/entropy/db/sqlite.py:2116
 msgid "Database Export complete."
 msgstr "Export databáze dokončen."
 
-#: ../../lib/entropy/db/sqlite.py:2454 ../../lib/entropy/db/sqlite.py:2558
-#: ../../lib/entropy/db/sqlite.py:2666 ../../lib/entropy/db/sqlite.py:2679
-#: ../../lib/entropy/db/sql.py:5468 ../../lib/entropy/db/sql.py:5481
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2678
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2815
+#: ../../lib/entropy/db/sqlite.py:2516 ../../lib/entropy/db/sqlite.py:2620
+#: ../../lib/entropy/db/sqlite.py:2728 ../../lib/entropy/db/sqlite.py:2741
+#: ../../lib/entropy/db/sql.py:5483 ../../lib/entropy/db/sql.py:5496
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2696
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2833
 #: ../../lib/entropy/client/interfaces/client.py:370
 msgid "ATTENTION"
 msgstr "POZOR"
 
-#: ../../lib/entropy/db/sqlite.py:2456 ../../lib/entropy/db/sqlite.py:2560
+#: ../../lib/entropy/db/sqlite.py:2518 ../../lib/entropy/db/sqlite.py:2622
 msgid "updating repository metadata layout, please wait!"
 msgstr "aktualizuji rozvržení metadat repozitáře, čekejte prosím..."
 
-#: ../../lib/entropy/db/sqlite.py:2667
+#: ../../lib/entropy/db/sqlite.py:2729
 msgid "generating provided_libs metadata, please wait!"
 msgstr "generuji metadata provided_libs, čekejte prosím..."
 
-#: ../../lib/entropy/db/sql.py:5469
+#: ../../lib/entropy/db/sql.py:5484
 msgid "Spm error occurred"
 msgstr ""
 
-#: ../../lib/entropy/db/sql.py:5482
+#: ../../lib/entropy/db/sql.py:5497
 msgid "Spm Unique Identifier not found for"
 msgstr "Nenalezen unikátní identifikátor SZB pro"
 
-#: ../../lib/entropy/core/settings/base.py:2036
+#: ../../lib/entropy/core/settings/base.py:2102
 msgid "No description"
 msgstr ""
 
@@ -132,11 +132,11 @@ msgid "has been installed."
 msgstr ""
 
 #: ../../lib/kswitch/__init__.py:123
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3472
-#: ../../lib/entropy/client/interfaces/db.py:449
-#: ../../lib/entropy/client/interfaces/db.py:636
-#: ../../lib/entropy/client/interfaces/db.py:2002
-#: ../../lib/entropy/client/interfaces/db.py:2015 ../../lib/entropy/qa.py:832
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3490
+#: ../../lib/entropy/client/interfaces/db.py:456
+#: ../../lib/entropy/client/interfaces/db.py:647
+#: ../../lib/entropy/client/interfaces/db.py:2037
+#: ../../lib/entropy/client/interfaces/db.py:2050 ../../lib/entropy/qa.py:701
 #: ../../client/solo/commands/rescue.py:310
 #: ../../client/solo/commands/rescue.py:321
 #: ../../client/solo/commands/install.py:492
@@ -282,127 +282,127 @@ msgstr "chyba"
 msgid "not readable"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2637
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2655
 msgid "package not available on system"
 msgstr "balíček není dostupný v systému"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2646
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2664
 msgid "repackaging"
 msgstr "přebaluji"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2658
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2852
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2676
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2870
 msgid "WARNING"
 msgstr "VAROVÁNÍ"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2659
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2677
 msgid "Cannot complete quickpkg for atom"
 msgstr "Nelze dokončit quickpg pro atom"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2661
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2855
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2679
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2873
 msgid "do it manually"
 msgstr "udělat to ručně"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2679
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2697
 msgid "package files rebuild did not run properly"
 msgstr "znovuvytvoření souborů balíčků neproběhlo správně"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2680
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2698
 msgid "Please update packages manually"
 msgstr "Prosím aktualizujte balíčky ručně"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2816
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2834
 msgid "forcing package updates"
 msgstr "vynucuji aktualizaci balíčků"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2817
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2835
 msgid "Syncing with"
 msgstr "Synchronizace s"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2853
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2871
 msgid "Cannot complete quickpkg for atoms"
 msgstr "Nelze dokončit quickpkg pro atomy"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3217
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4934
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3235
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4954
 #: ../../lib/entropy/client/interfaces/package/actions/_triggers.py:284
 #: ../../lib/entropy/client/interfaces/package/actions/_triggers.py:535
 msgid "QA"
 msgstr "QA"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3218
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3236
 msgid "Cannot update Portage package metadata"
 msgstr "Nelze aktualizovat metadata balíčku Portage"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3244
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3262
 msgid "SPM uid update error"
 msgstr "Chyba aktualizace uid SZB"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3311
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3329
 msgid "Cannot update SPM installed pkgs file"
 msgstr "Nelze aktualizovat soubor nainstalovaných balíčků SZB"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3413
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3431
 msgid "Portage world file is corrupted"
 msgstr "World soubor portage je poškozen"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3473
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3491
 msgid "preserved libraries have been found on system"
 msgstr "na systému byly nalezeny zachované knihovny"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3618
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3766
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3636
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3784
 msgid "does not exist"
 msgstr "neexistuje"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3618
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3636
 msgid "Overwriting"
 msgstr "Přepisuji"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3664
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3682
 msgid "variable differs"
 msgstr "proměnné se liší"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3664
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3751
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3682
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3769
 msgid "Updating"
 msgstr "Aktualizuji"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3679
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3697
 msgid "updating critical variables"
 msgstr "aktualizuji kritické proměnné"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3751
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3769
 msgid "differs"
 msgstr "se liší"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3766
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3784
 msgid "Reverting"
 msgstr "Vracím zpět"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3781
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3799
 msgid "Skipping configuration files update, you are not root."
 msgstr "Přeskakuji aktualizaci konfiguračních souborů, nejste root."
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4064
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4082
 msgid "Error calculating dependencies"
 msgstr "Chyba kalkulace závislostí"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4623
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4641
 msgid "not supported"
 msgstr "nepodporováno"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4624
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4642
 msgid "Probably Portage API has changed"
 msgstr "Pravděpodobně se změnilo API Portage"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4687
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4780
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4705
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4791
 msgid "IOError while reading"
 msgstr "Chyba IO při čtení"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4935
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4955
 msgid "illegal Entropy package tag in ebuild"
 msgstr "Neplatná značka balíčku Entropy v ebuildu"
 
@@ -499,7 +499,7 @@ msgid "Repository"
 msgstr "Repozitář"
 
 #: ../../lib/entropy/client/interfaces/methods.py:112
-#: ../../client/solo/commands/pkg.py:189
+#: ../../client/solo/commands/pkg.py:190
 #: ../../client/solo/commands/mask.py:101
 msgid "is not available"
 msgstr "není dostupný"
@@ -578,309 +578,309 @@ msgstr "neplatná metoda"
 msgid "Injecting downloaded dump"
 msgstr "Vkládám stažená data"
 
-#: ../../lib/entropy/client/interfaces/db.py:408
+#: ../../lib/entropy/client/interfaces/db.py:411
 msgid "Scanning URL"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:426
+#: ../../lib/entropy/client/interfaces/db.py:433
 msgid "Selected URL"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:450
+#: ../../lib/entropy/client/interfaces/db.py:457
 msgid "repository is not available at the database URLs"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:457
+#: ../../lib/entropy/client/interfaces/db.py:464
 msgid "Looking for an alternate route using package mirrors"
 msgstr "Vyhledávám alternativní cestu pomocí zrcadel balíčku"
 
-#: ../../lib/entropy/client/interfaces/db.py:466
+#: ../../lib/entropy/client/interfaces/db.py:473
 msgid "Checking repository URL"
 msgstr "Kontroluji URL repozitáře"
 
-#: ../../lib/entropy/client/interfaces/db.py:485
+#: ../../lib/entropy/client/interfaces/db.py:496
 msgid "Found repository at URL"
 msgstr "Repozitář nalezen na URL"
 
-#: ../../lib/entropy/client/interfaces/db.py:497
+#: ../../lib/entropy/client/interfaces/db.py:508
 msgid "Unable to find alternate repository mirrors. Sorry."
 msgstr "Nelze nalézt alternativní zrcadla repozitáře. Lituji."
 
-#: ../../lib/entropy/client/interfaces/db.py:519
+#: ../../lib/entropy/client/interfaces/db.py:530
 #: ../../client/solo/commands/status.py:153
 msgid "Repository URL"
 msgstr "URL repozitáře"
 
-#: ../../lib/entropy/client/interfaces/db.py:529
+#: ../../lib/entropy/client/interfaces/db.py:540
 msgid "Repository local path"
 msgstr "Místní cesta k repozitáři"
 
-#: ../../lib/entropy/client/interfaces/db.py:537
+#: ../../lib/entropy/client/interfaces/db.py:548
 msgid "Repository API"
 msgstr "API repozitáře"
 
-#: ../../lib/entropy/client/interfaces/db.py:587
+#: ../../lib/entropy/client/interfaces/db.py:598
 msgid "Downloading repository"
 msgstr "Stahuji repozitář"
 
-#: ../../lib/entropy/client/interfaces/db.py:637
+#: ../../lib/entropy/client/interfaces/db.py:648
 msgid "unable to download the repository"
 msgstr "nelze stáhnout repozitář"
 
-#: ../../lib/entropy/client/interfaces/db.py:658
+#: ../../lib/entropy/client/interfaces/db.py:669
 msgid "Downloading checksum"
 msgstr "Stahuji kontrolní součet"
 
-#: ../../lib/entropy/client/interfaces/db.py:685
+#: ../../lib/entropy/client/interfaces/db.py:696
 msgid "Cannot fetch checksum"
 msgstr "Nelze stáhnout kontrolní součet"
 
-#: ../../lib/entropy/client/interfaces/db.py:686
-#: ../../lib/entropy/client/interfaces/db.py:1265
+#: ../../lib/entropy/client/interfaces/db.py:697
+#: ../../lib/entropy/client/interfaces/db.py:1287
 msgid "Cannot verify repository integrity"
 msgstr "Nelze ověřit integritu repozitáře"
 
-#: ../../lib/entropy/client/interfaces/db.py:783
+#: ../../lib/entropy/client/interfaces/db.py:794
 msgid "Unpacking database to"
 msgstr "Rozbaluji databázi do"
 
-#: ../../lib/entropy/client/interfaces/db.py:800
+#: ../../lib/entropy/client/interfaces/db.py:811
 msgid "Cannot unpack compressed package"
 msgstr "Nelze rozbalit zkomprimovaný balíček"
 
-#: ../../lib/entropy/client/interfaces/db.py:801
+#: ../../lib/entropy/client/interfaces/db.py:812
 msgid "Skipping repository"
 msgstr "Přeskakuji repozitář"
 
-#: ../../lib/entropy/client/interfaces/db.py:829
+#: ../../lib/entropy/client/interfaces/db.py:840
 msgid "Repository is invalid"
 msgstr "Repozitář je neplatný"
 
-#: ../../lib/entropy/client/interfaces/db.py:853
+#: ../../lib/entropy/client/interfaces/db.py:864
 msgid "Indexing Repository metadata"
 msgstr "Indexování metadat repozitáře"
 
-#: ../../lib/entropy/client/interfaces/db.py:1070
+#: ../../lib/entropy/client/interfaces/db.py:1092
 msgid "Downloading repository metafile"
 msgstr "Stahuji meta soubor repozitáře"
 
-#: ../../lib/entropy/client/interfaces/db.py:1080
+#: ../../lib/entropy/client/interfaces/db.py:1102
 msgid "Downloading GPG signature of repository metafile"
 msgstr "Stahuji podpis GPG meta souboru repozitáře"
 
-#: ../../lib/entropy/client/interfaces/db.py:1090
+#: ../../lib/entropy/client/interfaces/db.py:1112
 msgid "Downloading Notice Board"
 msgstr "Stahuji nástěnku oznámení"
 
-#: ../../lib/entropy/client/interfaces/db.py:1116
+#: ../../lib/entropy/client/interfaces/db.py:1138
 msgid "unpacked meta file"
 msgstr "rozbalen meta soubor"
 
-#: ../../lib/entropy/client/interfaces/db.py:1122
+#: ../../lib/entropy/client/interfaces/db.py:1144
 msgid "removed meta file"
 msgstr "odebrán meta soubor"
 
-#: ../../lib/entropy/client/interfaces/db.py:1139
+#: ../../lib/entropy/client/interfaces/db.py:1161
 msgid "not available, it's ok"
 msgstr "nedostupný, nevadí"
 
-#: ../../lib/entropy/client/interfaces/db.py:1143
+#: ../../lib/entropy/client/interfaces/db.py:1165
 msgid "not available, not very ok!"
 msgstr "není dostupný, to není moc v pořádku!"
 
-#: ../../lib/entropy/client/interfaces/db.py:1156
+#: ../../lib/entropy/client/interfaces/db.py:1178
 msgid "available, w00t!"
 msgstr "dostupný, skvělé!"
 
-#: ../../lib/entropy/client/interfaces/db.py:1174
+#: ../../lib/entropy/client/interfaces/db.py:1196
 msgid "cannot be unpacked, not very ok!"
 msgstr "nelze rozbalit, to není moc dobré!"
 
-#: ../../lib/entropy/client/interfaces/db.py:1227
+#: ../../lib/entropy/client/interfaces/db.py:1249
 msgid "Repository revision"
 msgstr "Revize repozitáře"
 
-#: ../../lib/entropy/client/interfaces/db.py:1250
+#: ../../lib/entropy/client/interfaces/db.py:1272
 msgid "Checking downloaded repository"
 msgstr "Kontroluji stažený repozitář"
 
-#: ../../lib/entropy/client/interfaces/db.py:1264
+#: ../../lib/entropy/client/interfaces/db.py:1286
 msgid "Cannot open digest"
 msgstr "Nelze otevřít digest"
 
-#: ../../lib/entropy/client/interfaces/db.py:1275
-#: ../../lib/entropy/client/interfaces/db.py:1286
+#: ../../lib/entropy/client/interfaces/db.py:1297
+#: ../../lib/entropy/client/interfaces/db.py:1308
 msgid "Downloaded repository status"
 msgstr "Stav staženého repozitáře"
 
-#: ../../lib/entropy/client/interfaces/db.py:1276
+#: ../../lib/entropy/client/interfaces/db.py:1298
 msgid "OK"
 msgstr "OK"
 
-#: ../../lib/entropy/client/interfaces/db.py:1287
+#: ../../lib/entropy/client/interfaces/db.py:1309
 msgid "ERROR"
 msgstr "CHYBA"
 
-#: ../../lib/entropy/client/interfaces/db.py:1296
+#: ../../lib/entropy/client/interfaces/db.py:1318
 msgid "An error occurred while checking repository integrity"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1297
+#: ../../lib/entropy/client/interfaces/db.py:1319
 msgid "Giving up"
 msgstr "Vzdávám se"
 
-#: ../../lib/entropy/client/interfaces/db.py:1319
+#: ../../lib/entropy/client/interfaces/db.py:1341
 #: ../../lib/entropy/security.py:397
 msgid ""
 "Make sure to verify the imported key and set an appropriate trust level"
 msgstr "Ujistěte se, že ověříte importovaný klíč a nastavíte vhodnou úroveň důvěry"
 
-#: ../../lib/entropy/client/interfaces/db.py:1339
+#: ../../lib/entropy/client/interfaces/db.py:1361
 msgid "This repository suports GPG-signed packages"
 msgstr "Repozitář podporuje balíčky podepsané GPG"
 
-#: ../../lib/entropy/client/interfaces/db.py:1346
+#: ../../lib/entropy/client/interfaces/db.py:1368
 msgid "you may want to install GnuPG to take advantage of this feature"
 msgstr "možná chcete nainstalovat GnuPG pro využívání této funkce"
 
-#: ../../lib/entropy/client/interfaces/db.py:1381
+#: ../../lib/entropy/client/interfaces/db.py:1403
 #: ../../lib/entropy/security.py:437
 msgid "GPG key changed for"
 msgstr "Změnil se GPG klíč pro"
 
-#: ../../lib/entropy/client/interfaces/db.py:1401
+#: ../../lib/entropy/client/interfaces/db.py:1423
 #: ../../lib/entropy/security.py:456
 msgid "GPG key already installed for"
 msgstr "Již existuje GPG klíč pro"
 
-#: ../../lib/entropy/client/interfaces/db.py:1414
+#: ../../lib/entropy/client/interfaces/db.py:1436
 msgid "GPG key EXPIRED for repository"
 msgstr "Vypršel GPG klíč repozitáře"
 
-#: ../../lib/entropy/client/interfaces/db.py:1426
+#: ../../lib/entropy/client/interfaces/db.py:1448
 msgid "Installing GPG key for repository"
 msgstr "Instaluji GPG klíč pro repozitář"
 
-#: ../../lib/entropy/client/interfaces/db.py:1444
-#: ../../lib/entropy/client/interfaces/db.py:1477
+#: ../../lib/entropy/client/interfaces/db.py:1466
+#: ../../lib/entropy/client/interfaces/db.py:1499
 #: ../../lib/entropy/security.py:493
 msgid "Error during GPG key installation"
 msgstr "Chyba při instalaci GPG klíče"
 
-#: ../../lib/entropy/client/interfaces/db.py:1454
+#: ../../lib/entropy/client/interfaces/db.py:1476
 msgid "GPG key seems already installed but not properly recorded, resetting"
 msgstr "GPG klíč vypadá nainstalovaný, ale špatně zaznamenaný, nastavuji znovu"
 
-#: ../../lib/entropy/client/interfaces/db.py:1489
+#: ../../lib/entropy/client/interfaces/db.py:1511
 msgid "Successfully installed GPG key for repository"
 msgstr "Úspěšně nainstalován GPG klíč pro repozitář"
 
-#: ../../lib/entropy/client/interfaces/db.py:1498
+#: ../../lib/entropy/client/interfaces/db.py:1520
 #: ../../lib/entropy/security.py:513
 msgid "Fingerprint"
 msgstr "Otisk"
 
-#: ../../lib/entropy/client/interfaces/db.py:1536
+#: ../../lib/entropy/client/interfaces/db.py:1558
 msgid "Verifying GPG signature of"
 msgstr "Ověřuji GPG podpis"
 
-#: ../../lib/entropy/client/interfaces/db.py:1550
+#: ../../lib/entropy/client/interfaces/db.py:1572
 msgid "Verified GPG signature of"
 msgstr "Ověřen GPG podpis"
 
-#: ../../lib/entropy/client/interfaces/db.py:1560
+#: ../../lib/entropy/client/interfaces/db.py:1582
 #: ../../lib/entropy/security.py:541
 msgid "Error during GPG verification of"
 msgstr "Chyba při ověřování GPG"
 
-#: ../../lib/entropy/client/interfaces/db.py:1569
+#: ../../lib/entropy/client/interfaces/db.py:1591
 #: ../../lib/entropy/security.py:550
 msgid "It could mean a potential security risk"
 msgstr "Může znamenat potenciální bezpečnostní riziko"
 
-#: ../../lib/entropy/client/interfaces/db.py:1627
+#: ../../lib/entropy/client/interfaces/db.py:1649
 msgid "Web Service"
 msgstr "Služba webu"
 
-#: ../../lib/entropy/client/interfaces/db.py:1628
+#: ../../lib/entropy/client/interfaces/db.py:1650
 msgid "skipping differential sync"
 msgstr "přeskakuji diferenciální synchronizaci"
 
-#: ../../lib/entropy/client/interfaces/db.py:1629
+#: ../../lib/entropy/client/interfaces/db.py:1651
 msgid "threshold"
 msgstr "Práh"
 
-#: ../../lib/entropy/client/interfaces/db.py:1663
+#: ../../lib/entropy/client/interfaces/db.py:1685
 msgid "Web Service communication error"
 msgstr "Chyba komunikace se službou webu"
 
-#: ../../lib/entropy/client/interfaces/db.py:1683
+#: ../../lib/entropy/client/interfaces/db.py:1705
 msgid "Web Service data error"
 msgstr "Chyba dat služby webu"
 
-#: ../../lib/entropy/client/interfaces/db.py:1699
+#: ../../lib/entropy/client/interfaces/db.py:1721
 msgid "Local status"
 msgstr "Místní stav"
 
-#: ../../lib/entropy/client/interfaces/db.py:1731
+#: ../../lib/entropy/client/interfaces/db.py:1753
 msgid "Fetching segments"
 msgstr "Stahuji segmenty"
 
-#: ../../lib/entropy/client/interfaces/db.py:1767
-#: ../../lib/entropy/client/interfaces/db.py:1786
-#: ../../lib/entropy/client/interfaces/db.py:1803
+#: ../../lib/entropy/client/interfaces/db.py:1789
+#: ../../lib/entropy/client/interfaces/db.py:1808
+#: ../../lib/entropy/client/interfaces/db.py:1825
 msgid "Web Service status"
 msgstr "Stav služby webu"
 
-#: ../../lib/entropy/client/interfaces/db.py:1768
+#: ../../lib/entropy/client/interfaces/db.py:1790
 msgid "cannot fetch repository metadata"
 msgstr "Nelze stáhnout metadata repozitáře"
 
-#: ../../lib/entropy/client/interfaces/db.py:1787
+#: ../../lib/entropy/client/interfaces/db.py:1809
 msgid "cannot update treeupdates data"
 msgstr "nelze aktualizovat data treeupdates"
 
-#: ../../lib/entropy/client/interfaces/db.py:1804
+#: ../../lib/entropy/client/interfaces/db.py:1826
 msgid "cannot update package sets data"
 msgstr "nelze aktualizovat data sad balíčků"
 
-#: ../../lib/entropy/client/interfaces/db.py:1820
+#: ../../lib/entropy/client/interfaces/db.py:1842
 msgid "Fetch error on segment while adding"
 msgstr "Chyba stahování na segmentu při přidávání"
 
-#: ../../lib/entropy/client/interfaces/db.py:1846
+#: ../../lib/entropy/client/interfaces/db.py:1868
 msgid "repository error while adding packages"
 msgstr "chyba repozitáře při přidávání balíčků"
 
-#: ../../lib/entropy/client/interfaces/db.py:1869
+#: ../../lib/entropy/client/interfaces/db.py:1891
 msgid "repository error while removing packages"
 msgstr "chyba repozitáře při odebírání balíčků"
 
-#: ../../lib/entropy/client/interfaces/db.py:1885
+#: ../../lib/entropy/client/interfaces/db.py:1907
 msgid "Repository checksum doesn't match remote."
 msgstr "Kontrolní součet repozitáře nesouhlasí."
 
-#: ../../lib/entropy/client/interfaces/db.py:1888
+#: ../../lib/entropy/client/interfaces/db.py:1910
 msgid "local"
 msgstr "místní"
 
-#: ../../lib/entropy/client/interfaces/db.py:1893
+#: ../../lib/entropy/client/interfaces/db.py:1915
 msgid "remote"
 msgstr "vzdálený"
 
-#: ../../lib/entropy/client/interfaces/db.py:2003
+#: ../../lib/entropy/client/interfaces/db.py:2038
 msgid "repository is already up to date"
 msgstr "repozitář je již aktuální"
 
-#: ../../lib/entropy/client/interfaces/db.py:2016
+#: ../../lib/entropy/client/interfaces/db.py:2051
 msgid "Repository is being updated"
 msgstr "Repozitář se aktualizuje"
 
-#: ../../lib/entropy/client/interfaces/db.py:2017
+#: ../../lib/entropy/client/interfaces/db.py:2052
 msgid "Try again in a few minutes"
 msgstr "Zkuste znovu za pár minut"
 
-#: ../../lib/entropy/client/interfaces/db.py:2213
+#: ../../lib/entropy/client/interfaces/db.py:2248
 msgid "Configuration files update error, not critical, continuing"
 msgstr "Nekritická chyba aktualizace konfiguračních souborů, pokračuji"
 
@@ -927,110 +927,110 @@ msgstr "Synchronizace repozitářů"
 msgid "Checking %s"
 msgstr "Kontroluji %s"
 
-#: ../../lib/entropy/client/interfaces/dep.py:2209
+#: ../../lib/entropy/client/interfaces/dep.py:2225
 msgid "Sorting dependencies"
 msgstr "Řadím závislosti"
 
-#: ../../lib/entropy/client/interfaces/dep.py:2483
+#: ../../lib/entropy/client/interfaces/dep.py:2510
 msgid "Calculating inverse dependencies for"
 msgstr "Zkoumám reverzní závislosti pro"
 
-#: ../../lib/entropy/client/interfaces/dep.py:3203
+#: ../../lib/entropy/client/interfaces/dep.py:3230
 msgid "Calculating updates"
 msgstr "Zkoumám aktualizace"
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:590
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:671
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:604
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:691
 msgid "Mirror"
 msgstr "Zrcadlo"
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:592
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:673
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:606
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:693
 msgid "maximum failure threshold reached"
 msgstr "dosažen maximální počet chyb"
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:643
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:657
 msgid "success"
 msgstr "úspěch"
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:656
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:670
 msgid "Aggregated transfer rate"
 msgstr "Agregovaná rychlost přenosu"
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:659
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:734
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:673
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:754
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:176
 msgid "second"
 msgstr "sekunda"
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:675
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:751
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:689
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:771
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:197
 msgid "Error downloading from"
 msgstr "Chyba stahování z"
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:680
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:694
 msgid "data not available on this mirror"
 msgstr "data nejsou dostupná na zrcadle"
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:683
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:762
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:697
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:782
 msgid "wrong checksum"
 msgstr "špatný kontrolní součet"
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:686
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:774
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:700
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:794
 msgid "not found"
 msgstr "nenalezeno"
 
 #. timeout!
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:689
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:703
 msgid "timeout error"
 msgstr "vypršení časového limitu"
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:692
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:787
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:706
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:807
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:207
 msgid "discarded download"
 msgstr "vyřazené stahování"
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:696
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:790
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:710
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:810
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:210
 msgid "unknown reason"
 msgstr "neznámý důvod"
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:807
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:815
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:824
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:845
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:822
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:830
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:844
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:865
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:151
 #: ../../client/solo/utils.py:276 ../../client/solo/commands/command.py:353
 msgid "Downloading"
 msgstr "Stahuji"
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:809
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:817
-#: ../../client/solo/commands/query.py:1284
-#: ../../client/solo/commands/_manage.py:558
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:824
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:832
+#: ../../client/solo/commands/query.py:1286
+#: ../../client/solo/commands/_manage.py:610
 msgid "package"
 msgid_plural "packages"
 msgstr[0] "balíček"
 msgstr[1] "balíčky"
 msgstr[2] "balíčků"
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:831
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:846
 msgid "Some packages cannot be fetched"
 msgstr "Některé balíčky nelze stáhnout"
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:832
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:847
 msgid "Try to update your repositories and retry"
 msgstr "Zkuste aktualizovat repozitáře a opakujte"
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:845
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:833
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:569
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1263
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:860
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:853
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:580
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1274
 #: ../../lib/entropy/client/interfaces/package/actions/config.py:144
 #: ../../lib/entropy/client/interfaces/package/actions/config.py:164
 #: ../../client/solo/commands/rescue.py:204
@@ -1068,7 +1068,7 @@ msgid "Source Package Manager phase error"
 msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/remove.py:86
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:800
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:811
 msgid "Pre-remove"
 msgstr ""
 
@@ -1081,7 +1081,7 @@ msgid "Removing from Entropy"
 msgstr "Odstraňuji z Entropy"
 
 #: ../../lib/entropy/client/interfaces/package/actions/remove.py:234
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:866
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:877
 msgid "Post-remove"
 msgstr ""
 
@@ -1089,82 +1089,82 @@ msgstr ""
 msgid "An error occurred. Action aborted."
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:702
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:722
 msgid "Downloading from"
 msgstr "Stahuji"
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:728
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:748
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:172
 msgid "Successfully downloaded from"
 msgstr "Úspěšně staženo z"
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:733
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:753
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:174
 msgid "at"
 msgstr "na"
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:758
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:778
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:202
 msgid "file not available on this mirror"
 msgstr "soubor není dostupný na zrcadle"
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:768
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:788
 msgid "Disabling resume"
 msgstr "Zakazuji obnovení"
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:780
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:800
 msgid "timeout, retrying on this mirror"
 msgstr "vypršel časový limit, zkouším na následujícím zrcadle"
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:783
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:803
 msgid "timeout, giving up"
 msgstr "vypršel časový limit, vzdávám se"
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:831
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:851
 msgid "Package cannot be downloaded. Try to update repositories"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1018
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1038
 msgid "Package signature verification error for"
 msgstr "Chyba ověření podpisu balíčku pro"
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1051
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1071
 msgid "disabled"
 msgstr "vypnuto"
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1070
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1090
 msgid "Package signature verification"
 msgstr "Ověřování podpisu balíčku"
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1072
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1092
 msgid "temporarily unavailable"
 msgstr "dočasně nedostupný"
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1084
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1104
 msgid "Package signature"
 msgstr "Podpis balíčku"
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1086
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1106
 msgid "does not match the recorded one"
 msgstr "neshoduje se se zaznamenaným"
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1098
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1118
 msgid "validated"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1108
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1128
 msgid "Checking package checksum..."
 msgstr "Ověřuji kontrolní součet balíčku..."
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1126
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1146
 msgid "Checksum validation error"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1140
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1160
 msgid "Invalid checksum"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1158
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1178
 msgid "Invalid signatures"
 msgstr ""
 
@@ -1233,141 +1233,141 @@ msgstr "Balíček obsahuje špatně kódovaný soubor!"
 msgid "Collision found during removal of"
 msgstr "Nalezena kolize při odebírání"
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:344
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:559
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:355
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:570
 msgid "Unpacking"
 msgstr "Rozbaluji"
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:384
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:395
 msgid "Unpack error"
 msgstr "Chyba rozbalení"
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:416
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:427
 msgid "Unable to find Entropy metadata in package"
 msgstr "Nelze nalézt metadata Entropy v balíčku"
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:455
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:466
 msgid "Unable to unpack package"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:526
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:537
 msgid "Merging"
 msgstr "Slučuji"
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:532
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:543
 msgid "Merging package"
 msgstr "Slučuji balíček"
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:565
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:576
 msgid "An error occurred while trying to unpack the package"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:568
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1262
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:579
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1273
 msgid "Check if your system is healthy"
 msgstr "Ověřte zda je systém v pořádku"
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:651
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:662
 msgid "Setup"
 msgstr "Nastavení"
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:681
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:692
 msgid "Pre-install"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:730
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:744
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:741
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:755
 msgid "Error during package files permissions setup"
 msgstr "Chyba při nastavení práv souborů balíčku"
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:837
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:848
 msgid "Cleaning previously installed application data."
 msgstr "Čistím data od původně nainstalované aplikace."
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:923
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:934
 msgid "Post-install"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:950
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:956
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:961
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:967
 #: ../../client/solo/utils.py:67
 msgid "Cleaning"
 msgstr "Čistím"
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1261
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1272
 msgid "An error occurred while trying to install the package"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1275
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1286
 msgid "Updating installed packages repository"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1307
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1318
 msgid "Installing"
 msgstr "Instaluji"
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1313
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1324
 msgid "Installing package"
 msgstr "Instaluji balíček"
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1335
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1346
 msgid "unsupported splitdebug usage (package files)"
 msgstr "nepodporované použití splitdebug (soubory balíčku)"
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1339
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1350
 msgid "<3 debug files installation enabled <3"
 msgstr "<3 instalace ladících souborů zapnuta <3"
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1437
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1448
 msgid "Collision found during install for"
 msgstr "Nalezena kolize při instalaci"
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1439
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1450
 msgid "QA:"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1441
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1452
 msgid "cannot overwrite"
 msgstr "nelze přepsat"
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1525
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1536
 #, python-format
 msgid "QA: %s is a file when it should be a directory"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1550
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1561
 msgid "File moved"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1572
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1583
 msgid "QA: symlink expected, directory found"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1606
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1617
 msgid "Cannot remove symlink"
 msgstr "Nelze odebrat symbolický odkaz"
 
 #. we can merge it, files, even if
 #. contains changes have not been modified
 #. by the user
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1774
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1795
 msgid "Automerging config file, never modified"
 msgstr "Automaticky slučuji konfigurační soubor, nikdy nebyl měněn"
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1803
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1825
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1824
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1846
 msgid "QA: circular symlink issue"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1865
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1886
 msgid "Fatal: file expected, directory found"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1905
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1926
 msgid "QA: file move error"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1908
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1929
 msgid "please report"
 msgstr "prosím nahlaste"
 
@@ -1397,27 +1397,27 @@ msgstr ""
 msgid "Configuring package"
 msgstr "Nastavuji balíček"
 
-#: ../../lib/entropy/fetchers.py:854
+#: ../../lib/entropy/fetchers.py:888
 msgid "infinite"
 msgstr "neomezeně"
 
-#: ../../lib/entropy/fetchers.py:926
+#: ../../lib/entropy/fetchers.py:960
 msgid "[F]"
 msgstr "[F]"
 
-#: ../../lib/entropy/fetchers.py:927 ../../lib/entropy/fetchers.py:1344
+#: ../../lib/entropy/fetchers.py:961 ../../lib/entropy/fetchers.py:1389
 msgid "ETA"
 msgstr "ETA"
 
-#: ../../lib/entropy/fetchers.py:928 ../../lib/entropy/fetchers.py:1345
+#: ../../lib/entropy/fetchers.py:962 ../../lib/entropy/fetchers.py:1390
 msgid "sec"
 msgstr "s"
 
-#: ../../lib/entropy/fetchers.py:1208
+#: ../../lib/entropy/fetchers.py:1253
 msgid "Aggregated download"
 msgstr "Agregované stahování"
 
-#: ../../lib/entropy/fetchers.py:1210
+#: ../../lib/entropy/fetchers.py:1255
 msgid "item"
 msgid_plural "items"
 msgstr[0] "položka"
@@ -1449,9 +1449,9 @@ msgstr "Bezpečnostní doporučení"
 msgid "GPG key verification successful"
 msgstr "Ověření GPG klíče bylo úspěšné"
 
-#: ../../lib/entropy/security.py:722 ../../client/solo/commands/_manage.py:397
-#: ../../client/solo/commands/_manage.py:430
-#: ../../client/solo/commands/pkg.py:187 ../../client/solo/commands/mask.py:99
+#: ../../lib/entropy/security.py:722 ../../client/solo/commands/_manage.py:418
+#: ../../client/solo/commands/_manage.py:451
+#: ../../client/solo/commands/pkg.py:188 ../../client/solo/commands/mask.py:99
 #: ../../client/solo/commands/mask.py:172
 msgid "Warning"
 msgstr "Varování"
@@ -1602,7 +1602,7 @@ msgstr "Ano"
 #: ../../client/solo/commands/rescue.py:331
 #: ../../client/solo/commands/rescue.py:335
 #: ../../client/solo/commands/rescue.py:342
-#: ../../client/solo/commands/install.py:555
+#: ../../client/solo/commands/install.py:556
 #: ../../client/solo/commands/upgrade.py:300
 #: ../../client/solo/commands/mask.py:161
 msgid "No"
@@ -1620,7 +1620,7 @@ msgstr "Přerušeno"
 msgid "Selected number"
 msgstr "Vybrané číslo"
 
-#: ../../lib/entropy/output.py:893 ../../client/solo/commands/_manage.py:671
+#: ../../lib/entropy/output.py:893 ../../client/solo/commands/_manage.py:723
 msgid "Please select an option"
 msgstr "Prosím vyberte možnost"
 
@@ -1689,107 +1689,103 @@ msgstr "Neplatný prvek"
 msgid "Element number to remove (-1 to go back):"
 msgstr "Číslo prvku k odebrání (-1 krok zpět):"
 
-#: ../../lib/entropy/qa.py:163
+#: ../../lib/entropy/qa.py:164
 msgid "Searching for broken reverse dependencies"
 msgstr "Hledám rozbité reverzní závislosti"
 
-#: ../../lib/entropy/qa.py:180
+#: ../../lib/entropy/qa.py:181
 msgid "scanning for broken reverse dependencies"
 msgstr "prohledávání rozbitých reverzních závislostí"
 
-#: ../../lib/entropy/qa.py:221
+#: ../../lib/entropy/qa.py:222
 msgid "broken libraries detected"
 msgstr "nalezeny rozbité knihovny"
 
-#: ../../lib/entropy/qa.py:232
+#: ../../lib/entropy/qa.py:233
 msgid "needs"
 msgstr "vyžaduje"
 
-#: ../../lib/entropy/qa.py:271
+#: ../../lib/entropy/qa.py:272
 msgid "scanning"
 msgstr "prohledávám"
 
-#: ../../lib/entropy/qa.py:313
+#: ../../lib/entropy/qa.py:314
 msgid "blacklisted dependencies !!!"
 msgstr "závislosti na černé listině"
 
-#: ../../lib/entropy/qa.py:338
+#: ../../lib/entropy/qa.py:339
 msgid "requires libraries"
 msgstr ""
 
-#: ../../lib/entropy/qa.py:356
+#: ../../lib/entropy/qa.py:357
 msgid "library provided by"
 msgstr ""
 
-#: ../../lib/entropy/qa.py:402 ../../lib/entropy/qa.py:629
-msgid "no packages"
-msgstr "žádné balíčky"
-
-#: ../../lib/entropy/qa.py:431
-msgid "is potentially missing these dependencies"
-msgstr "pravděpodobně chybí v závislostech"
-
-#: ../../lib/entropy/qa.py:568
+#: ../../lib/entropy/qa.py:429
 msgid "determining missing libraries"
 msgstr "zjišťuji chybějící knihovny"
 
-#: ../../lib/entropy/qa.py:600
+#: ../../lib/entropy/qa.py:473
 msgid "requires"
 msgstr "vyžaduje"
 
-#: ../../lib/entropy/qa.py:617 ../../lib/entropy/qa.py:628
+#: ../../lib/entropy/qa.py:489 ../../lib/entropy/qa.py:500
 msgid "provided by"
 msgstr "poskytováno"
 
-#: ../../lib/entropy/qa.py:641
+#: ../../lib/entropy/qa.py:501
+msgid "no packages"
+msgstr "žádné balíčky"
+
+#: ../../lib/entropy/qa.py:513
 msgid "no missing runtime libraries found"
 msgstr "nenalezeny žádné chybějící knihovny"
 
-#: ../../lib/entropy/qa.py:677
+#: ../../lib/entropy/qa.py:549
 msgid "Libraries test"
 msgstr "Test knihoven"
 
-#: ../../lib/entropy/qa.py:692
+#: ../../lib/entropy/qa.py:564
 msgid "Broken symbols packages list"
 msgstr "Seznam balíčků s rozbitými symboly"
 
-#: ../../lib/entropy/qa.py:693
+#: ../../lib/entropy/qa.py:565
 msgid "Broken executables list"
 msgstr "Seznam rozbitých spustitelných souborů"
 
-#: ../../lib/entropy/qa.py:695
+#: ../../lib/entropy/qa.py:567
 msgid "Dumping results into these files"
 msgstr "Vkládám výsledky do souborů"
 
-#: ../../lib/entropy/qa.py:775
+#: ../../lib/entropy/qa.py:644
 msgid "discarding directory"
 msgstr "zahazuji adresář"
 
-#: ../../lib/entropy/qa.py:777
+#: ../../lib/entropy/qa.py:646
 msgid "because it's symlinked on"
 msgstr "protože je symbolickým odkazem na"
 
-#: ../../lib/entropy/qa.py:827
+#: ../../lib/entropy/qa.py:696
 msgid "Collecting broken executables"
 msgstr "Sbírám rozbité spustitelné soubory"
 
-#: ../../lib/entropy/qa.py:833
+#: ../../lib/entropy/qa.py:702
 msgid "don't worry about libraries that are shown here but not later."
 msgstr "nestarejte se o zde vypsané knihovny, které se nevypíší později."
 
-#: ../../lib/entropy/qa.py:854
+#: ../../lib/entropy/qa.py:723
 msgid "Scanning libraries"
 msgstr "Prohledávám knihovny"
 
-#: ../../lib/entropy/qa.py:964
+#: ../../lib/entropy/qa.py:837
 msgid "various broken symbols"
 msgstr "různé rozbité symboly"
 
-#: ../../lib/entropy/qa.py:1003
+#: ../../lib/entropy/qa.py:876
 msgid "Matching broken libraries/executables"
 msgstr "Vyhledávám odpovídající rozbité binární soubory/knihovny"
 
-#: ../../lib/entropy/qa.py:1769
+#: ../../lib/entropy/qa.py:1677
 msgid "Not prepared yet"
 msgstr "Ještě nepřipraveno"
 
@@ -1826,7 +1822,7 @@ msgstr "Nenainstalován"
 
 #: ../../client/solo/utils.py:400 ../../client/solo/commands/query.py:467
 #: ../../client/solo/commands/query.py:716
-#: ../../client/solo/commands/query.py:1040
+#: ../../client/solo/commands/query.py:1042
 msgid "Package"
 msgstr "Balíček"
 
@@ -1906,7 +1902,7 @@ msgstr "Konflikty"
 msgid "Homepage"
 msgstr "Domovská stránka"
 
-#: ../../client/solo/utils.py:525 ../../client/solo/commands/security.py:228
+#: ../../client/solo/utils.py:525 ../../client/solo/commands/security.py:231
 #: ../../client/solo/commands/ugc.py:627
 msgid "Description"
 msgstr "Popis"
@@ -1949,7 +1945,7 @@ msgstr "Klíčová slova"
 msgid "Created"
 msgstr "Vytvořeno"
 
-#: ../../client/solo/utils.py:592 ../../client/solo/commands/_manage.py:730
+#: ../../client/solo/utils.py:592 ../../client/solo/commands/_manage.py:786
 msgid "License"
 msgstr "Licence"
 
@@ -1961,7 +1957,7 @@ msgstr "Vytvářím reverzní graf nainstalovaného balíčku"
 #: ../../client/solo/commands/config.py:119
 #: ../../client/solo/commands/remove.py:323
 #: ../../client/solo/commands/source.py:164
-#: ../../client/solo/commands/install.py:531
+#: ../../client/solo/commands/install.py:532
 #: ../../client/solo/commands/download.py:164
 #: ../../client/solo/commands/mask.py:118
 msgid "No packages found"
@@ -2097,7 +2093,7 @@ msgid "bow to lxnay"
 msgstr ""
 
 #: ../../client/solo/commands/query.py:72
-#: ../../client/solo/commands/query.py:1598
+#: ../../client/solo/commands/query.py:1600
 msgid "repository query tools"
 msgstr "nástroje dotazování k repozitáři"
 
@@ -2109,7 +2105,7 @@ msgstr "nástroje dotazování k repozitáři"
 #: ../../client/solo/commands/ugc.py:105 ../../client/solo/commands/ugc.py:146
 #: ../../client/solo/commands/repo.py:68
 #: ../../client/solo/commands/rescue.py:72
-#: ../../client/solo/commands/pkg.py:72
+#: ../../client/solo/commands/pkg.py:73
 #: ../../client/solo/commands/preservedlibs.py:68 ../kernel-switcher:49
 msgid "available commands"
 msgstr "dostupné příkazy"
@@ -2289,10 +2285,10 @@ msgstr ""
 #: ../../client/solo/commands/query.py:674
 #: ../../client/solo/commands/query.py:782
 #: ../../client/solo/commands/query.py:971
-#: ../../client/solo/commands/query.py:1342
-#: ../../client/solo/commands/query.py:1400
-#: ../../client/solo/commands/query.py:1463
-#: ../../client/solo/commands/query.py:1511
+#: ../../client/solo/commands/query.py:1344
+#: ../../client/solo/commands/query.py:1402
+#: ../../client/solo/commands/query.py:1465
+#: ../../client/solo/commands/query.py:1513
 #: ../../client/solo/commands/search.py:184
 #: ../../client/solo/commands/match.py:240
 msgid "entry"
@@ -2306,10 +2302,10 @@ msgstr[2] "záznamů"
 #: ../../client/solo/commands/query.py:671
 #: ../../client/solo/commands/query.py:785
 #: ../../client/solo/commands/query.py:974
-#: ../../client/solo/commands/query.py:1343
-#: ../../client/solo/commands/query.py:1402
-#: ../../client/solo/commands/query.py:1465
-#: ../../client/solo/commands/query.py:1513
+#: ../../client/solo/commands/query.py:1345
+#: ../../client/solo/commands/query.py:1404
+#: ../../client/solo/commands/query.py:1467
+#: ../../client/solo/commands/query.py:1515
 msgid "Keyword"
 msgstr "Klíčové slovo"
 
@@ -2319,12 +2315,12 @@ msgstr "Klíčové slovo"
 #: ../../client/solo/commands/query.py:717
 #: ../../client/solo/commands/query.py:788
 #: ../../client/solo/commands/query.py:976
-#: ../../client/solo/commands/query.py:1041
-#: ../../client/solo/commands/query.py:1290
-#: ../../client/solo/commands/query.py:1344
-#: ../../client/solo/commands/query.py:1405
-#: ../../client/solo/commands/query.py:1468
-#: ../../client/solo/commands/query.py:1516
+#: ../../client/solo/commands/query.py:1043
+#: ../../client/solo/commands/query.py:1292
+#: ../../client/solo/commands/query.py:1346
+#: ../../client/solo/commands/query.py:1407
+#: ../../client/solo/commands/query.py:1470
+#: ../../client/solo/commands/query.py:1518
 #: ../../client/solo/commands/search.py:182
 #: ../../client/solo/commands/match.py:238
 msgid "Found"
@@ -2374,10 +2370,10 @@ msgstr "Hledat popis"
 #: ../../client/solo/commands/query.py:795
 #: ../../client/solo/commands/query.py:854
 #: ../../client/solo/commands/query.py:985
-#: ../../client/solo/commands/query.py:1350
-#: ../../client/solo/commands/query.py:1413
-#: ../../client/solo/commands/query.py:1476
-#: ../../client/solo/commands/query.py:1524
+#: ../../client/solo/commands/query.py:1352
+#: ../../client/solo/commands/query.py:1415
+#: ../../client/solo/commands/query.py:1478
+#: ../../client/solo/commands/query.py:1526
 msgid "No matches"
 msgstr "Žádná shoda"
 
@@ -2409,106 +2405,106 @@ msgstr ""
 msgid "Needed Libraries Search"
 msgstr ""
 
-#: ../../client/solo/commands/query.py:1042
+#: ../../client/solo/commands/query.py:1044
 msgid "libraries"
 msgstr "knihovny"
 
-#: ../../client/solo/commands/query.py:1058
+#: ../../client/solo/commands/query.py:1060
 msgid "Orphans Search"
 msgstr "Hledat sirotky"
 
-#: ../../client/solo/commands/query.py:1126
+#: ../../client/solo/commands/query.py:1128
 msgid "Analyzing"
 msgstr "Kontroluji"
 
-#: ../../client/solo/commands/query.py:1140
+#: ../../client/solo/commands/query.py:1142
 msgid "Analyzed directories"
 msgstr "Zkontrolované adresáře"
 
-#: ../../client/solo/commands/query.py:1145
+#: ../../client/solo/commands/query.py:1147
 msgid "Masked directories"
 msgstr "Maskované adresáře"
 
-#: ../../client/solo/commands/query.py:1150
+#: ../../client/solo/commands/query.py:1152
 msgid "Number of files collected on the filesystem"
 msgstr "Počet souborů nasbíraných na souborovém systému"
 
-#: ../../client/solo/commands/query.py:1155
+#: ../../client/solo/commands/query.py:1157
 msgid "Now searching among installed packages"
 msgstr ""
 
-#: ../../client/solo/commands/query.py:1186
+#: ../../client/solo/commands/query.py:1188
 msgid "Checking"
 msgstr "Kontroluji"
 
-#: ../../client/solo/commands/query.py:1201
+#: ../../client/solo/commands/query.py:1203
 msgid "Number of total files"
 msgstr "Celkový počet souborů"
 
-#: ../../client/solo/commands/query.py:1207
+#: ../../client/solo/commands/query.py:1209
 msgid "Number of matching files"
 msgstr "Počet odpovídajících souborů"
 
-#: ../../client/solo/commands/query.py:1214
+#: ../../client/solo/commands/query.py:1216
 msgid "Number of orphaned files"
 msgstr "Počet osiřelých souborů"
 
-#: ../../client/solo/commands/query.py:1220
+#: ../../client/solo/commands/query.py:1222
 msgid "Writing file to disk"
 msgstr "Zapisuji soubor na disk"
 
-#: ../../client/solo/commands/query.py:1250
+#: ../../client/solo/commands/query.py:1252
 msgid "Total space wasted"
 msgstr "Celkem zbytečně využitého místa"
 
-#: ../../client/solo/commands/query.py:1268
+#: ../../client/solo/commands/query.py:1270
 msgid "Required Packages Search"
 msgstr ""
 
-#: ../../client/solo/commands/query.py:1286
+#: ../../client/solo/commands/query.py:1288
 msgid "Library"
 msgstr "Knihovna"
 
-#: ../../client/solo/commands/query.py:1310
+#: ../../client/solo/commands/query.py:1312
 msgid "Package Set Search"
 msgstr "Hledání v sadách balíčků"
 
-#: ../../client/solo/commands/query.py:1366
+#: ../../client/solo/commands/query.py:1368
 msgid "Slot Search"
 msgstr "Hledat slot"
 
-#: ../../client/solo/commands/query.py:1429
+#: ../../client/solo/commands/query.py:1431
 msgid "Tag Search"
 msgstr "Hledat značku"
 
-#: ../../client/solo/commands/query.py:1492
+#: ../../client/solo/commands/query.py:1494
 msgid "Revision Search"
 msgstr "Hledat revizi"
 
-#: ../../client/solo/commands/query.py:1562
+#: ../../client/solo/commands/query.py:1564
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:2
 msgid "Available Updates"
 msgstr "Dostupné aktualizace"
 
-#: ../../client/solo/commands/query.py:1577
+#: ../../client/solo/commands/query.py:1579
 msgid "Packages to update:"
 msgstr "Balíčky k aktualizaci:"
 
-#: ../../client/solo/commands/query.py:1580
+#: ../../client/solo/commands/query.py:1582
 msgid "Packages to remove:"
 msgstr "Balíčky k odebrání:"
 
-#: ../../client/solo/commands/query.py:1584
+#: ../../client/solo/commands/query.py:1586
 msgid "Packages already up-to-date:"
 msgstr "Balíčky jsou již aktuální."
 
-#: ../../client/solo/commands/query.py:1587
+#: ../../client/solo/commands/query.py:1589
 msgid "Critical updates found:"
 msgstr ""
 
 #: ../../client/solo/commands/config.py:63
-#: ../../client/solo/commands/security.py:90
-#: ../../client/solo/commands/security.py:162
+#: ../../client/solo/commands/security.py:93
+#: ../../client/solo/commands/security.py:165
 #: ../../client/solo/commands/remove.py:68
 #: ../../client/solo/commands/deptest.py:61
 #: ../../client/solo/commands/source.py:62
@@ -2522,8 +2518,8 @@ msgid "ask before making any changes"
 msgstr "dotázat se před provedením libovolných změn"
 
 #: ../../client/solo/commands/config.py:69
-#: ../../client/solo/commands/security.py:93
-#: ../../client/solo/commands/security.py:165
+#: ../../client/solo/commands/security.py:96
+#: ../../client/solo/commands/security.py:168
 #: ../../client/solo/commands/remove.py:75
 #: ../../client/solo/commands/source.py:69
 #: ../../client/solo/commands/rescue.py:86
@@ -2565,7 +2561,7 @@ msgid "Packages involved"
 msgstr "Zapojené balíčky"
 
 #: ../../client/solo/commands/config.py:151
-#: ../../client/solo/commands/install.py:554
+#: ../../client/solo/commands/install.py:555
 msgid "Would you like to continue ?"
 msgstr "Přejete si pokračovat?"
 
@@ -2683,7 +2679,7 @@ msgstr "Nástěnka oznámení"
 
 #. title
 #: ../../client/solo/commands/update.py:286
-#: ../../client/solo/commands/security.py:223
+#: ../../client/solo/commands/security.py:226
 #: ../../client/solo/commands/ugc.py:361 ../../client/solo/commands/ugc.py:620
 #: ../../client/solo/commands/notice.py:152
 #: ../../client/solo/commands/notice.py:189
@@ -2695,7 +2691,7 @@ msgid "update repositories"
 msgstr "aktualizovat repozitáře"
 
 #: ../../client/solo/commands/security.py:68
-#: ../../client/solo/commands/security.py:660
+#: ../../client/solo/commands/security.py:672
 msgid "system security tools"
 msgstr "nástroje zabezpečení systému"
 
@@ -2704,161 +2700,165 @@ msgid "verify installed files using stored checksums"
 msgstr "ověřit nainstalované soubory pomocí uložených kontrolních součtů"
 
 #: ../../client/solo/commands/security.py:77
+msgid "name of package to check"
+msgstr ""
+
+#: ../../client/solo/commands/security.py:80
 msgid "consider mtime instead of SHA256 (false positives ahead)"
 msgstr "brát v potaz mtime místo SHA256 (může způsobit falešnou detekci)"
 
-#: ../../client/solo/commands/security.py:81
+#: ../../client/solo/commands/security.py:84
 msgid "update hashes and mtime (useful after editing config files)"
 msgstr "aktualizovat otisky a mtime (užitečné po editaci konfiguračních souborů)"
 
-#: ../../client/solo/commands/security.py:85
+#: ../../client/solo/commands/security.py:88
 msgid "reinstall faulty packages"
 msgstr "přeinstalovat narušené balíčky"
 
-#: ../../client/solo/commands/security.py:96
-#: ../../client/solo/commands/security.py:168
+#: ../../client/solo/commands/security.py:99
+#: ../../client/solo/commands/security.py:171
 #: ../../client/solo/commands/install.py:99
 #: ../../client/solo/commands/upgrade.py:94
 msgid "just download packages"
 msgstr "pouze stáhnout balíčky"
 
-#: ../../client/solo/commands/security.py:112
+#: ../../client/solo/commands/security.py:115
 msgid "download the latest Security Advisories"
 msgstr "stáhnout nejnovější bezpečnostní doporučení"
 
-#: ../../client/solo/commands/security.py:116
+#: ../../client/solo/commands/security.py:119
 msgid "force download"
 msgstr "vynutit stažení"
 
-#: ../../client/solo/commands/security.py:125
+#: ../../client/solo/commands/security.py:128
 msgid "list all the available Security Advisories"
 msgstr "vypsat všechna dostupná bezpečnostní doporučení"
 
-#: ../../client/solo/commands/security.py:131
+#: ../../client/solo/commands/security.py:134
 msgid "list only affected"
 msgstr "vypsat pouze ovlivněné"
 
-#: ../../client/solo/commands/security.py:134
+#: ../../client/solo/commands/security.py:137
 msgid "list only unaffected"
 msgstr "vypsat pouze neovlivněné"
 
-#: ../../client/solo/commands/security.py:143
+#: ../../client/solo/commands/security.py:146
 msgid "show information about provided advisories identifiers"
 msgstr "zobrazit informace o poskytnutých doporučeních"
 
-#: ../../client/solo/commands/security.py:148
+#: ../../client/solo/commands/security.py:151
 msgid "advisory indentifier"
 msgstr "identifikátor doporučení"
 
-#: ../../client/solo/commands/security.py:155
+#: ../../client/solo/commands/security.py:158
 msgid "automatically install all the available security updates"
 msgstr "automaticky instalovat všechny dostupné bezpečnostní aktualizace"
 
-#: ../../client/solo/commands/security.py:219
+#: ../../client/solo/commands/security.py:222
 msgid "Advisory Identifier"
 msgstr "Identifikátor doporučení"
 
-#: ../../client/solo/commands/security.py:251
+#: ../../client/solo/commands/security.py:254
 msgid "Background"
 msgstr "Pozadí"
 
-#: ../../client/solo/commands/security.py:258
+#: ../../client/solo/commands/security.py:261
 msgid "Exploitable"
 msgstr "Zneužitelné"
 
-#: ../../client/solo/commands/security.py:264
+#: ../../client/solo/commands/security.py:267
 msgid "Impact"
 msgstr "Dopad"
 
-#: ../../client/solo/commands/security.py:271
+#: ../../client/solo/commands/security.py:274
 msgid "Impact type"
 msgstr "Typ dopadu"
 
-#: ../../client/solo/commands/security.py:276
+#: ../../client/solo/commands/security.py:279
 msgid "Revised"
 msgstr "Revidované"
 
-#: ../../client/solo/commands/security.py:281
+#: ../../client/solo/commands/security.py:284
 msgid "Announced"
 msgstr "Oznámeno"
 
-#: ../../client/solo/commands/security.py:286
+#: ../../client/solo/commands/security.py:289
 msgid "Synopsis"
 msgstr "Přehled"
 
-#: ../../client/solo/commands/security.py:293
+#: ../../client/solo/commands/security.py:296
 msgid "References"
 msgstr "Odkazy"
 
-#: ../../client/solo/commands/security.py:299
+#: ../../client/solo/commands/security.py:302
 msgid "Upstream bugs"
 msgstr "Chyby upstreamu"
 
-#: ../../client/solo/commands/security.py:305
+#: ../../client/solo/commands/security.py:308
 msgid "Affected"
 msgstr "Dotčené"
 
-#: ../../client/solo/commands/security.py:313
+#: ../../client/solo/commands/security.py:316
 msgid "vulnerable versions"
 msgstr "zranitelné verze"
 
-#: ../../client/solo/commands/security.py:316
+#: ../../client/solo/commands/security.py:319
 msgid "unaffected versions"
 msgstr "nedotčené verze"
 
-#: ../../client/solo/commands/security.py:321
+#: ../../client/solo/commands/security.py:324
 msgid "Workaround"
 msgstr "Dočasné řešení"
 
-#: ../../client/solo/commands/security.py:328
+#: ../../client/solo/commands/security.py:331
 msgid "Resolution"
 msgstr "Rozlišení"
 
-#: ../../client/solo/commands/security.py:367
+#: ../../client/solo/commands/security.py:370
 msgid "no checksum information"
 msgstr "žádné informace o kontrolním součtu"
 
-#: ../../client/solo/commands/security.py:416
+#: ../../client/solo/commands/security.py:419
 msgid "found altered files"
 msgstr "nalezeny pozměněné soubory"
 
-#: ../../client/solo/commands/security.py:435
+#: ../../client/solo/commands/security.py:438
 msgid "assimilated new hashes and mtime"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:446
+#: ../../client/solo/commands/security.py:449
 msgid "unavailable"
 msgstr "nedostupné"
 
-#: ../../client/solo/commands/security.py:468
+#: ../../client/solo/commands/security.py:472
 msgid "Checking system files"
 msgstr "Kontroluji systémové soubory"
 
-#: ../../client/solo/commands/security.py:479
+#: ../../client/solo/commands/security.py:491
 msgid "No altered files found"
 msgstr "Nenalezeny změněné soubory"
 
-#: ../../client/solo/commands/security.py:505
+#: ../../client/solo/commands/security.py:517
 msgid "Altered files have been found"
 msgstr "Byly nalezeny změněné soubory"
 
-#: ../../client/solo/commands/security.py:509
+#: ../../client/solo/commands/security.py:521
 msgid "Packages have been reinstalled successfully"
 msgstr "Balíčky byly úspěšně znovu nainstalovány"
 
-#: ../../client/solo/commands/security.py:540
+#: ../../client/solo/commands/security.py:552
 msgid "No advisories available or applicable"
 msgstr "Žádná dostupná, či použitelná doporučení"
 
-#: ../../client/solo/commands/security.py:594
+#: ../../client/solo/commands/security.py:606
 msgid "Advisory does not exist"
 msgstr "Doporučení neexistuje"
 
-#: ../../client/solo/commands/security.py:618
+#: ../../client/solo/commands/security.py:630
 msgid "Calculating security updates"
 msgstr "Zkoumám bezpečnostní aktualizace"
 
-#: ../../client/solo/commands/security.py:643
+#: ../../client/solo/commands/security.py:655
 msgid "All the available updates have been already installed"
 msgstr "Všechny dostupné aktualizace jsou již nainstalovány"
 
@@ -3197,7 +3197,7 @@ msgstr "vyhledat balíčky v repozitářích"
 
 #: ../../client/solo/commands/deptest.py:64
 #: ../../client/solo/commands/libtest.py:67
-#: ../../client/solo/commands/unused.py:66
+#: ../../client/solo/commands/unused.py:68
 msgid "show less details (useful for scripting)"
 msgstr "zobrazit méně podrobností (užitečné pro skriptování)"
 
@@ -3245,7 +3245,7 @@ msgid "not a valid directory"
 msgstr "není platným adresářem"
 
 #: ../../client/solo/commands/command.py:142
-#: ../../client/solo/commands/pkg.py:79
+#: ../../client/solo/commands/pkg.py:80
 msgid "not a valid Entropy package file"
 msgstr "není platným balíčkem Entropy"
 
@@ -3792,7 +3792,7 @@ msgstr "uložit soubory do aktuálního pracovního adresáře"
 
 #: ../../client/solo/commands/source.py:176
 #: ../../client/solo/commands/rescue.py:637
-#: ../../client/solo/commands/install.py:544
+#: ../../client/solo/commands/install.py:545
 #: ../../client/solo/commands/download.py:176
 msgid "Nothing to do"
 msgstr "Nic k provedení"
@@ -3920,95 +3920,107 @@ msgid "package needed by"
 msgstr "balíček je vyžadován pro"
 
 #: ../../client/solo/commands/_manage.py:322
-#: ../../client/solo/commands/_manage.py:740
+#: ../../client/solo/commands/_manage.py:796
 #: ../../client/solo/commands/install.py:391
 msgid "from"
 msgstr "z"
 
-#: ../../client/solo/commands/_manage.py:400
+#: ../../client/solo/commands/_manage.py:421
 msgid "Skipped"
 msgstr "Přeskočeno"
 
-#: ../../client/solo/commands/_manage.py:432
+#: ../../client/solo/commands/_manage.py:453
 msgid "is not installed"
 msgstr "není nainstalován"
 
-#: ../../client/solo/commands/_manage.py:460
+#: ../../client/solo/commands/_manage.py:481
 msgid "Calculating dependencies"
 msgstr "Zkoumám závislosti"
 
-#: ../../client/solo/commands/_manage.py:472
+#: ../../client/solo/commands/_manage.py:493
 msgid "Dependencies not found"
 msgstr "Závislosti nenalezeny"
 
-#: ../../client/solo/commands/_manage.py:483
+#: ../../client/solo/commands/_manage.py:504
 msgid "Conflicting packages were pulled in"
 msgstr "Byly vtaženy konfliktní balíčky"
 
-#: ../../client/solo/commands/_manage.py:499
+#: ../../client/solo/commands/_manage.py:524
+#: ../../client/solo/commands/_manage.py:540
+msgid "required by"
+msgstr ""
+
+#. Conflicting dependencies could have been
+#. specified by user, in which case they were
+#. not pulled in by anything.
+#: ../../client/solo/commands/_manage.py:528
+msgid "(no reverse dependencies)"
+msgstr ""
+
+#: ../../client/solo/commands/_manage.py:551
 msgid "Please mask conflicts using"
 msgstr "Prosím zamaskujte konflikty použitím"
 
-#: ../../client/solo/commands/_manage.py:551
-#: ../../client/solo/commands/_manage.py:594
+#: ../../client/solo/commands/_manage.py:603
+#: ../../client/solo/commands/_manage.py:646
 msgid "download"
 msgstr "stahování"
 
-#: ../../client/solo/commands/_manage.py:620
+#: ../../client/solo/commands/_manage.py:672
 msgid "Repositories are old, please run:"
 msgstr "Repozitáře jsou zastaralé, prosím spusťte:"
 
-#: ../../client/solo/commands/_manage.py:644
+#: ../../client/solo/commands/_manage.py:696
 msgid "Please update the following critical packages"
 msgstr "Prosím aktualizujte následující kritické balíčky"
 
-#: ../../client/solo/commands/_manage.py:655
+#: ../../client/solo/commands/_manage.py:707
 msgid "You should install them as soon as possible"
 msgstr "Měl byste je nainstalovat co nejdříve"
 
-#: ../../client/solo/commands/_manage.py:676
+#: ../../client/solo/commands/_manage.py:728
 msgid "Read the license"
 msgstr "Přečíst licenci"
 
-#: ../../client/solo/commands/_manage.py:681
+#: ../../client/solo/commands/_manage.py:733
 msgid "Accept the license (I've read it)"
 msgstr "Přijmout licenci (četl jsem ji)"
 
-#: ../../client/solo/commands/_manage.py:686
+#: ../../client/solo/commands/_manage.py:738
 msgid "Accept the license and don't ask anymore (I've read it)"
 msgstr "Přijmout licenci a znovu se neptat (četl jsem ji)"
 
-#: ../../client/solo/commands/_manage.py:690
+#: ../../client/solo/commands/_manage.py:742
 msgid "Quit"
 msgstr "Zavřít"
 
-#: ../../client/solo/commands/_manage.py:697
+#: ../../client/solo/commands/_manage.py:749
 msgid "Your choice (type a number and press enter)"
 msgstr "Vaše volba (zadejte číslo a stiskněte klávesu enter)"
 
-#: ../../client/solo/commands/_manage.py:724
+#: ../../client/solo/commands/_manage.py:780
 msgid "You need to accept the licenses below"
 msgstr "Musíte přijmout následující licence"
 
-#: ../../client/solo/commands/_manage.py:732
+#: ../../client/solo/commands/_manage.py:788
 #: ../../client/solo/commands/preservedlibs.py:142
 msgid "needed by"
 msgstr "požadována"
 
-#: ../../client/solo/commands/_manage.py:772
+#: ../../client/solo/commands/_manage.py:833
 msgid "No license data available"
 msgstr "Nejsou dostupná žádná licenční data"
 
-#: ../../client/solo/commands/_manage.py:783
+#: ../../client/solo/commands/_manage.py:844
 msgid "No file viewer"
 msgstr "Žádný prohlížeč souborů"
 
-#: ../../client/solo/commands/_manage.py:784
+#: ../../client/solo/commands/_manage.py:845
 msgid "License saved into"
 msgstr "Licence uložena do"
 
 #: ../../client/solo/commands/rescue.py:71
-#: ../../client/solo/commands/pkg.py:71 ../../client/solo/commands/pkg.py:455
+#: ../../client/solo/commands/pkg.py:72 ../../client/solo/commands/pkg.py:461
 msgid "execute advanced tasks on packages"
 msgstr "vykonat pokročilé úlohy nad balíčky"
 
@@ -4319,19 +4331,19 @@ msgstr "volného místa"
 msgid "You don't have enough space for the installation. Free some space into"
 msgstr "Nemáte dostatek místa na disku pro instalaci. Uvolněte nějaké místo v"
 
-#: ../../client/solo/commands/install.py:586
+#: ../../client/solo/commands/install.py:587
 msgid "Download complete"
 msgstr "Stahování dokončeno"
 
-#: ../../client/solo/commands/install.py:635
+#: ../../client/solo/commands/install.py:636
 msgid "install"
 msgstr "instalovat"
 
-#: ../../client/solo/commands/install.py:663
+#: ../../client/solo/commands/install.py:664
 msgid "Installation complete"
 msgstr "Instalace dokončena"
 
-#: ../../client/solo/commands/install.py:672
+#: ../../client/solo/commands/install.py:673
 msgid "install or update packages or package files"
 msgstr "instalovat, či aktualizovat balíčky, nebo soubory balíčků"
 
@@ -4401,101 +4413,100 @@ msgstr "Existuje více aktualizací k instalaci, znovu načítám Entropy"
 msgid "upgrade the system"
 msgstr "aktualizovat systém"
 
-#: ../../client/solo/commands/pkg.py:86
+#: ../../client/solo/commands/pkg.py:87
 msgid "generate packages from the installed system"
 msgstr "generovat balíčky z nainstalovaného systému"
 
-#: ../../client/solo/commands/pkg.py:90
+#: ../../client/solo/commands/pkg.py:91
 msgid "installed package name"
 msgstr "název nainstalovaného balíčku"
 
-#: ../../client/solo/commands/pkg.py:95 ../../client/solo/commands/pkg.py:111
-#: ../../client/solo/commands/pkg.py:127 ../../client/solo/commands/pkg.py:143
+#: ../../client/solo/commands/pkg.py:96 ../../client/solo/commands/pkg.py:112
+#: ../../client/solo/commands/pkg.py:128 ../../client/solo/commands/pkg.py:144
 msgid "destination directory where to save generated packages"
 msgstr "cílový adresář pro uložení generovaných balíčků"
 
-#: ../../client/solo/commands/pkg.py:101
+#: ../../client/solo/commands/pkg.py:102
 msgid "transform SPM package files into Entropy ones"
 msgstr "převést balíčky SZB na balíčky Entropy"
 
-#: ../../client/solo/commands/pkg.py:106
+#: ../../client/solo/commands/pkg.py:107
 msgid "SPM package file path"
 msgstr ""
 
-#: ../../client/solo/commands/pkg.py:117
+#: ../../client/solo/commands/pkg.py:118
 msgid "transform Entropy package files into SPM ones"
 msgstr "převést balíčky Entropy na balíčky SZB"
 
-#: ../../client/solo/commands/pkg.py:122 ../../client/solo/commands/pkg.py:138
+#: ../../client/solo/commands/pkg.py:123 ../../client/solo/commands/pkg.py:139
 msgid "Entropy package file path"
 msgstr ""
 
-#: ../../client/solo/commands/pkg.py:133
+#: ../../client/solo/commands/pkg.py:134
 msgid "extract Entropy metadata from Entropy packages"
 msgstr "extrahovat metadata Entropy z balíčků Entropy"
 
-#: ../../client/solo/commands/pkg.py:219 ../../client/solo/commands/pkg.py:271
-#: ../../client/solo/commands/pkg.py:369 ../../client/solo/commands/pkg.py:417
+#: ../../client/solo/commands/pkg.py:220 ../../client/solo/commands/pkg.py:272
+#: ../../client/solo/commands/pkg.py:375 ../../client/solo/commands/pkg.py:423
 msgid "broken directory path"
 msgstr "špatná cesta k adresáři"
 
-#: ../../client/solo/commands/pkg.py:232
+#: ../../client/solo/commands/pkg.py:233
 msgid "generating package"
 msgstr "vytvářím balíček"
 
-#: ../../client/solo/commands/pkg.py:242
+#: ../../client/solo/commands/pkg.py:243
 msgid "package file creation error"
 msgstr "chyba vytváření balíčku"
 
-#: ../../client/solo/commands/pkg.py:250
+#: ../../client/solo/commands/pkg.py:251
 msgid "package generated"
 msgstr "balíček vytvořen"
 
-#: ../../client/solo/commands/pkg.py:280 ../../client/solo/commands/pkg.py:376
-#: ../../client/solo/commands/pkg.py:424
+#: ../../client/solo/commands/pkg.py:281 ../../client/solo/commands/pkg.py:382
+#: ../../client/solo/commands/pkg.py:430
 msgid "working on package file"
 msgstr ""
 
-#: ../../client/solo/commands/pkg.py:293
+#: ../../client/solo/commands/pkg.py:294
 msgid "package file extraction complete"
 msgstr "extrakce souborů balíčku dokončeno"
 
-#: ../../client/solo/commands/pkg.py:337
+#: ../../client/solo/commands/pkg.py:343
 msgid "package metadata generation complete"
 msgstr "generování metadat balíčku dokončeno"
 
-#: ../../client/solo/commands/pkg.py:348
+#: ../../client/solo/commands/pkg.py:354
 msgid "package file generated at"
 msgstr "soubor balíčku vytvořen v"
 
-#: ../../client/solo/commands/pkg.py:388 ../../client/solo/commands/pkg.py:437
+#: ../../client/solo/commands/pkg.py:394 ../../client/solo/commands/pkg.py:443
 msgid "error during metadata extraction"
 msgstr "chyba při extrakci metadat"
 
-#: ../../client/solo/commands/pkg.py:396
+#: ../../client/solo/commands/pkg.py:402
 msgid "package file generated"
 msgstr ""
 
-#: ../../client/solo/commands/pkg.py:445
+#: ../../client/solo/commands/pkg.py:451
 msgid "metadata file generated"
 msgstr "soubor metadat vytvořen"
 
-#: ../../client/solo/commands/unused.py:72
+#: ../../client/solo/commands/unused.py:74
 msgid "sort packages by size"
 msgstr "seřadit balíčky dle velikosti"
 
-#: ../../client/solo/commands/unused.py:77
-msgid "include packages installed by user"
-msgstr "vložit balíčky nainstalované uživatelem"
-
-#: ../../client/solo/commands/unused.py:117
-msgid ""
-"Running unused packages test, pay attention, there can be false positives"
+#: ../../client/solo/commands/unused.py:79
+msgid "consider packages installed with a Source Package Manager to be wanted"
 msgstr ""
 
-#: ../../client/solo/commands/unused.py:164
-msgid "look for unused packages (pay attention)"
-msgstr "vyhledat nevyužité balíčky (dávejte pozor)"
+#: ../../client/solo/commands/unused.py:192
+msgid "Running unused packages test"
+msgstr ""
+
+#: ../../client/solo/commands/unused.py:226
+msgid "show unused packages (pay attention)"
+msgstr ""
 
 #: ../../client/solo/commands/cleanup.py:97
 msgid "remove downloaded packages and clean temp. directories"
@@ -4736,55 +4747,42 @@ msgid "Sabayon updates available"
 msgstr "Dostupné aktualizace Sabayonu"
 
 #: ../../magneto/src/magneto/core/interfaces.py:371
-#, python-format
-msgid "There is <b>%s</b> update available"
-msgid_plural "There are <b>%s</b> updates available"
-msgstr[0] "Je dostupná <b>%s</b> aktualizace"
-msgstr[1] "Jsou dostupné <b>%s</b> aktualizace"
-msgstr[2] "Je dostupných <b>%s</b> aktualizací"
+msgid "Updates are available"
+msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:376
+#: ../../magneto/src/magneto/core/interfaces.py:374
 msgid "Upgrade now"
 msgstr ""
 
 #. all fine, no updates
+#: ../../magneto/src/magneto/core/interfaces.py:378
 #: ../../magneto/src/magneto/core/interfaces.py:380
-#: ../../magneto/src/magneto/core/interfaces.py:382
 msgid "Your Sabayon is up-to-date"
 msgstr "Váš Sabayon je aktuální"
 
-#: ../../magneto/src/magneto/core/interfaces.py:383
+#: ../../magneto/src/magneto/core/interfaces.py:381
 msgid "No updates available at this time, cool!"
 msgstr "Žádné dostupné aktualizace, super!"
 
-#. all fine, no updates
-#: ../../magneto/src/magneto/core/interfaces.py:394
+#: ../../magneto/src/magneto/core/interfaces.py:391
 msgid "Repositories are being updated"
 msgstr "Repozitáře se aktualizují"
 
-#: ../../magneto/src/magneto/core/interfaces.py:395
-msgid "Sabayon repositories status"
-msgstr "Stav repozitářů Sabayon"
-
-#: ../../magneto/src/magneto/core/interfaces.py:396
-msgid "Repositories are being updated automatically"
-msgstr "Repozitáře se automaticky aktualizují"
-
 #. all fine, no updates
-#: ../../magneto/src/magneto/core/interfaces.py:404
-#: ../../magneto/src/magneto/core/interfaces.py:405
+#: ../../magneto/src/magneto/core/interfaces.py:402
+#: ../../magneto/src/magneto/core/interfaces.py:403
 msgid "System upgrade started"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:406
+#: ../../magneto/src/magneto/core/interfaces.py:404
 msgid "Do not shutdown nor reboot the computer!"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:499
+#: ../../magneto/src/magneto/core/interfaces.py:497
 msgid "Updates Notification Applet Disabled"
 msgstr "Applet oznamování aktualizací zakázán"
 
-#: ../../magneto/src/magneto/core/interfaces.py:509
+#: ../../magneto/src/magneto/core/interfaces.py:507
 msgid "Updates Notification Applet Enabled"
 msgstr "Applet oznamování aktualizací povolen"
 
