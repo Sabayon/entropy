@@ -368,7 +368,7 @@ class MagnetoCore(MagnetoCoreUI):
             self.set_state("CRITICAL")
             self.show_alert(
                 _("Sabayon updates available"),
-                _("There are updates available"),
+                _("Updates are available"),
                 urgency = "critical",
                 force = self.manual_check_triggered,
                 buttons = [("upgrade", _("Upgrade now"), upgrade_cb,)]

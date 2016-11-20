@@ -25,6 +25,10 @@ from magneto.gtk3.components import AppletNoticeWindow
 from entropy.i18n import _
 import entropy.dep
 
+import gi
+gi.require_version('Gtk', '3.0')
+gi.require_version('Notify', '0.7')
+
 from gi.repository import Gtk, GObject, GLib, Gdk, Notify
 
 
