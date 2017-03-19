@@ -4343,12 +4343,15 @@ class EntropySQLRepository(EntropyRepositoryBase):
 
         return self._cur2tuple(cur)
 
-    def searchPackages(self, keyword, sensitive = False, slot = None,
+    def searchPackages(self, keyword, sensitive = False, slot = None, exact = False,
             tag = None, order_by = None, just_id = False):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        like_keyword = "%"+keyword+"%"
+        if exact:
+            like_keyword = keyword
+        else:
+            like_keyword = "%"+keyword+"%"
         if not sensitive:
             like_keyword = like_keyword.lower()
         searchkeywords = (like_keyword, like_keyword)

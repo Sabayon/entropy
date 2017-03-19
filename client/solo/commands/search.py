@@ -35,9 +35,10 @@ Search for packages.
 """
     SEE_ALSO = ""
 
-    def __init__(self, args, quiet=False, verbose=False, installed=False,
+    def __init__(self, args, exact=False, quiet=False, verbose=False, installed=False,
                  available=False, packages=None):
         SoloCommand.__init__(self, args)
+        self._exact = exact
         self._quiet = quiet
         self._verbose = verbose
         self._installed = installed
@@ -66,6 +67,10 @@ Search for packages.
 
         parser.add_argument("string", nargs='+',
                             metavar="<string>", help=_("search keyword"))
+
+        parser.add_argument("--exact", "-e", action="store_true",
+                            default=self._exact,
+                            help=_('search among packages matching exact search keyword'))
 
         parser.add_argument("--quiet", "-q", action="store_true",
                             default=self._quiet,
@@ -97,6 +102,7 @@ Search for packages.
             sys.stderr.write("%s\n" % (err,))
             return parser.print_help, []
 
+        self._exact = nsargs.exact
         self._quiet = nsargs.quiet
         self._verbose = nsargs.verbose
         self._installed = nsargs.installed
@@ -109,6 +115,7 @@ Search for packages.
         Overridden from SoloCommand.
         """
         args = [
+            "--exact", "-e",
             "--quiet", "-q", "--verbose", "-v",
             "--installed", "--available"]
         args.sort()
@@ -127,7 +134,7 @@ Search for packages.
             package = entropy.dep.remove_slot(package)
             package = entropy.dep.remove_tag(package)
             pkg_ids = set(dbconn.searchPackages(
-                    package, slot = slot,
+                    package, exact = self._exact, slot = slot,
                     tag = tag, just_id = True, order_by = "atom"))
             if not pkg_ids: # look for something else?
                 pkg_id, _rc = dbconn.atomMatch(
