@@ -118,24 +118,9 @@ class _PackageInstallRemoveAction(PackageAction):
 
         for library, elfclass, path in preserved_libs:
 
-            # if path is owned by a package, it means that
-            # the library has been replaced, we should not remove it
-            # but just unregister.
-            remove = False
-            package_ids = inst_repo.isFileAvailable(path, get_id = True)
-            if not package_ids:
-                remove = True
-
-            if remove:
-                msg = _("Removing library")
-                log_msg = const_convert_to_unicode("Removing library")
-            else:
-                msg = _("Unregistering library")
-                log_msg = const_convert_to_unicode("Unregistering library")
-
             self._entropy.output(
                 "%s: %s [%s, %s]" % (
-                    brown(msg),
+                    brown(_("Removing library")),
                     darkgreen(path),
                     purple(library),
                     teal(const_convert_to_unicode("%s" % (elfclass,))),
@@ -149,27 +134,33 @@ class _PackageInstallRemoveAction(PackageAction):
                 "[Package]",
                 etpConst['logging']['normal_loglevel_id'],
                 "%s %s [%s:%s]" % (
-                    log_msg, path, library, elfclass,)
+                    const_convert_to_unicode("Removing library"),
+                    path, library, elfclass,)
             )
 
-            if remove:
-                remove_failed = preserved_mgr.remove(path)
-                for failed_path, err in remove_failed:
-                    self._entropy.output(
-                        "%s: %s, %s" % (
-                            purple(_("Failed to remove the library")),
-                            darkred(failed_path),
-                            err,
-                        ),
-                        importance = 1,
-                        level = "warning",
-                        header = brown("   ## ")
-                    )
-                    self._entropy.logger.log(
-                        "[Package]",
-                        etpConst['logging']['normal_loglevel_id'],
-                        "Error during %s removal: %s" % (failed_path, err)
-                    )
+            # This will also check if path and it's destinations (in case of
+            # symlink) is owned by other packages.
+            # If this is the case, removal will fail for that specific path.
+            # This may be the case for packages like vmware-workstation,
+            # containing symlinks pointing to system libraries.
+            # See Sabayon bug #5182.
+            remove_failed = preserved_mgr.remove(path)
+            for failed_path, err in remove_failed:
+                self._entropy.output(
+                    "%s: %s, %s" % (
+                        purple(_("Failed to remove the library")),
+                        darkred(failed_path),
+                        err,
+                    ),
+                    importance = 1,
+                    level = "warning",
+                    header = brown("   ## ")
+                )
+                self._entropy.logger.log(
+                    "[Package]",
+                    etpConst['logging']['normal_loglevel_id'],
+                    "Error during %s removal: %s" % (failed_path, err)
+                )
 
             preserved_mgr.unregister(library, elfclass, path)
 

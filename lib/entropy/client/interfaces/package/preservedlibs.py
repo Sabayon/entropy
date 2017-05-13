@@ -285,6 +285,19 @@ class PreservedLibraries(object):
         for lib_path in self._follow(library_path):
             root_lib_path = self._root + lib_path
 
+            # Guard against cross package symlinking. Example:
+            # vmware-workstation pkg conaining symlinks to libssl.so.x
+            # See Sabayon bug #5182.
+            lib_path_pkg_ids = self._inst_repo.isFileAvailable(
+                lib_path, get_id=True)
+            if lib_path_pkg_ids:
+                pkg_atoms = [self._inst_repo.retrieveAtom(x) for x in lib_path_pkg_ids]
+                failed.append(
+                    (root_lib_path,
+                     '%s owned by %s' % (lib_path, ', '.join(pkg_atoms)))
+                )
+                continue
+
             try:
                 os.remove(root_lib_path)
             except (OSError, IOError) as err:
