@@ -1,3 +1,34 @@
+commit b2d0ca8707b181d1c52604d881c27bd5684b2f57
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat May 13 14:36:24 2017 +0200
+
+    Release Entropy 307
+
+commit 345d31b3c5f3b3966aa0e2cc75afd847f4a10ae7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat May 13 14:25:01 2017 +0200
+
+    [entropy.client] Fix accidental deletion of preserved libs when still in use.
+    
+    Entropy preserved libs handling code did not check all the followed symlink
+    before removing them. This causes the deletion of unexpected libraries during the
+    removal of packages. For example, app-emulation/vmware-workstation contains
+    the following symlink:
+    
+    (A) /opt/vmware/lib/vmware/lib/libssl.so.1.0.1/libssl.so.1.0.1 -> (B) /usr/lib64/libssl.so.1.0.1
+    
+    Upon removal of vmware-workstation, A is garbage collected and deleted,
+    if it's a symlink, the link is followed and (B) is removed as well, without
+    validating the action (i.e. checking if a package is still owning (B).)
+    
+    This commit fixes this. See Sabayon bug #5812.
+
+commit 12c5fc31ec3c6a8d25d0f22414b1576168b11db1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 20 08:07:37 2016 +0100
+
+    Tagging Entropy version 306
+
 commit c611f76a33420dd8064ca0ec103683d18a31bbdf
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Nov 20 08:07:36 2016 +0100
@@ -83,7 +114,7 @@ Date:   Sat Sep 17 14:09:06 2016 +0200
     add CICKU's FOSS Mirror
 
 commit 0d778e8b397cb55fca0a4a0778124bedc9f1690b
-Merge: b8007c3 3fc1de1
+Merge: b8007c344 3fc1de1e7
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Sep 2 09:40:42 2016 +0200
 
@@ -98,7 +129,7 @@ Date:   Wed Aug 31 07:49:02 2016 +1000
     break up the long text processing pipes
 
 commit b8007c3445c344f4bd807487c1d2129931d3347c
-Merge: 5ae09bf c530299
+Merge: 5ae09bf9c c530299fb
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Aug 30 20:19:46 2016 +0200
 
@@ -107,7 +138,7 @@ Date:   Tue Aug 30 20:19:46 2016 +0200
     [entropy.core] _system_parser: Actually read the file
 
 commit 5ae09bf9c30315c1d1d4df1be3378786956f7d09
-Merge: bf5e00d 37d15af
+Merge: bf5e00d01 37d15af8b
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Aug 30 20:18:38 2016 +0200
 
@@ -116,7 +147,7 @@ Date:   Tue Aug 30 20:18:38 2016 +0200
     [entropy.client] fixes to exception handler
 
 commit bf5e00d01488d19e692ccbbb159d69eed06210db
-Merge: abde25f f4d09bc
+Merge: abde25f91 f4d09bcef
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Aug 30 20:17:57 2016 +0200
 
@@ -125,7 +156,7 @@ Date:   Tue Aug 30 20:17:57 2016 +0200
     [solo.commands.moo] fix `lxnay` speech bubble
 
 commit abde25f9181fd78ea57d202f3ecce6847d71afb4
-Merge: b38fc48 706d6bc
+Merge: b38fc48ac 706d6bca5
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Aug 30 20:17:35 2016 +0200
 
@@ -134,7 +165,7 @@ Date:   Tue Aug 30 20:17:35 2016 +0200
     [solo.commands,lib] display packages that pull in conflicting ones
 
 commit b38fc48ac33c8fafa09fbe342c836e9be1d34d6a
-Merge: 28d16ff 12a7bdd
+Merge: 28d16ff86 12a7bdd2b
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Aug 30 20:16:23 2016 +0200
 
@@ -247,7 +278,7 @@ Date:   Mon May 16 22:22:26 2016 +0200
     Release Entropy 302
 
 commit dceea5bc79098ded31fdbe94529a1e8fa2290a7e
-Merge: f935b18 8af6a26
+Merge: f935b1821 8af6a2678
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon May 16 21:08:13 2016 +0200
 
@@ -264,7 +295,7 @@ Date:   Sat May 14 17:29:56 2016 +0200
     This allows to call equo with ACCEPT_LICENSE="*" and accept automatically all the licenses without user prompting
 
 commit f935b1821f4cb23880ab7c5efc40968cf99379b3
-Merge: af86b58 67a645f
+Merge: af86b5836 67a645fab
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat May 14 12:00:39 2016 +0200
 
@@ -279,7 +310,7 @@ Date:   Sat May 14 11:49:37 2016 +0200
     [entropy.tools] add IA_64 to elf_class_strtoint
 
 commit af86b583680fddab16c35e3ace0e74d6231d076c
-Merge: 0c92120 b12a25e
+Merge: 0c9212003 b12a25e72
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun May 8 14:10:39 2016 -0700
 
@@ -288,7 +319,7 @@ Date:   Sun May 8 14:10:39 2016 -0700
     [entropy.client] print repository name on dependency conflict
 
 commit 0c9212003132dac2912fe307f5aca1d40e918780
-Merge: 1e23d2c 97a99ed
+Merge: 1e23d2cec 97a99edbf
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Apr 16 20:25:48 2016 +0200
 
@@ -357,7 +388,7 @@ Date:   Sun Mar 20 19:32:01 2016 +0100
     Update translations
 
 commit a305f121eeb2abc9dfcf5d56c7123fbaf2bec025
-Merge: b17686f b434985
+Merge: b17686f00 b43498596
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Mar 20 19:29:18 2016 +0100
 
@@ -381,7 +412,7 @@ Date:   Mon Mar 7 21:00:06 2016 +0100
     [solo.commands.security] support for package names in oscheck
 
 commit b17686f00812c47b0f614559172ff2253b3c970e
-Merge: b5bbd6d 3ff54e8
+Merge: b5bbd6dcd 3ff54e824
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Mar 7 11:56:48 2016 +0100
 
@@ -402,7 +433,7 @@ Date:   Wed Dec 23 20:54:06 2015 +0100
     [conf] update GARR mirror URLs
 
 commit d90f406218a6b706271eee715056bfbbeea83127
-Merge: f394eff a20db47
+Merge: f394eff92 a20db47d8
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Nov 30 11:11:31 2015 +0100
 
@@ -465,7 +496,7 @@ Date:   Sat Aug 22 23:49:00 2015 +0100
     Release Entropy 298
 
 commit 9a106f81f68aef4eeeaf62f69027bc32315f350e
-Merge: 460adbe bfe8b99
+Merge: 460adbe92 bfe8b9951
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Aug 11 21:55:30 2015 +0100
 
@@ -480,7 +511,7 @@ Date:   Tue Aug 11 22:07:39 2015 +0200
     [entropy.tools] add AARCH64 to elf_class_strtoint
 
 commit 460adbe92f38b5c63d3093fc14e9fdf4506423b6
-Merge: 4d40ea4 38d03dc
+Merge: 4d40ea44a 38d03dc20
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Jun 6 13:52:58 2015 +0100
 
@@ -507,7 +538,7 @@ Date:   Wed Jun 3 06:50:08 2015 +0100
     Release Entropy 297
 
 commit 72851f1948d5b9efe819bd833597380ab380d191
-Merge: 1753bc2 d227393
+Merge: 1753bc2c0 d2273933e
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Jun 3 07:55:46 2015 +0100
 
@@ -522,7 +553,7 @@ Date:   Wed May 27 20:20:01 2015 +0200
     [entropy.tools] add more arches to elf_class_strtoint
 
 commit 1753bc2c005fb00e0ffe969780464b22627e753f
-Merge: d92c7ca 1bda075
+Merge: d92c7ca45 1bda075ad
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun May 17 12:43:16 2015 +0100
 
@@ -787,7 +818,7 @@ Date:   Sat Oct 18 14:58:21 2014 +0200
     Release Entropy 287
 
 commit 35542de6c0c2626f2c00d59555ba94cff0f63351
-Merge: 86e2094 bbb1b71
+Merge: 86e209482 bbb1b710c
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Oct 17 23:20:40 2014 +0100
 
@@ -835,7 +866,7 @@ Date:   Tue Sep 30 20:41:18 2014 +0100
     [solo.commands.pkg] EEXIST is fine when using makedirs()
 
 commit eed20a69c02cec91cf41d8c6065b3fd772967fbd
-Merge: 7b2810c bbedeeb
+Merge: 7b2810c05 bbedeeb45
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Oct 16 19:37:14 2014 +0100
 
@@ -1661,7 +1692,7 @@ Date:   Sun Jan 5 13:00:31 2014 +0100
     [entropy.core] SystemSettings: enable lazy loading of external plugins as well
 
 commit ce070e541b13df58b7bf7fc483d14f99f38841eb
-Merge: 282fd0d a03296d
+Merge: 282fd0d74 a03296d92
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Jan 5 02:57:17 2014 -0800
 
@@ -1678,7 +1709,7 @@ Date:   Sun Jan 5 11:27:54 2014 +0100
     finally translated to 100%
 
 commit 282fd0d74c1f4450c40f9f3e26fb0d1d2ba6063e
-Merge: 1d965c7 1152e6e
+Merge: 1d965c718 1152e6e6f
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Jan 5 02:18:13 2014 -0800
 
@@ -1693,7 +1724,7 @@ Date:   Sun Jan 5 10:11:47 2014 +0100
     Slovak translation update
 
 commit 1d965c7185f88915baa8639e4a8d9da6da955e88
-Merge: 1f4ecf4 42f9df1
+Merge: 1f4ecf45b 42f9df141
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Jan 4 23:35:59 2014 -0800
 
@@ -1702,7 +1733,7 @@ Date:   Sat Jan 4 23:35:59 2014 -0800
     Slovak translation update
 
 commit 1f4ecf45b3adfdad45b75decd4ced9c7b0635894
-Merge: c946bac 95a37ca
+Merge: c946bacd7 95a37ca2a
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Jan 4 23:35:46 2014 -0800
 
@@ -2980,7 +3011,7 @@ Date:   Wed Dec 11 16:23:45 2013 +0100
     [Rigo] update translations
 
 commit 041cf6687561db734952814f1770bfdf6a5d6a5b
-Merge: f758c1b 4bf19be
+Merge: f758c1bfb 4bf19be3b
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Dec 11 15:52:56 2013 +0100
 
@@ -5845,7 +5876,7 @@ Date:   Wed Oct 9 21:23:14 2013 +0200
     Release Entropy 217
 
 commit 74169c1a8ad6473251e3ae66fbd23235c2418a2c
-Merge: 0b7423a cc0346b
+Merge: 0b7423a7f cc0346bb2
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Oct 9 12:22:15 2013 -0700
 
@@ -10300,7 +10331,7 @@ Date:   Tue Nov 6 22:35:32 2012 +0100
     [po] update entropy.pot
 
 commit d42003ba94031f447a88ca4017bcf590da66a901
-Merge: 022375f 659ad99
+Merge: 022375fd7 659ad992d
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Nov 6 22:35:01 2012 +0100
 
@@ -19638,14 +19669,14 @@ Date:   Mon Oct 17 11:36:32 2011 +0200
     [server] move trigger.sh to more appropriate location
 
 commit 0ba9a2e68cf3dac5a1fdcb30ba586773e3f58a75
-Merge: e601148 07a6730
+Merge: e601148b1 07a673031
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Oct 17 11:29:21 2011 +0200
 
     Merge remote-tracking branch 'origin/master'
 
 commit e601148b14fb3ff40d4a2cb1dff9b9f32aec64d2
-Merge: 0743021 08c4921
+Merge: 0743021dd 08c492108
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Oct 17 11:27:02 2011 +0200
 
@@ -43420,7 +43451,7 @@ Date:   Sun Oct 11 00:08:14 2009 +0200
     [equo] fix indentation
 
 commit 86520fac3c25f63c0708b5ccab6e4f2ff225bcae
-Merge: 8697dad 733e2c4
+Merge: 8697dad30 733e2c4dd
 Author: Daniel Halens Rodríguez <dhalens@lappie.(none)>
 Date:   Sat Oct 10 22:45:02 2009 +0100
 
@@ -50248,7 +50279,7 @@ Date:   Tue May 26 23:27:53 2009 +0200
     Makefile: do not install test suite to system
 
 commit 98d343406dcc190482ab71aba576d5f89fefe9d3
-Merge: 32d68d7 e71d8db
+Merge: 32d68d70b e71d8dbfb
 Author: Fabio Erculiani <lxnay@sabayonlinux.org>
 Date:   Tue May 26 23:08:28 2009 +0200
 
@@ -50261,7 +50292,7 @@ Date:   Tue May 26 23:06:14 2009 +0200
     entropy.client.interfaces.package: code cleanup, preparing for debugging
 
 commit e71d8dbfb4a654128effd8e9979068a00905acea
-Merge: cab4301 70a5653
+Merge: cab4301db 70a565333
 Author: Daniel Halens Rodriguez <dhalens@sabayon.(none)>
 Date:   Tue May 26 19:03:24 2009 +0000
 
@@ -51182,7 +51213,7 @@ Date:   Tue May 12 16:41:05 2009 +0200
     entropy.client: fix unreferenced variable, my fault
 
 commit 668e22889fd9e3fa2d0c4624094f1738435e6169
-Merge: 5ec9677 d52ac2a
+Merge: 5ec967746 d52ac2a56
 Author: Fabio Erculiani <lxnay@sabayonlinux.org>
 Date:   Tue May 12 14:45:27 2009 +0200
 
@@ -51206,14 +51237,14 @@ Date:   Tue May 12 14:44:52 2009 +0200
     and affecting several files at once.
 
 commit 16305fa67723586c1cb3853f8856294b44904810
-Merge: 4eefede a9abb9c
+Merge: 4eefede7c a9abb9c4a
 Author: Fabio Erculiani <lxnay@sabayonlinux.org>
 Date:   Tue May 12 14:20:30 2009 +0200
 
     Merge branch 'master' of git+ssh://fabio@sabayonlinux.org/home/git/projects/entropy
 
 commit d52ac2a56ec90497ee881b7a0fe3d4bbe6c91997
-Merge: 4eefede a9abb9c
+Merge: 4eefede7c a9abb9c4a
 Author: Fabio Erculiani <lxnay@sabayonlinux.org>
 Date:   Tue May 12 14:20:30 2009 +0200
 
@@ -51648,7 +51679,7 @@ Date:   Tue May 5 05:59:13 2009 +0200
     entropy.db: improve utf8 and str input support of insertLicenses
 
 commit 318e90692cc552c919928a93ba123d8047a5c3b7
-Merge: 2a88737 e7ca06c
+Merge: 2a88737b2 e7ca06ce9
 Author: Fabio Erculiani <lxnay@sabayonlinux.org>
 Date:   Mon May 4 22:48:28 2009 +0200
 
@@ -52396,7 +52427,7 @@ Date:   Tue Apr 21 00:29:34 2009 +0200
     entropy.db: retrieveTrigger, return empty string if no trigger is found
 
 commit 2b0bd68d0b01bc8584dc2dedc39b48e0cbe95eec
-Merge: 157a001 d4a25cd
+Merge: 157a00135 d4a25cd0d
 Author: Fabio Erculiani <fabio@mars.(none)>
 Date:   Mon Apr 20 22:01:30 2009 +0200
 
@@ -53093,7 +53124,7 @@ Date:   Tue Apr 14 22:57:04 2009 +0200
     like in configprotect and configprotectmask
 
 commit d4a25cd0ddaadf99fe02bd0a5f13924606360096
-Merge: f6bfca6 f944343
+Merge: f6bfca645 f94434327
 Author: Wael Nasreddine <wael.nasreddine@sabayonlinux.org>
 Date:   Tue Apr 14 14:37:54 2009 +0000
 
@@ -53106,7 +53137,7 @@ Date:   Tue Apr 14 09:04:14 2009 +0200
     unit testing module: run returns status != 0 if errors occured
 
 commit f1f02d2e23cbca722450ae31b8e42ae688fd6337
-Merge: 3185cdf ec0327a
+Merge: 3185cdf8d ec0327af7
 Author: Fabio Erculiani <fabio@mars.(none)>
 Date:   Tue Apr 14 08:59:09 2009 +0200
 
@@ -53262,7 +53293,7 @@ Date:   Sat Apr 11 17:05:01 2009 +0200
     entropy.db: improve speed of doesColumnInTableExist
 
 commit f6bfca6457bc887e0465b568d5b9bd3b513e7873
-Merge: ec0327a 7a03461
+Merge: ec0327af7 7a03461cc
 Author: Wael Nasreddine <wael.nasreddine@sabayonlinux.org>
 Date:   Sat Apr 11 11:48:19 2009 +0000
 
@@ -53300,7 +53331,7 @@ Date:   Thu Apr 9 14:44:20 2009 +0200
     entropy.db: retrieveSignatures, fix typo
 
 commit fe82ed5d8673edbb054d228d7e7a91ce9107f74d
-Merge: f0d6d9c d0d2915
+Merge: f0d6d9c3f d0d2915b5
 Author: Fabio Erculiani <fabio@mars.(none)>
 Date:   Thu Apr 9 12:34:20 2009 +0200
 
@@ -54579,7 +54610,7 @@ Date:   Tue Mar 24 21:11:55 2009 +0100
     use saner approach for Live system
 
 commit a14b6d57d0bbd0629d0ee376fd74f682812cb0e9
-Merge: ed239b2 0f8a10f
+Merge: ed239b2f4 0f8a10f03
 Author: Fabio Erculiani <fabio@mars.(none)>
 Date:   Tue Mar 24 21:10:18 2009 +0100
 
