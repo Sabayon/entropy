@@ -596,8 +596,9 @@ class UrlFetcher(TextInterface):
 
             # Handle HTTP Basic auth
             if self.__http_basic_user and self.__http_basic_pwd:
-                basic_header = base64.encodestring('%s:%s' % (
-                    self.__http_basic_user, self.__http_basic_pwd)).replace('\n', '')
+                basic_header = base64.b64encode(('%s:%s' % (
+                    self.__http_basic_user, self.__http_basic_pwd)
+                ).encode('utf-8')).decode('utf-8')
 
                 headers = {
                     'User-Agent': user_agent,
