@@ -196,6 +196,39 @@ Install or update packages or package files.
 
         return exit_st
 
+    @staticmethod
+    def _match_pkg_in_installed_repo(repo, package_id, inst_repo):
+        """
+        Match package in installed repository by name and retrieved slot.
+        """
+        atom = repo.retrieveAtom(package_id)
+        pkgslot = repo.retrieveSlot(package_id)
+
+        inst_pkg_id, inst_pkg_rc = inst_repo.atomMatch(
+            entropy.dep.dep_getkey(atom), matchSlot = pkgslot)
+        return inst_pkg_id, inst_pkg_rc
+
+    @classmethod
+    def _get_installed_packages_sources(cls, entropy_client,
+                                        inst_repo, run_queue):
+        """
+        Return a dict whose keys are installed packages among the ones in
+        run_queue and values are installed sources.
+        """
+        inst_sources = {}
+
+        for package_id, repository_id in run_queue:
+            repo = entropy_client.open_repository(repository_id)
+
+            inst_pkg_id, inst_pkg_rc = cls._match_pkg_in_installed_repo(
+                repo, package_id, inst_repo)
+
+            if inst_pkg_rc == 0:
+                source_id = inst_repo.getInstalledPackageSource(inst_pkg_id)
+                inst_sources[(package_id, repository_id)] = source_id
+
+        return inst_sources
+
     @classmethod
     def _show_install_queue(cls, entropy_client, inst_repo,
                             run_queue, removal_queue, ask, pretend,
@@ -229,7 +262,6 @@ Install or update packages or package files.
             pkgver = repo.retrieveVersion(package_id)
             pkgtag = repo.retrieveTag(package_id)
             pkgrev = repo.retrieveRevision(package_id)
-            pkgslot = repo.retrieveSlot(package_id)
             pkgfile = repo.retrieveDownloadURL(package_id)
             on_disk_used_size += repo.retrieveOnDiskSize(package_id)
 
@@ -258,8 +290,9 @@ Install or update packages or package files.
             installed_rev = 0
             inst_repo_s = None
 
-            inst_pkg_id, inst_pkg_rc = inst_repo.atomMatch(
-                entropy.dep.dep_getkey(atom), matchSlot = pkgslot)
+            inst_pkg_id, inst_pkg_rc = cls._match_pkg_in_installed_repo(
+                repo, package_id, inst_repo)
+
             if inst_pkg_rc == 0:
                 installed_ver = inst_repo.retrieveVersion(
                     inst_pkg_id)
@@ -505,6 +538,24 @@ Install or update packages or package files.
                 bold(_("Attention")),
                 header=darkred(" !!! "))
 
+    def _match_packages_for_installation(self, entropy_client,
+                                         onlydeps, packages):
+        """
+        Converts packages from user to package_matches that
+        can be used in _install_action.
+        """
+        package_matches = self._scan_packages(
+            entropy_client, packages,
+            onlydeps=onlydeps)
+
+        if not package_matches:
+            entropy_client.output(
+                "%s." % (
+                    darkred(_("No package_matches found")),),
+                level="error", importance=1)
+
+        return package_matches
+
     def _install_action(self, entropy_client, deps, recursive,
                         pretend, ask, verbose, quiet, empty,
                         config_files, deep, fetch, bdeps,
@@ -512,9 +563,13 @@ Install or update packages or package files.
                         package_matches=None):
         """
         Solo Install action implementation.
+
+        Packages passed in the packages argument (as opposed to
+        package_matches) will be marked as installed by user.
         """
         inst_repo = entropy_client.installed_repository()
         action_factory = entropy_client.PackageActionFactory()
+        packages_by_user = set()
 
         with inst_repo.shared():
 
@@ -523,15 +578,11 @@ Install or update packages or package files.
                 self._advise_packages_update(entropy_client)
 
             if package_matches is None:
-                packages = self._scan_packages(
-                    entropy_client, packages,
-                    onlydeps=onlydeps)
+                packages = self._match_packages_for_installation(
+                    entropy_client, onlydeps, packages)
                 if not packages:
-                    entropy_client.output(
-                        "%s." % (
-                            darkred(_("No packages found")),),
-                        level="error", importance=1)
                     return 1, False
+                packages_by_user = set(packages)
             else:
                 packages = package_matches
 
@@ -549,6 +600,9 @@ Install or update packages or package files.
             self._show_install_queue(
                 entropy_client, inst_repo,
                 run_queue, removal_queue, ask, pretend, quiet, verbose)
+
+            installed_pkg_sources = self._get_installed_packages_sources(
+                entropy_client, inst_repo, run_queue)
 
         if ask:
             rc = entropy_client.ask_question(
@@ -590,7 +644,6 @@ Install or update packages or package files.
 
         notification_lock = UpdatesNotificationResourceLock(
             output=entropy_client)
-        package_set = set(packages)
         total = len(run_queue)
 
         notif_acquired = False
@@ -617,12 +670,16 @@ Install or update packages or package files.
 
             for count, pkg_match in enumerate(run_queue, 1):
 
-                if onlydeps:
-                    metaopts['install_source'] = \
-                        etpConst['install_sources']['automatic_dependency']
-                elif pkg_match in package_set:
+                source_id = installed_pkg_sources.get(pkg_match, None)
+
+                if not onlydeps and pkg_match in packages_by_user:
                     metaopts['install_source'] = \
                         etpConst['install_sources']['user']
+                elif source_id is not None:
+                    # Retain the information.
+                    # Install action can upgrade packages, their source
+                    # should not be changed to automatic_dependency.
+                    metaopts['install_source'] = source_id
                 else:
                     metaopts['install_source'] = \
                         etpConst['install_sources']['automatic_dependency']

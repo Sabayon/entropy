@@ -207,12 +207,17 @@ Test system integrity by checking installed packages dependencies.
             entropy_client.output(mytxt, header=darkred(" @@ "))
             time.sleep(10)
 
+        # avoid saving deps as installed by user
+        matched_for_installation = self._match_packages_for_installation(
+            entropy_client, False, sorted(found_deps))
+        if not matched_for_installation:
+            return 1
         exit_st, _show_cfgupd = self._install_action(
             entropy_client, True, True,
             self._pretend, self._ask,
             False, self._quiet, False,
             False, False, False, False, False,
-            False, 1, sorted(found_deps))
+            False, 1, [], package_matches=matched_for_installation)
         return exit_st
 
 
