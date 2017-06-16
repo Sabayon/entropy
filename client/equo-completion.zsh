@@ -93,8 +93,7 @@ case $state in
               installed)
               ;;
               *)
-                cmds=( ${(f)"$(equo query list --help |tr "\t" ":" | grep "^::[^:]" | sed 's/^::\([^:\ ]*\)[^:]*:*/\1:/')"} )
-                _describe -t commands 'command params' cmds
+                _equo_get_cmds $line
               ;;
             esac
           ;;
