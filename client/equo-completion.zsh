@@ -12,11 +12,22 @@ _equo_get_mirrors()
 
 _equo_get_cmds()
 {
-  cmds=( ${(f)"$(equo $1 --help |
-    sed 's/--multifetch/--multifetch  can be/' |
-    sed -r -e '/^(positional|action:)/ {N; d;}' |
+  # If we return the equo --help text and have a 1st argument
+  # then that means there is no matching name so return nothing
+  local help_txt=$(equo $@ --help)
+  if [[ "$1" && ${help_txt[0,16]} == 'usage: equo [-h]' ]]; then
+    cmds=( )
+  # Otherwise, parse it
+  else
+    cmds=(
+    ${(f)"$(
+    printf "%s" "$help_txt" |
+    sed -e 's/--multifetch/--multifetch  can be/' \
+    -r -e '/^(positional|action:)/ {N; d;}' |
     grep -P '^  (?!-h|<package>|{|   )' |
-    sed -r 's/^ {2,4}(-*[a-zA-z0-9-]+)(, -\w|)  +(\w.*)/\1:\3/')"} )
+    sed -r 's/^ {2,4}(-*\w+)(, *-\w+)? +(\w.*)/\1:\3/')"}
+    )
+  fi
   _describe -t commands 'command params' cmds
 }
 
