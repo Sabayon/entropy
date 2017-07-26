@@ -81,9 +81,6 @@ pkg = http://ftp.cc.uoc.gr/mirrors/linux/SabayonLinux/entropy
 pkg = http://ftp.rnl.ist.utl.pt/pub/sabayon/entropy
 # pkg = ftp://ftp.rnl.ist.utl.pt/pub/sabayon/entropy
 
-# Freelydifferent.com, France
-pkg = http://mirror.freelydifferent.com/sabayon/entropy
-
 # NLUUG, Holland
 pkg = ftp://ftp.nluug.nl/pub/os/Linux/distr/sabayonlinux/entropy
 # pkg = rsync://ftp.nluug.nl/sabayonlinux/entropy
