@@ -5,3 +5,5 @@ misc/po/*.mo
 server/doc/man/*.1
 #*#
 lib/*test*.py
+.idea
+venv
