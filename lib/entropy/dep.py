@@ -43,6 +43,9 @@ endversion_keys = ["pre", "p", "alpha", "beta", "rc"]
 valid_category = re.compile("^\w[\w-]*")
 invalid_atom_chars_regexp = re.compile("[()|@]")
 
+digits_group = re.compile('([0-9]+)')
+
+
 def _ververify(myver):
     if myver.endswith("*"):
         m = ver_regexp.match(myver[:-1])
@@ -632,6 +635,21 @@ def is_valid_package_tag(tag):
         return False
     return True
 
+def _nat_sort_key(key):
+    """
+    Key generator for natural sorting algorithms.
+
+    @param key: Entropy package tag
+    return: array obtained from the input string with strings parsed as
+        strings and numbers parsed as number with the empty string as
+        first and last element.
+    """
+    def convert(text):
+        return int(text) if text.isdigit() else text.lower()
+    if key is None:
+        key = ''
+    return [convert(c) for c in re.split(digits_group, key.strip())]
+
 def entropy_compare_package_tags(tag_a, tag_b):
     """
     Compare two Entropy package tags using builtin cmp().
@@ -644,7 +662,7 @@ def entropy_compare_package_tags(tag_a, tag_b):
         zero if tag_a == tag_b.
     rtype: int
     """
-    return const_cmp(tag_a, tag_b)
+    return const_cmp(_nat_sort_key(tag_a), _nat_sort_key(tag_b))
 
 def sort_entropy_package_tags(tags):
     """
@@ -655,7 +673,7 @@ def sort_entropy_package_tags(tags):
     @return: sorted list of Entropy package tags
     @rtype: list
     """
-    return sorted(tags)
+    return sorted(tags, key=_nat_sort_key)
 
 def entropy_compare_versions(ver_data, ver_data2):
     """
@@ -673,7 +691,7 @@ def entropy_compare_versions(ver_data, ver_data2):
     # if both are tagged, check tag first
     rc = 0
     if a_tag and b_tag:
-        rc = const_cmp(a_tag, b_tag)
+        rc = entropy_compare_package_tags(a_tag, b_tag)
     if rc == 0:
         rc = compare_versions(a_ver, b_ver)
 
@@ -1173,8 +1191,8 @@ def expand_dependencies(dependencies, entropy_repository_list,
     @param dependencies: list of raw package dependencies, as
         returned by EntropyRepositoryBase.retrieveDependencies{,List}()
     @type dependencies: iterable
-    @param entropy_repository_list: ordered list of EntropyRepositoryBase instances
-        used to execute the actual resolution
+    @param entropy_repository_list: ordered list of EntropyRepositoryBase
+        instances used to execute the actual resolution
     @type entropy_repository_list: list
     @keyword selected_matches: list of preferred package matches used to
         evaluate or-dependencies.
