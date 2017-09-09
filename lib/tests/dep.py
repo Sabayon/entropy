@@ -115,22 +115,54 @@ class DepTest(unittest.TestCase):
         ver_a = ("1.0.0", "1.0.0", 0,)
         ver_b = ("1.0.1", "1.0.0", 0.10000000000000001,)
         ver_c = ("1.0.0", "1.0.1", -0.10000000000000001,)
+        ver_d = ("4.9.44", "4.11.12", -2,)
 
         self.assertEqual(et.compare_versions(ver_a[0], ver_a[1]), ver_a[2])
         self.assertEqual(et.compare_versions(ver_b[0], ver_b[1]), ver_b[2])
         self.assertEqual(et.compare_versions(ver_c[0], ver_c[1]), ver_c[2])
+        self.assertEqual(et.compare_versions(ver_d[0], ver_d[1]), ver_d[2])
 
     def test_get_newer_version(self):
-        vers = ["1.0", "3.4", "0.5", "999", "9999", "10.0"]
-        out_vers = ['9999', '999', '10.0', '3.4', '1.0', '0.5']
+        vers = ["1.0", "3.4", "0.5", "999", "9999", "10.0", "10.11.12", "10.1.32", "10.9.44"]
+        out_vers = ['9999', '999', '10.11.12', '10.9.44', '10.1.32', '10.0', '3.4', '1.0', '0.5']
         self.assertEqual(et.get_newer_version(vers), out_vers)
+
+    def test_compare_tag_versions(self):
+        tag_ver_a = ("4.11.0-sabayon", "4.11.0-sabayon", 0,)
+        tag_ver_b = ("4.4.0-sabayon", "4.9.0-sabayon", -1,)
+        tag_ver_c = ("4.11.0-sabayon", "4.1.0-sabayon", 1,)
+        tag_ver_d = ("4.9.44", "3.11.12", 1,)
+        tag_ver_e = ("2.11.59", "4.12.0", -1,)
+        tag_ver_f = ("2222", "2223", -1,)
+
+        self.assertEqual(et.entropy_compare_package_tags(tag_ver_a[0], tag_ver_a[1]), tag_ver_a[2])
+        self.assertEqual(et.entropy_compare_package_tags(tag_ver_b[0], tag_ver_b[1]), tag_ver_b[2])
+        self.assertEqual(et.entropy_compare_package_tags(tag_ver_c[0], tag_ver_c[1]), tag_ver_c[2])
+        self.assertEqual(et.entropy_compare_package_tags(tag_ver_d[0], tag_ver_d[1]), tag_ver_d[2])
+        self.assertEqual(et.entropy_compare_package_tags(tag_ver_e[0], tag_ver_e[1]), tag_ver_e[2])
+        self.assertEqual(et.entropy_compare_package_tags(tag_ver_f[0], tag_ver_f[1]), tag_ver_f[2])
 
     def test_get_entropy_newer_version(self):
         vers = [("1.0", "2222", 1,), ("3.4", "2222", 0,), ("1.0", "2223", 1,),
             ("1.0", "2223", 3,)]
         out_vers = [('1.0', '2223', 3), ('1.0', '2223', 1),
             ('3.4', '2222', 0), ('1.0', '2222', 1)]
+        vers2 = [("340.102", "3.18.0-sabayon", 1,),
+                 ("340.102", "4.11.0-sabayon", 5,),
+                 ("340.102", "4.1.0-sabayon", 3,),
+                 ("381.09", "4.11.0-sabayon", 0,),
+                 ("381.09", "4.11.0-sabayon", 8,),
+                 ("381.09", "3.18.0-sabayon", 0,),
+                 ("381.09", "4.1.0-sabayon", 0,),]
+        out_vers2 = [("381.09", "4.11.0-sabayon", 8,),
+                     ("381.09", "4.11.0-sabayon", 0,),
+                     ("340.102", "4.11.0-sabayon", 5,),
+                     ("381.09", "4.1.0-sabayon", 0,),
+                     ("340.102", "4.1.0-sabayon", 3,),
+                     ("381.09", "3.18.0-sabayon", 0,),
+                     ("340.102", "3.18.0-sabayon", 1,),]
         self.assertEqual(et.get_entropy_newer_version(vers), out_vers)
+        self.assertEqual(et.get_entropy_newer_version(vers2), out_vers2)
 
     def test_create_package_filename(self):
         package_category = "app-foo"
