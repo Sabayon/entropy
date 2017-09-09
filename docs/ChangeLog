@@ -1,3 +1,106 @@
+commit cac8ad2b29cde725bcb2274c47edac7ee47f663c
+Author: Francesco Ferro <skullbocks@sabayon.org>
+Date:   Sat Sep 9 18:46:39 2017 +0200
+
+    Release Entropy 308
+
+commit 019d42c91fd4faeef9d13f83de67ce948c17df2f
+Merge: 055fb0bc4 19a7a54dd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 9 11:50:53 2017 +0200
+
+    Merge pull request #38 from Sabayon/issue/fix-entropy-tag-sorting
+    
+    [entropy.core] fix entropy tag sorting
+
+commit 19a7a54ddadf2df09446b81bb60d6bda20311839
+Author: Francesco Ferro <skullbocks@sabayon.org>
+Date:   Sat Sep 9 11:31:26 2017 +0200
+
+    [entropy.core] Remove nested function for natural sorting
+
+commit afbce1c169d35afeb8ddf38ffb5566a50bd614a4
+Author: Francesco Ferro <skullbocks@sabayon.org>
+Date:   Sat Aug 19 17:04:48 2017 +0200
+
+    [entropy.core] update tests for entropy tag sorting
+
+commit 79e1bec57f7f104c60d44d75d75c554bea761e37
+Author: Francesco Ferro <skullbocks@sabayon.org>
+Date:   Sat Aug 19 17:04:24 2017 +0200
+
+    [entropy.core] fix tags natural sorting issue
+    
+    This commit will add a key generator that creates an array
+    from the original string where each group of numbers is
+    converted to a number.
+
+commit 8a8eca7ac03988954b032af8776c3a48d7c0cd19
+Author: Francesco Ferro <skullbocks@sabayon.org>
+Date:   Sat Aug 19 17:03:42 2017 +0200
+
+    Update gitignore
+
+commit 055fb0bc4bc158c0afa125658c1ac1e6a8ff4f8e
+Author: Ettore Di Giacinto <mudler@users.noreply.github.com>
+Date:   Wed Jul 26 19:15:14 2017 +0200
+
+    [conf] remove Freelydifferent.com mirror
+
+commit 960cd6d9119ac1b7634fe4c26c2eae205e22c01c
+Merge: c726b3d69 14921ad71
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 1 21:40:26 2017 +0200
+
+    Merge pull request #37 from samcv/zsh-fixes
+    
+    [zsh-completion] Fix help message parse bugs and add improvements
+
+commit 14921ad719473de5493d89b6356170380367a09a
+Author: Samantha McVey <samantham@posteo.net>
+Date:   Thu Jun 15 17:41:31 2017 -0700
+
+    [zsh-completion] Fix completion for equo query list
+    
+    Before no completions would show. Now we remove unneeded code and use
+    the same completion processing for other commands.
+
+commit 83ea0e56cf045c8a9c1c500a64367898781f453c
+Author: Samantha McVey <samantham@posteo.net>
+Date:   Thu Jun 15 17:29:05 2017 -0700
+
+    [zsh-completion] Fix help message parse bugs and add improvements
+    
+    This fixes a bug where certain tab completions would be met with lots
+    of sed errors.
+    
+    It is also faster since it uses 1 less sed process.
+    
+    Additionally it will also show 'no matches' if there are no
+    matches found for a command completion, instead of showing
+    a suggestion to add 1st level commands on.
+    
+    Before: equo X (no cmds left to add)
+    zsh suggests install, query, remove etc.
+    
+    Now it will properly say there are not more suggestions
+    for most of the $1 terms
+
+commit c726b3d694f69195511d5b1082eb3a7a93dd93ac
+Merge: eb43caabc aa32d22d6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 14 18:29:16 2017 +0200
+
+    Merge pull request #34 from geaaru/basic_python3_4
+    
+    Fix issue on use basic authentication with python3.4:
+
+commit eb43caabca30aa727a57e6b11a75337965336655
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat May 13 14:36:24 2017 +0200
+
+    Tagging Entropy version 307
+
 commit b2d0ca8707b181d1c52604d881c27bd5684b2f57
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat May 13 14:36:24 2017 +0200
@@ -22,6 +125,54 @@ Date:   Sat May 13 14:25:01 2017 +0200
     validating the action (i.e. checking if a package is still owning (B).)
     
     This commit fixes this. See Sabayon bug #5812.
+
+commit aa32d22d637981f99487c229155ccb3f31c8e04e
+Author: Geaaru <geaaru@gmail.com>
+Date:   Tue Apr 11 13:53:11 2017 +0200
+
+    Fix issue on use basic authentication with python3.4:
+    
+    Traceback (most recent call last):
+      File "/usr/lib64/python3.4/base64.py", line 519, in _input_type_check
+        m = memoryview(s)
+    TypeError: memoryview: str object does not have the buffer interface
+    
+    The above exception was the direct cause of the following exception:
+    
+    Traceback (most recent call last):
+      File "/usr/bin/equo", line 15, in <module>
+        main()
+      File "/usr/lib/entropy/client/solo/main.py", line 332, in main
+        exit_st = func(*func_args)
+      File "/usr/lib/entropy/client/solo/commands/command.py", line 406, in _call_exclusive
+        return func(client)
+      File "/usr/lib/entropy/client/solo/commands/update.py", line 115, in _update
+        rc = self._normal_update(entropy_client)
+      File "/usr/lib/entropy/client/solo/commands/update.py", line 236, in _normal_update
+        rc = repo_intf.sync()
+      File "/usr/lib/entropy/lib/entropy/client/interfaces/repository.py", line 327, in sync
+        rc = self._run_sync()
+      File "/usr/lib/entropy/lib/entropy/client/interfaces/repository.py", line 146, in _run_sync
+        self._entropy, repo, self.force, self._gpg_feature)
+      File "/usr/lib/entropy/lib/entropy/client/interfaces/db.py", line 2764, in update
+        return updater.update()
+      File "/usr/lib/entropy/lib/entropy/client/interfaces/db.py", line 2029, in update
+        selected = self._select_database_mirror()
+      File "/usr/lib/entropy/lib/entropy/client/interfaces/db.py", line 428, in _select_database_mirror
+        https_validate_cert = https_validate_cert)
+      File "/usr/lib/entropy/lib/entropy/client/interfaces/db.py", line 1992, in _remote_revision
+        fetch_rc = fetcher.download()
+      File "/usr/lib/entropy/lib/entropy/fetchers.py", line 391, in download
+        status = downloader()
+      File "/usr/lib/entropy/lib/entropy/fetchers.py", line 600, in _urllib_download
+        self.__http_basic_user, self.__http_basic_pwd)).replace('\n', '')
+      File "/usr/lib64/python3.4/base64.py", line 548, in encodestring
+        return encodebytes(s)
+      File "/usr/lib64/python3.4/base64.py", line 536, in encodebytes
+        _input_type_check(s)
+      File "/usr/lib64/python3.4/base64.py", line 522, in _input_type_check
+        raise TypeError(msg) from err
+    TypeError: expected bytes-like object, not str
 
 commit 12c5fc31ec3c6a8d25d0f22414b1576168b11db1
 Author: Fabio Erculiani <lxnay@sabayon.org>
