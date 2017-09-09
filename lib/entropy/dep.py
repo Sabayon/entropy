@@ -644,11 +644,10 @@ def _nat_sort_key(key):
         strings and numbers parsed as number with the empty string as
         first and last element.
     """
-    def convert(text):
-        return int(text) if text.isdigit() else text.lower()
     if key is None:
         key = ''
-    return [convert(c) for c in re.split(digits_group, key.strip())]
+    return [int(c) if c.isdigit() else c.lower()
+            for c in re.split(digits_group, key.strip())]
 
 def entropy_compare_package_tags(tag_a, tag_b):
     """
