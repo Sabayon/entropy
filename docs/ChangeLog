@@ -1,3 +1,27 @@
+commit 330ffd192608a3ae5b4038c4deee32e2737935e7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 10 19:08:33 2017 +0200
+
+    Release Entropy 309
+
+commit 8461cdaa985cc604646a6951f0807a2d2d9f0595
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 10 19:08:14 2017 +0200
+
+    [client/po] Update translations
+
+commit a0b9dcb3a867f7d2d9d65c1740d1affbe705c709
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 10 19:03:48 2017 +0200
+
+    [app-admin/magneto] move magneto-gtk to use PyQt5 (ebuild needs to be updated)
+
+commit 22797e28e033fa29972ced521be9eedcde92c0ed
+Author: Francesco Ferro <skullbocks@sabayon.org>
+Date:   Sat Sep 9 18:46:40 2017 +0200
+
+    Tagging Entropy version 308
+
 commit cac8ad2b29cde725bcb2274c47edac7ee47f663c
 Author: Francesco Ferro <skullbocks@sabayon.org>
 Date:   Sat Sep 9 18:46:39 2017 +0200
