@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-20 07:54+0100\n"
+"POT-Creation-Date: 2017-09-10 19:06+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1186,44 +1186,40 @@ msgstr ""
 msgid "library needed by:"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:130
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:123
 msgid "Removing library"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:133
-msgid "Unregistering library"
-msgstr ""
-
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:160
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:151
 msgid "Failed to remove the library"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:352
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:343
 msgid "Cannot protect broken symlink"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:386
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:377
 msgid "Skipping file installation/removal"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:430
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:548
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:421
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:539
 msgid "Protecting config file"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:525
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:516
 msgid "Removing config file, never modified"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:547
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:538
 msgid "remove"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:567
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:558
 msgid "This package contains a badly encoded file !!!"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:696
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:687
 msgid "Collision found during removal of"
 msgstr ""
 
@@ -1391,27 +1387,27 @@ msgstr ""
 msgid "Configuring package"
 msgstr ""
 
-#: ../../lib/entropy/fetchers.py:888
+#: ../../lib/entropy/fetchers.py:889
 msgid "infinite"
 msgstr ""
 
-#: ../../lib/entropy/fetchers.py:960
+#: ../../lib/entropy/fetchers.py:961
 msgid "[F]"
 msgstr ""
 
-#: ../../lib/entropy/fetchers.py:961 ../../lib/entropy/fetchers.py:1389
+#: ../../lib/entropy/fetchers.py:962 ../../lib/entropy/fetchers.py:1390
 msgid "ETA"
 msgstr ""
 
-#: ../../lib/entropy/fetchers.py:962 ../../lib/entropy/fetchers.py:1390
+#: ../../lib/entropy/fetchers.py:963 ../../lib/entropy/fetchers.py:1391
 msgid "sec"
 msgstr ""
 
-#: ../../lib/entropy/fetchers.py:1253
+#: ../../lib/entropy/fetchers.py:1254
 msgid "Aggregated download"
 msgstr ""
 
-#: ../../lib/entropy/fetchers.py:1255
+#: ../../lib/entropy/fetchers.py:1256
 msgid "item"
 msgid_plural "items"
 msgstr[0] ""
@@ -4594,41 +4590,41 @@ msgstr ""
 msgid "Tools to manage the preserved libraries on the system"
 msgstr ""
 
-#: ../../magneto/src/magneto/kde/interfaces.py:74
+#: ../../magneto/src/magneto/qt5/interfaces.py:49
 msgid "Magneto Entropy Updates Applet"
 msgstr ""
 
-#: ../../magneto/src/magneto/kde/interfaces.py:248
+#: ../../magneto/src/magneto/qt5/interfaces.py:209
 #: ../../magneto/src/magneto/gtk/interfaces.py:220
 msgid "Your system currently has an outdated version of"
 msgstr ""
 
-#: ../../magneto/src/magneto/kde/interfaces.py:249
+#: ../../magneto/src/magneto/qt5/interfaces.py:210
 #: ../../magneto/src/magneto/gtk/interfaces.py:221
 msgid "installed"
 msgstr ""
 
-#: ../../magneto/src/magneto/kde/interfaces.py:250
+#: ../../magneto/src/magneto/qt5/interfaces.py:211
 #: ../../magneto/src/magneto/gtk/interfaces.py:222
 msgid "the latest available version is"
 msgstr ""
 
-#: ../../magneto/src/magneto/kde/interfaces.py:252
+#: ../../magneto/src/magneto/qt5/interfaces.py:213
 #: ../../magneto/src/magneto/gtk/interfaces.py:224
 msgid ""
 "It is recommended that you upgrade to the latest before updating any other "
 "packages"
 msgstr ""
 
-#: ../../magneto/src/magneto/kde/components.py:48
+#: ../../magneto/src/magneto/qt5/components.py:49
 msgid "Close"
 msgstr ""
 
-#: ../../magneto/src/magneto/kde/components.py:49
+#: ../../magneto/src/magneto/qt5/components.py:50
 msgid "Launch Application Browser"
 msgstr ""
 
-#: ../../magneto/src/magneto/kde/components.py:59
+#: ../../magneto/src/magneto/qt5/components.py:60
 msgid "Application updates"
 msgstr ""
 
@@ -4753,21 +4749,29 @@ msgstr ""
 msgid "Repositories are being updated"
 msgstr ""
 
+#: ../../magneto/src/magneto/core/interfaces.py:392
+msgid "Sabayon repositories status"
+msgstr ""
+
+#: ../../magneto/src/magneto/core/interfaces.py:393
+msgid "Repositories are being updated automatically"
+msgstr ""
+
 #. all fine, no updates
+#: ../../magneto/src/magneto/core/interfaces.py:401
 #: ../../magneto/src/magneto/core/interfaces.py:402
-#: ../../magneto/src/magneto/core/interfaces.py:403
 msgid "System upgrade started"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:404
+#: ../../magneto/src/magneto/core/interfaces.py:403
 msgid "Do not shutdown nor reboot the computer!"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:497
+#: ../../magneto/src/magneto/core/interfaces.py:496
 msgid "Updates Notification Applet Disabled"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:507
+#: ../../magneto/src/magneto/core/interfaces.py:506
 msgid "Updates Notification Applet Enabled"
 msgstr ""
 

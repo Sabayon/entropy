@@ -1,21 +1,22 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Nelson Kigen <nellyk89@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-20 07:54+0100\n"
+"POT-Creation-Date: 2017-09-10 19:06+0200\n"
 "PO-Revision-Date: 2016-11-20 06:54+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Swahili (http://www.transifex.com/lxnay/sabayon-entropy/language/sw/)\n"
+"Language-Team: Swahili (http://www.transifex.com/lxnay/sabayon-entropy/"
+"language/sw/)\n"
+"Language: sw\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: sw\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../../lib/entropy/db/skel.py:518
@@ -498,8 +499,7 @@ msgid "Repository"
 msgstr ""
 
 #: ../../lib/entropy/client/interfaces/methods.py:112
-#: ../../client/solo/commands/pkg.py:190
-#: ../../client/solo/commands/mask.py:101
+#: ../../client/solo/commands/pkg.py:190 ../../client/solo/commands/mask.py:101
 msgid "is not available"
 msgstr ""
 
@@ -730,8 +730,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:1341
 #: ../../lib/entropy/security.py:397
-msgid ""
-"Make sure to verify the imported key and set an appropriate trust level"
+msgid "Make sure to verify the imported key and set an appropriate trust level"
 msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:1361
@@ -1188,44 +1187,40 @@ msgstr ""
 msgid "library needed by:"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:130
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:123
 msgid "Removing library"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:133
-msgid "Unregistering library"
-msgstr ""
-
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:160
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:151
 msgid "Failed to remove the library"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:352
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:343
 msgid "Cannot protect broken symlink"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:386
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:377
 msgid "Skipping file installation/removal"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:430
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:548
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:421
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:539
 msgid "Protecting config file"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:525
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:516
 msgid "Removing config file, never modified"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:547
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:538
 msgid "remove"
 msgstr "Toa"
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:567
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:558
 msgid "This package contains a badly encoded file !!!"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:696
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:687
 msgid "Collision found during removal of"
 msgstr ""
 
@@ -1393,27 +1388,27 @@ msgstr ""
 msgid "Configuring package"
 msgstr ""
 
-#: ../../lib/entropy/fetchers.py:888
+#: ../../lib/entropy/fetchers.py:889
 msgid "infinite"
 msgstr ""
 
-#: ../../lib/entropy/fetchers.py:960
+#: ../../lib/entropy/fetchers.py:961
 msgid "[F]"
 msgstr ""
 
-#: ../../lib/entropy/fetchers.py:961 ../../lib/entropy/fetchers.py:1389
+#: ../../lib/entropy/fetchers.py:962 ../../lib/entropy/fetchers.py:1390
 msgid "ETA"
 msgstr ""
 
-#: ../../lib/entropy/fetchers.py:962 ../../lib/entropy/fetchers.py:1390
+#: ../../lib/entropy/fetchers.py:963 ../../lib/entropy/fetchers.py:1391
 msgid "sec"
 msgstr ""
 
-#: ../../lib/entropy/fetchers.py:1253
+#: ../../lib/entropy/fetchers.py:1254
 msgid "Aggregated download"
 msgstr ""
 
-#: ../../lib/entropy/fetchers.py:1255
+#: ../../lib/entropy/fetchers.py:1256
 msgid "item"
 msgid_plural "items"
 msgstr[0] ""
@@ -2022,7 +2017,8 @@ msgstr ""
 #: ../../client/solo/main.py:163
 msgid ""
 "Erm... Can I send the error, along with some other information\n"
-"about your hardware to my creators so they can fix me? (Your IP will be logged)"
+"about your hardware to my creators so they can fix me? (Your IP will be "
+"logged)"
 msgstr ""
 
 #: ../../client/solo/main.py:170
@@ -2055,8 +2051,7 @@ msgstr ""
 
 #: ../../client/solo/main.py:213
 msgid ""
-"Ugh. Cannot send the report. Please mail the file below to "
-"lxnay@sabayon.org."
+"Ugh. Cannot send the report. Please mail the file below to lxnay@sabayon.org."
 msgstr ""
 
 #: ../../client/solo/main.py:233
@@ -2099,8 +2094,7 @@ msgstr ""
 #: ../../client/solo/commands/conf.py:76 ../../client/solo/commands/ugc.py:72
 #: ../../client/solo/commands/ugc.py:105 ../../client/solo/commands/ugc.py:146
 #: ../../client/solo/commands/repo.py:68
-#: ../../client/solo/commands/rescue.py:72
-#: ../../client/solo/commands/pkg.py:73
+#: ../../client/solo/commands/rescue.py:72 ../../client/solo/commands/pkg.py:73
 #: ../../client/solo/commands/preservedlibs.py:68 ../kernel-switcher:49
 msgid "available commands"
 msgstr ""
@@ -3282,8 +3276,7 @@ msgstr ""
 #: ../../client/solo/commands/ugc.py:77 ../../client/solo/commands/ugc.py:87
 #: ../../client/solo/commands/ugc.py:99 ../../client/solo/commands/ugc.py:140
 #: ../../client/solo/commands/repo.py:74 ../../client/solo/commands/repo.py:82
-#: ../../client/solo/commands/repo.py:89
-#: ../../client/solo/commands/repo.py:112
+#: ../../client/solo/commands/repo.py:89 ../../client/solo/commands/repo.py:112
 #: ../../client/solo/commands/repo.py:140
 msgid "repository name"
 msgstr ""
@@ -3298,8 +3291,7 @@ msgstr ""
 
 #: ../../client/solo/commands/ugc.py:96
 msgid ""
-"manage package documents in the selected repository (comments, files, "
-"videos)"
+"manage package documents in the selected repository (comments, files, videos)"
 msgstr ""
 
 #: ../../client/solo/commands/ugc.py:104
@@ -3574,8 +3566,7 @@ msgstr ""
 msgid "vote added, thank you!"
 msgstr ""
 
-#: ../../client/solo/commands/repo.py:67
-#: ../../client/solo/commands/repo.py:737
+#: ../../client/solo/commands/repo.py:67 ../../client/solo/commands/repo.py:737
 msgid "manage repositories"
 msgstr ""
 
@@ -4011,8 +4002,8 @@ msgstr ""
 msgid "License saved into"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:71
-#: ../../client/solo/commands/pkg.py:72 ../../client/solo/commands/pkg.py:461
+#: ../../client/solo/commands/rescue.py:71 ../../client/solo/commands/pkg.py:72
+#: ../../client/solo/commands/pkg.py:461
 msgid "execute advanced tasks on packages"
 msgstr ""
 
@@ -4341,8 +4332,8 @@ msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:130
 msgid ""
-"remove unmaintained packages, if any. This will respect --ask, --pretend and"
-" other switches."
+"remove unmaintained packages, if any. This will respect --ask, --pretend and "
+"other switches."
 msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:201
@@ -4600,41 +4591,41 @@ msgstr ""
 msgid "Tools to manage the preserved libraries on the system"
 msgstr ""
 
-#: ../../magneto/src/magneto/kde/interfaces.py:74
+#: ../../magneto/src/magneto/qt5/interfaces.py:49
 msgid "Magneto Entropy Updates Applet"
 msgstr ""
 
-#: ../../magneto/src/magneto/kde/interfaces.py:248
+#: ../../magneto/src/magneto/qt5/interfaces.py:209
 #: ../../magneto/src/magneto/gtk/interfaces.py:220
 msgid "Your system currently has an outdated version of"
 msgstr ""
 
-#: ../../magneto/src/magneto/kde/interfaces.py:249
+#: ../../magneto/src/magneto/qt5/interfaces.py:210
 #: ../../magneto/src/magneto/gtk/interfaces.py:221
 msgid "installed"
 msgstr ""
 
-#: ../../magneto/src/magneto/kde/interfaces.py:250
+#: ../../magneto/src/magneto/qt5/interfaces.py:211
 #: ../../magneto/src/magneto/gtk/interfaces.py:222
 msgid "the latest available version is"
 msgstr ""
 
-#: ../../magneto/src/magneto/kde/interfaces.py:252
+#: ../../magneto/src/magneto/qt5/interfaces.py:213
 #: ../../magneto/src/magneto/gtk/interfaces.py:224
 msgid ""
 "It is recommended that you upgrade to the latest before updating any other "
 "packages"
 msgstr ""
 
-#: ../../magneto/src/magneto/kde/components.py:48
+#: ../../magneto/src/magneto/qt5/components.py:49
 msgid "Close"
 msgstr ""
 
-#: ../../magneto/src/magneto/kde/components.py:49
+#: ../../magneto/src/magneto/qt5/components.py:50
 msgid "Launch Application Browser"
 msgstr ""
 
-#: ../../magneto/src/magneto/kde/components.py:59
+#: ../../magneto/src/magneto/qt5/components.py:60
 msgid "Application updates"
 msgstr ""
 
@@ -4759,21 +4750,29 @@ msgstr ""
 msgid "Repositories are being updated"
 msgstr ""
 
+#: ../../magneto/src/magneto/core/interfaces.py:392
+msgid "Sabayon repositories status"
+msgstr ""
+
+#: ../../magneto/src/magneto/core/interfaces.py:393
+msgid "Repositories are being updated automatically"
+msgstr ""
+
 #. all fine, no updates
+#: ../../magneto/src/magneto/core/interfaces.py:401
 #: ../../magneto/src/magneto/core/interfaces.py:402
-#: ../../magneto/src/magneto/core/interfaces.py:403
 msgid "System upgrade started"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:404
+#: ../../magneto/src/magneto/core/interfaces.py:403
 msgid "Do not shutdown nor reboot the computer!"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:497
+#: ../../magneto/src/magneto/core/interfaces.py:496
 msgid "Updates Notification Applet Disabled"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:507
+#: ../../magneto/src/magneto/core/interfaces.py:506
 msgid "Updates Notification Applet Enabled"
 msgstr ""
 

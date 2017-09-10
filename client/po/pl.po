@@ -1,26 +1,29 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # KarielG0 <karielg0@gmx.com>, 2014
-# Michał Plichta <mplichta@gmail.com>, 2013-2014
-# Michał Plichta <mplichta@gmail.com>, 2012
+# Michal Plichta <mplichta@gmail.com>, 2013-2014,2016
+# Michal Plichta <mplichta@gmail.com>, 2012
 # Enlik <slawomir.nizio@sabayon.org>, 2012
 # Zetok <prendter@gmail.com>, 2013-2014
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-20 07:54+0100\n"
-"PO-Revision-Date: 2016-11-20 06:54+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Polish (http://www.transifex.com/lxnay/sabayon-entropy/language/pl/)\n"
+"POT-Creation-Date: 2017-09-10 19:06+0200\n"
+"PO-Revision-Date: 2016-12-31 13:54+0000\n"
+"Last-Translator: Michal Plichta <mplichta@gmail.com>\n"
+"Language-Team: Polish (http://www.transifex.com/lxnay/sabayon-entropy/"
+"language/pl/)\n"
+"Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: pl\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n"
+"%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n"
+"%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
 
 #: ../../lib/entropy/db/skel.py:518
 #: ../../lib/entropy/client/interfaces/package/actions/action.py:100
@@ -344,7 +347,8 @@ msgstr "Błąd przy aktualizacji SPM UID"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3329
 msgid "Cannot update SPM installed pkgs file"
-msgstr "Nie można zaktualizować pliku zawierającego pakiety zainstalowane przez SPM"
+msgstr ""
+"Nie można zaktualizować pliku zawierającego pakiety zainstalowane przez SPM"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3431
 msgid "Portage world file is corrupted"
@@ -502,8 +506,7 @@ msgid "Repository"
 msgstr "Repozytorium"
 
 #: ../../lib/entropy/client/interfaces/methods.py:112
-#: ../../client/solo/commands/pkg.py:190
-#: ../../client/solo/commands/mask.py:101
+#: ../../client/solo/commands/pkg.py:190 ../../client/solo/commands/mask.py:101
 msgid "is not available"
 msgstr "nie jest dostępne"
 
@@ -531,7 +534,9 @@ msgstr "Systemowa baza danych nie została znaleziona albo jest uszkodzona."
 
 #: ../../lib/entropy/client/interfaces/methods.py:1071
 msgid "running in safe mode using temporary, empty repository"
-msgstr "uruchamianie w bezpiecznym trybie, używając tymczasowego, pustego repozytorium"
+msgstr ""
+"uruchamianie w bezpiecznym trybie, używając tymczasowego, pustego "
+"repozytorium"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1259
 msgid "Backing up repository to"
@@ -734,9 +739,9 @@ msgstr "Poddaję się"
 
 #: ../../lib/entropy/client/interfaces/db.py:1341
 #: ../../lib/entropy/security.py:397
-msgid ""
-"Make sure to verify the imported key and set an appropriate trust level"
-msgstr "Koniecznie sprawdź zaimportowany klucz i ustaw odpowiedni poziom zaufania"
+msgid "Make sure to verify the imported key and set an appropriate trust level"
+msgstr ""
+"Koniecznie sprawdź zaimportowany klucz i ustaw odpowiedni poziom zaufania"
 
 #: ../../lib/entropy/client/interfaces/db.py:1361
 msgid "This repository suports GPG-signed packages"
@@ -772,7 +777,9 @@ msgstr "Błąd podczas instalacji klucza GPG"
 
 #: ../../lib/entropy/client/interfaces/db.py:1476
 msgid "GPG key seems already installed but not properly recorded, resetting"
-msgstr "Klucz GPG wydaje się być zainstalowany, ale niepoprawnie zapisany - resetowanie"
+msgstr ""
+"Klucz GPG wydaje się być zainstalowany, ale niepoprawnie zapisany - "
+"resetowanie"
 
 #: ../../lib/entropy/client/interfaces/db.py:1511
 msgid "Successfully installed GPG key for repository"
@@ -905,6 +912,7 @@ msgid_plural "there are"
 msgstr[0] "jest"
 msgstr[1] "są"
 msgstr[2] "jest"
+msgstr[3] "jest"
 
 #: ../../lib/entropy/client/interfaces/repository.py:215
 msgid "package file that could be removed"
@@ -912,6 +920,7 @@ msgid_plural "package files that could be removed"
 msgstr[0] "plik pakietu, który może być usunięty"
 msgstr[1] "pliki pakietów, które mogą być usunięte"
 msgstr[2] "plików pakietów, które mogą być usunięte"
+msgstr[3] "plików pakietów, które mogą być usunięte"
 
 #: ../../lib/entropy/client/interfaces/repository.py:228
 msgid "Packages are stored in"
@@ -1021,6 +1030,7 @@ msgid_plural "packages"
 msgstr[0] "pakiet"
 msgstr[1] "pakiety"
 msgstr[2] "pakietów"
+msgstr[3] "pakietów"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:846
 msgid "Some packages cannot be fetched"
@@ -1195,44 +1205,40 @@ msgstr "Ochranianie"
 msgid "library needed by:"
 msgstr "biblioteka potrzebna dla:"
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:130
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:123
 msgid "Removing library"
 msgstr "Usuwanie biblioteki"
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:133
-msgid "Unregistering library"
-msgstr "Wyrejestrowywanie biblioteki"
-
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:160
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:151
 msgid "Failed to remove the library"
 msgstr "Niepowodzenie usuwania biblioteki"
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:352
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:343
 msgid "Cannot protect broken symlink"
 msgstr "Wyłączona ochrona dla uszkodzonego dowiązania symbolicznego"
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:386
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:377
 msgid "Skipping file installation/removal"
 msgstr "Pomijanie operacji instalacji/usuwania pliku"
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:430
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:548
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:421
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:539
 msgid "Protecting config file"
 msgstr "Chronienie pliku konfiguracyjnego"
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:525
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:516
 msgid "Removing config file, never modified"
 msgstr "Usuwanie pliku konfiguracyjnego, nie był modyfikowany"
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:547
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:538
 msgid "remove"
 msgstr "usuń"
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:567
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:558
 msgid "This package contains a badly encoded file !!!"
 msgstr "Ten pakiet zawiera źle zakodowany plik!!!"
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:696
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:687
 msgid "Collision found during removal of"
 msgstr "Znaleziono kolizję przy usuwaniu"
 
@@ -1400,32 +1406,33 @@ msgstr "Żądany pakiet nie jest już dostępny."
 msgid "Configuring package"
 msgstr "Konfigurowanie pakietu"
 
-#: ../../lib/entropy/fetchers.py:888
+#: ../../lib/entropy/fetchers.py:889
 msgid "infinite"
 msgstr "nieskończoność"
 
-#: ../../lib/entropy/fetchers.py:960
+#: ../../lib/entropy/fetchers.py:961
 msgid "[F]"
 msgstr "[F]"
 
-#: ../../lib/entropy/fetchers.py:961 ../../lib/entropy/fetchers.py:1389
+#: ../../lib/entropy/fetchers.py:962 ../../lib/entropy/fetchers.py:1390
 msgid "ETA"
 msgstr "ETA"
 
-#: ../../lib/entropy/fetchers.py:962 ../../lib/entropy/fetchers.py:1390
+#: ../../lib/entropy/fetchers.py:963 ../../lib/entropy/fetchers.py:1391
 msgid "sec"
 msgstr "sek."
 
-#: ../../lib/entropy/fetchers.py:1253
+#: ../../lib/entropy/fetchers.py:1254
 msgid "Aggregated download"
 msgstr "Skumulowane pobieranie"
 
-#: ../../lib/entropy/fetchers.py:1255
+#: ../../lib/entropy/fetchers.py:1256
 msgid "item"
 msgid_plural "items"
 msgstr[0] "elementu"
 msgstr[1] "elementów"
 msgstr[2] "elementów"
+msgstr[3] "elementów"
 
 #: ../../lib/entropy/security.py:469
 msgid "GPG key EXPIRED for URL"
@@ -1774,7 +1781,8 @@ msgstr "Zbieranie uszkodzonych plików wykonywalnych"
 
 #: ../../lib/entropy/qa.py:702
 msgid "don't worry about libraries that are shown here but not later."
-msgstr "nie przejmuj się bibliotekami, które są tutaj pokazane, ale nie później."
+msgstr ""
+"nie przejmuj się bibliotekami, które są tutaj pokazane, ale nie później."
 
 #: ../../lib/entropy/qa.py:723
 msgid "Scanning libraries"
@@ -1980,7 +1988,8 @@ msgstr "pakeity z dalszymi zależnościami (węzły)"
 
 #: ../../client/solo/utils.py:694
 msgid "packages already pulled in as dependency in upper levels (circularity)"
-msgstr "pakiety już określone na wyższych poziomach jako zależność (zapętlenie)"
+msgstr ""
+"pakiety już określone na wyższych poziomach jako zależność (zapętlenie)"
 
 #: ../../client/solo/utils.py:773
 msgid "Graphing"
@@ -1988,7 +1997,9 @@ msgstr "Wizualizacja"
 
 #: ../../client/solo/main.py:40
 msgid "Installed packages repository corrupted. Please re-generate it"
-msgstr "Repozytorium zainstalowanych pakietów jest uszkodzone. Proszę je ponownie wygenerować."
+msgstr ""
+"Repozytorium zainstalowanych pakietów jest uszkodzone. Proszę je ponownie "
+"wygenerować."
 
 #: ../../client/solo/main.py:50
 msgid "Cannot continue"
@@ -2006,7 +2017,9 @@ msgstr "Nie ma wolnej pamięci, facet! Twoja wina!"
 msgid ""
 "Hi. My name is Bug Reporter. I am sorry to inform you that the program "
 "crashed. Well, you know, shit happens."
-msgstr "Cześć. Nazywam się Zgłaszacz Błędów. Przykro mi poinformować, że program awaryjnie przerwał działanie. Cóż, wiesz, przypadki chodzą po ludziach."
+msgstr ""
+"Cześć. Nazywam się Zgłaszacz Błędów. Przykro mi poinformować, że program "
+"awaryjnie przerwał działanie. Cóż, wiesz, przypadki chodzą po ludziach."
 
 #: ../../client/solo/main.py:100
 msgid ""
@@ -2025,13 +2038,19 @@ msgstr "Teraz pokażę ci, co się stało. Bez nerwów, jestem tu po to, by pom�
 msgid ""
 "Oh well, I cannot even write to TMPDIR. So, please copy the error and mail "
 "lxnay@sabayon.org."
-msgstr "No cóż, nie mogę nawet zapisywać do TMPDIR. Proszę więc, skopiuj ten błąd i wyślij wiadomość do lxnay@sabayon.org."
+msgstr ""
+"No cóż, nie mogę nawet zapisywać do TMPDIR. Proszę więc, skopiuj ten błąd i "
+"wyślij wiadomość do lxnay@sabayon.org."
 
 #: ../../client/solo/main.py:163
 msgid ""
 "Erm... Can I send the error, along with some other information\n"
-"about your hardware to my creators so they can fix me? (Your IP will be logged)"
-msgstr "Hm... Czy mogę wysłać zapis błędu razem z innymi informacjami\no twoim sprzęcie do mych twórców, żeby mogli mnie naprawić? (Twoje IP zostanie zapisane.)"
+"about your hardware to my creators so they can fix me? (Your IP will be "
+"logged)"
+msgstr ""
+"Hm... Czy mogę wysłać zapis błędu razem z innymi informacjami\n"
+"o twoim sprzęcie do mych twórców, żeby mogli mnie naprawić? (Twoje IP "
+"zostanie zapisane.)"
 
 #: ../../client/solo/main.py:170
 msgid "Ok, ok ok ok... Sorry!"
@@ -2041,7 +2060,9 @@ msgstr "Ok, ok ok ok... Wybacz!"
 msgid ""
 "If you want to be contacted back (and actively supported), also answer the "
 "questions below:"
-msgstr "Jeżeli chcesz uzyskać kontakt (i otrzymać aktywne wsparcie), odpowiedz też na poniższe pytania:"
+msgstr ""
+"Jeżeli chcesz uzyskać kontakt (i otrzymać aktywne wsparcie), odpowiedz też "
+"na poniższe pytania:"
 
 #: ../../client/solo/main.py:183
 msgid "Your Full name:"
@@ -2059,13 +2080,16 @@ msgstr "Co robiłeś:"
 msgid ""
 "Thank you very much. The error has been reported and hopefully, the problem "
 "will be solved as soon as possible."
-msgstr "Dziękuję bardzo. Błąd został zgłoszony i - miejmy nadzieję - problem zostanie rozwiązany tak szybko, jak to możliwe."
+msgstr ""
+"Dziękuję bardzo. Błąd został zgłoszony i - miejmy nadzieję - problem "
+"zostanie rozwiązany tak szybko, jak to możliwe."
 
 #: ../../client/solo/main.py:213
 msgid ""
-"Ugh. Cannot send the report. Please mail the file below to "
+"Ugh. Cannot send the report. Please mail the file below to lxnay@sabayon.org."
+msgstr ""
+"Uch. Nie można wysłać zgłoszenia. Wyślij, proszę, plik poniżej do "
 "lxnay@sabayon.org."
-msgstr "Uch. Nie można wysłać zgłoszenia. Wyślij, proszę, plik poniżej do lxnay@sabayon.org."
 
 #: ../../client/solo/main.py:233
 msgid "Entropy/Equo version mismatch"
@@ -2107,8 +2131,7 @@ msgstr "narzędzia do przeszukiwania repozytorium"
 #: ../../client/solo/commands/conf.py:76 ../../client/solo/commands/ugc.py:72
 #: ../../client/solo/commands/ugc.py:105 ../../client/solo/commands/ugc.py:146
 #: ../../client/solo/commands/repo.py:68
-#: ../../client/solo/commands/rescue.py:72
-#: ../../client/solo/commands/pkg.py:73
+#: ../../client/solo/commands/rescue.py:72 ../../client/solo/commands/pkg.py:73
 #: ../../client/solo/commands/preservedlibs.py:68 ../kernel-switcher:49
 msgid "available commands"
 msgstr "dostępne polecenia"
@@ -2269,7 +2292,9 @@ msgstr "pokaż graf zależności dla podanego pakietu"
 msgid ""
 "include system packages, build-time dependencies and circular dependencies "
 "information"
-msgstr "dołącz też informacje dotyczące pakietów systemowych, potrzebnych do kompilacji oraz zapętlonych zależności"
+msgstr ""
+"dołącz też informacje dotyczące pakietów systemowych, potrzebnych do "
+"kompilacji oraz zapętlonych zależności"
 
 #: ../../client/solo/commands/query.py:295
 msgid "show the inverse dependencies graph for the given package"
@@ -2299,6 +2324,7 @@ msgid_plural "entries"
 msgstr[0] "element"
 msgstr[1] "elementy"
 msgstr[2] "elementów"
+msgstr[3] "elementów"
 
 #: ../../client/solo/commands/query.py:411
 #: ../../client/solo/commands/query.py:577
@@ -2656,7 +2682,8 @@ msgstr "Repozytoria zostaną zaktualizowane w tle"
 
 #: ../../client/solo/commands/update.py:134
 msgid "app-admin/rigo-daemon not installed. Update not allowed."
-msgstr "app-admin/rigo-daemon nie jest zainstalowane. Aktualizacja niedozwolona."
+msgstr ""
+"app-admin/rigo-daemon nie jest zainstalowane. Aktualizacja niedozwolona."
 
 #: ../../client/solo/commands/update.py:201
 msgid "Have a nice day"
@@ -2704,7 +2731,7 @@ msgstr "sprawdź zainstalowane pliki, używając zapisanych sum kontrolnych"
 
 #: ../../client/solo/commands/security.py:77
 msgid "name of package to check"
-msgstr ""
+msgstr "nazwa paczki do sprawdzenia"
 
 #: ../../client/solo/commands/security.py:80
 msgid "consider mtime instead of SHA256 (false positives ahead)"
@@ -2755,7 +2782,8 @@ msgstr "Identyfikator rekomendacji bezpieczeństwa"
 
 #: ../../client/solo/commands/security.py:158
 msgid "automatically install all the available security updates"
-msgstr "automatycznie zainstaluj wszystkie dostępne aktualizacje bezpieczeństwa"
+msgstr ""
+"automatycznie zainstaluj wszystkie dostępne aktualizacje bezpieczeństwa"
 
 #: ../../client/solo/commands/security.py:222
 msgid "Advisory Identifier"
@@ -2893,7 +2921,8 @@ msgstr "Wpisz liczbę"
 
 #: ../../client/solo/commands/conf.py:217
 msgid "Please choose a file to update by typing its identification number."
-msgstr "Proszę wybrać plik do aktualizacji przez wybranie towarzyszącej mu liczby"
+msgstr ""
+"Proszę wybrać plik do aktualizacji przez wybranie towarzyszącej mu liczby"
 
 #: ../../client/solo/commands/conf.py:221
 msgid "Other options are:"
@@ -2907,7 +2936,8 @@ msgstr "Wyjście"
 
 #: ../../client/solo/commands/conf.py:230
 msgid "Automerge all the files asking you one by one"
-msgstr "Scal automatycznie wszystkie pliki, pytając o potwierdzenie dla każdego"
+msgstr ""
+"Scal automatycznie wszystkie pliki, pytając o potwierdzenie dla każdego"
 
 #: ../../client/solo/commands/conf.py:235
 msgid "Automerge all the files without questioning"
@@ -3291,8 +3321,7 @@ msgstr "zaloguj się w podanym repozytorium"
 #: ../../client/solo/commands/ugc.py:77 ../../client/solo/commands/ugc.py:87
 #: ../../client/solo/commands/ugc.py:99 ../../client/solo/commands/ugc.py:140
 #: ../../client/solo/commands/repo.py:74 ../../client/solo/commands/repo.py:82
-#: ../../client/solo/commands/repo.py:89
-#: ../../client/solo/commands/repo.py:112
+#: ../../client/solo/commands/repo.py:89 ../../client/solo/commands/repo.py:112
 #: ../../client/solo/commands/repo.py:140
 msgid "repository name"
 msgstr "nazwa repozytorium"
@@ -3307,9 +3336,10 @@ msgstr "wyloguj się z podanego repozytorium"
 
 #: ../../client/solo/commands/ugc.py:96
 msgid ""
-"manage package documents in the selected repository (comments, files, "
-"videos)"
-msgstr "zarządzaj dokumentami dla pakietów dla wybranego repozytorium (komentarze, pliki, wideo)"
+"manage package documents in the selected repository (comments, files, videos)"
+msgstr ""
+"zarządzaj dokumentami dla pakietów dla wybranego repozytorium (komentarze, "
+"pliki, wideo)"
 
 #: ../../client/solo/commands/ugc.py:104
 msgid "manage Documents"
@@ -3402,7 +3432,9 @@ msgstr "Pomyślnie zalogowano jako"
 
 #: ../../client/solo/commands/ugc.py:288
 msgid "From now on, any UGC action will be committed as this user"
-msgstr "Od teraz każda czynność związana z funkcjonalnością treści użytkowników będzie używała tego konta"
+msgstr ""
+"Od teraz każda czynność związana z funkcjonalnością treści użytkowników "
+"będzie używała tego konta"
 
 #: ../../client/solo/commands/ugc.py:325
 msgid "Not logged in."
@@ -3583,8 +3615,7 @@ msgstr "już oceniono"
 msgid "vote added, thank you!"
 msgstr "ocena dodana, dziękuję!"
 
-#: ../../client/solo/commands/repo.py:67
-#: ../../client/solo/commands/repo.py:737
+#: ../../client/solo/commands/repo.py:67 ../../client/solo/commands/repo.py:737
 msgid "manage repositories"
 msgstr "zarządzaj repozytoriami"
 
@@ -3868,6 +3899,7 @@ msgid_plural "There are %s configuration files needing update"
 msgstr[0] "Jest %s plik konfiguracyjny wymagający aktualizacji"
 msgstr[1] "Są %s pliki konfiguracyjne wymagające aktualizacji"
 msgstr[2] "Jest %s plików konfiguracyjnych wymagających aktualizacji"
+msgstr[3] "Jest %s plików konfiguracyjnych wymagających aktualizacji"
 
 #: ../../client/solo/commands/_manage.py:116
 msgid "Please run"
@@ -3880,6 +3912,7 @@ msgid_plural "There are %s preserved libraries on the system"
 msgstr[0] "Jest %s zachowana biblioteka w systemie"
 msgstr[1] "Są %s zachowane biblioteki w systemie"
 msgstr[2] "Jest %s zachowanych bibliotek w systemie"
+msgstr[3] "Jest %s zachowanych bibliotek w systemie"
 
 #. every package matching app-foo is masked
 #: ../../client/solo/commands/_manage.py:245
@@ -3951,14 +3984,14 @@ msgstr "Pociągnięte zostały konfliktujące pakiety"
 #: ../../client/solo/commands/_manage.py:524
 #: ../../client/solo/commands/_manage.py:540
 msgid "required by"
-msgstr ""
+msgstr "wymagany przez"
 
 #. Conflicting dependencies could have been
 #. specified by user, in which case they were
 #. not pulled in by anything.
 #: ../../client/solo/commands/_manage.py:528
 msgid "(no reverse dependencies)"
-msgstr ""
+msgstr "(brak wstecznych zależności)"
 
 #: ../../client/solo/commands/_manage.py:551
 msgid "Please mask conflicts using"
@@ -4022,8 +4055,8 @@ msgstr "Brak czytnika plików"
 msgid "License saved into"
 msgstr "Licencja zapisana do"
 
-#: ../../client/solo/commands/rescue.py:71
-#: ../../client/solo/commands/pkg.py:72 ../../client/solo/commands/pkg.py:461
+#: ../../client/solo/commands/rescue.py:71 ../../client/solo/commands/pkg.py:72
+#: ../../client/solo/commands/pkg.py:461
 msgid "execute advanced tasks on packages"
 msgstr "wykonaj zaawansowane działania na pakietach"
 
@@ -4039,7 +4072,9 @@ msgstr "przeprowadź kompaktowanie repozytorium zainstalowanych pakietów"
 msgid ""
 "re-generate the installed packages repository using the Source Package "
 "Manager"
-msgstr "wygeneruj bazę danych zainstalowanych pakietów używając menadżera pakietów źródłowych (SPM)"
+msgstr ""
+"wygeneruj bazę danych zainstalowanych pakietów używając menadżera pakietów "
+"źródłowych (SPM)"
 
 #: ../../client/solo/commands/rescue.py:111
 msgid "re-generate SPM<->Entropy package UIDs mapping"
@@ -4049,7 +4084,9 @@ msgstr "wygeneruj ponownie odwzorowanie UID-ów (SPM<->pakiety Entropy)"
 msgid ""
 "update Entropy installed packages repository merging Source Package Manager "
 "changes"
-msgstr "zaktualizuj repozytorium Entropy zainstalowanych pakietów, łącząc zmiany dokonane z użyciem menadżera pakietów źródłowych"
+msgstr ""
+"zaktualizuj repozytorium Entropy zainstalowanych pakietów, łącząc zmiany "
+"dokonane z użyciem menadżera pakietów źródłowych"
 
 #: ../../client/solo/commands/rescue.py:128
 msgid "create a backup of the installed packages repository"
@@ -4101,7 +4138,9 @@ msgstr "Kompaktowanie zakończone"
 msgid ""
 "the Installed Packages repository will be re-generated using the Source "
 "Package Manager"
-msgstr "repozytorium zainstalowanych pakietów zostanie wygenerowane na podstawie danych menadżera pakietów źródłowych"
+msgstr ""
+"repozytorium zainstalowanych pakietów zostanie wygenerowane na podstawie "
+"danych menadżera pakietów źródłowych"
 
 #: ../../client/solo/commands/rescue.py:322
 msgid "I am not joking, this is quite disruptive"
@@ -4292,7 +4331,9 @@ msgstr "konfliktujące/zastąpione"
 
 #: ../../client/solo/commands/install.py:402
 msgid "Packages needing to be installed/updated/downgraded"
-msgstr "Pakiety, które mają zostać zainstalowane/zaktualizowane/cofnięte do starszej wersji"
+msgstr ""
+"Pakiety, które mają zostać zainstalowane/zaktualizowane/cofnięte do starszej "
+"wersji"
 
 #: ../../client/solo/commands/install.py:407
 msgid "Packages needing to be removed"
@@ -4332,7 +4373,9 @@ msgstr "wolnego miejsca"
 
 #: ../../client/solo/commands/install.py:487
 msgid "You don't have enough space for the installation. Free some space into"
-msgstr "Nie masz wystarczająco dużo miejsca na dokonanie instalacji. Zwolnij trochę miejsca z"
+msgstr ""
+"Nie masz wystarczająco dużo miejsca na dokonanie instalacji. Zwolnij trochę "
+"miejsca z"
 
 #: ../../client/solo/commands/install.py:587
 msgid "Download complete"
@@ -4352,9 +4395,11 @@ msgstr "zainstaluj lub zaktualizuj pakiety lub pakiety z plików"
 
 #: ../../client/solo/commands/upgrade.py:130
 msgid ""
-"remove unmaintained packages, if any. This will respect --ask, --pretend and"
-" other switches."
-msgstr "usunięcie nieutrzymywanych pakietów, jeżeli istniały. To będzie respektowało --ask, --pretend i inne przełączniki."
+"remove unmaintained packages, if any. This will respect --ask, --pretend and "
+"other switches."
+msgstr ""
+"usunięcie nieutrzymywanych pakietów, jeżeli istniały. To będzie respektowało "
+"--ask, --pretend i inne przełączniki."
 
 #: ../../client/solo/commands/upgrade.py:201
 msgid "Calculating System Updates"
@@ -4380,13 +4425,17 @@ msgstr "Nic do zaktualizowania"
 msgid ""
 "On the system there are packages that are not available anymore in the "
 "online repositories"
-msgstr "W systemie znajdują się pakiety, które nie są już dostępne w repozytoriach online"
+msgstr ""
+"W systemie znajdują się pakiety, które nie są już dostępne w repozytoriach "
+"online"
 
 #: ../../client/solo/commands/upgrade.py:277
 msgid ""
 "Even if they are usually harmless, it is suggested (after proper "
 "verification) to remove them."
-msgstr "Nawet jeśli jest to zwykle nieszkodliwe, sugeruje się (po odpowiednim sprawdzeniu), żeby je usunąć."
+msgstr ""
+"Nawet jeśli jest to zwykle nieszkodliwe, sugeruje się (po odpowiednim "
+"sprawdzeniu), żeby je usunąć."
 
 #: ../../client/solo/commands/upgrade.py:289
 msgid "To automatically remove them, please run: equo upgrade --purge."
@@ -4410,7 +4459,8 @@ msgstr "Nic do usunięcia"
 
 #: ../../client/solo/commands/upgrade.py:380
 msgid "There are more updates to install, reloading Entropy"
-msgstr "Jest więcej aktualizacji do zainstalowania - ponowne wczytywanie Entropy"
+msgstr ""
+"Jest więcej aktualizacji do zainstalowania - ponowne wczytywanie Entropy"
 
 #: ../../client/solo/commands/upgrade.py:400
 msgid "upgrade the system"
@@ -4502,14 +4552,16 @@ msgstr "sortuj pakiety według rozmiaru"
 #: ../../client/solo/commands/unused.py:79
 msgid "consider packages installed with a Source Package Manager to be wanted"
 msgstr ""
+" rozważ paczki czy chcesz zainstalowane paczki przez menadżera pakietów "
+"źródłowych"
 
 #: ../../client/solo/commands/unused.py:192
 msgid "Running unused packages test"
-msgstr ""
+msgstr "Uruchamiam test nie używanych oaczek"
 
 #: ../../client/solo/commands/unused.py:226
 msgid "show unused packages (pay attention)"
-msgstr ""
+msgstr "pokaż nieużywane paczki (zwróć uwagę)"
 
 #: ../../client/solo/commands/cleanup.py:97
 msgid "remove downloaded packages and clean temp. directories"
@@ -4611,41 +4663,42 @@ msgstr "więc po prostu wyrejestruj bibliotekę"
 msgid "Tools to manage the preserved libraries on the system"
 msgstr "Narzędzia do zarządzania zachowanymi bibliotekami w systemie"
 
-#: ../../magneto/src/magneto/kde/interfaces.py:74
+#: ../../magneto/src/magneto/qt5/interfaces.py:49
 msgid "Magneto Entropy Updates Applet"
 msgstr "Magneto, aplet aktualizacji Entropy"
 
-#: ../../magneto/src/magneto/kde/interfaces.py:248
+#: ../../magneto/src/magneto/qt5/interfaces.py:209
 #: ../../magneto/src/magneto/gtk/interfaces.py:220
 msgid "Your system currently has an outdated version of"
 msgstr "Twój system ma przestarzałą wersję"
 
-#: ../../magneto/src/magneto/kde/interfaces.py:249
+#: ../../magneto/src/magneto/qt5/interfaces.py:210
 #: ../../magneto/src/magneto/gtk/interfaces.py:221
 msgid "installed"
 msgstr "zainstal."
 
-#: ../../magneto/src/magneto/kde/interfaces.py:250
+#: ../../magneto/src/magneto/qt5/interfaces.py:211
 #: ../../magneto/src/magneto/gtk/interfaces.py:222
 msgid "the latest available version is"
 msgstr "najnowsza dostępna wersja to"
 
-#: ../../magneto/src/magneto/kde/interfaces.py:252
+#: ../../magneto/src/magneto/qt5/interfaces.py:213
 #: ../../magneto/src/magneto/gtk/interfaces.py:224
 msgid ""
 "It is recommended that you upgrade to the latest before updating any other "
 "packages"
-msgstr "Zaleca się aktualizację do najnowszej przez aktualizowaniem innych pakietów"
+msgstr ""
+"Zaleca się aktualizację do najnowszej przez aktualizowaniem innych pakietów"
 
-#: ../../magneto/src/magneto/kde/components.py:48
+#: ../../magneto/src/magneto/qt5/components.py:49
 msgid "Close"
 msgstr "Zamknij"
 
-#: ../../magneto/src/magneto/kde/components.py:49
+#: ../../magneto/src/magneto/qt5/components.py:50
 msgid "Launch Application Browser"
 msgstr "Uruchom przeglądarkę aplikacji"
 
-#: ../../magneto/src/magneto/kde/components.py:59
+#: ../../magneto/src/magneto/qt5/components.py:60
 msgid "Application updates"
 msgstr "Aktualizacje programów"
 
@@ -4723,7 +4776,9 @@ msgstr "Potrzebny restart systemu"
 
 #: ../../magneto/src/magneto/core/interfaces.py:336
 msgid "This system should be restarted at your earliest convenience"
-msgstr "System powinien zostać zrestartowany jak najszybciej, gdy tylko będzie to wygodne"
+msgstr ""
+"System powinien zostać zrestartowany jak najszybciej, gdy tylko będzie to "
+"wygodne"
 
 #: ../../magneto/src/magneto/core/interfaces.py:343
 msgid "Cannot monitor Sabayon updates"
@@ -4744,6 +4799,7 @@ msgid_plural "There are %s updates available"
 msgstr[0] "Jest %s dostępna aktualizacja"
 msgstr[1] "Są %s dostępne aktualizacje"
 msgstr[2] "Jest %s dostępnych aktualizacji"
+msgstr[3] "Jest %s dostępnych aktualizacji"
 
 #: ../../magneto/src/magneto/core/interfaces.py:370
 msgid "Sabayon updates available"
@@ -4751,7 +4807,7 @@ msgstr "aktualizacje Sabayona dostępne"
 
 #: ../../magneto/src/magneto/core/interfaces.py:371
 msgid "Updates are available"
-msgstr ""
+msgstr "Dostępne uaktualnienia"
 
 #: ../../magneto/src/magneto/core/interfaces.py:374
 msgid "Upgrade now"
@@ -4771,21 +4827,31 @@ msgstr "W tej chwili nie ma żadnych aktualizacji, świetnie!"
 msgid "Repositories are being updated"
 msgstr "Repozytoria są teraz aktualizowane"
 
+#: ../../magneto/src/magneto/core/interfaces.py:392
+#, fuzzy
+msgid "Sabayon repositories status"
+msgstr "pokaż stan repozytoriów"
+
+#: ../../magneto/src/magneto/core/interfaces.py:393
+#, fuzzy
+msgid "Repositories are being updated automatically"
+msgstr "Repozytoria są teraz aktualizowane"
+
 #. all fine, no updates
+#: ../../magneto/src/magneto/core/interfaces.py:401
 #: ../../magneto/src/magneto/core/interfaces.py:402
-#: ../../magneto/src/magneto/core/interfaces.py:403
 msgid "System upgrade started"
 msgstr "Uruchomiono aktualizację systemu"
 
-#: ../../magneto/src/magneto/core/interfaces.py:404
+#: ../../magneto/src/magneto/core/interfaces.py:403
 msgid "Do not shutdown nor reboot the computer!"
 msgstr "Nie wyłączaj i nie uruchamiaj ponownie komputera!"
 
-#: ../../magneto/src/magneto/core/interfaces.py:497
+#: ../../magneto/src/magneto/core/interfaces.py:496
 msgid "Updates Notification Applet Disabled"
 msgstr "Aplet powiadomień o aktualizacjach nieaktywny"
 
-#: ../../magneto/src/magneto/core/interfaces.py:507
+#: ../../magneto/src/magneto/core/interfaces.py:506
 msgid "Updates Notification Applet Enabled"
 msgstr "Aplet powiadomień o aktualizacjach aktywny"
 
@@ -4848,3 +4914,6 @@ msgstr "Magneto, aplet aktualizacji Entropy"
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:3
 msgid "_Load Package Manager"
 msgstr "Załaduj menadżera _pakietów"
+
+#~ msgid "Unregistering library"
+#~ msgstr "Wyrejestrowywanie biblioteki"

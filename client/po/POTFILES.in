@@ -106,9 +106,9 @@
 ../client/solo/commands/version.py
 ../client/solo/commands/mask.py
 ../client/solo/commands/preservedlibs.py
-../magneto/src/magneto/kde/interfaces.py
-../magneto/src/magneto/kde/components.py
-../magneto/src/magneto/kde/__init__.py
+../magneto/src/magneto/qt5/interfaces.py
+../magneto/src/magneto/qt5/components.py
+../magneto/src/magneto/qt5/__init__.py
 ../magneto/src/magneto/gtk/interfaces.py
 ../magneto/src/magneto/gtk/components.py
 ../magneto/src/magneto/gtk/__init__.py
