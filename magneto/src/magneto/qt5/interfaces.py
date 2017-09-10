@@ -12,22 +12,20 @@
 import os
 import sys
 
-# PyQt4 imports
-from PyQt4.QtCore import QTimer, SIGNAL
-from PyQt4.QtGui import QIcon
-
-# PyKDE4 imports
-from PyKDE4.kdecore import KAboutData, KCmdLineArgs, ki18n
-from PyKDE4.kdeui import KApplication, KStatusNotifierItem, KIcon, \
-    KMenu, KAction, KNotification
+# PyQt5 imports
+from PyQt5.QtCore import QTimer
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, \
+    QAction, QDialog
 
 # Magneto imports
 from magneto.core import config
 from magneto.core.interfaces import MagnetoCore
-from magneto.kde.components import AppletNoticeWindow
+from magneto.qt5.components import AppletNoticeWindow
 
 # Entropy imports
 from entropy.i18n import _
+from entropy.const import const_debug_write
 import entropy.dep
 
 
@@ -38,40 +36,17 @@ class Magneto(MagnetoCore):
     """
 
     def __init__(self):
+        self._app = QApplication([sys.argv[0]])
 
-        app_name    = "magneto"
-        catalog     = ""
-        prog_name   = ki18n("Magneto")
-        version     = "1.0"
-        description = ki18n("System Update Status")
-        lic         = KAboutData.License_GPL
-        cright      = ki18n("(c) 2013 Fabio Erculiani")
-        text        = ki18n("none")
-        home_page   = "www.sabayon.org"
-        bug_mail    = "lxnay@sabayon.org"
-
-        self._kabout = KAboutData (app_name, catalog, prog_name, version,
-            description, lic, cright, text, home_page, bug_mail)
-
-        argv = [sys.argv[0]]
-        KCmdLineArgs.init(argv, self._kabout)
-        self._app = KApplication()
-
-        from dbus.mainloop.qt import DBusQtMainLoop
+        from dbus.mainloop.pyqt5 import DBusQtMainLoop
         super(Magneto, self).__init__(main_loop_class = DBusQtMainLoop)
 
-        self._window = KStatusNotifierItem()
-        # do not show "Quit" and use quitSelected() signal
-        self._window.setStandardActionsEnabled(False)
-
+        self._window = QSystemTrayIcon(self._app)
         icon_name = self.icons.get("okay")
-        self._window.setIconByName(icon_name)
-        self._window.setStatus(KStatusNotifierItem.Passive)
+        self._window.setIcon(QIcon.fromTheme(icon_name))
+        self._window.activated.connect(self.applet_activated)
 
-        self._window.connect(self._window,
-            SIGNAL("activateRequested(bool,QPoint)"),
-            self.applet_activated)
-        self._menu = KMenu(_("Magneto Entropy Updates Applet"))
+        self._menu = QMenu(_("Magneto Entropy Updates Applet"))
         self._window.setContextMenu(self._menu)
 
         self._menu_items = {}
@@ -82,41 +57,44 @@ class Magneto(MagnetoCore):
 
             myid, _unused, mytxt, myslot_func = item
             name = self.get_menu_image(myid)
-            action_icon = KIcon(name)
+            action_icon = QIcon.fromTheme(name)
 
-            w = KAction(action_icon, mytxt, self._menu)
+            w = QAction(action_icon, mytxt, self._window,
+                        triggered=myslot_func)
             self._menu_items[myid] = w
-            self._window.connect(w, SIGNAL("triggered()"), myslot_func)
             self._menu.addAction(w)
 
         self._menu.hide()
 
     def _first_check(self):
-
         def _do_check():
             self.send_check_updates_signal(startup_check = True)
             return False
 
         if self._dbus_service_available:
+            const_debug_write("_first_check", "spawning check.")
             QTimer.singleShot(10000, _do_check)
 
     def startup(self):
-        """
-        Start user interface.
-        """
         self._dbus_service_available = self.setup_dbus()
         if config.settings["APPLET_ENABLED"] and \
             self._dbus_service_available:
             self.enable_applet(do_check = False)
+            const_debug_write("startup", "applet enabled, dbus service available.")
         else:
+            const_debug_write("startup", "applet disabled.")
             self.disable_applet()
         if not self._dbus_service_available:
+            const_debug_write("startup", "dbus not service available.")
             QTimer.singleShot(30000, self.show_service_not_available)
         else:
+            const_debug_write("startup", "spawning first check.")
             self._first_check()
 
         # Notice Window instance
         self._notice_window = AppletNoticeWindow(self)
+
+        self._window.show()
 
         # Enter main loop
         self._app.exec_()
@@ -127,7 +105,7 @@ class Magneto(MagnetoCore):
 
     def change_icon(self, icon_name):
         name = self.icons.get(icon_name)
-        self._window.setIconByName(name)
+        self._window.setIcon(QIcon.fromTheme(name))
 
     def disable_applet(self, *args):
         super(Magneto, self).disable_applet()
@@ -142,6 +120,8 @@ class Magneto(MagnetoCore):
 
     def show_alert(self, title, text, urgency = None, force = False,
                    buttons = None):
+
+        # NOTE: there is no support for buttons via QSystemTrayIcon.
 
         if ((title, text) == self.last_alert) and not force:
             return
@@ -159,51 +139,31 @@ class Magneto(MagnetoCore):
             button_callback()
 
         def do_show():
-            notification = KNotification("Updates")
+            if not self._window.supportsMessages():
+                const_debug_write("show_alert", "messages not supported.")
+                return
 
-            # Keep a reference or the callback of the actions added
-            # below will never work.
-            # See: https://bugzilla.redhat.com/show_bug.cgi?id=241531
-            self.__last_notification = notification
-
-            notification.setFlags(KNotification.CloseOnTimeout)
-            notification.setText("<b>%s</b><br/>%s" % (title, text,))
-            if buttons:
-                notification.setActions([x[1] for x in buttons])
-                notification.connect(
-                    notification,
-                    SIGNAL("activated(unsigned int)"), _action_activate_cb)
-
-            icon_name = "okay"
-            status = KStatusNotifierItem.Passive
+            icon_id = QSystemTrayIcon.Information
             if urgency == "critical":
-                icon_name = "critical"
-                status = KStatusNotifierItem.Active
+                icon_id = QSystemTrayIcon.Critical
 
-            name = self.icons.get(icon_name)
-            icon = KIcon(name)
-            self._window.setStatus(status)
-
-            notification.setPixmap(icon.pixmap(48, 48))
-            notification.sendEvent()
+            self._window.showMessage(title, text, icon_id)
             self.last_alert = (title, text)
 
-        # thread safety
         QTimer.singleShot(0, do_show)
 
     def update_tooltip(self, tip):
         def do_update():
-            self._window.setToolTipTitle(tip)
+            self._window.setToolTip(tip)
         QTimer.singleShot(0, do_update)
 
     def applet_context_menu(self):
-        """
-        No action for now.
-        """
-        pass
+        """No action for now."""
 
-    def applet_activated(self, active, pos):
-        if active:
+    def applet_activated(self, reason):
+        const_debug_write("applet_activated", "Applet activated: %s" % reason)
+        if reason == QSystemTrayIcon.DoubleClick:
+            const_debug_write("applet_activated", "Double click event.")
             self.applet_doubleclick()
 
     def hide_notice_window(self):
@@ -213,9 +173,11 @@ class Magneto(MagnetoCore):
     def show_notice_window(self):
 
         if self.notice_window_shown:
+            const_debug_write("show_notice_window", "Notice window already shown.")
             return
 
         if not self.package_updates:
+            const_debug_write("show_notice_window", "No computed updates.")
             return
 
         entropy_ver = None
@@ -243,8 +205,7 @@ class Magneto(MagnetoCore):
 
         critical_msg = ""
         if entropy_ver is not None:
-            critical_msg = "%s <b>sys-apps/entropy</b> "
-            "%s, %s <b>%s</b>. %s." % (
+            critical_msg = "%s <b>sys-apps/entropy</b> %s, %s <b>%s</b>. %s." % (
                 _("Your system currently has an outdated version of"),
                 _("installed"),
                 _("the latest available version is"),

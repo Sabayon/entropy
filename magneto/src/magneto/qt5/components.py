@@ -13,9 +13,10 @@
 import os
 
 # Qt imports
-from PyQt4.QtCore import SIGNAL
-from PyQt4.QtGui import QPixmap, QHBoxLayout, QListView, QLabel, QWidget, \
-    QStringListModel, QVBoxLayout, QPushButton, QIcon
+from PyQt5.QtCore import QStringListModel
+from PyQt5.QtWidgets import QHBoxLayout, QListView, QLabel, QWidget, \
+    QVBoxLayout, QPushButton
+from PyQt5.QtGui import QIcon
 
 # Entropy imports
 from entropy.i18n import _
@@ -24,8 +25,8 @@ from entropy.i18n import _
 class AppletNoticeWindow(QWidget):
 
     def __init__(self, controller):
+        super(AppletNoticeWindow, self).__init__()
 
-        QWidget.__init__(self)
         self.__controller = controller
 
         self.__pkglist = []
@@ -58,8 +59,8 @@ class AppletNoticeWindow(QWidget):
         self.resize(400, 200)
         self.setWindowTitle(_("Application updates"))
 
-        self.connect(self.__close_button, SIGNAL("clicked()"), self.on_close)
-        self.connect(self.__launch_pm_button, SIGNAL("clicked()"), self.on_pm)
+        self.__close_button.clicked.connect(self.on_close)
+        self.__launch_pm_button.clicked.connect(self.on_pm)
 
     def closeEvent(self, event):
         """

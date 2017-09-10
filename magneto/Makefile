@@ -49,10 +49,10 @@ magneto-gtk3-install:
 
 magneto-kde-install:
 
-	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/magneto/magneto/kde
+	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/magneto/magneto/qt5
 	mkdir -p $(DESTDIR)$(PREFIX)/share/apps/magneto
-	install -m644 src/magneto/kde/*.py \
-		$(DESTDIR)/$(LIBDIR)/entropy/magneto/magneto/kde/.
+	install -m644 src/magneto/qt5/*.py \
+		$(DESTDIR)/$(LIBDIR)/entropy/magneto/magneto/qt5/.
 	# install Magneto notification service
 	install -m644 $(MISCDIR)/magneto.notifyrc \
 		$(DESTDIR)$(PREFIX)/share/apps/magneto/.

@@ -46,7 +46,7 @@ def _startup(unlock_callback):
     is_mate = desktop_session == "MATE"
 
     if "--kde" in sys.argv:
-        from magneto.kde.interfaces import Magneto
+        from magneto.qt5.interfaces import Magneto
     elif "--gtk" in sys.argv:
         from magneto.gtk.interfaces import Magneto
     elif "--gtk3" in sys.argv:
@@ -55,7 +55,7 @@ def _startup(unlock_callback):
         if kde_env is not None:
             # this is KDE!
             try:
-                from magneto.kde.interfaces import Magneto
+                from magneto.qt5.interfaces import Magneto
             except (ImportError, RuntimeError,):
                 # try GTK3, then GTK
                 try:

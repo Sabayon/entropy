@@ -513,6 +513,8 @@ class MagnetoCore(MagnetoCoreUI):
 
     def applet_doubleclick(self):
         if not self.current_state in [ "OKAY", "ERROR", "CRITICAL" ]:
+            const_debug_write("applet_doubleclick",
+                              "not ready to show notice window: %s." % self.current_state)
             return
         self.trigger_notice_window()
 
