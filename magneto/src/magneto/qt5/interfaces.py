@@ -44,7 +44,7 @@ class Magneto(MagnetoCore):
         self._window = QSystemTrayIcon(self._app)
         icon_name = self.icons.get("okay")
         self._window.setIcon(QIcon.fromTheme(icon_name))
-        self._window.activated.connect(self.applet_activated)
+        self._window.activated.connect(self._applet_activated)
 
         self._menu = QMenu(_("Magneto Entropy Updates Applet"))
         self._window.setContextMenu(self._menu)
@@ -160,7 +160,7 @@ class Magneto(MagnetoCore):
     def applet_context_menu(self):
         """No action for now."""
 
-    def applet_activated(self, reason):
+    def _applet_activated(self, reason):
         const_debug_write("applet_activated", "Applet activated: %s" % reason)
         if reason == QSystemTrayIcon.DoubleClick:
             const_debug_write("applet_activated", "Double click event.")
