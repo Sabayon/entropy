@@ -85,7 +85,7 @@ class Magneto(MagnetoCore):
             const_debug_write("startup", "applet disabled.")
             self.disable_applet()
         if not self._dbus_service_available:
-            const_debug_write("startup", "dbus not service available.")
+            const_debug_write("startup", "dbus service not available.")
             QTimer.singleShot(30000, self.show_service_not_available)
         else:
             const_debug_write("startup", "spawning first check.")
