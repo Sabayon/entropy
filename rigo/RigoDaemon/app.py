@@ -2023,7 +2023,7 @@ class RigoDaemonService(dbus.service.Object):
                 package_id, repository_id = pkg_match
 
                 write_output(
-                    "_process_install_merge_action: "
+                    "_process_remove_merge_action: "
                     "%s, count: %s, total: %s" % (
                         pkg_match, (count + 1),
                         total),
