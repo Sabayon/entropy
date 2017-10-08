@@ -606,11 +606,16 @@ Install or update packages or package files.
             # state.
             notif_acquired = notification_lock.try_acquire_shared()
 
-            for count, pkg_match in enumerate(run_queue, 1):
+            metaopts = {
+                'removeconfig': config_files,
+                # This can be used by PackageAction based classes
+                # to know what's the overall package schedule for
+                # both upgrade and install actions. This way, we
+                # can better handle conflicts.
+                'install_queue' : run_queue,
+            }
 
-                metaopts = {
-                    'removeconfig': config_files,
-                }
+            for count, pkg_match in enumerate(run_queue, 1):
 
                 if onlydeps:
                     metaopts['install_source'] = \

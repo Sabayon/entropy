@@ -2544,6 +2544,14 @@ class RigoDaemonService(dbus.service.Object):
 
         action_factory = self._entropy.PackageActionFactory()
 
+        metaopts = {
+            # This can be used by PackageAction based classes
+            # to know what's the overall package schedule for
+            # both upgrade and install actions. This way, we
+            # can better handle conflicts.
+            'install_queue' : install_queue,
+        }
+
         try:
             for pkg_match in install_queue:
 
@@ -2566,7 +2574,7 @@ class RigoDaemonService(dbus.service.Object):
                 try:
                     pkg = action_factory.get(
                         action_factory.INSTALL_ACTION,
-                        pkg_match)
+                        pkg_match, opts=metaopts)
 
                     msg = "++ %s" % (purple(_("Application Install")),)
                     self._entropy.output(msg, count=(count, total),

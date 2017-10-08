@@ -328,6 +328,55 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                 package_ids]
 
             if not package_ids:
+                const_debug_write(
+                    __name__, "_remove_conflict_phase: no package_ids, no need to filter.")
+                return 0
+
+            # Now we have a list of packages that should be removed, but
+            # we may want to check whether a new version of such package
+            # would not cause the removal to begin with.
+            # We have two options:
+            # 1. we are already planning to install the package, and perhaps
+            # we should just let this happen.
+            # 2. we are not planning to install the package, and perhaps
+            # we should.
+            install_queue = self._opts.get('install_queue', [])
+            if not install_queue:
+                const_debug_write(
+                    __name__, "_remove_conflict_phase: empty install_queue.")
+
+            # This is O(nm) [m = number of packages to install that could get us here]
+            # But the chance to get here is low (basically m is low), the cardinality
+            # of n is within 1-2000 worst case, typical case for a 12 months old system
+            # is around 700-1000 (according to my experience). Plus, this data is
+            # super fast to retrieve (retrieveKeySlotTag is heavily cached, see
+            # entropy/db/sqlite.py.) So, as long as this is not a real problem, there is
+            # no need for further optimizations.
+            key_slot_tags = set()
+            for pkg_id, repo_id in install_queue:
+                repo = self._entropy.open_repository(repo_id)
+                key_slot_tag = repo.retrieveKeySlotTag(pkg_id)
+                if key_slot_tag:
+                    key_slot_tags.add(key_slot_tag)
+
+            filtered = set()
+            for package_id in package_ids:
+                inst_key_slot_tag = inst_repo.retrieveKeySlotTag(package_id)
+                if inst_key_slot_tag in key_slot_tags:
+                    const_debug_write(
+                        __name__,
+                        "_remove_conflict_phase: %s is being installed, skipping." % (
+                            inst_key_slot_tag,))
+                    filtered.add(package_id)
+
+            key_slot_tags.clear()  # help Python gc, FWIW.
+            package_ids = [x for x in package_ids if x not in filtered]
+
+            if not package_ids:
+                const_debug_write(
+                    __name__,
+                    "_remove_conflict_phase: no package_ids left after "
+                    "install_queue filtering.")
                 return 0
 
         # make sure to run this without locks, or deadlock happenz
