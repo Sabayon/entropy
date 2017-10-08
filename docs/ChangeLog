@@ -1,3 +1,73 @@
+commit 8d0f16d9d5f3dd2caf5ad548eb46ad3aba206bbc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 8 22:25:58 2017 +0200
+
+    Release Entropy 310
+
+commit 2d65d5b7bf9aa3806721ce337b0a08925cd44fbf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 8 21:39:30 2017 +0200
+
+    [entropy.client] fix conflicts removal handling during upgrade.
+    
+    In certain extreme situations, that are more likely if the install
+    state is old (e.g. 9 months +), Entropy may decide to remove packages
+    due to conflicts with the version being installed and shoot itself
+    in the foot, if this is the case of dev-lang/python :-).
+    
+    So, this commit tries to avoid the scenario by filtering out package
+    removals for those that are being installed anyway as part of the
+    transaction (e.g. a system upgrade).
+    
+    This should fix the very specific case, but increase uncertainty
+    and thus entropy in other cases where once a package that lists
+    conflicts is installed, it may not expect to find that package
+    installed. However, this case should be handled by the dependency
+    graph generator (and it currently does not), which would need to
+    reorder the execution of the queue to comply with conflicts.
+    
+    Perhaps, someone in the future will improve that too, for now,
+    let's enjoy one more snowflake.
+    
+    Current improvement:
+    - foo-1 and bar-2 are set to be installed
+    - foo-1 conflicts with <bar-2
+    - bar-1 is installed
+    - foo-1 wanted to remove bar-1 as part of foo-1 install transaction.
+      (now fixed, it won't...)
+    - bar-2 is then installed
+    
+    Better improvement:
+    - foo-1 and bar-2 are set to be installed
+    - foo-1 conflicts with <bar-2 (but bar-2 itself can be installed
+      and does not conflict with foo-1)
+    - bar-2 is set to be installed before foo-1
+    - when entropy gets to foo-1 there is nothing to remove
+
+commit 18fa7ebf5d018c693de45754ff8966903a3a9135
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 8 21:14:51 2017 +0200
+
+    [RigoDaemon] fix typo in debug string name
+
+commit 57deded2a8bfc61847967aa91c263e4f64813acc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 11 08:18:03 2017 +0200
+
+    [magneto] fix typo in debug message :)
+
+commit 3dfd0cabff674e800214ce05e84e584017139055
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 11 08:17:33 2017 +0200
+
+    [magneto] s/applet_activated/_applet_activated/
+
+commit 0088107ff3d1e2980e38732339e058b0060e60b7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 10 19:08:33 2017 +0200
+
+    Tagging Entropy version 309
+
 commit 330ffd192608a3ae5b4038c4deee32e2737935e7
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Sep 10 19:08:33 2017 +0200
