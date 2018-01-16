@@ -351,7 +351,7 @@ If you would like to selectively add certain packages, please see
 
         etp_pkg_files = [(pkg_list, False) for pkg_list in generated]
         package_ids = entropy_server.add_packages_to_repository(
-            repository_id, etp_pkg_files)
+            repository_id, etp_pkg_files, ask=self._ask)
 
         entropy_server.commit_repositories()
 
