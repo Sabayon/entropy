@@ -10,6 +10,7 @@
 
 """
 import os
+import os.path
 import errno
 import sys
 import argparse
@@ -443,6 +444,11 @@ Tools to rescue the running system.
 
         entropy_client.reopen_installed_repository()
         inst_repo = entropy_client.installed_repository()
+
+        # Sanity check: make sure we're not accidentally using the in-RAM db
+        if not os.path.exists(repo_path):
+            print("Repository creation failed")
+            return 1
 
         entropy_client.output(
             purple(_("Repository initialized, generating metadata")),
