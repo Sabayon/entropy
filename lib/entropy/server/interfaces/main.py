@@ -1017,13 +1017,51 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                         'action': "replace",
                         'does_dep_match_func': lambda dep_string: compiled_pattern.match(dep_string) is not None,
                         'replaces': replaces,
-                        'do': _do}
+                        'do_func': _do}
+            return metadata
+
+        def new_replace_dep_handler(rule):
+            def _do(_unused, dep_string):
+                try:
+                    # Should not actually happen as it's tested with does_dep_match_func.
+                    rewriter = entropy.dep.DependencyRewriter([dep_string], rule)
+                except entropy.dep.WrongRewriteRuleError:
+                    return dep_string, False
+
+                rewriter.rewrite()
+                return rewriter.deps[0], rewriter.changed
+
+            def _does_dep_match(dep_string):
+                try:
+                    rewriter = entropy.dep.DependencyRewriter([dep_string], rule)
+                except entropy.dep.WrongRewriteRuleError:
+                    return False
+
+                rewriter.rewrite()
+                return rewriter.matched
+
+            metadata = {'dep_pattern_str': "rewrite",
+                            # not translated to match the keyword in configuration
+                        'replaces_str': "~> %s" % (rule,),
+                        'action': "replace",
+                        'does_dep_match_func': _does_dep_match,
+                        'replaces': [rule],
+                        'do_func': _do}
             return metadata
 
         for line in rewrite_content:
             params = line.split()
             if len(params) < 2:
                 continue
+
+            if params[0] == "rewrite":
+                if len(params) < 3:
+                    continue
+                _unused, pkg_match, rule = line.split(None, 2)
+                metadata = new_replace_dep_handler(rule)
+                data.append((pkg_match, metadata))
+                continue
+
             pkg_match, pattern, replaces = params[0], params[1], params[2:]
             if pattern.startswith("++"):
                 compiled_pattern = None
@@ -7486,7 +7524,7 @@ class Server(Client):
 
         for dep_string, dep_value, is_conflict in pkg_deps:
 
-            dep_string_matched = False
+            dep_changed = False
             matched_pattern = False
 
             for dep_string_rewrite, handler in rewrites_enabled:
@@ -7512,13 +7550,13 @@ class Server(Client):
                 matched_pattern = True
 
                 if action == "remove":
-                    dep_string_matched = True
+                    dep_changed = True
 
                 for replace in handler['replaces']:
                     new_dep_string, subst_made = \
-                        handler['do'](replace, dep_string)
+                        handler['do_func'](replace, dep_string)
                     if subst_made:
-                        dep_string_matched = True
+                        dep_changed = True
                         if new_dep_string and (new_dep_string != "-"):
 
                             if is_conflict:
@@ -7559,13 +7597,13 @@ class Server(Client):
                             header = darkred("   !!! ")
                         )
 
-            if dep_string_matched:
+            if dep_changed:
                 if is_conflict:
                     remove_conflicts.add(dep_string)
                 else:
                     remove_dependencies.add(dep_string)
 
-            elif (not dep_string_matched) and matched_pattern:
+            elif (not dep_changed) and matched_pattern:
                 self.output(
                     "%s: %s :: %s" % (
                         darkred(_("No dependency rewrite made for")),

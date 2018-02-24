@@ -3,8 +3,9 @@
 """
 
     @author: Fabio Erculiani <lxnay@sabayon.org>
+    @author: Slawomir Nizio <slawomir.nizio@sabayon.org>
     @contact: lxnay@sabayon.org
-    @copyright: Fabio Erculiani
+    @copyright: Fabio Erculiani, Slawomir Nizio
     @license: GPL-2
 
     B{Entropy dependency functions module}.
@@ -1241,3 +1242,133 @@ def expand_dependencies(dependencies, entropy_repository_list,
             pkg_deps.append((dep, dep_type))
 
     return pkg_deps
+
+class WrongRewriteRuleError(Exception):
+    """
+    Exception thrown when the new dep_rewrite mechanism encounters a badly
+    formatted rule.
+    """
+    pass
+
+
+class DependencyRewriter(object):
+    """
+    Class that implements the new dependency rewrite schema.
+    It is simpler to use but less powerful than the regex based one, so the two
+    are complementary.
+    """
+    _use_in_depstring_re = re.compile(r"\[([^\]]+)\]")
+
+    def __init__(self, deps, rule):
+        self.deps = deps
+        self._rule = rule
+        self._rule_dict = self._get_rewrite_rules_dict(rule)
+        self.matched = None
+        self.changed = None
+
+        self._dep_has_use, self._modify_use = self._setup_default_funcs()
+
+
+    @staticmethod
+    def _get_rewrite_rules_dict(rule):
+        known_rule_keys = set(["if-dep-has-use", "from-dep", "to-dep", "drop-use"])
+        mandatory_keys = set(["from-dep", "to-dep"])
+
+        rule_dict = {}
+        for rule_word in rule.split():
+            try:
+                op, arg = rule_word.split("=", 1)
+            except ValueError:
+                raise WrongRewriteRuleError("Badly formatted line with '%s'" % (rule_word,))
+            rule_dict[op] = arg
+
+            if op not in known_rule_keys:
+                raise WrongRewriteRuleError("Bad key '%s'" % (op,))
+
+        missing_keys = mandatory_keys - set(rule_dict.keys())
+        if missing_keys:
+            raise WrongRewriteRuleError("Incomplete rewrite rule")
+
+        return rule_dict
+
+
+    def _setup_default_funcs(self):
+        if 'if-dep-has-use' in self._rule_dict:
+            dep_has_use_func = lambda deps_: self._rule_dict['if-dep-has-use'] in deps_
+        else:
+            dep_has_use_func = lambda _: True
+
+        if 'drop-use' in self._rule_dict:
+            modify_use_func = lambda dep_postfix, use_flags_list, clean_use_flags_list: \
+                    DependencyRewriter._use_in_depstring_re.sub(
+                        self._filter_use(use_flags_list, clean_use_flags_list, self._rule_dict['drop-use']),
+                        dep_postfix,
+                        count=1)
+        else:
+            modify_use_func = lambda dep_postfix, _1, _2: dep_postfix
+
+        return dep_has_use_func, modify_use_func
+
+
+    @staticmethod
+    def _filter_use(use_list, clean_use_list, use_to_remove):
+        filtered_use = []
+        for orig_use, clean_use in zip(use_list, clean_use_list):
+            if clean_use != use_to_remove:
+                filtered_use.append(orig_use)
+
+        if filtered_use:
+            result = "[%s]" % (",".join(filtered_use),)
+        else:
+            result = ""
+
+        return result
+
+
+    def rewrite(self):
+        """
+        Do a rewrite of dependencies and set attributes: self.deps (rewritten
+        dependencies), self.matched (any dependency matched its prerequisites)
+        and self.changed (at least one dependency was modifed).
+
+        Value of these attributes is not defined before executing this method.
+        """
+        matched = False
+        changed = False
+
+        new_deps = []
+        for dep in self.deps:
+            clean_dep = dep_getkey(dep)
+            dep_prefix, dep_postfix = dep.split(clean_dep, 1)
+
+            use_flags_list, clean_use_flags_list = self._use_flags_from_dep(dep_postfix)
+
+            if self._rule_dict['from-dep'] == clean_dep and self._dep_has_use(clean_use_flags_list):
+                new_dep = dep_prefix + self._rule_dict['to-dep'] + self._modify_use(dep_postfix, use_flags_list, clean_use_flags_list)
+                new_deps.append(new_dep)
+                matched = True
+                if dep != new_dep:
+                    changed = True
+            else:
+                new_deps.append(dep)
+
+        self.matched = matched
+        self.changed = changed
+        self.deps = new_deps
+
+
+    @staticmethod
+    def _use_flags_from_dep(depstring):
+        dep_use_match = DependencyRewriter._use_in_depstring_re.search(depstring)
+        usestring = dep_use_match.group(1) if dep_use_match else ""
+        dep_use = usestring.split(",")
+        clean_dep_use = []
+        use_postfixes_to_strip = ("?", "(-)", "(+)")
+        for raw_dep in dep_use:
+            for use_postfix_to_strip in use_postfixes_to_strip:
+                if raw_dep.endswith(use_postfix_to_strip):
+                    raw_dep = raw_dep[:-len(use_postfix_to_strip)]
+            clean_dep_use += [raw_dep]
+
+        assert len(dep_use) == len(clean_dep_use)
+        return dep_use, clean_dep_use

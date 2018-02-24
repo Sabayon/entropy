@@ -7,6 +7,7 @@ import unittest
 from entropy.const import const_convert_to_rawstring, const_convert_to_unicode
 from entropy.output import print_generic
 import tests._misc as _misc
+import itertools
 import tempfile
 import subprocess
 import shutil
@@ -284,6 +285,228 @@ class DepTest(unittest.TestCase):
         for name, expected_outcome in names:
             outcome = et.get_entropy_package_sha1(name)
             self.assertEqual(outcome, expected_outcome)
+
+
+class DepsRewriteTestsMixin:
+    def _validate(self):
+        rewriter = et.DependencyRewriter(self._deps, self._rule)
+        rewriter.rewrite()
+        self.assertEqual(rewriter.deps, self._expected_deps)
+
+
+class MatchedChangedTestsMixin:
+    def _validate(self):
+        rewriter = et.DependencyRewriter(self._deps, self._rule)
+        rewriter.rewrite()
+        self.assertEqual(rewriter.matched, self._expected_matched)
+        self.assertEqual(rewriter.changed, self._expected_changed)
+
+
+class DependencyRewriterTests(unittest.TestCase, DepsRewriteTestsMixin):
+    # Test for the new rewrite rules without regexes.
+    def test_dep_changed(self):
+        # inspired by:
+        # foo/bar (.*)app-text/poppler(.*)(\[.*\]) \1app-text/poppler-glib\2
+        self._rule = "from-dep=app-text/poppler to-dep=app-text/poppler-glib"
+        self._deps = ["app-text/poppler"]
+        self._expected_deps = ["app-text/poppler-glib"]
+        self._validate()
+
+    def _test_dep_changed_pkg_data_stays(self, dep_matches):
+        prefixes = ("", "=", ">=", "<", "~")
+        postfixes = ("", ":3", "[some]", "[some,use]", ":4[use]")
+        rule = "from-dep=app-text/poppler to-dep=app-text/poppler-glib"
+
+        if dep_matches:
+            dep_base = "app-text/poppler"
+            expected_base = "app-text/poppler-glib"
+        else:
+            dep_base = "foobar"
+            expected_base = dep_base
+
+        for prefix, postfix in itertools.product(prefixes, postfixes):
+            self._rule = rule
+            self._deps = [prefix + dep_base + postfix]
+            self._expected_deps = [prefix + expected_base + postfix]
+            self._validate()
+
+    def test_dep_changed_pkg_data_stays(self):
+        self._test_dep_changed_pkg_data_stays(dep_matches=True)
+
+    def test_dep_with_pkg_data_dep_not_matched(self):
+        self._test_dep_changed_pkg_data_stays(dep_matches=False)
+
+    def test_dep_changed_version_stays(self):
+        self._rule = "from-dep=app-text/poppler to-dep=app-text/poppler-glib"
+        self._deps = ["=app-text/poppler-10"]
+        self._expected_deps = ["=app-text/poppler-glib-10"]
+        self._validate()
+
+    def test_version_dep_not_matched(self):
+        self._rule = "from-dep=app-text/poppler to-dep=app-text/poppler-glib"
+        self._deps = ["=app-text/not-poppler-10"]
+        self._expected_deps = ["=app-text/not-poppler-10"]
+        self._validate()
+
+    def test_version_and_data_matches(self):
+        self._rule = "from-dep=app-text/poppler to-dep=app-text/poppler-glib"
+        self._deps = ["=app-text/poppler-10:3[use]"]
+        self._expected_deps = ["=app-text/poppler-glib-10:3[use]"]
+        self._validate()
+
+    def test_version_and_data_not_matches(self):
+        self._rule = "from-dep=app-text/poppler to-dep=app-text/poppler-glib"
+        self._deps = ["=app-text/not-poppler-10:3[use]"]
+        self._expected_deps = ["=app-text/not-poppler-10:3[use]"]
+        self._validate()
+
+    def test_more_deps_one_changed(self):
+        self._rule = "from-dep=app-text/poppler to-dep=app-text/poppler-glib"
+        self._deps = ["d1", "app-text/poppler", "d2"]
+        self._expected_deps = ["d1", "app-text/poppler-glib", "d2"]
+        self._validate()
+
+    def test_dep_not_changed_dep_not_matched(self):
+        self._rule = "from-dep=app-text/poppler-not to-dep=app-text/poppler-glib"
+        self._deps = ["app-text/poppler"]
+        self._expected_deps = ["app-text/poppler"]
+        self._validate()
+
+    def test_more_deps_none_changed_dep_not_matched(self):
+        self._rule = "from-dep=app-text/poppler-not to-dep=app-text/poppler-glib"
+        self._deps = ["d1", "app-text/poppler", "d2"]
+        self._expected_deps = ["d1", "app-text/poppler", "d2"]
+        self._validate()
+
+    def _test_with_if_has_use(self, dep_use, rule_use, dep_use_matches):
+        assert dep_use.startswith("[") or not dep_use
+        if dep_use_matches:
+            expected_dep_base = "x11-misc/lightdm-qt4"
+        else:
+            expected_dep_base = "x11-misc/lightdm"
+
+        self._rule = "from-dep=x11-misc/lightdm to-dep=x11-misc/lightdm-qt4 if-dep-has-use=%s" % (rule_use,)
+        self._deps = ["x11-misc/lightdm"+dep_use]
+        self._expected_deps = [expected_dep_base+dep_use]
+        self._validate()
+
+    def test_with_if_has_use_matched(self):
+        self._test_with_if_has_use(dep_use="[qt4]", rule_use="qt4", dep_use_matches=True)
+
+    def test_with_if_has_use_matched_complex(self):
+        use_list = ("[qt4,qt5]", "[qt4?,qt5]", "[qt4(-)]", "[qt4(+)]")
+        for use in use_list:
+            self._test_with_if_has_use(dep_use=use, rule_use="qt4", dep_use_matches=True)
+
+    def test_with_if_has_use_not_matched_no_use(self):
+        self._test_with_if_has_use(dep_use="", rule_use="qt4", dep_use_matches=False)
+
+    def test_with_if_has_use_not_matched_different_use(self):
+        self._test_with_if_has_use(dep_use="[not-qt4]", rule_use="qt4", dep_use_matches=False)
+
+    def test_with_if_has_use_not_matched_different_use_complex(self):
+        self._test_with_if_has_use(dep_use="[qt4]", rule_use="not-qt4", dep_use_matches=False)
+        # There is no necessity to handle [-use(-)].
+        self._test_with_if_has_use(dep_use="[-qt4]", rule_use="qt4", dep_use_matches=False)
+        use_list = ("[qt4,qt5]", "[qt4?,qt5]", "[qt4(-)]", "[qt4(+)]")
+        for use in use_list:
+            self._test_with_if_has_use(dep_use=use, rule_use="not-qt4", dep_use_matches=False)
+
+    def test_with_if_has_use_and_drop_use(self):
+        self._rule = "from-dep=x11-misc/lightdm to-dep=x11-misc/lightdm-qt4 if-dep-has-use=qt4 drop-use=qt4"
+        self._deps = ["x11-misc/lightdm[qt4]"]
+        self._expected_deps = ["x11-misc/lightdm-qt4"]
+        self._validate()
+
+    def test_with_if_has_use_and_drop_use_more_deps(self):
+        self._rule = "from-dep=x11-misc/lightdm to-dep=x11-misc/lightdm-qt4 if-dep-has-use=qt4 drop-use=qt4"
+        self._deps = ["x11-misc/lightdm[qt4,something-else]"]
+        self._expected_deps = ["x11-misc/lightdm-qt4[something-else]"]
+        self._validate()
+
+    def test_with_if_has_use_and_drop_use_complex(self):
+        self._rule = "from-dep=x11-misc/lightdm to-dep=x11-misc/lightdm-qt4 if-dep-has-use=qt4 drop-use=qt4"
+        self._deps = ["x11-misc/lightdm[qt4(-),something-else(+)]"]
+        self._expected_deps = ["x11-misc/lightdm-qt4[something-else(+)]"]
+        self._validate()
+
+    def test_with_if_has_use_and_drop_use_no_dropped_use_match(self):
+        self._rule = "from-dep=x11-misc/lightdm to-dep=x11-misc/lightdm-qt4 if-dep-has-use=qt4 drop-use=something"
+        self._deps = ["x11-misc/lightdm[qt4]"]
+        self._expected_deps = ["x11-misc/lightdm-qt4[qt4]"]
+        self._validate()
+
+    def test_without_if_has_use_but_with_drop_use(self):
+        self._rule = "from-dep=x11-misc/lightdm to-dep=x11-misc/lightdm-qt5 drop-use=qt4"
+        self._deps = ["x11-misc/lightdm[qt4]"]
+        self._expected_deps = ["x11-misc/lightdm-qt5"]
+        self._validate()
+
+    def test_raises_on_unknown_key(self):
+        rule = "from-dep=x11-misc/lightdm to-dep=x11-misc/lightdm-qt4 haha=true"
+        deps = ["x11-misc/lightdm"]
+
+        with self.assertRaisesRegexp(et.WrongRewriteRuleError, r"^Bad key 'haha'"):
+            et.DependencyRewriter(deps, rule)
+
+    def test_raises_on_missing_key(self):
+        rule_parts = "from-dep=x11-misc/lightdm to-dep=x11-misc/lightdm-qt4".split()
+        deps = []
+        for rule in rule_parts:
+            with self.assertRaisesRegexp(et.WrongRewriteRuleError, r"Incomplete rewrite rule"):
+                et.DependencyRewriter(deps, rule)
+
+    def test_raises_on_key_with_no_assignment(self):
+        wrong_values = ("if-has-use", "drop-use", "haha")
+        for value in wrong_values:
+            rule = "from-dep=x11-misc/lightdm to-dep=x11-misc/lightdm-qt4 %s" % (value,)
+            deps = ["x11-misc/lightdm"]
+            with self.assertRaisesRegexp(et.WrongRewriteRuleError,
+                                         r"^Badly formatted line with '%s'" % (value,)):
+                et.DependencyRewriter(deps, rule)
+
+    def test_with_empty_deps(self):
+        self._rule = "from-dep=app-text/poppler to-dep=app-text/poppler-glib"
+        self._deps = []
+        self._expected_deps = []
+        self._validate()
+
+
+class DependencyRewriterBasicAttrsTests(unittest.TestCase, MatchedChangedTestsMixin):
+    def test_matched_and_changed(self):
+        self._rule = "from-dep=x11-misc/lightdm to-dep=x11-misc/lightdm-qt5 drop-use=qt4"
+        self._deps = ["x11-misc/lightdm[qt4]"]
+        self._expected_matched = True
+        self._expected_changed = True
+        self._validate()
+
+    def test_not_matched_and_not_changed_dep_mismatch(self):
+        self._rule = "from-dep=x11-misc/lightdm to-dep=x11-misc/lightdm-qt5 drop-use=qt4"
+        self._deps = ["something-else/lightdm[qt4]"]
+        self._expected_matched = False
+        self._expected_changed = False
+        self._validate()
+
+    def test_not_matched_and_not_changed_use_mismatch(self):
+        self._rule = "from-dep=x11-misc/lightdm to-dep=x11-misc/lightdm-qt5 if-dep-has-use=qt4"
+        self._deps = ["x11-misc/lightdm[not-qt4]"]
+        self._expected_matched = False
+        self._expected_changed = False
+        self._validate()
+
+    def test_matched_and_not_changed(self):
+        self._rule = "from-dep=x11-misc/lightdm to-dep=x11-misc/lightdm if-dep-has-use=qt4"
+        self._deps = ["x11-misc/lightdm[qt4]"]
+        self._expected_matched = True
+        self._expected_changed = False
+        self._validate()
+
+    def test_with_empty_deps(self):
+        self._rule = "from-dep=app-text/poppler to-dep=app-text/poppler-glib"
+        self._deps = []
+        self._expected_matched = False
+        self._expected_changed = False
+        self._validate()
 
 if __name__ == '__main__':
     unittest.main()
