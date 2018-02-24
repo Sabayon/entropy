@@ -985,31 +985,35 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
         if cached is not None:
             return cached
 
-        data = {}
+        data = []
         rewrite_file = Server._get_conf_dep_rewrite_file()
         if not os.path.isfile(rewrite_file):
             return data
         rewrite_content = self.__generic_parser(rewrite_file)
 
-        def add_dep_handler():
-            metadata = {'replaces_str': _("added"),
-                        'action': "add"}
+        def add_dep_handler(dep_pattern):
+            metadata = {'dep_pattern_str': dep_pattern,
+                        'replaces_str': _("added"),
+                        'action': "add",
+                        'add_what': dep_pattern}
             return metadata
 
-        def remove_dep_handler(compiled_pattern):
-            metadata = {'replaces_str': _("removed"),
+        def remove_dep_handler(dep_pattern, compiled_pattern):
+            metadata = {'dep_pattern_str': dep_pattern,
+                        'replaces_str': _("removed"),
                         'action': "remove",
                         'does_dep_match_func': lambda dep_string: compiled_pattern.match(dep_string) is not None,
                         'replaces': []}
             return metadata
 
-        def replace_dep_handler(compiled_pattern, replaces):
+        def replace_dep_handler(dep_pattern, compiled_pattern, replaces):
             def _do(replace, dep_string):
                 new_dep_string, number_of_subs_made = \
                     compiled_pattern.subn(replace, dep_string)
                 return new_dep_string, bool(number_of_subs_made)
 
-            metadata = {'replaces_str': "=> " + ', '.join(replaces),
+            metadata = {'dep_pattern_str': dep_pattern,
+                        'replaces_str': "=> " + ', '.join(replaces),
                         'action': "replace",
                         'does_dep_match_func': lambda dep_string: compiled_pattern.match(dep_string) is not None,
                         'replaces': replaces,
@@ -1037,14 +1041,14 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             if compiled_pattern is None:
                 # this means that user is asking to add dep_pattern
                 # as a dependency to package
-                metadata = add_dep_handler()
+                metadata = add_dep_handler(pattern)
             elif not replaces:
                 # this means that user is asking to remove dep_pattern
-                metadata = remove_dep_handler(compiled_pattern)
+                metadata = remove_dep_handler(pattern, compiled_pattern)
             else:
-                metadata = replace_dep_handler(compiled_pattern, replaces)
+                metadata = replace_dep_handler(pattern, compiled_pattern, replaces)
             # use this key to make sure to not overwrite similar entries
-            data[(pkg_match, pattern)] = metadata
+            data.append((pkg_match, metadata))
 
         self._mod_rewrite_data = data
         return data
@@ -7393,7 +7397,7 @@ class Server(Client):
 
         rewrites_enabled = []
         wildcard_rewrite = False
-        for dep_string_rewrite, dep_pattern in dep_rewrite:
+        for dep_string_rewrite, handler in dep_rewrite:
             # magic catch-all support
             if dep_string_rewrite == "*":
                 pkg_id, rc = None, 0
@@ -7402,7 +7406,7 @@ class Server(Client):
                 wildcard_rewrite = False
                 pkg_id, rc = tmp_repo.atomMatch(dep_string_rewrite)
             if rc == 0:
-                rewrites_enabled.append((dep_string_rewrite, dep_pattern))
+                rewrites_enabled.append((dep_string_rewrite, handler))
         tmp_repo.close()
 
         if not rewrites_enabled:
@@ -7420,11 +7424,10 @@ class Server(Client):
                 level = "info",
                 header = brown(" @@ ")
             )
-            for dep_string_rewrite, dep_pattern in rewrites_enabled:
-                handler = dep_rewrite[(dep_string_rewrite, dep_pattern)]
+            for dep_string_rewrite, handler in rewrites_enabled:
                 self.output(
                     "%s %s" % (
-                        purple(dep_pattern),
+                        purple(handler['dep_pattern_str']),
                         handler['replaces_str'],
                     ),
                     importance = 1,
@@ -7486,18 +7489,16 @@ class Server(Client):
             dep_string_matched = False
             matched_pattern = False
 
-            for key in rewrites_enabled:
+            for dep_string_rewrite, handler in rewrites_enabled:
 
-                dep_string_rewrite, dep_pattern = key
-                handler = dep_rewrite[key]
                 action = handler['action']
 
                 assert action in ("add", "remove", "replace")
 
                 if action == "add":
-                    # user is asking to add dep_pattern to dependency list
+                    # user is asking to add a dependency to dependency list
                     dep_pattern_string, dep_pattern_type, conflict = \
-                        _extract_dep_add_from_dep_pattern(dep_pattern)
+                        _extract_dep_add_from_dep_pattern(handler['add_what'])
                     if conflict:
                         conflicts.add(dep_pattern_string)
                     else:
