@@ -1299,11 +1299,18 @@ class DependencyRewriter(object):
             dep_has_use_func = lambda _: True
 
         if 'drop-use' in self._rule_dict:
-            modify_use_func = lambda dep_postfix, use_flags_list, clean_use_flags_list: \
-                    DependencyRewriter._use_in_depstring_re.sub(
-                        self._filter_use(use_flags_list, clean_use_flags_list, self._rule_dict['drop-use']),
-                        dep_postfix,
-                        count=1)
+            if self._rule_dict['drop-use'] == "*":
+                modify_use_func = lambda dep_postfix, use_flags_list, clean_use_flags_list: \
+                        DependencyRewriter._use_in_depstring_re.sub(
+                            "",
+                            dep_postfix,
+                            count=1)
+            else:
+                modify_use_func = lambda dep_postfix, use_flags_list, clean_use_flags_list: \
+                        DependencyRewriter._use_in_depstring_re.sub(
+                            self._filter_use(use_flags_list, clean_use_flags_list, self._rule_dict['drop-use']),
+                            dep_postfix,
+                            count=1)
         else:
             modify_use_func = lambda dep_postfix, _1, _2: dep_postfix
 

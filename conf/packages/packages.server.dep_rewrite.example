@@ -78,7 +78,8 @@
 # If present in rule, ::use_to_remove:: will be removed if dependency contains it.
 #
 # ::dep_atom:: and ::new_dep_atom:: are category/package names, without version, slot etc.
+# ::use_to_remove:: can be an asterisk (*) which means to remove all USE flags.
 #
-# Examples:
+# EXAMPLE
 #	rewrite foo/bar from-dep=app-crypt/pinentry to-dep=app-crypt/pinentry-gtk2 if-dep-has-use=gtk drop-use=gtk
 # will change foo/bar's dependency "app-crypt/pinentry[gtk,qt5]" to "app-crypt/pinentry-gtk2[qt5]".

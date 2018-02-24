@@ -442,6 +442,18 @@ class DependencyRewriterTests(unittest.TestCase, DepsRewriteTestsMixin):
         self._expected_deps = ["x11-misc/lightdm-qt5"]
         self._validate()
 
+    def test_with_drop_use_asterisk(self):
+        self._rule = "from-dep=x11-misc/lightdm to-dep=x11-misc/lightdm-qt5 drop-use=*"
+        self._deps = ["x11-misc/lightdm[qt4?,qt5]"]
+        self._expected_deps = ["x11-misc/lightdm-qt5"]
+        self._validate()
+
+    def test_with_drop_use_asterisk_and_no_use_in_dep(self):
+        self._rule = "from-dep=x11-misc/lightdm to-dep=x11-misc/lightdm-qt5 drop-use=*"
+        self._deps = ["x11-misc/lightdm"]
+        self._expected_deps = ["x11-misc/lightdm-qt5"]
+        self._validate()
+
     def test_raises_on_unknown_key(self):
         rule = "from-dep=x11-misc/lightdm to-dep=x11-misc/lightdm-qt4 haha=true"
         deps = ["x11-misc/lightdm"]
@@ -507,6 +519,21 @@ class DependencyRewriterBasicAttrsTests(unittest.TestCase, MatchedChangedTestsMi
         self._expected_matched = False
         self._expected_changed = False
         self._validate()
+
+    def test_matched_and_changed_with_use_asterisk(self):
+        self._rule = "from-dep=x11-misc/lightdm to-dep=x11-misc/lightdm drop-use=*"
+        self._deps = ["x11-misc/lightdm[gtk]"]
+        self._expected_matched = True
+        self._expected_changed = True
+        self._validate()
+
+    def test_matched_and_not_changed_with_use_asterisk(self):
+        self._rule = "from-dep=x11-misc/lightdm to-dep=x11-misc/lightdm drop-use=*"
+        self._deps = ["x11-misc/lightdm"]
+        self._expected_matched = True
+        self._expected_changed = False
+        self._validate()
+
 
 if __name__ == '__main__':
     unittest.main()
