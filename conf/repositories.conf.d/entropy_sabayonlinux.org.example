@@ -124,3 +124,7 @@ pkg = http://mirror3.mirror.garr.it/mirrors/sabayonlinux/entropy
 pkg = http://mirrors.cicku.me/sabayon/entropy
 # pkg = https://mirrors.cicku.me/sabayon/entropy
 # pkg = rsync://rsync.belnet.be/sabayon/entropy
+
+# Ctrl-C mirror, Sweden
+pkg = http://mirror.ctrl-c.liu.se/sabayon/entropy
+# pkg = ftp://mirror.ctrl-c.liu.se/sabayon/entropy
