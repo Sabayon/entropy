@@ -32,6 +32,8 @@ class EitInject(EitCommand):
     def __init__(self, args):
         EitCommand.__init__(self, args)
         self._packages = []
+        # ask user before any critical operation
+        self._ask = True
 
     def _get_parser(self):
         descriptor = EitCommandDescriptor.obtain_descriptor(
@@ -46,7 +48,9 @@ class EitInject(EitCommand):
         parser.add_argument("--to", metavar="<repository>",
                             help=_("inject into given repository"),
                             default=None)
-
+        parser.add_argument("--quick", action="store_true",
+                            default=not self._ask,
+                            help=_("no stupid questions"))
         return parser
 
     INTRODUCTION = """\
@@ -78,6 +82,7 @@ repositories as much as you can.
         except IOError:
             return parser.print_help, []
 
+        self._ask = not nsargs.quick
         self._packages += nsargs.packages
         return self._call_exclusive, [self._inject, nsargs.to]
 
@@ -122,7 +127,7 @@ repositories as much as you can.
         repository_id = entropy_server.repository()
         etp_pkg_files = [([x], True,) for x in etp_pkg_files]
         package_ids = entropy_server.add_packages_to_repository(
-            repository_id, etp_pkg_files)
+            repository_id, etp_pkg_files, ask=self._ask)
         if package_ids:
             # checking dependencies and print issues
             entropy_server.extended_dependencies_test([repository_id])
