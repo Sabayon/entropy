@@ -10,6 +10,8 @@
 # AND or OR operators: ( app-foo/bar & foo-app/rab ) | app-nice/woot
 # Please take this into consideration when writing dep rewrites.
 
+# 1. Regex-based dependency rewrite syntax.
+
 # LINE CONSTRUCTION:
 # <::pkg::> <::dep_pattern::> <::dep_replace_1::> [<::dep_replace_2::> ...]
 # ::pkg:: = package containing dependency to match, or * for catch-all
@@ -59,3 +61,25 @@
 # Apply a dep_rewrite rule to any package being added:
 #    * <::dep_pattern::> <::dep_replace_1::> [<::dep_replace_2::> ...]
 # In other words, set <::pkg::> to *
+
+
+# 2. Token-based dependency rewrite syntax.
+
+# This syntax supports only modification to dependencies, not addition nor removal.
+# rewrite <::pkg::> <::rule::>
+# where <::pkg::> is matched the same was as explained above,
+# and <::rule::> is:
+# <from-dep=::dep_atom::> <to-dep=::new_dep_atom::>
+#	[<if-dep-has-use=::use_to_match::>] [<drop-use=::use_to_remove::>]
+# (order does not matter).
+#
+# To a dependency to be rewritten, ::dep_atom:: must match and ::use_to_match:: if present.
+# Dependency will be rewritten as ::new_dep_atom::.
+# If present in rule, ::use_to_remove:: will be removed if dependency contains it.
+#
+# ::dep_atom:: and ::new_dep_atom:: are category/package names, without version, slot etc.
+# ::use_to_remove:: can be an asterisk (*) which means to remove all USE flags.
+#
+# EXAMPLE
+#	rewrite foo/bar from-dep=app-crypt/pinentry to-dep=app-crypt/pinentry-gtk2 if-dep-has-use=gtk drop-use=gtk
+# will change foo/bar's dependency "app-crypt/pinentry[gtk,qt5]" to "app-crypt/pinentry-gtk2[qt5]".
