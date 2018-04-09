@@ -10,6 +10,7 @@
 
 """
 import os
+import os.path
 import errno
 import sys
 import argparse
@@ -434,8 +435,24 @@ Tools to rescue the running system.
         # open a repository at the old path, if repo_path is
         # not in place, Entropy will forward us to the in-RAM
         # database (for sqlite), which is not what we want.
-        inst_repo.initializeRepository()
-        inst_repo.commit()
+        gen_repo = entropy_client.open_generic_repository(
+            repo_path, dbname=InstalledPackagesRepository.NAME,
+            xcache=False, skip_checks=True)
+        gen_repo.initializeRepository()
+        gen_repo.commit()
+        gen_repo.close()
+
+        entropy_client.reopen_installed_repository()
+        inst_repo = entropy_client.installed_repository()
+
+        # Sanity check: make sure we're not accidentally using the in-RAM db
+        if not os.path.exists(repo_path):
+            entropy_client.output(
+                darkred(_("Repository creation failed")),
+                level="error",
+                importance=1,
+                header=darkred(" @@ "))
+            return 1
 
         entropy_client.output(
             purple(_("Repository initialized, generating metadata")),
@@ -516,6 +533,7 @@ Tools to rescue the running system.
                 revision = data['revision'])
             inst_repo.storeInstalledPackage(package_id,
                 etpConst['spmdbid'])
+            inst_repo.commit()
 
         try:
             os.remove(tmp_path)
@@ -527,7 +545,6 @@ Tools to rescue the running system.
             header=darkgreen(" @@ "), back=True
             )
         inst_repo.createAllIndexes()
-        inst_repo.commit()
         entropy_client.output(
             purple(_("Repository metadata generation complete")),
             header=darkgreen(" @@ ")
