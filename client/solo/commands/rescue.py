@@ -447,7 +447,11 @@ Tools to rescue the running system.
 
         # Sanity check: make sure we're not accidentally using the in-RAM db
         if not os.path.exists(repo_path):
-            print("Repository creation failed")
+            entropy_client.output(
+                darkred(_("Repository creation failed")),
+                level="error",
+                importance=1,
+                header=darkred(" @@ "))
             return 1
 
         entropy_client.output(
