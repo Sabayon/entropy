@@ -1,3 +1,145 @@
+commit 1d6fde589eabece6d2c910527866fe8476700ee3
+Author: Ettore Di Giacinto <mudler@gentoo.org>
+Date:   Wed May 30 22:13:29 2018 +0200
+
+    Release Entropy 311
+
+commit 1197966644fb21dc0eed976f9a8337e5f461781a
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Sun May 14 19:57:38 2017 +0200
+
+    [entropy.client] fix install_sources saving
+    
+    Examples of scenarios that are fixed:
+    - "package was installed by user" information was lost on package p1
+      when p1 was pulled as update on "equo install p2";
+    - update was saving all packages as installed by user.
+
+commit d1fb352a6c1ed18b110614e6cfb0805d6f2e2c47
+Merge: 955fcfbc4 2b532d423
+Author: Enlik <poczta-sn@gazeta.pl>
+Date:   Mon Apr 9 22:57:26 2018 +0200
+
+    Merge pull request #42 from rdnetto/fix-generate
+    
+    Fix rescue generate
+    
+    Results were written to the in-memory database instead of the file.
+    Effect of the revert is similar to what d89f15d ([solo.commands.rescue] fix "equo rescue generate") did and was later regressed.
+
+commit 2b532d42379ee18ce374fb2d60ea62c6ac77c031
+Author: Reuben D'Netto <rdnetto@gmail.com>
+Date:   Mon Apr 9 21:36:25 2018 +1000
+
+    Use entropy_client.output()
+
+commit 2e6909f134f9501e9146a6ab5c5ee66b787b68d0
+Author: Reuben D'Netto <rdnetto@gmail.com>
+Date:   Thu Feb 15 18:36:46 2018 +1100
+
+    [solo.commands.rescue] Added a sanity check to ensure we're using the real database.
+
+commit f9ff8cc3051520fb7b67d343daa7deda666b9d63
+Author: Reuben D'Netto <rdnetto@gmail.com>
+Date:   Thu Feb 15 18:34:08 2018 +1100
+
+    Revert "[solo.commands.rescue] simplify "generate" code"
+    
+    This reverts commit d856204a8d88a66b9afc1694cf964f986b9dee54.
+
+commit 955fcfbc486604f8a134506041e83e929669f899
+Merge: 0d39b4449 d36bef4f7
+Author: Enlik <poczta-sn@gazeta.pl>
+Date:   Thu Apr 5 21:39:15 2018 +0200
+
+    Merge pull request #44 from geaaru/fix_ask_eit_inject
+    
+    [eit] Add --quick option to inject command
+
+commit 0d39b4449cce0c5e0926ec2c538df888ecc41148
+Merge: dbbb7bd60 cbcbf7495
+Author: Enlik <poczta-sn@gazeta.pl>
+Date:   Thu Apr 5 21:23:17 2018 +0200
+
+    Merge pull request #43 from Enlik/nonregex-dep-rewrite
+    
+    Simpler dependency rewrite syntax
+
+commit d36bef4f79a4c139b71f9aaa0c07f86f94a7e503
+Author: Geaaru <geaaru@gmail.com>
+Date:   Mon Mar 26 23:55:29 2018 +0200
+
+    [eit] Add --quick option to inject command
+
+commit dbbb7bd60ec047f9a85f30ab36501c904cf43a32
+Author: Alexander "Ananace" Olofsson <ace@haxalot.com>
+Date:   Sat Mar 10 20:16:37 2018 +0100
+
+    Add the Ctrl-C mirror (#39)
+    
+    * Add the Ctrl-C mirror
+    
+    * Correct URLs for entropy on the Ctrl-C mirror
+
+commit cbcbf7495fe86e2e73745495be6de93e6fae8c3e
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Sat Feb 24 19:52:12 2018 +0100
+
+    [entropy.core] implement "drop all USE" in the new dep. rewrite
+
+commit 0a56ec74b8b94169282d3ab3667b7551b74fe87e
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Sat Feb 24 18:56:50 2018 +0100
+
+    [entropy.core,entropy.server] implement new dep. rewrite parser
+    
+    It uses a simple rules without the need to use complex regexes. It is
+    not as powerful as the existing approaches so both are complementary.
+    
+    For example, this:
+        foo/bar (.*)app-crypt/pinentry(.*)\[gtk\] \1app-crypt/pinentry-gtk2\2
+    expresses the intention that can be expressed simpler:
+        rewrite foo/bar from-dep=app-crypt/pinentry to-dep=app-crypt/pinentry-gtk2 if-dep-has-use=gtk drop-use=gtk
+
+commit 9e3f45f4c3f8a8fa3137c27ee3661197fe4d3c18
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Sat Feb 24 18:49:39 2018 +0100
+
+    [entropy.server] simplify data container for dep_rewrite
+    
+    Previously it has a dict with complex key (with the need to pack and
+    unpack it in places where it was used), and data was both part of the
+    keys and values.
+    It had the small advantage of removing duplicates, but changes for them
+    are very low and they are harmless anyway.
+
+commit 7635fb6d3b19093842524f86119236da7ec84d09
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Sat Feb 24 18:47:16 2018 +0100
+
+    [entropy.server] create a simple abstration/interface for dep. rewrite
+
+commit 558630f16ede2823037d8a5ebaf13c79f7bb3e2f
+Merge: 9bcf98ad0 9781fa409
+Author: Ettore Di Giacinto <mudler@users.noreply.github.com>
+Date:   Tue Jan 16 10:09:13 2018 +0100
+
+    Merge pull request #40 from geaaru/fix_ask_eit_commit
+    
+    [eit] Fix pass of ask attribute on commit command
+
+commit 9781fa409f73041c158fbe6fde4fa5a56f8ee156
+Author: Geaaru <geaaru@gmail.com>
+Date:   Tue Dec 26 17:03:49 2017 +0100
+
+    [eit] Fix pass of ask attribute to add_packages_to_repository function on commit command.
+
+commit 9bcf98ad0ff027aedacfb11a6eb40091c2d0299b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 8 22:25:58 2017 +0200
+
+    Tagging Entropy version 310
+
 commit 8d0f16d9d5f3dd2caf5ad548eb46ad3aba206bbc
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Oct 8 22:25:58 2017 +0200
