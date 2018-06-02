@@ -128,3 +128,8 @@ pkg = http://mirrors.cicku.me/sabayon/entropy
 # Ctrl-C mirror, Sweden
 pkg = http://mirror.ctrl-c.liu.se/sabayon/entropy
 # pkg = ftp://mirror.ctrl-c.liu.se/sabayon/entropy
+
+# Academic Computer Club, Umeå University
+pkg = http://ftp.acc.umu.se/mirror/sabayon.org/
+pkg = https://ftp.acc.umu.se/mirror/sabayon.org/
+pkg = rsync://ftp.acc.umu.se/mirror/sabayon.org/
