@@ -4,7 +4,7 @@
 # 
 # Translators:
 # rogerc, 2013-2014
-# Davidmp <medipas@gmail.com>, 2015
+# Davidmp <medipas@gmail.com>, 2015-2017
 # rogerc, 2012
 # rogerc, 2008, 2009, 2010, 2011
 msgid ""
@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Server\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-14 16:15+0100\n"
-"PO-Revision-Date: 2015-12-29 10:49+0000\n"
+"PO-Revision-Date: 2017-09-19 12:23+0000\n"
 "Last-Translator: Davidmp <medipas@gmail.com>\n"
 "Language-Team: Catalan (http://www.transifex.com/lxnay/sabayon-entropy-server/language/ca/)\n"
 "MIME-Version: 1.0\n"
@@ -23,7 +23,7 @@ msgstr ""
 
 #: ../../lib/entropy/db/skel.py:518 ../../lib/entropy/locks.py:305
 msgid "Acquiring shared lock on"
-msgstr "Adquirint bloqueig compartit a"
+msgstr "S'està adquirint bloqueig compartit a"
 
 #: ../../lib/entropy/db/skel.py:529
 msgid "Acquired shared lock on"
@@ -31,7 +31,7 @@ msgstr "S'ha adquirit un bloqueig compartit a"
 
 #: ../../lib/entropy/db/skel.py:563 ../../lib/entropy/locks.py:309
 msgid "Acquiring exclusive lock on"
-msgstr "Adquirint bloqueig exclusiu a"
+msgstr "S'està adquirint bloqueig exclusiu a"
 
 #: ../../lib/entropy/db/skel.py:574
 msgid "Acquired exclusive lock on"
@@ -622,7 +622,7 @@ msgstr "S'estan commutant paquets"
 
 #: ../../lib/entropy/server/interfaces/main.py:4263
 msgid "Ignoring"
-msgstr "S'està ignorant"
+msgstr "S'ignora"
 
 #: ../../lib/entropy/server/interfaces/main.py:4265
 msgid "already in branch"
@@ -651,15 +651,15 @@ msgstr "Cadena de paquets"
 
 #: ../../lib/entropy/server/interfaces/main.py:4393
 msgid "scanning dependencies"
-msgstr "escanejant dependències"
+msgstr "s'estan escanejant les dependències"
 
 #: ../../lib/entropy/server/interfaces/main.py:4489
 msgid "checking repository"
-msgstr "verificant el dipòsit"
+msgstr "s'està comprovant el dipòsit"
 
 #: ../../lib/entropy/server/interfaces/main.py:4582
 msgid "Calculating dependencies"
-msgstr "Calculant dependències"
+msgstr "S'estan calculant les dependències"
 
 #: ../../lib/entropy/server/interfaces/main.py:4590
 msgid "if these repositories were merged"
@@ -741,7 +741,7 @@ msgstr "El sistema està sa"
 
 #: ../../lib/entropy/server/interfaces/main.py:5226
 msgid "Matching libraries with Spm, please wait"
-msgstr "S'estan cercant llibreries coincidents amb Spm; espereu, si us plau"
+msgstr "S'estan cercant biblioteques coincidents amb Spm; espereu, si us plau"
 
 #: ../../lib/entropy/server/interfaces/main.py:5240
 msgid "These are the matched packages"
@@ -921,7 +921,7 @@ msgstr "la clau GPG ha vençut"
 
 #: ../../lib/entropy/server/interfaces/main.py:6995
 msgid "please frigging fix"
-msgstr "arregleu-ho, sisplau"
+msgstr "arregleu-ho, si us plau"
 
 #: ../../lib/entropy/server/interfaces/main.py:7006
 msgid "GPG got unexpected error"
@@ -1420,7 +1420,7 @@ msgstr "obridor"
 
 #: ../../lib/entropy/server/interfaces/db.py:1295
 msgid "compressing repository + checksum"
-msgstr "dipòsit comprimit i suma de verificació"
+msgstr "s'estan comprimint el dipòsit i suma de verificació"
 
 #: ../../lib/entropy/server/interfaces/db.py:1310
 msgid "compressed repository path"
@@ -1525,7 +1525,7 @@ msgstr[1] "elements"
 #: ../../lib/entropy/security.py:397
 msgid ""
 "Make sure to verify the imported key and set an appropriate trust level"
-msgstr "Assegureu-vos de comprovar la clau importada i establiu-ne el nivell de confiança apropiat"
+msgstr "Assegureu-vos de verificar la clau importada i establiu-ne el nivell de confiança apropiat"
 
 #: ../../lib/entropy/security.py:437
 msgid "GPG key changed for"
@@ -1557,7 +1557,7 @@ msgstr "Empremta"
 
 #: ../../lib/entropy/security.py:541
 msgid "Error during GPG verification of"
-msgstr "Error durant la comprovació GPG de"
+msgstr "Error durant la verificació GPG de"
 
 #: ../../lib/entropy/security.py:550
 msgid "It could mean a potential security risk"
@@ -1618,7 +1618,7 @@ msgstr "la verificació és correcta"
 
 #: ../../lib/entropy/security.py:1062
 msgid "checksum verification failed, sorry"
-msgstr "ha fallat la verificació de l'empremta electrònica, ho sento"
+msgstr "ha fallat la comprovació de la suma de verificació, ho sento"
 
 #: ../../lib/entropy/security.py:1087
 msgid "GPG service not available"
@@ -1798,7 +1798,7 @@ msgstr "s'estan cercant dependències inverses trencades"
 
 #: ../../lib/entropy/qa.py:221
 msgid "broken libraries detected"
-msgstr "s'han detectat llibreries trencades"
+msgstr "s'han detectat biblioteques trencades"
 
 #: ../../lib/entropy/qa.py:232
 msgid "needs"
@@ -1806,7 +1806,7 @@ msgstr "necessita"
 
 #: ../../lib/entropy/qa.py:271
 msgid "scanning"
-msgstr "escanejant..."
+msgstr "s'està escanejant"
 
 #: ../../lib/entropy/qa.py:313
 msgid "blacklisted dependencies !!!"
@@ -1814,11 +1814,11 @@ msgstr "dependències a la llista negra !!!"
 
 #: ../../lib/entropy/qa.py:338
 msgid "requires libraries"
-msgstr "requereix les llibreries"
+msgstr "requereix les biblioteques"
 
 #: ../../lib/entropy/qa.py:356
 msgid "library provided by"
-msgstr "llibreria proporcionada per"
+msgstr "biblioteca proporcionada per"
 
 #: ../../lib/entropy/qa.py:402 ../../lib/entropy/qa.py:629
 msgid "no packages"
@@ -1830,7 +1830,7 @@ msgstr "potencialment li falten aquestes dependències"
 
 #: ../../lib/entropy/qa.py:568
 msgid "determining missing libraries"
-msgstr "s'estan determinant les llibreries que falten"
+msgstr "s'estan determinant les biblioteques que falten"
 
 #: ../../lib/entropy/qa.py:600
 msgid "requires"
@@ -1842,11 +1842,11 @@ msgstr "facilitades per"
 
 #: ../../lib/entropy/qa.py:641
 msgid "no missing runtime libraries found"
-msgstr "no s'han trobat a faltar dependències en temps d'execució"
+msgstr "no s'han trobat a faltar biblioteques d'execució"
 
 #: ../../lib/entropy/qa.py:677
 msgid "Libraries test"
-msgstr "Verificació de les llibreries"
+msgstr "Verificació de les biblioteques"
 
 #: ../../lib/entropy/qa.py:692
 msgid "Broken symbols packages list"
@@ -1870,11 +1870,11 @@ msgstr "S'estan recollint els executables trencats"
 
 #: ../../lib/entropy/qa.py:833
 msgid "don't worry about libraries that are shown here but not later."
-msgstr "no us preocupeu per les llibreries que es mostren aquí, però que no apareixen després."
+msgstr "no us preocupeu per les biblioteques que es mostren aquí, però que no apareixen després."
 
 #: ../../lib/entropy/qa.py:854
 msgid "Scanning libraries"
-msgstr "S'estan escanejant les llibreries"
+msgstr "S'estan escanejant les biblioteques"
 
 #: ../../lib/entropy/qa.py:964
 msgid "various broken symbols"
@@ -1882,7 +1882,7 @@ msgstr "diversos símbols trencats"
 
 #: ../../lib/entropy/qa.py:1003
 msgid "Matching broken libraries/executables"
-msgstr "Llibreries/executables trencats coincidents"
+msgstr "Biblioteques / executables trencats coincidents"
 
 #: ../../lib/entropy/qa.py:1769
 msgid "Not prepared yet"
@@ -2028,7 +2028,7 @@ msgstr "Llicència"
 
 #: ../../server/eit/utils.py:420
 msgid "Reverse graphing installed package"
-msgstr "Grafiant inversament el paquet instal·lat"
+msgstr "Reverteix el gràfic del paquet instal·lat"
 
 #: ../../server/eit/utils.py:432 ../../server/eit/utils.py:591
 msgid "No packages found"
@@ -2052,7 +2052,7 @@ msgstr "paquets ja inclosos com a dependències en nivells superiors (circular)"
 
 #: ../../server/eit/utils.py:579
 msgid "Graphing"
-msgstr "Graficant"
+msgstr "Generació de gràfic"
 
 #: ../../server/eit/main.py:117
 msgid "superuser access required"
