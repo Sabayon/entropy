@@ -3,14 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# necrose99 <mike@michaellawrenceit.com>, 2014
+# Michael R. Lawrence <mike@michaellawrenceit.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-14 16:14+0100\n"
-"PO-Revision-Date: 2014-05-29 21:18+0000\n"
-"Last-Translator: necrose99 <mike@michaellawrenceit.com>\n"
+"PO-Revision-Date: 2017-09-23 19:52+0000\n"
+"Last-Translator: Michael R. Lawrence <mike@michaellawrenceit.com>\n"
 "Language-Team: Japanese (http://www.transifex.com/lxnay/sabayon-rigo/language/ja/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"

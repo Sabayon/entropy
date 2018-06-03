@@ -9,14 +9,14 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-14 16:14+0100\n"
-"PO-Revision-Date: 2014-05-21 14:25+0000\n"
+"PO-Revision-Date: 2017-09-23 19:52+0000\n"
 "Last-Translator: rootergod <rootergod@gmail.com>\n"
 "Language-Team: Persian (Iran) (http://www.transifex.com/lxnay/sabayon-rigo/language/fa_IR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fa_IR\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: ../RigoDaemon/app.py:129
 msgid "Downloading"
@@ -175,6 +175,7 @@ msgstr "<b>%s</b> اقدام شما در صف انتظار رفت"
 msgid ", <b>%i</b> Application enqueued so far..."
 msgid_plural ", <b>%i</b> Applications enqueued so far..."
 msgstr[0] ", <b>%i</b> برنامه‌ها در صف انتظار تا الان..."
+msgstr[1] ", <b>%i</b> برنامه‌ها در صف انتظار تا الان..."
 
 #: ../rigo/controllers/daemon.py:790 ../rigo_app.py:165
 msgid "Application"
@@ -256,6 +257,7 @@ msgstr "<b>بروز رسانی سیستم</b> فعالیت شروع شده <i>ر
 msgid "There is <b>%i</b> more update"
 msgid_plural "There are <b>%i</b> more updates"
 msgstr[0] "تعداد <b>%i</b> به روز رسانی بیشتری وجود داره"
+msgstr[1] "تعداد <b>%i</b> به روز رسانی بیشتری وجود داره"
 
 #: ../rigo/controllers/daemon.py:1165
 msgid "Congratulations, mirrors have been <b>optimized</b>!"
@@ -390,6 +392,7 @@ msgstr "در حال پاک کردن"
 msgid ", and <b>%d</b> <i>more in queue</i>"
 msgid_plural ", and <b>%d</b> <i>more in queue</i>"
 msgstr[0] ", و <b>%d</b> <i> بیشتر در حال انتظار</i>"
+msgstr[1] ", و <b>%d</b> <i> بیشتر در حال انتظار</i>"
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:93
 msgid "Cannot <b>edit</b> configuration file"
@@ -455,6 +458,7 @@ msgstr "_بسیارخوب، سپاسگزارم"
 msgid "Rate <b>%s</b> as <b>%s</b>, with <b>%d</b> star?"
 msgid_plural "Rate <b>%s</b> as <b>%s</b>, with <b>%d</b> stars?"
 msgstr[0] "ارزیابی <b>%s</b> در <b>%s</b>, با <b>%d</b> ستاره؟"
+msgstr[1] "ارزیابی <b>%s</b> در <b>%s</b>, با <b>%d</b> ستاره؟"
 
 #: ../rigo/ui/gtk3/controllers/application.py:350
 #: ../rigo/ui/gtk3/controllers/application.py:514
@@ -677,12 +681,14 @@ msgstr "جستجو از طریق کرنل‌‌های بلندمدت که موج
 msgid "There is <b>%d</b> update"
 msgid_plural "There are <b>%d</b> updates"
 msgstr[0] "تعداد <b>%d</b> بروز رسانی موجود هست"
+msgstr[1] "تعداد <b>%d</b> بروز رسانی موجود هست"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:188
 #, python-format
 msgid "and <b>%d</b> security update"
 msgid_plural "and <b>%d</b> security updates"
 msgstr[0] "و <b>%d</b> بروز رسانی امنیتی"
+msgstr[1] "و <b>%d</b> بروز رسانی امنیتی"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:194
 #: ../rigo/ui/gtk3/widgets/notifications.py:1222
@@ -864,12 +870,14 @@ msgid "<b>%s</b> Application Action will start in <big><b>%d</b></big> second"
 msgid_plural ""
 "<b>%s</b> Application Action will start in <big><b>%d</b></big> seconds"
 msgstr[0] "<b>%s</b> برنامه اجرا خواهد شد در <big><b>%d</b></big> ثانیه"
+msgstr[1] "<b>%s</b> برنامه اجرا خواهد شد در <big><b>%d</b></big> ثانیه"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1020
 #, python-format
 msgid "There is <b>%d</b> configuration file update"
 msgid_plural "There are <b>%d</b> configuration file updates"
 msgstr[0] "تعدادی <b>%d</b> فایلهای پیکربندی برای به‌روز رسانی موجودهست"
+msgstr[1] "تعدادی <b>%d</b> فایلهای پیکربندی برای به‌روز رسانی موجودهست"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1026
 msgid ""
@@ -891,6 +899,7 @@ msgstr "براحتی چشم پوشی‌کن "
 msgid "There is <b>%d</b> notice from a repository"
 msgid_plural "There are <b>%d</b> notices from repositories"
 msgstr[0] "تعداد <b>%d</b> اعلامیه از مخازن موجود هست"
+msgstr[1] "تعداد <b>%d</b> اعلامیه از مخازن موجود هست"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1077
 msgid "It is <b>extremely</b> important to always read them."
@@ -925,6 +934,7 @@ msgstr "تغییر اسم مخزن <b>غیر مجاز هست</b>!"
 msgid "There is <b>%d</b> preserved library on the system"
 msgid_plural "There are <b>%d</b> preserved libraries on the system"
 msgstr[0] "تعداد <b>%d</b> کتابخانه حفاظت شده در این سیستم هست"
+msgstr[1] "تعداد <b>%d</b> کتابخانه حفاظت شده در این سیستم هست"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1227
 msgid "Preserved libraries detected on the system."
@@ -939,6 +949,7 @@ msgstr "_بروز رسانی سیستم حالا"
 msgid "%(nr_ratings)i rating"
 msgid_plural "%(nr_ratings)i ratings"
 msgstr[0] "%(nr_ratings)i ارزیابی"
+msgstr[1] "%(nr_ratings)i ارزیابی"
 
 #: ../rigo/ui/gtk3/widgets/stars.py:500
 msgid "Hint: Click a star to rate this app"

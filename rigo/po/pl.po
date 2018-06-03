@@ -10,14 +10,14 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-14 16:14+0100\n"
-"PO-Revision-Date: 2014-01-11 16:05+0000\n"
+"PO-Revision-Date: 2017-09-19 12:06+0000\n"
 "Last-Translator: Zetok <prendter@gmail.com>\n"
 "Language-Team: Polish (http://www.transifex.com/lxnay/sabayon-rigo/language/pl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: pl\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
 
 #: ../RigoDaemon/app.py:129
 msgid "Downloading"
@@ -178,6 +178,7 @@ msgid_plural ", <b>%i</b> Applications enqueued so far..."
 msgstr[0] ", <b>%i</b> aplikacji w kolejce jak dotąd..."
 msgstr[1] ", <b>%i</b> aplikacje w kolejce jak dotąd..."
 msgstr[2] ", <b>%i</b> aplikacji w kolejce jak dotąd..."
+msgstr[3] ", <b>%i</b> aplikacji w kolejce jak dotąd..."
 
 #: ../rigo/controllers/daemon.py:790 ../rigo_app.py:165
 msgid "Application"
@@ -261,6 +262,7 @@ msgid_plural "There are <b>%i</b> more updates"
 msgstr[0] "Jest jeszcze <b>%i</b> aktualizacja"
 msgstr[1] "Są jeszcze <b>%i</b> aktualizacje"
 msgstr[2] "Jest jeszcze <b>%i</b> aktualizacji"
+msgstr[3] "Jest jeszcze <b>%i</b> aktualizacji"
 
 #: ../rigo/controllers/daemon.py:1165
 msgid "Congratulations, mirrors have been <b>optimized</b>!"
@@ -397,6 +399,7 @@ msgid_plural ", and <b>%d</b> <i>more in queue</i>"
 msgstr[0] ", jeszcze <b>%d</b> <i>w kolejce</i>"
 msgstr[1] ", jeszcze <b>%d</b> <i>w kolejce</i>"
 msgstr[2] ", jeszcze <b>%d</b> <i>w kolejce</i>"
+msgstr[3] ", jeszcze <b>%d</b> <i>w kolejce</i>"
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:93
 msgid "Cannot <b>edit</b> configuration file"
@@ -464,6 +467,7 @@ msgid_plural "Rate <b>%s</b> as <b>%s</b>, with <b>%d</b> stars?"
 msgstr[0] "Ocenić <b>%s</b> z konta <b>%s</b> <b>%d</b> gwiazdką?"
 msgstr[1] "Ocenić <b>%s</b> z konta <b>%s</b> <b>%d</b> gwiazdkami?"
 msgstr[2] "Ocenić <b>%s</b> z konta <b>%s</b> <b>%d</b> gwiazdkami?"
+msgstr[3] "Ocenić <b>%s</b> z konta <b>%s</b> <b>%d</b> gwiazdkami?"
 
 #: ../rigo/ui/gtk3/controllers/application.py:350
 #: ../rigo/ui/gtk3/controllers/application.py:514
@@ -688,6 +692,7 @@ msgid_plural "There are <b>%d</b> updates"
 msgstr[0] "Jest <b>%d</b> aktualizacja"
 msgstr[1] "Są <b>%d</b> aktualizacje"
 msgstr[2] "Jest <b>%d</b> aktualizacji"
+msgstr[3] "Jest <b>%d</b> aktualizacji"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:188
 #, python-format
@@ -696,6 +701,7 @@ msgid_plural "and <b>%d</b> security updates"
 msgstr[0] "i <b>%d</b> aktualizacja bezpieczeństwa"
 msgstr[1] "i <b>%d</b> aktualizacje bezpieczeństwa"
 msgstr[2] "i <b>%d</b> aktualizacji bezpieczeństwa"
+msgstr[3] "i <b>%d</b> aktualizacji bezpieczeństwa"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:194
 #: ../rigo/ui/gtk3/widgets/notifications.py:1222
@@ -879,6 +885,7 @@ msgid_plural ""
 msgstr[0] " <b>%s</b> Czynność rozpocznie się za <big><b>%d</b></big> sekundę"
 msgstr[1] " <b>%s</b> Czynność rozpocznie się za <big><b>%d</b></big> sekundy"
 msgstr[2] " <b>%s</b> Czynność rozpocznie się za <big><b>%d</b></big> sekund"
+msgstr[3] " <b>%s</b> Czynność rozpocznie się za <big><b>%d</b></big> sekund"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1020
 #, python-format
@@ -887,6 +894,7 @@ msgid_plural "There are <b>%d</b> configuration file updates"
 msgstr[0] "Jest <b>%d</b> aktualizacja plików konfiguracyjnych"
 msgstr[1] "Są <b>%d</b> aktualizacje plików konfiguracyjnych"
 msgstr[2] "Jest <b>%d</b> aktualizacji plików konfiguracyjnych"
+msgstr[3] "Jest <b>%d</b> aktualizacji plików konfiguracyjnych"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1026
 msgid ""
@@ -910,6 +918,7 @@ msgid_plural "There are <b>%d</b> notices from repositories"
 msgstr[0] "Jest <b>%d</b> powiadomienie repozytorium"
 msgstr[1] "Są <b>%d</b> powiadomienia repozytorium"
 msgstr[2] "Jest <b>%d</b> powiadomień repozytorium"
+msgstr[3] "Jest <b>%d</b> powiadomień repozytorium"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1077
 msgid "It is <b>extremely</b> important to always read them."
@@ -946,6 +955,7 @@ msgid_plural "There are <b>%d</b> preserved libraries on the system"
 msgstr[0] "Jest <b>%d</b> zachowana biblioteka w systemie"
 msgstr[1] "Są <b>%d</b> zachowane biblioteki w systemie"
 msgstr[2] "Jest <b>%d</b> zachowanych bibliotek w systemie"
+msgstr[3] "Jest <b>%d</b> zachowanych bibliotek w systemie"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1227
 msgid "Preserved libraries detected on the system."
@@ -962,6 +972,7 @@ msgid_plural "%(nr_ratings)i ratings"
 msgstr[0] "%(nr_ratings)i ocena"
 msgstr[1] "%(nr_ratings)i oceny"
 msgstr[2] "%(nr_ratings)i ocen"
+msgstr[3] "%(nr_ratings)i ocen"
 
 #: ../rigo/ui/gtk3/widgets/stars.py:500
 msgid "Hint: Click a star to rate this app"

@@ -9,14 +9,14 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-14 16:14+0100\n"
-"PO-Revision-Date: 2015-02-03 23:06+0000\n"
+"PO-Revision-Date: 2017-09-19 12:06+0000\n"
 "Last-Translator: Dušan Kazik <prescott66@gmail.com>\n"
 "Language-Team: Slovak (http://www.transifex.com/lxnay/sabayon-rigo/language/sk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: sk\n"
-"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n == 1 ? 0 : n % 1 == 0 && n >= 2 && n <= 4 ? 1 : n % 1 != 0 ? 2: 3);\n"
 
 #: ../RigoDaemon/app.py:129
 msgid "Downloading"
@@ -177,6 +177,7 @@ msgid_plural ", <b>%i</b> Applications enqueued so far..."
 msgstr[0] ", <b>%i</b> Applications enqueued so far..."
 msgstr[1] ", <b>%i</b> Application enqueued so far..."
 msgstr[2] ", <b>%i</b> Applications enqueued so far..."
+msgstr[3] ", <b>%i</b> Applications enqueued so far..."
 
 #: ../rigo/controllers/daemon.py:790 ../rigo_app.py:165
 msgid "Application"
@@ -260,6 +261,7 @@ msgid_plural "There are <b>%i</b> more updates"
 msgstr[0] "Je dostupných ďalších <b>%i</b> aktualizácií"
 msgstr[1] "Je dostupná ďalšia <b>%i</b> aktualizácia"
 msgstr[2] "Sú dostupné ďalšie <b>%i</b> aktualizácie"
+msgstr[3] "Sú dostupné ďalšie <b>%i</b> aktualizácie"
 
 #: ../rigo/controllers/daemon.py:1165
 msgid "Congratulations, mirrors have been <b>optimized</b>!"
@@ -396,6 +398,7 @@ msgid_plural ", and <b>%d</b> <i>more in queue</i>"
 msgstr[0] ",a ďalších <b>%d</b> <i>vo fronte</i>"
 msgstr[1] ",a ďalšia <b>%d</b> <i>vo fronte</i>"
 msgstr[2] ",a ďalšie <b>%d</b> <i>vo fronte</i>"
+msgstr[3] ",a ďalšie <b>%d</b> <i>vo fronte</i>"
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:93
 msgid "Cannot <b>edit</b> configuration file"
@@ -463,6 +466,7 @@ msgid_plural "Rate <b>%s</b> as <b>%s</b>, with <b>%d</b> stars?"
 msgstr[0] "Ohodnotiť aplikáciu <b>%s</b> ako <b>%s</b>, <b>%d</b> hviezdičkami?"
 msgstr[1] "Ohodnotiť aplikáciu <b>%s</b> ako <b>%s</b>, <b>%d</b> hviezdičkou?"
 msgstr[2] "Ohodnotiť aplikáciu <b>%s</b> ako <b>%s</b>, <b>%d</b> hviezdičkami?"
+msgstr[3] "Ohodnotiť aplikáciu <b>%s</b> ako <b>%s</b>, <b>%d</b> hviezdičkami?"
 
 #: ../rigo/ui/gtk3/controllers/application.py:350
 #: ../rigo/ui/gtk3/controllers/application.py:514
@@ -687,6 +691,7 @@ msgid_plural "There are <b>%d</b> updates"
 msgstr[0] "Je dostupných <b>%d</b> aktualizácií"
 msgstr[1] "Je dostupná <b>%d</b> aktualizácia"
 msgstr[2] "Sú dostupné <b>%d</b> aktualizácie"
+msgstr[3] "Sú dostupné <b>%d</b> aktualizácie"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:188
 #, python-format
@@ -695,6 +700,7 @@ msgid_plural "and <b>%d</b> security updates"
 msgstr[0] "a <b>%d</b> bezpečnostných aktualizácií"
 msgstr[1] "a <b>%d</b> bezpečnostná aktualizácia"
 msgstr[2] "a <b>%d</b> bezpečnostné aktualizácie"
+msgstr[3] "a <b>%d</b> bezpečnostné aktualizácie"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:194
 #: ../rigo/ui/gtk3/widgets/notifications.py:1222
@@ -878,6 +884,7 @@ msgid_plural ""
 msgstr[0] "Akcia aplikácie <b>%s</b> začne o <big><b>%d</b></big> sekúnd"
 msgstr[1] "Akcia aplikácie <b>%s</b> začne o <big><b>%d</b></big> sekundu"
 msgstr[2] "Akcia aplikácie <b>%s</b> začne o <big><b>%d</b></big> sekundy"
+msgstr[3] "Akcia aplikácie <b>%s</b> začne o <big><b>%d</b></big> sekundy"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1020
 #, python-format
@@ -886,6 +893,7 @@ msgid_plural "There are <b>%d</b> configuration file updates"
 msgstr[0] "Je dostupných <b>%d</b> aktualizácií konfiguračného súboru"
 msgstr[1] "Je dostupná <b>%d</b> aktualizácia konfiguračného súboru"
 msgstr[2] "Sú dostupné <b>%d</b> aktualizácie konfiguračného súboru"
+msgstr[3] "Sú dostupné <b>%d</b> aktualizácie konfiguračného súboru"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1026
 msgid ""
@@ -909,6 +917,7 @@ msgid_plural "There are <b>%d</b> notices from repositories"
 msgstr[0] "Je dostupných <b>%d</b> oznamov z repozitárov"
 msgstr[1] "Je dostupný <b>%d</b> oznam z repozitára"
 msgstr[2] "Sú dostupné <b>%d</b> oznamy z repozitárov"
+msgstr[3] "Sú dostupné <b>%d</b> oznamy z repozitárov"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1077
 msgid "It is <b>extremely</b> important to always read them."
@@ -945,6 +954,7 @@ msgid_plural "There are <b>%d</b> preserved libraries on the system"
 msgstr[0] "V systéme je dostupných <b>%d</b> zachovaných knižníc"
 msgstr[1] "V systéme je dostupná <b>%d</b> zachovaná knižnica"
 msgstr[2] "V systéme sú dostupné <b>%d</b> zachované knižnice"
+msgstr[3] "V systéme sú dostupné <b>%d</b> zachované knižnice"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1227
 msgid "Preserved libraries detected on the system."
@@ -961,6 +971,7 @@ msgid_plural "%(nr_ratings)i ratings"
 msgstr[0] "%(nr_ratings)i hodnotení"
 msgstr[1] "%(nr_ratings)i hodnotenie"
 msgstr[2] "%(nr_ratings)i hodnotenia"
+msgstr[3] "%(nr_ratings)i hodnotenia"
 
 #: ../rigo/ui/gtk3/widgets/stars.py:500
 msgid "Hint: Click a star to rate this app"
