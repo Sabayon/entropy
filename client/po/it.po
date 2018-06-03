@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Elvis Angelaccio, 2013-2014
 # Elvis Angelaccio, 2012
@@ -13,14 +13,13 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-09-10 19:06+0200\n"
-"PO-Revision-Date: 2016-11-20 06:54+0000\n"
+"PO-Revision-Date: 2017-09-23 18:10+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Italian (http://www.transifex.com/lxnay/sabayon-entropy/"
-"language/it/)\n"
-"Language: it\n"
+"Language-Team: Italian (http://www.transifex.com/lxnay/sabayon-entropy/language/it/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: it\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../../lib/entropy/db/skel.py:518
@@ -503,7 +502,8 @@ msgid "Repository"
 msgstr "Repository"
 
 #: ../../lib/entropy/client/interfaces/methods.py:112
-#: ../../client/solo/commands/pkg.py:190 ../../client/solo/commands/mask.py:101
+#: ../../client/solo/commands/pkg.py:190
+#: ../../client/solo/commands/mask.py:101
 msgid "is not available"
 msgstr "non è disponibile"
 
@@ -726,8 +726,7 @@ msgstr "ERRORE"
 
 #: ../../lib/entropy/client/interfaces/db.py:1318
 msgid "An error occurred while checking repository integrity"
-msgstr ""
-"E' avvenuto un errore durante il controllo dell'integrità della repository"
+msgstr "E' avvenuto un errore durante il controllo dell'integrità della repository"
 
 #: ../../lib/entropy/client/interfaces/db.py:1319
 msgid "Giving up"
@@ -735,10 +734,9 @@ msgstr "Arresa"
 
 #: ../../lib/entropy/client/interfaces/db.py:1341
 #: ../../lib/entropy/security.py:397
-msgid "Make sure to verify the imported key and set an appropriate trust level"
-msgstr ""
-"Accertati di verificare le chiavi importate ed impostare un livello di trust "
-"appropriato"
+msgid ""
+"Make sure to verify the imported key and set an appropriate trust level"
+msgstr "Accertati di verificare le chiavi importate ed impostare un livello di trust appropriato"
 
 #: ../../lib/entropy/client/interfaces/db.py:1361
 msgid "This repository suports GPG-signed packages"
@@ -746,9 +744,7 @@ msgstr "Questa repository suppora pacchetti firmati con GPG"
 
 #: ../../lib/entropy/client/interfaces/db.py:1368
 msgid "you may want to install GnuPG to take advantage of this feature"
-msgstr ""
-"potresti essere interessato ad installare GnuPG per sfruttare questa "
-"caratteristica"
+msgstr "potresti essere interessato ad installare GnuPG per sfruttare questa caratteristica"
 
 #: ../../lib/entropy/client/interfaces/db.py:1403
 #: ../../lib/entropy/security.py:437
@@ -776,9 +772,7 @@ msgstr "Errore durante l'installazione della chiave GPG"
 
 #: ../../lib/entropy/client/interfaces/db.py:1476
 msgid "GPG key seems already installed but not properly recorded, resetting"
-msgstr ""
-"Chiave GPG sembra già installata ma non registrata correttamente, reset in "
-"corso"
+msgstr "Chiave GPG sembra già installata ma non registrata correttamente, reset in corso"
 
 #: ../../lib/entropy/client/interfaces/db.py:1511
 msgid "Successfully installed GPG key for repository"
@@ -891,9 +885,7 @@ msgstr "Prova nuovamente fra qualche minuto"
 
 #: ../../lib/entropy/client/interfaces/db.py:2248
 msgid "Configuration files update error, not critical, continuing"
-msgstr ""
-"Errore durante l'aggiornamento dei file di configurazione, non critico, "
-"continuo"
+msgstr "Errore durante l'aggiornamento dei file di configurazione, non critico, continuo"
 
 #: ../../lib/entropy/client/interfaces/client.py:371
 msgid "forcing packages metadata update"
@@ -905,8 +897,7 @@ msgstr "Aggiornamento database di sistema usando repository"
 
 #: ../../lib/entropy/client/interfaces/repository.py:194
 msgid "Something bad happened. Please have a look."
-msgstr ""
-"E' accaduto qualcosa di brutto (ma brutto brutto brutto). Dai un occhio."
+msgstr "E' accaduto qualcosa di brutto (ma brutto brutto brutto). Dai un occhio."
 
 #: ../../lib/entropy/client/interfaces/repository.py:213
 msgid "there is"
@@ -1131,8 +1122,7 @@ msgstr "timeout, mi arrendo"
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:851
 msgid "Package cannot be downloaded. Try to update repositories"
-msgstr ""
-"Il pacchetto non può essere scaricato. Prova ad aggiornare le repository"
+msgstr "Il pacchetto non può essere scaricato. Prova ad aggiornare le repository"
 
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1038
 msgid "Package signature verification error for"
@@ -1266,8 +1256,7 @@ msgstr "Incorporamento pacchetto"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:576
 msgid "An error occurred while trying to unpack the package"
-msgstr ""
-"E' avvenuto un errore durante il tentativo di scompattamento del pacchetto"
+msgstr "E' avvenuto un errore durante il tentativo di scompattamento del pacchetto"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:579
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1273
@@ -1303,8 +1292,7 @@ msgstr "Pulizia"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1272
 msgid "An error occurred while trying to install the package"
-msgstr ""
-"E' avvenuto un errore durante il tentativo di installazione del pacchetto"
+msgstr "E' avvenuto un errore durante il tentativo di installazione del pacchetto"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1286
 msgid "Updating installed packages repository"
@@ -1386,8 +1374,7 @@ msgstr "fase di configurazione"
 #: ../../lib/entropy/client/interfaces/package/actions/config.py:141
 #: ../../lib/entropy/client/interfaces/package/actions/config.py:161
 msgid "An error occurred while trying to configure the package"
-msgstr ""
-"E' avvenuto un errore durante il tentativo di configurazione del pacchetto"
+msgstr "E' avvenuto un errore durante il tentativo di configurazione del pacchetto"
 
 #: ../../lib/entropy/client/interfaces/package/actions/config.py:143
 msgid "Make sure that your system is healthy"
@@ -1985,8 +1972,7 @@ msgstr "pacchetti con ulteriori dipendenze (nodo)"
 
 #: ../../client/solo/utils.py:694
 msgid "packages already pulled in as dependency in upper levels (circularity)"
-msgstr ""
-"pacchetti già inclusi come dipendenze in livelli più alti (circolarità)"
+msgstr "pacchetti già inclusi come dipendenze in livelli più alti (circolarità)"
 
 #: ../../client/solo/utils.py:773
 msgid "Graphing"
@@ -2012,16 +1998,12 @@ msgstr "Memoria esaurita! Colpa tua!"
 msgid ""
 "Hi. My name is Bug Reporter. I am sorry to inform you that the program "
 "crashed. Well, you know, shit happens."
-msgstr ""
-"Ciao. Io sono il Bug Reporter. Mi dispiace ma devo informarti che il "
-"programma è crashato. Sai, i disastri accadono."
+msgstr "Ciao. Io sono il Bug Reporter. Mi dispiace ma devo informarti che il programma è crashato. Sai, i disastri accadono."
 
 #: ../../client/solo/main.py:100
 msgid ""
 "But there's something you could do to help me to be a better application."
-msgstr ""
-"Ma c'è qualcosa che potresti fare per aiutarmi ad essere un programma "
-"migliore."
+msgstr "Ma c'è qualcosa che potresti fare per aiutarmi ad essere un programma migliore."
 
 #: ../../client/solo/main.py:106
 msgid "-- BUT, DO NOT SUBMIT THE SAME REPORT MORE THAN ONCE --"
@@ -2029,26 +2011,19 @@ msgstr "-- PERÒ PROMETTIMI DI NON DUPLICARE LA STESSA SEGNALAZIONE --"
 
 #: ../../client/solo/main.py:111
 msgid "Now I am showing you what happened. Don't panic, I'm here to help you."
-msgstr ""
-"Ora ti mostro quel che è successo. Non preoccuparti, sono qui per aiutarti."
+msgstr "Ora ti mostro quel che è successo. Non preoccuparti, sono qui per aiutarti."
 
 #: ../../client/solo/main.py:148
 msgid ""
 "Oh well, I cannot even write to TMPDIR. So, please copy the error and mail "
 "lxnay@sabayon.org."
-msgstr ""
-"Oh bene, non riesco neanche a scrivere su TMPDIR. Tienilo in mente e "
-"segnalalo con una mail a lxnay@sabayon.org."
+msgstr "Oh bene, non riesco neanche a scrivere su TMPDIR. Tienilo in mente e segnalalo con una mail a lxnay@sabayon.org."
 
 #: ../../client/solo/main.py:163
 msgid ""
 "Erm... Can I send the error, along with some other information\n"
-"about your hardware to my creators so they can fix me? (Your IP will be "
-"logged)"
-msgstr ""
-"Ehm... Posso inviare l'errore insieme ad altre informazioni  sul tuo "
-"hardware ai miei creatori in modo che possano sistemarmi? (Il tuo IP sarà "
-"registrato)"
+"about your hardware to my creators so they can fix me? (Your IP will be logged)"
+msgstr "Ehm... Posso inviare l'errore insieme ad altre informazioni  sul tuo hardware ai miei creatori in modo che possano sistemarmi? (Il tuo IP sarà registrato)"
 
 #: ../../client/solo/main.py:170
 msgid "Ok, ok ok ok... Sorry!"
@@ -2058,9 +2033,7 @@ msgstr "Ok, ok ok ok... Scusa!"
 msgid ""
 "If you want to be contacted back (and actively supported), also answer the "
 "questions below:"
-msgstr ""
-"Se vuoi essere contattato (e supportato attivamente), rispondi anche alle "
-"domande sotto:"
+msgstr "Se vuoi essere contattato (e supportato attivamente), rispondi anche alle domande sotto:"
 
 #: ../../client/solo/main.py:183
 msgid "Your Full name:"
@@ -2078,16 +2051,13 @@ msgstr "Cosa stavi facendo:"
 msgid ""
 "Thank you very much. The error has been reported and hopefully, the problem "
 "will be solved as soon as possible."
-msgstr ""
-"Grazie mille. L'errore è stato riportato e, sperando bene, il problema sarà "
-"risolto il prima possibile."
+msgstr "Grazie mille. L'errore è stato riportato e, sperando bene, il problema sarà risolto il prima possibile."
 
 #: ../../client/solo/main.py:213
 msgid ""
-"Ugh. Cannot send the report. Please mail the file below to lxnay@sabayon.org."
-msgstr ""
-"Ugh. Impossibile inviare il report. Segnalalo con una mail a lxnay@sabayon."
-"org, per piacere."
+"Ugh. Cannot send the report. Please mail the file below to "
+"lxnay@sabayon.org."
+msgstr "Ugh. Impossibile inviare il report. Segnalalo con una mail a lxnay@sabayon.org, per piacere."
 
 #: ../../client/solo/main.py:233
 msgid "Entropy/Equo version mismatch"
@@ -2129,7 +2099,8 @@ msgstr "strumenti di interrogazione della repository"
 #: ../../client/solo/commands/conf.py:76 ../../client/solo/commands/ugc.py:72
 #: ../../client/solo/commands/ugc.py:105 ../../client/solo/commands/ugc.py:146
 #: ../../client/solo/commands/repo.py:68
-#: ../../client/solo/commands/rescue.py:72 ../../client/solo/commands/pkg.py:73
+#: ../../client/solo/commands/rescue.py:72
+#: ../../client/solo/commands/pkg.py:73
 #: ../../client/solo/commands/preservedlibs.py:68 ../kernel-switcher:49
 msgid "available commands"
 msgstr "Comandi disponibili"
@@ -2290,9 +2261,7 @@ msgstr "mostra il grafo diretto delle dipendenze per il pacchetto indicato"
 msgid ""
 "include system packages, build-time dependencies and circular dependencies "
 "information"
-msgstr ""
-"includi pacchetti di sistema, dipendenze build-time e informazioni su "
-"dipendenze circolari"
+msgstr "includi pacchetti di sistema, dipendenze build-time e informazioni su dipendenze circolari"
 
 #: ../../client/solo/commands/query.py:295
 msgid "show the inverse dependencies graph for the given package"
@@ -2777,8 +2746,7 @@ msgstr "identificatore avviso"
 
 #: ../../client/solo/commands/security.py:158
 msgid "automatically install all the available security updates"
-msgstr ""
-"installa automaticamente tutti gli aggiornamenti di sicurezza disponibili"
+msgstr "installa automaticamente tutti gli aggiornamenti di sicurezza disponibili"
 
 #: ../../client/solo/commands/security.py:222
 msgid "Advisory Identifier"
@@ -2916,9 +2884,7 @@ msgstr "Digitare un numero"
 
 #: ../../client/solo/commands/conf.py:217
 msgid "Please choose a file to update by typing its identification number."
-msgstr ""
-"Per favore scegli un file da aggiornare scrivendo il suo numero "
-"identificativo."
+msgstr "Per favore scegli un file da aggiornare scrivendo il suo numero identificativo."
 
 #: ../../client/solo/commands/conf.py:221
 msgid "Other options are:"
@@ -3316,7 +3282,8 @@ msgstr "login sulla repository indicata"
 #: ../../client/solo/commands/ugc.py:77 ../../client/solo/commands/ugc.py:87
 #: ../../client/solo/commands/ugc.py:99 ../../client/solo/commands/ugc.py:140
 #: ../../client/solo/commands/repo.py:74 ../../client/solo/commands/repo.py:82
-#: ../../client/solo/commands/repo.py:89 ../../client/solo/commands/repo.py:112
+#: ../../client/solo/commands/repo.py:89
+#: ../../client/solo/commands/repo.py:112
 #: ../../client/solo/commands/repo.py:140
 msgid "repository name"
 msgstr "nome della repository"
@@ -3331,10 +3298,9 @@ msgstr "disconnessione dalla repository indicata"
 
 #: ../../client/solo/commands/ugc.py:96
 msgid ""
-"manage package documents in the selected repository (comments, files, videos)"
-msgstr ""
-"gestisci documenti del pacchetto nella repository selezionata (commenti, "
-"file, video)"
+"manage package documents in the selected repository (comments, files, "
+"videos)"
+msgstr "gestisci documenti del pacchetto nella repository selezionata (commenti, file, video)"
 
 #: ../../client/solo/commands/ugc.py:104
 msgid "manage Documents"
@@ -3608,7 +3574,8 @@ msgstr "già votato"
 msgid "vote added, thank you!"
 msgstr "voto aggiunto, grazie!"
 
-#: ../../client/solo/commands/repo.py:67 ../../client/solo/commands/repo.py:737
+#: ../../client/solo/commands/repo.py:67
+#: ../../client/solo/commands/repo.py:737
 msgid "manage repositories"
 msgstr "gestisci repository"
 
@@ -3890,8 +3857,7 @@ msgstr "Nessun file di configurazione da aggiornare."
 msgid "There is %s configuration file needing update"
 msgid_plural "There are %s configuration files needing update"
 msgstr[0] "C'è %s file di configurazione che ha bisogno di un aggiornamento"
-msgstr[1] ""
-"Ci sono %s file di configurazione che hanno bisogno di un aggiornamento"
+msgstr[1] "Ci sono %s file di configurazione che hanno bisogno di un aggiornamento"
 
 #: ../../client/solo/commands/_manage.py:116
 msgid "Please run"
@@ -4045,8 +4011,8 @@ msgstr "Nessun visualizzatore file"
 msgid "License saved into"
 msgstr "Licenza salvata in"
 
-#: ../../client/solo/commands/rescue.py:71 ../../client/solo/commands/pkg.py:72
-#: ../../client/solo/commands/pkg.py:461
+#: ../../client/solo/commands/rescue.py:71
+#: ../../client/solo/commands/pkg.py:72 ../../client/solo/commands/pkg.py:461
 msgid "execute advanced tasks on packages"
 msgstr "eseguire operazioni avanzate sui pacchetti"
 
@@ -4062,9 +4028,7 @@ msgstr "compatta i pacchetti della repository installati"
 msgid ""
 "re-generate the installed packages repository using the Source Package "
 "Manager"
-msgstr ""
-"rigenera la repository dei pacchetti installati usando il Source Package "
-"Manager"
+msgstr "rigenera la repository dei pacchetti installati usando il Source Package Manager"
 
 #: ../../client/solo/commands/rescue.py:111
 msgid "re-generate SPM<->Entropy package UIDs mapping"
@@ -4074,9 +4038,7 @@ msgstr "rigenera la mappa SPM<->Entropy per gli UID pacchetto"
 msgid ""
 "update Entropy installed packages repository merging Source Package Manager "
 "changes"
-msgstr ""
-"aggiorna la repository dei pacchetti di Entropy installati con i cambiamenti "
-"del Source Package Manager"
+msgstr "aggiorna la repository dei pacchetti di Entropy installati con i cambiamenti del Source Package Manager"
 
 #: ../../client/solo/commands/rescue.py:128
 msgid "create a backup of the installed packages repository"
@@ -4128,9 +4090,7 @@ msgstr "Compattazione completata"
 msgid ""
 "the Installed Packages repository will be re-generated using the Source "
 "Package Manager"
-msgstr ""
-"la repository dei Pacchetti Installati sarà rigenerata usando il Source "
-"Package Manager"
+msgstr "la repository dei Pacchetti Installati sarà rigenerata usando il Source Package Manager"
 
 #: ../../client/solo/commands/rescue.py:322
 msgid "I am not joking, this is quite disruptive"
@@ -4361,8 +4321,7 @@ msgstr "di spazio libero"
 
 #: ../../client/solo/commands/install.py:487
 msgid "You don't have enough space for the installation. Free some space into"
-msgstr ""
-"Non hai abbastanza spazio per l'installazione. Libera un po' di spazio dentro"
+msgstr "Non hai abbastanza spazio per l'installazione. Libera un po' di spazio dentro"
 
 #: ../../client/solo/commands/install.py:587
 msgid "Download complete"
@@ -4382,11 +4341,9 @@ msgstr "installa o aggiorna pacchetti o file del pacchetto"
 
 #: ../../client/solo/commands/upgrade.py:130
 msgid ""
-"remove unmaintained packages, if any. This will respect --ask, --pretend and "
-"other switches."
-msgstr ""
-"rimuovi pacchetti non più mantenuti, se presenti. Quest'opzione rispetterà --"
-"ask, --pretend e altre flag."
+"remove unmaintained packages, if any. This will respect --ask, --pretend and"
+" other switches."
+msgstr "rimuovi pacchetti non più mantenuti, se presenti. Quest'opzione rispetterà --ask, --pretend e altre flag."
 
 #: ../../client/solo/commands/upgrade.py:201
 msgid "Calculating System Updates"
@@ -4412,17 +4369,13 @@ msgstr "Niente da aggiornare"
 msgid ""
 "On the system there are packages that are not available anymore in the "
 "online repositories"
-msgstr ""
-"Sul sistema ci sono pacchetti che non sono più disponibili nelle repository "
-"online"
+msgstr "Sul sistema ci sono pacchetti che non sono più disponibili nelle repository online"
 
 #: ../../client/solo/commands/upgrade.py:277
 msgid ""
 "Even if they are usually harmless, it is suggested (after proper "
 "verification) to remove them."
-msgstr ""
-"Sebbene siano solitamente innocui, è suggerita (dopo verifica appropriata) "
-"la loro rimozione."
+msgstr "Sebbene siano solitamente innocui, è suggerita (dopo verifica appropriata) la loro rimozione."
 
 #: ../../client/solo/commands/upgrade.py:289
 msgid "To automatically remove them, please run: equo upgrade --purge."
@@ -4671,9 +4624,7 @@ msgstr "l'ultima versione disponibile è"
 msgid ""
 "It is recommended that you upgrade to the latest before updating any other "
 "packages"
-msgstr ""
-"Si raccomanda di aggiornare all'ultima versione prima di qualsiasi altro "
-"pacchetto."
+msgstr "Si raccomanda di aggiornare all'ultima versione prima di qualsiasi altro pacchetto."
 
 #: ../../magneto/src/magneto/qt5/components.py:49
 msgid "Close"
@@ -4809,14 +4760,12 @@ msgid "Repositories are being updated"
 msgstr "Repository in fase di aggiornamento"
 
 #: ../../magneto/src/magneto/core/interfaces.py:392
-#, fuzzy
 msgid "Sabayon repositories status"
-msgstr "mostra stato repository"
+msgstr ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:393
-#, fuzzy
 msgid "Repositories are being updated automatically"
-msgstr "Repository in fase di aggiornamento"
+msgstr ""
 
 #. all fine, no updates
 #: ../../magneto/src/magneto/core/interfaces.py:401
@@ -4895,6 +4844,3 @@ msgstr "Magneto Notifier"
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:3
 msgid "_Load Package Manager"
 msgstr "_Lancia il Gestore dei pacchetti"
-
-#~ msgid "Unregistering library"
-#~ msgstr "De-registrazione libreria"

@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Daniel Halens Rodriguez <DanielHalens@gmail.com>, 2011
 # Danilo Riffo <danriffo@gmail.com>, 2012
@@ -10,14 +10,13 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-09-10 19:06+0200\n"
-"PO-Revision-Date: 2016-11-20 06:54+0000\n"
+"PO-Revision-Date: 2017-09-19 12:11+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Spanish (Chile) (http://www.transifex.com/lxnay/sabayon-"
-"entropy/language/es_CL/)\n"
-"Language: es_CL\n"
+"Language-Team: Spanish (Chile) (http://www.transifex.com/lxnay/sabayon-entropy/language/es_CL/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: es_CL\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../../lib/entropy/db/skel.py:518
@@ -110,8 +109,7 @@ msgstr "ATENCIÓN"
 
 #: ../../lib/entropy/db/sqlite.py:2518 ../../lib/entropy/db/sqlite.py:2622
 msgid "updating repository metadata layout, please wait!"
-msgstr ""
-"actualizando la disposición de metadatos del repositorio, ¡espera por favor!"
+msgstr "actualizando la disposición de metadatos del repositorio, ¡espera por favor!"
 
 #: ../../lib/entropy/db/sqlite.py:2729
 msgid "generating provided_libs metadata, please wait!"
@@ -308,8 +306,7 @@ msgstr "hazlo manualmente"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2697
 msgid "package files rebuild did not run properly"
-msgstr ""
-"la reconstrucción de los archivos del paquete no se completó correctamente"
+msgstr "la reconstrucción de los archivos del paquete no se completó correctamente"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2698
 msgid "Please update packages manually"
@@ -386,8 +383,7 @@ msgstr "Revirtiendo"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3799
 msgid "Skipping configuration files update, you are not root."
-msgstr ""
-"No eres root, saltándose la actualización de archivos de configuración."
+msgstr "No eres root, saltándose la actualización de archivos de configuración."
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4082
 msgid "Error calculating dependencies"
@@ -494,9 +490,7 @@ msgstr "El Set no se ha encontrado o no se puede eliminar"
 
 #: ../../lib/entropy/client/interfaces/methods.py:92
 msgid "Please update your repositories now in order to remove this message!"
-msgstr ""
-"Por favor, actualiza los repositorios para hacer que este mensaje "
-"desaparezca."
+msgstr "Por favor, actualiza los repositorios para hacer que este mensaje desaparezca."
 
 #: ../../lib/entropy/client/interfaces/methods.py:111
 #: ../../lib/entropy/client/interfaces/methods.py:136
@@ -505,7 +499,8 @@ msgid "Repository"
 msgstr "Repositorio"
 
 #: ../../lib/entropy/client/interfaces/methods.py:112
-#: ../../client/solo/commands/pkg.py:190 ../../client/solo/commands/mask.py:101
+#: ../../client/solo/commands/pkg.py:190
+#: ../../client/solo/commands/mask.py:101
 msgid "is not available"
 msgstr "no está disponible"
 
@@ -736,10 +731,9 @@ msgstr "Abandonando"
 
 #: ../../lib/entropy/client/interfaces/db.py:1341
 #: ../../lib/entropy/security.py:397
-msgid "Make sure to verify the imported key and set an appropriate trust level"
-msgstr ""
-"Asegúrate de verificar la clave importada y configurar un nivel de confianza "
-"adecuado"
+msgid ""
+"Make sure to verify the imported key and set an appropriate trust level"
+msgstr "Asegúrate de verificar la clave importada y configurar un nivel de confianza adecuado"
 
 #: ../../lib/entropy/client/interfaces/db.py:1361
 msgid "This repository suports GPG-signed packages"
@@ -775,8 +769,7 @@ msgstr "Error mientras se instalaba la clave GPG"
 
 #: ../../lib/entropy/client/interfaces/db.py:1476
 msgid "GPG key seems already installed but not properly recorded, resetting"
-msgstr ""
-"La clave GPG parece instalada pero no correctamente almacenada, reiniciando"
+msgstr "La clave GPG parece instalada pero no correctamente almacenada, reiniciando"
 
 #: ../../lib/entropy/client/interfaces/db.py:1511
 msgid "Successfully installed GPG key for repository"
@@ -889,9 +882,7 @@ msgstr "Inténtalo de nuevo en unos minutos"
 
 #: ../../lib/entropy/client/interfaces/db.py:2248
 msgid "Configuration files update error, not critical, continuing"
-msgstr ""
-"Error no crítico en la actualización de archivos de configuración, "
-"continuando"
+msgstr "Error no crítico en la actualización de archivos de configuración, continuando"
 
 #: ../../lib/entropy/client/interfaces/client.py:371
 msgid "forcing packages metadata update"
@@ -1523,9 +1514,7 @@ msgstr ""
 
 #: ../../lib/entropy/const.py:630
 msgid "Corrupted Client Repository. Please restore a backup."
-msgstr ""
-"El Repositorio Cliente está Corrupto. Por favor, restaura una copia de "
-"seguridad."
+msgstr "El Repositorio Cliente está Corrupto. Por favor, restaura una copia de seguridad."
 
 #: ../../lib/entropy/const.py:662
 msgid "reason not available"
@@ -1774,9 +1763,7 @@ msgstr "Recopilando los ejecutables rotos"
 
 #: ../../lib/entropy/qa.py:702
 msgid "don't worry about libraries that are shown here but not later."
-msgstr ""
-"no te preocupes por las bibliotecas que se muestren aquí pero que no "
-"aparezcan después."
+msgstr "no te preocupes por las bibliotecas que se muestren aquí pero que no aparezcan después."
 
 #: ../../lib/entropy/qa.py:723
 msgid "Scanning libraries"
@@ -2021,9 +2008,7 @@ msgstr ""
 
 #: ../../client/solo/main.py:111
 msgid "Now I am showing you what happened. Don't panic, I'm here to help you."
-msgstr ""
-"Ahora te voy a mostrar que ha sucedido. No te preocupes, estoy aquí para "
-"ayudarte."
+msgstr "Ahora te voy a mostrar que ha sucedido. No te preocupes, estoy aquí para ayudarte."
 
 #: ../../client/solo/main.py:148
 msgid ""
@@ -2034,8 +2019,7 @@ msgstr ""
 #: ../../client/solo/main.py:163
 msgid ""
 "Erm... Can I send the error, along with some other information\n"
-"about your hardware to my creators so they can fix me? (Your IP will be "
-"logged)"
+"about your hardware to my creators so they can fix me? (Your IP will be logged)"
 msgstr ""
 
 #: ../../client/solo/main.py:170
@@ -2046,9 +2030,7 @@ msgstr "Vale vale vale vale... Lo siento."
 msgid ""
 "If you want to be contacted back (and actively supported), also answer the "
 "questions below:"
-msgstr ""
-"Si quieres que te respondamos (y te demos soporte activo), escribe también "
-"los siguientes datos:"
+msgstr "Si quieres que te respondamos (y te demos soporte activo), escribe también los siguientes datos:"
 
 #: ../../client/solo/main.py:183
 msgid "Your Full name:"
@@ -2066,13 +2048,12 @@ msgstr "Qué estabas haciendo:"
 msgid ""
 "Thank you very much. The error has been reported and hopefully, the problem "
 "will be solved as soon as possible."
-msgstr ""
-"Muchas gracias. El error ha sido reportado; el problema será solucionado lo "
-"antes posible."
+msgstr "Muchas gracias. El error ha sido reportado; el problema será solucionado lo antes posible."
 
 #: ../../client/solo/main.py:213
 msgid ""
-"Ugh. Cannot send the report. Please mail the file below to lxnay@sabayon.org."
+"Ugh. Cannot send the report. Please mail the file below to "
+"lxnay@sabayon.org."
 msgstr ""
 
 #: ../../client/solo/main.py:233
@@ -2115,7 +2096,8 @@ msgstr ""
 #: ../../client/solo/commands/conf.py:76 ../../client/solo/commands/ugc.py:72
 #: ../../client/solo/commands/ugc.py:105 ../../client/solo/commands/ugc.py:146
 #: ../../client/solo/commands/repo.py:68
-#: ../../client/solo/commands/rescue.py:72 ../../client/solo/commands/pkg.py:73
+#: ../../client/solo/commands/rescue.py:72
+#: ../../client/solo/commands/pkg.py:73
 #: ../../client/solo/commands/preservedlibs.py:68 ../kernel-switcher:49
 msgid "available commands"
 msgstr ""
@@ -2753,9 +2735,7 @@ msgstr "muestra sólo los no afectados"
 
 #: ../../client/solo/commands/security.py:146
 msgid "show information about provided advisories identifiers"
-msgstr ""
-"muestra la información de los avisos correspondiente a los identificadores "
-"proporcionado"
+msgstr "muestra la información de los avisos correspondiente a los identificadores proporcionado"
 
 #: ../../client/solo/commands/security.py:151
 msgid "advisory indentifier"
@@ -3299,7 +3279,8 @@ msgstr ""
 #: ../../client/solo/commands/ugc.py:77 ../../client/solo/commands/ugc.py:87
 #: ../../client/solo/commands/ugc.py:99 ../../client/solo/commands/ugc.py:140
 #: ../../client/solo/commands/repo.py:74 ../../client/solo/commands/repo.py:82
-#: ../../client/solo/commands/repo.py:89 ../../client/solo/commands/repo.py:112
+#: ../../client/solo/commands/repo.py:89
+#: ../../client/solo/commands/repo.py:112
 #: ../../client/solo/commands/repo.py:140
 msgid "repository name"
 msgstr ""
@@ -3314,7 +3295,8 @@ msgstr ""
 
 #: ../../client/solo/commands/ugc.py:96
 msgid ""
-"manage package documents in the selected repository (comments, files, videos)"
+"manage package documents in the selected repository (comments, files, "
+"videos)"
 msgstr ""
 
 #: ../../client/solo/commands/ugc.py:104
@@ -3408,9 +3390,7 @@ msgstr "Correctamente conectado como"
 
 #: ../../client/solo/commands/ugc.py:288
 msgid "From now on, any UGC action will be committed as this user"
-msgstr ""
-"A partir de ahora, cualquier acción del Contenido Generado por el Usuario "
-"será realizada como este usuario"
+msgstr "A partir de ahora, cualquier acción del Contenido Generado por el Usuario será realizada como este usuario"
 
 #: ../../client/solo/commands/ugc.py:325
 msgid "Not logged in."
@@ -3591,7 +3571,8 @@ msgstr ""
 msgid "vote added, thank you!"
 msgstr ""
 
-#: ../../client/solo/commands/repo.py:67 ../../client/solo/commands/repo.py:737
+#: ../../client/solo/commands/repo.py:67
+#: ../../client/solo/commands/repo.py:737
 msgid "manage repositories"
 msgstr ""
 
@@ -4027,8 +4008,8 @@ msgstr "No hay visor de archivos"
 msgid "License saved into"
 msgstr "La licencia ha sido guardada en"
 
-#: ../../client/solo/commands/rescue.py:71 ../../client/solo/commands/pkg.py:72
-#: ../../client/solo/commands/pkg.py:461
+#: ../../client/solo/commands/rescue.py:71
+#: ../../client/solo/commands/pkg.py:72 ../../client/solo/commands/pkg.py:461
 msgid "execute advanced tasks on packages"
 msgstr ""
 
@@ -4337,9 +4318,7 @@ msgstr "de espacio libre"
 
 #: ../../client/solo/commands/install.py:487
 msgid "You don't have enough space for the installation. Free some space into"
-msgstr ""
-"No dispones de suficiente espacio para la instalación. Libera algo de "
-"espacio en"
+msgstr "No dispones de suficiente espacio para la instalación. Libera algo de espacio en"
 
 #: ../../client/solo/commands/install.py:587
 msgid "Download complete"
@@ -4359,8 +4338,8 @@ msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:130
 msgid ""
-"remove unmaintained packages, if any. This will respect --ask, --pretend and "
-"other switches."
+"remove unmaintained packages, if any. This will respect --ask, --pretend and"
+" other switches."
 msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:201
@@ -4387,17 +4366,13 @@ msgstr "Nada que actualizar"
 msgid ""
 "On the system there are packages that are not available anymore in the "
 "online repositories"
-msgstr ""
-"En el sistema hay paquetes que ya no están disponibles en los repositorios "
-"online"
+msgstr "En el sistema hay paquetes que ya no están disponibles en los repositorios online"
 
 #: ../../client/solo/commands/upgrade.py:277
 msgid ""
 "Even if they are usually harmless, it is suggested (after proper "
 "verification) to remove them."
-msgstr ""
-"A pesar de que no suelen ser dañinos, es aconsejable eliminarlos (tras "
-"comprobar que no son necesarios)."
+msgstr "A pesar de que no suelen ser dañinos, es aconsejable eliminarlos (tras comprobar que no son necesarios)."
 
 #: ../../client/solo/commands/upgrade.py:289
 msgid "To automatically remove them, please run: equo upgrade --purge."
@@ -4646,9 +4621,7 @@ msgstr "la última versión disponible es"
 msgid ""
 "It is recommended that you upgrade to the latest before updating any other "
 "packages"
-msgstr ""
-"Es recomendable que actualices a la última versión antes de actualizar "
-"cualquier otro paquete"
+msgstr "Es recomendable que actualices a la última versión antes de actualizar cualquier otro paquete"
 
 #: ../../magneto/src/magneto/qt5/components.py:49
 msgid "Close"
@@ -4784,14 +4757,12 @@ msgid "Repositories are being updated"
 msgstr "Los repositorios están actualizándose"
 
 #: ../../magneto/src/magneto/core/interfaces.py:392
-#, fuzzy
 msgid "Sabayon repositories status"
-msgstr "Estado del repositorio descargado"
+msgstr ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:393
-#, fuzzy
 msgid "Repositories are being updated automatically"
-msgstr "Los repositorios están actualizándose"
+msgstr ""
 
 #. all fine, no updates
 #: ../../magneto/src/magneto/core/interfaces.py:401

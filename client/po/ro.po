@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Baadur Jobava <jobaval10n@gmail.com>, 2016
 # Cristian Gherman <cgherman@mandrivausers.ro>, 2013
@@ -11,16 +11,14 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-09-10 19:06+0200\n"
-"PO-Revision-Date: 2016-11-20 14:45+0000\n"
-"Last-Translator: Baadur Jobava <jobaval10n@gmail.com>\n"
-"Language-Team: Romanian (http://www.transifex.com/lxnay/sabayon-entropy/"
-"language/ro/)\n"
-"Language: ro\n"
+"PO-Revision-Date: 2017-09-19 14:24+0000\n"
+"Last-Translator: lxnay <lxnay@sabayon.org>\n"
+"Language-Team: Romanian (http://www.transifex.com/lxnay/sabayon-entropy/language/ro/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?"
-"2:1));\n"
+"Language: ro\n"
+"Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?2:1));\n"
 
 #: ../../lib/entropy/db/skel.py:518
 #: ../../lib/entropy/client/interfaces/package/actions/action.py:100
@@ -386,8 +384,7 @@ msgstr "Revenire"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3799
 msgid "Skipping configuration files update, you are not root."
-msgstr ""
-"Nu se va realiza actualizarea fișierelor de configurare, nu sunteți root."
+msgstr "Nu se va realiza actualizarea fișierelor de configurare, nu sunteți root."
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4082
 msgid "Error calculating dependencies"
@@ -503,7 +500,8 @@ msgid "Repository"
 msgstr "Depozit"
 
 #: ../../lib/entropy/client/interfaces/methods.py:112
-#: ../../client/solo/commands/pkg.py:190 ../../client/solo/commands/mask.py:101
+#: ../../client/solo/commands/pkg.py:190
+#: ../../client/solo/commands/mask.py:101
 msgid "is not available"
 msgstr "indisponibil"
 
@@ -734,10 +732,9 @@ msgstr "Se renunță"
 
 #: ../../lib/entropy/client/interfaces/db.py:1341
 #: ../../lib/entropy/security.py:397
-msgid "Make sure to verify the imported key and set an appropriate trust level"
-msgstr ""
-"Aveți grijă să verificați cheia importată și să o setați la un nivel "
-"corespunzător de încredere"
+msgid ""
+"Make sure to verify the imported key and set an appropriate trust level"
+msgstr "Aveți grijă să verificați cheia importată și să o setați la un nivel corespunzător de încredere"
 
 #: ../../lib/entropy/client/interfaces/db.py:1361
 msgid "This repository suports GPG-signed packages"
@@ -745,8 +742,7 @@ msgstr "Acest depozit suportă pachete semnate GPG"
 
 #: ../../lib/entropy/client/interfaces/db.py:1368
 msgid "you may want to install GnuPG to take advantage of this feature"
-msgstr ""
-"vă recomandăm instalarea GnuPG pentru a profita de această funcționalitate"
+msgstr "vă recomandăm instalarea GnuPG pentru a profita de această funcționalitate"
 
 #: ../../lib/entropy/client/interfaces/db.py:1403
 #: ../../lib/entropy/security.py:437
@@ -774,9 +770,7 @@ msgstr "Eroare la instalarea cheii GPG"
 
 #: ../../lib/entropy/client/interfaces/db.py:1476
 msgid "GPG key seems already installed but not properly recorded, resetting"
-msgstr ""
-"cheia GPG pare a fi deja instalată, dar nu este înregistrată corect, se "
-"resetează"
+msgstr "cheia GPG pare a fi deja instalată, dar nu este înregistrată corect, se resetează"
 
 #: ../../lib/entropy/client/interfaces/db.py:1511
 msgid "Successfully installed GPG key for repository"
@@ -889,9 +883,7 @@ msgstr "Încercați din nou în câteva minute"
 
 #: ../../lib/entropy/client/interfaces/db.py:2248
 msgid "Configuration files update error, not critical, continuing"
-msgstr ""
-"Eroare de actualizare pentru fișierele de configurare, nu este critică, se "
-"continuă"
+msgstr "Eroare de actualizare pentru fișierele de configurare, nu este critică, se continuă"
 
 #: ../../lib/entropy/client/interfaces/client.py:371
 msgid "forcing packages metadata update"
@@ -1776,8 +1768,7 @@ msgstr "Se colectează executabilele rupte"
 
 #: ../../lib/entropy/qa.py:702
 msgid "don't worry about libraries that are shown here but not later."
-msgstr ""
-"nu vă îngrijorați despre biblioteci afișate aici acum, dar nu mai târziu."
+msgstr "nu vă îngrijorați despre biblioteci afișate aici acum, dar nu mai târziu."
 
 #: ../../lib/entropy/qa.py:723
 msgid "Scanning libraries"
@@ -1983,9 +1974,7 @@ msgstr "pachete cu alte dependențe (nod)"
 
 #: ../../client/solo/utils.py:694
 msgid "packages already pulled in as dependency in upper levels (circularity)"
-msgstr ""
-"pachetele au fost deja descărcate ca dependențe în nivelele superioare "
-"(circularitate)"
+msgstr "pachetele au fost deja descărcate ca dependențe în nivelele superioare (circularitate)"
 
 #: ../../client/solo/utils.py:773
 msgid "Graphing"
@@ -1993,8 +1982,7 @@ msgstr "Graphing"
 
 #: ../../client/solo/main.py:40
 msgid "Installed packages repository corrupted. Please re-generate it"
-msgstr ""
-"Depozitul pentru pachetele instalate este corupt. Vă rog să-l regenerați"
+msgstr "Depozitul pentru pachetele instalate este corupt. Vă rog să-l regenerați"
 
 #: ../../client/solo/main.py:50
 msgid "Cannot continue"
@@ -2012,9 +2000,7 @@ msgstr "Nu mai e memorie, frate! Vina ta!"
 msgid ""
 "Hi. My name is Bug Reporter. I am sorry to inform you that the program "
 "crashed. Well, you know, shit happens."
-msgstr ""
-"Salut. Mă numesc Bug Reporter. Îmi pare rău să vă informez că programul a "
-"avut o pană. Ei bine, căcatul se întâmplă."
+msgstr "Salut. Mă numesc Bug Reporter. Îmi pare rău să vă informez că programul a avut o pană. Ei bine, căcatul se întâmplă."
 
 #: ../../client/solo/main.py:100
 msgid ""
@@ -2027,26 +2013,19 @@ msgstr "-- DAR, NU POSTAȚI ACELAȘI RAPORT MAI MULT DE O DATĂ --"
 
 #: ../../client/solo/main.py:111
 msgid "Now I am showing you what happened. Don't panic, I'm here to help you."
-msgstr ""
-"Eu doar vă arăt ce s-a întâmplat. Nu intrați în panică, sunt aici să vă ajut."
+msgstr "Eu doar vă arăt ce s-a întâmplat. Nu intrați în panică, sunt aici să vă ajut."
 
 #: ../../client/solo/main.py:148
 msgid ""
 "Oh well, I cannot even write to TMPDIR. So, please copy the error and mail "
 "lxnay@sabayon.org."
-msgstr ""
-"Ei bine, nu pot nici măcar scrie pe TMPDIR. Așa că vă rog să copiați această "
-"eroare și să o trimiteți prin e-mail la lxnay@sabayon.org."
+msgstr "Ei bine, nu pot nici măcar scrie pe TMPDIR. Așa că vă rog să copiați această eroare și să o trimiteți prin e-mail la lxnay@sabayon.org."
 
 #: ../../client/solo/main.py:163
 msgid ""
 "Erm... Can I send the error, along with some other information\n"
-"about your hardware to my creators so they can fix me? (Your IP will be "
-"logged)"
-msgstr ""
-"Hmm... Pot să trimit eroarea, împreună cu alte informații\n"
-"despre hardware-ul dumneavoastră la creatorii mei ca ei să mă poată depana? "
-"(Adresa de IP va fi înregistrată)"
+"about your hardware to my creators so they can fix me? (Your IP will be logged)"
+msgstr "Hmm... Pot să trimit eroarea, împreună cu alte informații\ndespre hardware-ul dumneavoastră la creatorii mei ca ei să mă poată depana? (Adresa de IP va fi înregistrată)"
 
 #: ../../client/solo/main.py:170
 msgid "Ok, ok ok ok... Sorry!"
@@ -2056,9 +2035,7 @@ msgstr "Ok, ok ok ok... Scuze!"
 msgid ""
 "If you want to be contacted back (and actively supported), also answer the "
 "questions below:"
-msgstr ""
-"Dacă vreți să fiți contactați înapoi (și să primiți suport activ), vă rog să "
-"răspundeți la întrebările de mai jos:"
+msgstr "Dacă vreți să fiți contactați înapoi (și să primiți suport activ), vă rog să răspundeți la întrebările de mai jos:"
 
 #: ../../client/solo/main.py:183
 msgid "Your Full name:"
@@ -2076,16 +2053,13 @@ msgstr "Ce făceați în momentul respectiv:"
 msgid ""
 "Thank you very much. The error has been reported and hopefully, the problem "
 "will be solved as soon as possible."
-msgstr ""
-"Vă mulțumesc foarte mult. Eroarea a fost raportată și sperăm că problema va "
-"fi rezolvată cât mai curând posibil."
+msgstr "Vă mulțumesc foarte mult. Eroarea a fost raportată și sperăm că problema va fi rezolvată cât mai curând posibil."
 
 #: ../../client/solo/main.py:213
 msgid ""
-"Ugh. Cannot send the report. Please mail the file below to lxnay@sabayon.org."
-msgstr ""
-"Uff. Nu pot trimite raportul. Vă rog să trimiteți prin e-mail fișierul de "
-"mai jos la lxnay@sabayon.org."
+"Ugh. Cannot send the report. Please mail the file below to "
+"lxnay@sabayon.org."
+msgstr "Uff. Nu pot trimite raportul. Vă rog să trimiteți prin e-mail fișierul de mai jos la lxnay@sabayon.org."
 
 #: ../../client/solo/main.py:233
 msgid "Entropy/Equo version mismatch"
@@ -2127,7 +2101,8 @@ msgstr "unelte de interogare depozit"
 #: ../../client/solo/commands/conf.py:76 ../../client/solo/commands/ugc.py:72
 #: ../../client/solo/commands/ugc.py:105 ../../client/solo/commands/ugc.py:146
 #: ../../client/solo/commands/repo.py:68
-#: ../../client/solo/commands/rescue.py:72 ../../client/solo/commands/pkg.py:73
+#: ../../client/solo/commands/rescue.py:72
+#: ../../client/solo/commands/pkg.py:73
 #: ../../client/solo/commands/preservedlibs.py:68 ../kernel-switcher:49
 msgid "available commands"
 msgstr "comenzi disponibile"
@@ -2288,9 +2263,7 @@ msgstr "arată graful de dependențe directe pentru un pachet specificat"
 msgid ""
 "include system packages, build-time dependencies and circular dependencies "
 "information"
-msgstr ""
-"include pachetele de sistem, dependențele de build și informații dependențe "
-"circulare"
+msgstr "include pachetele de sistem, dependențele de build și informații dependențe circulare"
 
 #: ../../client/solo/commands/query.py:295
 msgid "show the inverse dependencies graph for the given package"
@@ -2733,9 +2706,7 @@ msgstr "consideră mtime în loc de SHA256 (pot fi pozitive false mai departe)"
 
 #: ../../client/solo/commands/security.py:84
 msgid "update hashes and mtime (useful after editing config files)"
-msgstr ""
-"actualizează hash-uri și mtime-uri (folositor după editarea fișierelor de "
-"configurare)"
+msgstr "actualizează hash-uri și mtime-uri (folositor după editarea fișierelor de configurare)"
 
 #: ../../client/solo/commands/security.py:88
 msgid "reinstall faulty packages"
@@ -2916,9 +2887,7 @@ msgstr "Tastați un număr"
 
 #: ../../client/solo/commands/conf.py:217
 msgid "Please choose a file to update by typing its identification number."
-msgstr ""
-"Alegeți un fișier de actualizat prin tastarea numărului de identificare al "
-"acestuia."
+msgstr "Alegeți un fișier de actualizat prin tastarea numărului de identificare al acestuia."
 
 #: ../../client/solo/commands/conf.py:221
 msgid "Other options are:"
@@ -3316,7 +3285,8 @@ msgstr "autentificare pentru depozitul dat"
 #: ../../client/solo/commands/ugc.py:77 ../../client/solo/commands/ugc.py:87
 #: ../../client/solo/commands/ugc.py:99 ../../client/solo/commands/ugc.py:140
 #: ../../client/solo/commands/repo.py:74 ../../client/solo/commands/repo.py:82
-#: ../../client/solo/commands/repo.py:89 ../../client/solo/commands/repo.py:112
+#: ../../client/solo/commands/repo.py:89
+#: ../../client/solo/commands/repo.py:112
 #: ../../client/solo/commands/repo.py:140
 msgid "repository name"
 msgstr "nume depozit"
@@ -3331,10 +3301,9 @@ msgstr "deconectează de la depozitul dat"
 
 #: ../../client/solo/commands/ugc.py:96
 msgid ""
-"manage package documents in the selected repository (comments, files, videos)"
-msgstr ""
-"gestionează documente pachet în depozitul selectat (comentarii, fișiere, "
-"videoclipuri)"
+"manage package documents in the selected repository (comments, files, "
+"videos)"
+msgstr "gestionează documente pachet în depozitul selectat (comentarii, fișiere, videoclipuri)"
 
 #: ../../client/solo/commands/ugc.py:104
 msgid "manage Documents"
@@ -3608,7 +3577,8 @@ msgstr "deja ați votat"
 msgid "vote added, thank you!"
 msgstr "votul a fost adăugat, vă mulțumim!"
 
-#: ../../client/solo/commands/repo.py:67 ../../client/solo/commands/repo.py:737
+#: ../../client/solo/commands/repo.py:67
+#: ../../client/solo/commands/repo.py:737
 msgid "manage repositories"
 msgstr "gestionare depozite"
 
@@ -4046,8 +4016,8 @@ msgstr "Niciun cititor pentru fișier"
 msgid "License saved into"
 msgstr "Licența a fost salvată în"
 
-#: ../../client/solo/commands/rescue.py:71 ../../client/solo/commands/pkg.py:72
-#: ../../client/solo/commands/pkg.py:461
+#: ../../client/solo/commands/rescue.py:71
+#: ../../client/solo/commands/pkg.py:72 ../../client/solo/commands/pkg.py:461
 msgid "execute advanced tasks on packages"
 msgstr "execută sarcinile avansate pe pachete"
 
@@ -4063,9 +4033,7 @@ msgstr "compactează depozitul pentru pachete instalate"
 msgid ""
 "re-generate the installed packages repository using the Source Package "
 "Manager"
-msgstr ""
-"regenerează depozitul pentru pachete instalate folosind Source Package "
-"Manager"
+msgstr "regenerează depozitul pentru pachete instalate folosind Source Package Manager"
 
 #: ../../client/solo/commands/rescue.py:111
 msgid "re-generate SPM<->Entropy package UIDs mapping"
@@ -4075,9 +4043,7 @@ msgstr "regenerează maparea cu UID-uri pentru SPM<->Entropy"
 msgid ""
 "update Entropy installed packages repository merging Source Package Manager "
 "changes"
-msgstr ""
-"actualizează depozitul de pachete instalate de Entropy prin contopirea "
-"schimbărilor din Source Package Manager"
+msgstr "actualizează depozitul de pachete instalate de Entropy prin contopirea schimbărilor din Source Package Manager"
 
 #: ../../client/solo/commands/rescue.py:128
 msgid "create a backup of the installed packages repository"
@@ -4129,9 +4095,7 @@ msgstr "Compactare completă"
 msgid ""
 "the Installed Packages repository will be re-generated using the Source "
 "Package Manager"
-msgstr ""
-"depozitul de pachete instalate va fi regenerat folosind Source Package "
-"Manager"
+msgstr "depozitul de pachete instalate va fi regenerat folosind Source Package Manager"
 
 #: ../../client/solo/commands/rescue.py:322
 msgid "I am not joking, this is quite disruptive"
@@ -4362,8 +4326,7 @@ msgstr "de spațiu liber"
 
 #: ../../client/solo/commands/install.py:487
 msgid "You don't have enough space for the installation. Free some space into"
-msgstr ""
-"Nu aveți destul spațiu liber pentru instalare. Eliberați mai mult spațiu în"
+msgstr "Nu aveți destul spațiu liber pentru instalare. Eliberați mai mult spațiu în"
 
 #: ../../client/solo/commands/install.py:587
 msgid "Download complete"
@@ -4383,11 +4346,9 @@ msgstr "instalează sau actualizează pachete sau fișiere din pachete"
 
 #: ../../client/solo/commands/upgrade.py:130
 msgid ""
-"remove unmaintained packages, if any. This will respect --ask, --pretend and "
-"other switches."
-msgstr ""
-"șterge pachetele neîntreținute, dacă există. Aceasta va respecta opțiunea --"
-"ask, --pretend și altele."
+"remove unmaintained packages, if any. This will respect --ask, --pretend and"
+" other switches."
+msgstr "șterge pachetele neîntreținute, dacă există. Aceasta va respecta opțiunea --ask, --pretend și altele."
 
 #: ../../client/solo/commands/upgrade.py:201
 msgid "Calculating System Updates"
@@ -4413,16 +4374,13 @@ msgstr "Nimic de actualizat"
 msgid ""
 "On the system there are packages that are not available anymore in the "
 "online repositories"
-msgstr ""
-"Sunt pachete pe sistem care nu mai sunt disponibile în depozitele online"
+msgstr "Sunt pachete pe sistem care nu mai sunt disponibile în depozitele online"
 
 #: ../../client/solo/commands/upgrade.py:277
 msgid ""
 "Even if they are usually harmless, it is suggested (after proper "
 "verification) to remove them."
-msgstr ""
-"Chiar dacă acestea sunt de regulă inofensive, este recomandabil (după o "
-"verificare adecvată) să le eliminați."
+msgstr "Chiar dacă acestea sunt de regulă inofensive, este recomandabil (după o verificare adecvată) să le eliminați."
 
 #: ../../client/solo/commands/upgrade.py:289
 msgid "To automatically remove them, please run: equo upgrade --purge."
@@ -4537,8 +4495,7 @@ msgstr "sortează pachetele după mărime"
 
 #: ../../client/solo/commands/unused.py:79
 msgid "consider packages installed with a Source Package Manager to be wanted"
-msgstr ""
-"consideră pachetele instalate cu un manager de surse de pachete ca dorite"
+msgstr "consideră pachetele instalate cu un manager de surse de pachete ca dorite"
 
 #: ../../client/solo/commands/unused.py:192
 msgid "Running unused packages test"
@@ -4672,9 +4629,7 @@ msgstr "ultima versiune disponibilă este"
 msgid ""
 "It is recommended that you upgrade to the latest before updating any other "
 "packages"
-msgstr ""
-"Este recomandat să actualizați la ultima versiune înainte de a actualiza "
-"alte pachete"
+msgstr "Este recomandat să actualizați la ultima versiune înainte de a actualiza alte pachete"
 
 #: ../../magneto/src/magneto/qt5/components.py:49
 msgid "Close"
@@ -4811,14 +4766,12 @@ msgid "Repositories are being updated"
 msgstr "Depozitele sunt actualizate"
 
 #: ../../magneto/src/magneto/core/interfaces.py:392
-#, fuzzy
 msgid "Sabayon repositories status"
-msgstr "arată starea depozitelor"
+msgstr ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:393
-#, fuzzy
 msgid "Repositories are being updated automatically"
-msgstr "Depozitele sunt actualizate"
+msgstr ""
 
 #. all fine, no updates
 #: ../../magneto/src/magneto/core/interfaces.py:401
@@ -4897,6 +4850,3 @@ msgstr "Magneto, notificator de actualizări de aplicații"
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:3
 msgid "_Load Package Manager"
 msgstr "Î_ncarcă gestionarul de pachete"
-
-#~ msgid "Unregistering library"
-#~ msgstr "Se anulează înregistrarea pentru bibliotecă"

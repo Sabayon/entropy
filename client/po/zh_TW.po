@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # coldnew <coldnew.tw@gmail.com>, 2012
 msgid ""
@@ -9,14 +9,13 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-09-10 19:06+0200\n"
-"PO-Revision-Date: 2016-11-20 06:54+0000\n"
+"PO-Revision-Date: 2017-09-19 12:08+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Chinese (Taiwan) (http://www.transifex.com/lxnay/sabayon-"
-"entropy/language/zh_TW/)\n"
-"Language: zh_TW\n"
+"Language-Team: Chinese (Taiwan) (http://www.transifex.com/lxnay/sabayon-entropy/language/zh_TW/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: zh_TW\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: ../../lib/entropy/db/skel.py:518
@@ -499,7 +498,8 @@ msgid "Repository"
 msgstr ""
 
 #: ../../lib/entropy/client/interfaces/methods.py:112
-#: ../../client/solo/commands/pkg.py:190 ../../client/solo/commands/mask.py:101
+#: ../../client/solo/commands/pkg.py:190
+#: ../../client/solo/commands/mask.py:101
 msgid "is not available"
 msgstr ""
 
@@ -730,7 +730,8 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:1341
 #: ../../lib/entropy/security.py:397
-msgid "Make sure to verify the imported key and set an appropriate trust level"
+msgid ""
+"Make sure to verify the imported key and set an appropriate trust level"
 msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:1361
@@ -2013,8 +2014,7 @@ msgstr ""
 #: ../../client/solo/main.py:163
 msgid ""
 "Erm... Can I send the error, along with some other information\n"
-"about your hardware to my creators so they can fix me? (Your IP will be "
-"logged)"
+"about your hardware to my creators so they can fix me? (Your IP will be logged)"
 msgstr ""
 
 #: ../../client/solo/main.py:170
@@ -2047,7 +2047,8 @@ msgstr ""
 
 #: ../../client/solo/main.py:213
 msgid ""
-"Ugh. Cannot send the report. Please mail the file below to lxnay@sabayon.org."
+"Ugh. Cannot send the report. Please mail the file below to "
+"lxnay@sabayon.org."
 msgstr ""
 
 #: ../../client/solo/main.py:233
@@ -2090,7 +2091,8 @@ msgstr ""
 #: ../../client/solo/commands/conf.py:76 ../../client/solo/commands/ugc.py:72
 #: ../../client/solo/commands/ugc.py:105 ../../client/solo/commands/ugc.py:146
 #: ../../client/solo/commands/repo.py:68
-#: ../../client/solo/commands/rescue.py:72 ../../client/solo/commands/pkg.py:73
+#: ../../client/solo/commands/rescue.py:72
+#: ../../client/solo/commands/pkg.py:73
 #: ../../client/solo/commands/preservedlibs.py:68 ../kernel-switcher:49
 msgid "available commands"
 msgstr ""
@@ -3271,7 +3273,8 @@ msgstr ""
 #: ../../client/solo/commands/ugc.py:77 ../../client/solo/commands/ugc.py:87
 #: ../../client/solo/commands/ugc.py:99 ../../client/solo/commands/ugc.py:140
 #: ../../client/solo/commands/repo.py:74 ../../client/solo/commands/repo.py:82
-#: ../../client/solo/commands/repo.py:89 ../../client/solo/commands/repo.py:112
+#: ../../client/solo/commands/repo.py:89
+#: ../../client/solo/commands/repo.py:112
 #: ../../client/solo/commands/repo.py:140
 msgid "repository name"
 msgstr ""
@@ -3286,7 +3289,8 @@ msgstr ""
 
 #: ../../client/solo/commands/ugc.py:96
 msgid ""
-"manage package documents in the selected repository (comments, files, videos)"
+"manage package documents in the selected repository (comments, files, "
+"videos)"
 msgstr ""
 
 #: ../../client/solo/commands/ugc.py:104
@@ -3561,7 +3565,8 @@ msgstr ""
 msgid "vote added, thank you!"
 msgstr ""
 
-#: ../../client/solo/commands/repo.py:67 ../../client/solo/commands/repo.py:737
+#: ../../client/solo/commands/repo.py:67
+#: ../../client/solo/commands/repo.py:737
 msgid "manage repositories"
 msgstr ""
 
@@ -3995,8 +4000,8 @@ msgstr ""
 msgid "License saved into"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:71 ../../client/solo/commands/pkg.py:72
-#: ../../client/solo/commands/pkg.py:461
+#: ../../client/solo/commands/rescue.py:71
+#: ../../client/solo/commands/pkg.py:72 ../../client/solo/commands/pkg.py:461
 msgid "execute advanced tasks on packages"
 msgstr ""
 
@@ -4325,8 +4330,8 @@ msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:130
 msgid ""
-"remove unmaintained packages, if any. This will respect --ask, --pretend and "
-"other switches."
+"remove unmaintained packages, if any. This will respect --ask, --pretend and"
+" other switches."
 msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:201

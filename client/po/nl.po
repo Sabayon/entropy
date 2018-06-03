@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Parhan <dyingmuppet@sabayon.org>, 2008
 msgid ""
@@ -9,14 +9,13 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-09-10 19:06+0200\n"
-"PO-Revision-Date: 2016-11-20 06:54+0000\n"
+"PO-Revision-Date: 2017-09-19 12:06+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Dutch (http://www.transifex.com/lxnay/sabayon-entropy/"
-"language/nl/)\n"
-"Language: nl\n"
+"Language-Team: Dutch (http://www.transifex.com/lxnay/sabayon-entropy/language/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: nl\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../../lib/entropy/db/skel.py:518
@@ -499,7 +498,8 @@ msgid "Repository"
 msgstr "Repositorie"
 
 #: ../../lib/entropy/client/interfaces/methods.py:112
-#: ../../client/solo/commands/pkg.py:190 ../../client/solo/commands/mask.py:101
+#: ../../client/solo/commands/pkg.py:190
+#: ../../client/solo/commands/mask.py:101
 msgid "is not available"
 msgstr "is niet beschikbaar"
 
@@ -730,9 +730,9 @@ msgstr "Opgeven"
 
 #: ../../lib/entropy/client/interfaces/db.py:1341
 #: ../../lib/entropy/security.py:397
-msgid "Make sure to verify the imported key and set an appropriate trust level"
-msgstr ""
-"Controleer de geimporteerde sleutel en stel een geldig vertrouwens level in"
+msgid ""
+"Make sure to verify the imported key and set an appropriate trust level"
+msgstr "Controleer de geimporteerde sleutel en stel een geldig vertrouwens level in"
 
 #: ../../lib/entropy/client/interfaces/db.py:1361
 msgid "This repository suports GPG-signed packages"
@@ -740,8 +740,7 @@ msgstr "Deze repositorie ondersteund GPG-ondertekende pakketten"
 
 #: ../../lib/entropy/client/interfaces/db.py:1368
 msgid "you may want to install GnuPG to take advantage of this feature"
-msgstr ""
-"Om gebruik te maken van deze functionaliteit dien je GnuPG te installeren"
+msgstr "Om gebruik te maken van deze functionaliteit dien je GnuPG te installeren"
 
 #: ../../lib/entropy/client/interfaces/db.py:1403
 #: ../../lib/entropy/security.py:437
@@ -1763,9 +1762,7 @@ msgstr "Opzoeken van beschadigde opstartbestanden"
 
 #: ../../lib/entropy/qa.py:702
 msgid "don't worry about libraries that are shown here but not later."
-msgstr ""
-"maak je geen zorgen over bibliotheken die hier worden getoond maar niet "
-"later."
+msgstr "maak je geen zorgen over bibliotheken die hier worden getoond maar niet later."
 
 #: ../../lib/entropy/qa.py:723
 msgid "Scanning libraries"
@@ -1971,9 +1968,7 @@ msgstr "pakketten met verdere afhankelijkheden (knooppunt)"
 
 #: ../../client/solo/utils.py:694
 msgid "packages already pulled in as dependency in upper levels (circularity)"
-msgstr ""
-"pakketten die al ingevoerd zijn als afhankelijkheden in hogere lagen "
-"(circulair)"
+msgstr "pakketten die al ingevoerd zijn als afhankelijkheden in hogere lagen (circulair)"
 
 #: ../../client/solo/utils.py:773
 msgid "Graphing"
@@ -1981,8 +1976,7 @@ msgstr "Graphische"
 
 #: ../../client/solo/main.py:40
 msgid "Installed packages repository corrupted. Please re-generate it"
-msgstr ""
-"Geinstalleerde pakketten repositorie corrupt. Genereer a.u.b. een nieuwe"
+msgstr "Geinstalleerde pakketten repositorie corrupt. Genereer a.u.b. een nieuwe"
 
 #: ../../client/solo/main.py:50
 msgid "Cannot continue"
@@ -2013,9 +2007,7 @@ msgstr ""
 
 #: ../../client/solo/main.py:111
 msgid "Now I am showing you what happened. Don't panic, I'm here to help you."
-msgstr ""
-"Nu zal ik je laten zien wat er is gebeurt. Vrees niet, Ik ben hier om je te "
-"helpen."
+msgstr "Nu zal ik je laten zien wat er is gebeurt. Vrees niet, Ik ben hier om je te helpen."
 
 #: ../../client/solo/main.py:148
 msgid ""
@@ -2026,8 +2018,7 @@ msgstr ""
 #: ../../client/solo/main.py:163
 msgid ""
 "Erm... Can I send the error, along with some other information\n"
-"about your hardware to my creators so they can fix me? (Your IP will be "
-"logged)"
+"about your hardware to my creators so they can fix me? (Your IP will be logged)"
 msgstr ""
 
 #: ../../client/solo/main.py:170
@@ -2038,9 +2029,7 @@ msgstr "ok, ok ok ok... Sorry!"
 msgid ""
 "If you want to be contacted back (and actively supported), also answer the "
 "questions below:"
-msgstr ""
-"Als je bericht terug wilt ontvangen (en actief mee helpt), beantwoord dan "
-"ook deze vragen:"
+msgstr "Als je bericht terug wilt ontvangen (en actief mee helpt), beantwoord dan ook deze vragen:"
 
 #: ../../client/solo/main.py:183
 msgid "Your Full name:"
@@ -2058,13 +2047,12 @@ msgstr "Waar was je mee bezig:"
 msgid ""
 "Thank you very much. The error has been reported and hopefully, the problem "
 "will be solved as soon as possible."
-msgstr ""
-"Dank je hartelijk. De fout is doorgestuurd en hopelijk wordt het probleem zo "
-"snel mogelijk verholpen."
+msgstr "Dank je hartelijk. De fout is doorgestuurd en hopelijk wordt het probleem zo snel mogelijk verholpen."
 
 #: ../../client/solo/main.py:213
 msgid ""
-"Ugh. Cannot send the report. Please mail the file below to lxnay@sabayon.org."
+"Ugh. Cannot send the report. Please mail the file below to "
+"lxnay@sabayon.org."
 msgstr ""
 
 #: ../../client/solo/main.py:233
@@ -2107,7 +2095,8 @@ msgstr ""
 #: ../../client/solo/commands/conf.py:76 ../../client/solo/commands/ugc.py:72
 #: ../../client/solo/commands/ugc.py:105 ../../client/solo/commands/ugc.py:146
 #: ../../client/solo/commands/repo.py:68
-#: ../../client/solo/commands/rescue.py:72 ../../client/solo/commands/pkg.py:73
+#: ../../client/solo/commands/rescue.py:72
+#: ../../client/solo/commands/pkg.py:73
 #: ../../client/solo/commands/preservedlibs.py:68 ../kernel-switcher:49
 msgid "available commands"
 msgstr ""
@@ -2710,8 +2699,7 @@ msgstr "gebruik mtime in plaats van SA256 (onjuiste calculatie mogelijk)"
 
 #: ../../client/solo/commands/security.py:84
 msgid "update hashes and mtime (useful after editing config files)"
-msgstr ""
-"update hashes en mtime (handig na het aanpassen van configuratie bestanden)"
+msgstr "update hashes en mtime (handig na het aanpassen van configuratie bestanden)"
 
 #: ../../client/solo/commands/security.py:88
 msgid "reinstall faulty packages"
@@ -2892,8 +2880,7 @@ msgstr ""
 
 #: ../../client/solo/commands/conf.py:217
 msgid "Please choose a file to update by typing its identification number."
-msgstr ""
-"Kies a.u.b. een bestand voor update door zijn identificatie nummer te typen."
+msgstr "Kies a.u.b. een bestand voor update door zijn identificatie nummer te typen."
 
 #: ../../client/solo/commands/conf.py:221
 msgid "Other options are:"
@@ -3291,7 +3278,8 @@ msgstr ""
 #: ../../client/solo/commands/ugc.py:77 ../../client/solo/commands/ugc.py:87
 #: ../../client/solo/commands/ugc.py:99 ../../client/solo/commands/ugc.py:140
 #: ../../client/solo/commands/repo.py:74 ../../client/solo/commands/repo.py:82
-#: ../../client/solo/commands/repo.py:89 ../../client/solo/commands/repo.py:112
+#: ../../client/solo/commands/repo.py:89
+#: ../../client/solo/commands/repo.py:112
 #: ../../client/solo/commands/repo.py:140
 msgid "repository name"
 msgstr ""
@@ -3306,7 +3294,8 @@ msgstr ""
 
 #: ../../client/solo/commands/ugc.py:96
 msgid ""
-"manage package documents in the selected repository (comments, files, videos)"
+"manage package documents in the selected repository (comments, files, "
+"videos)"
 msgstr ""
 
 #: ../../client/solo/commands/ugc.py:104
@@ -3329,9 +3318,7 @@ msgstr ""
 
 #: ../../client/solo/commands/ugc.py:124
 msgid "remove documents from database using their identifiers"
-msgstr ""
-"verwijder documenten van de database door middel van hun "
-"identificatiemiddelen"
+msgstr "verwijder documenten van de database door middel van hun identificatiemiddelen"
 
 #: ../../client/solo/commands/ugc.py:130
 msgid "document identifier"
@@ -3583,7 +3570,8 @@ msgstr "reeds gestemd"
 msgid "vote added, thank you!"
 msgstr "stem toegevoegd, dank je!"
 
-#: ../../client/solo/commands/repo.py:67 ../../client/solo/commands/repo.py:737
+#: ../../client/solo/commands/repo.py:67
+#: ../../client/solo/commands/repo.py:737
 msgid "manage repositories"
 msgstr ""
 
@@ -4019,8 +4007,8 @@ msgstr "Geen bestand viewer"
 msgid "License saved into"
 msgstr "Licentie opgeslagen in"
 
-#: ../../client/solo/commands/rescue.py:71 ../../client/solo/commands/pkg.py:72
-#: ../../client/solo/commands/pkg.py:461
+#: ../../client/solo/commands/rescue.py:71
+#: ../../client/solo/commands/pkg.py:72 ../../client/solo/commands/pkg.py:461
 msgid "execute advanced tasks on packages"
 msgstr ""
 
@@ -4329,8 +4317,7 @@ msgstr "aan vrije ruimte"
 
 #: ../../client/solo/commands/install.py:487
 msgid "You don't have enough space for the installation. Free some space into"
-msgstr ""
-"Je hebt niet genoeg ruimte voor de installatie. Maak meer ruimte vrij in"
+msgstr "Je hebt niet genoeg ruimte voor de installatie. Maak meer ruimte vrij in"
 
 #: ../../client/solo/commands/install.py:587
 msgid "Download complete"
@@ -4350,8 +4337,8 @@ msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:130
 msgid ""
-"remove unmaintained packages, if any. This will respect --ask, --pretend and "
-"other switches."
+"remove unmaintained packages, if any. This will respect --ask, --pretend and"
+" other switches."
 msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:201
@@ -4378,9 +4365,7 @@ msgstr "Niets te updaten"
 msgid ""
 "On the system there are packages that are not available anymore in the "
 "online repositories"
-msgstr ""
-"Op het systeem zijn pakketten aangetroffen die niet meer beschikbaar zijn op "
-"de online repositories"
+msgstr "Op het systeem zijn pakketten aangetroffen die niet meer beschikbaar zijn op de online repositories"
 
 #: ../../client/solo/commands/upgrade.py:277
 msgid ""
@@ -4771,14 +4756,12 @@ msgid "Repositories are being updated"
 msgstr "Repositories worden bijgewerkt"
 
 #: ../../magneto/src/magneto/core/interfaces.py:392
-#, fuzzy
 msgid "Sabayon repositories status"
-msgstr "Gedownloade repositorie status"
+msgstr ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:393
-#, fuzzy
 msgid "Repositories are being updated automatically"
-msgstr "Repositories worden bijgewerkt"
+msgstr ""
 
 #. all fine, no updates
 #: ../../magneto/src/magneto/core/interfaces.py:401

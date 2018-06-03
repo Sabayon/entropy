@@ -1,10 +1,10 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # rogerc, 2013-2014
-# Davidmp <medipas@gmail.com>, 2015-2017
+# Davidmp <medipas@gmail.com>, 2015-2018
 # rogerc, 2012
 # rogerc, 2008, 2009, 2010, 2011
 msgid ""
@@ -12,14 +12,13 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-09-10 19:06+0200\n"
-"PO-Revision-Date: 2017-05-31 15:27+0000\n"
+"PO-Revision-Date: 2018-02-12 14:30+0000\n"
 "Last-Translator: Davidmp <medipas@gmail.com>\n"
-"Language-Team: Catalan (http://www.transifex.com/lxnay/sabayon-entropy/"
-"language/ca/)\n"
-"Language: ca\n"
+"Language-Team: Catalan (http://www.transifex.com/lxnay/sabayon-entropy/language/ca/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: ca\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../../lib/entropy/db/skel.py:518
@@ -37,7 +36,7 @@ msgstr "S'ha adquirit el bloqueig de compartició a"
 #: ../../lib/entropy/client/interfaces/package/actions/action.py:98
 #: ../../lib/entropy/locks.py:309
 msgid "Acquiring exclusive lock on"
-msgstr "Adquirint bloqueig exclusiu a "
+msgstr "Adquirint bloqueig exclusiu a"
 
 #: ../../lib/entropy/db/skel.py:574
 #: ../../lib/entropy/client/interfaces/package/actions/action.py:113
@@ -112,8 +111,7 @@ msgstr "ATENCIÓ"
 
 #: ../../lib/entropy/db/sqlite.py:2518 ../../lib/entropy/db/sqlite.py:2622
 msgid "updating repository metadata layout, please wait!"
-msgstr ""
-"Actualitzant la disposició de metadades del dipòsit; espereu, si us plau!"
+msgstr "Actualitzant la disposició de metadades del dipòsit; espereu, si us plau!"
 
 #: ../../lib/entropy/db/sqlite.py:2729
 msgid "generating provided_libs metadata, please wait!"
@@ -503,7 +501,8 @@ msgid "Repository"
 msgstr "Dipòsit"
 
 #: ../../lib/entropy/client/interfaces/methods.py:112
-#: ../../client/solo/commands/pkg.py:190 ../../client/solo/commands/mask.py:101
+#: ../../client/solo/commands/pkg.py:190
+#: ../../client/solo/commands/mask.py:101
 msgid "is not available"
 msgstr "no està disponible"
 
@@ -734,10 +733,9 @@ msgstr "S'abandona"
 
 #: ../../lib/entropy/client/interfaces/db.py:1341
 #: ../../lib/entropy/security.py:397
-msgid "Make sure to verify the imported key and set an appropriate trust level"
-msgstr ""
-"Assegureu-vos de comprovar la clau importada i establiu-ne el nivell de "
-"confiança apropiat"
+msgid ""
+"Make sure to verify the imported key and set an appropriate trust level"
+msgstr "Assegureu-vos de comprovar la clau importada i establiu-ne el nivell de confiança apropiat"
 
 #: ../../lib/entropy/client/interfaces/db.py:1361
 msgid "This repository suports GPG-signed packages"
@@ -773,8 +771,7 @@ msgstr "Error en instal·lar la clau GPG"
 
 #: ../../lib/entropy/client/interfaces/db.py:1476
 msgid "GPG key seems already installed but not properly recorded, resetting"
-msgstr ""
-"La clau GPG sembla instal·lada, però no desada correctament, es restableix"
+msgstr "La clau GPG sembla instal·lada, però no desada correctament, es restableix"
 
 #: ../../lib/entropy/client/interfaces/db.py:1511
 msgid "Successfully installed GPG key for repository"
@@ -887,9 +884,7 @@ msgstr "Torneu-ho a intentar d'aquí a uns minuts"
 
 #: ../../lib/entropy/client/interfaces/db.py:2248
 msgid "Configuration files update error, not critical, continuing"
-msgstr ""
-"Hi ha un error en l'actualització dels fitxers de configuració, no és "
-"critic, es continua"
+msgstr "Hi ha un error en l'actualització dels fitxers de configuració, no és critic, es continua"
 
 #: ../../lib/entropy/client/interfaces/client.py:371
 msgid "forcing packages metadata update"
@@ -997,7 +992,7 @@ msgstr "error de temps d'espera"
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:807
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:207
 msgid "discarded download"
-msgstr "la baixada s'ha descartat"
+msgstr "Baixada descartada"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:710
 #: ../../lib/entropy/client/interfaces/package/actions/fetch.py:810
@@ -1186,7 +1181,7 @@ msgstr "Camí local"
 
 #: ../../lib/entropy/client/interfaces/package/actions/source.py:227
 msgid "Fetching sources"
-msgstr "Recollint les fonts"
+msgstr "Recuperant fonts"
 
 #: ../../lib/entropy/client/interfaces/package/actions/_manage.py:79
 msgid "Protecting"
@@ -1341,7 +1336,7 @@ msgstr "Fitxer desplaçat"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1583
 msgid "QA: symlink expected, directory found"
-msgstr "QA: s'espera un enllaç simbòlic, s'ha trobat una carpeta"
+msgstr "QA: s'esperava un enllaç simbòlic, s'ha trobat una carpeta."
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1617
 msgid "Cannot remove symlink"
@@ -1352,8 +1347,7 @@ msgstr "No es pot eliminar l'enllaç simbòlic"
 #. by the user
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1795
 msgid "Automerging config file, never modified"
-msgstr ""
-"Combinant automàticament el fitxer de configuració; no s'ha modificat mai"
+msgstr "Combinant automàticament el fitxer de configuració; no s'ha modificat mai"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1824
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1846
@@ -1502,9 +1496,7 @@ msgstr "el servei GPG no està disponible"
 
 #: ../../lib/entropy/security.py:1122
 msgid "digest verification failed, try again later"
-msgstr ""
-"la verificació de l'empremta electrònica ha fallat, torneu a intentar-ho més "
-"tard"
+msgstr "la verificació de l'empremta electrònica ha fallat, torneu a intentar-ho més tard"
 
 #: ../../lib/entropy/const.py:607
 msgid "Runtime dependency"
@@ -1524,9 +1516,7 @@ msgstr "Dependència de construcció"
 
 #: ../../lib/entropy/const.py:630
 msgid "Corrupted Client Repository. Please restore a backup."
-msgstr ""
-"El dipòsit del client està malmès. Si us plau, restaureu una còpia de "
-"seguretat."
+msgstr "El dipòsit del client està malmès. Si us plau, restaureu una còpia de seguretat."
 
 #: ../../lib/entropy/const.py:662
 msgid "reason not available"
@@ -1655,7 +1645,7 @@ msgstr "Mostra la llista actual"
 #: ../../lib/entropy/output.py:904 ../../client/solo/commands/conf.py:251
 #: ../../client/solo/commands/conf.py:294
 msgid "Your choice (type a number and press enter):"
-msgstr "Escolliu una opció (escriviu un número i premeu retorn):"
+msgstr "Escolliu una opció (escriviu-ne el número i premeu retorn):"
 
 #: ../../lib/entropy/output.py:936
 msgid "You don't have typed a number."
@@ -1763,21 +1753,19 @@ msgstr "Abocant els resultats en aquests fitxers"
 
 #: ../../lib/entropy/qa.py:644
 msgid "discarding directory"
-msgstr "descartant el directori"
+msgstr "Descartant el directori"
 
 #: ../../lib/entropy/qa.py:646
 msgid "because it's symlinked on"
-msgstr "perquè té un un enllaç simbòlic a"
+msgstr "perquè té un enllaç simbòlic a"
 
 #: ../../lib/entropy/qa.py:696
 msgid "Collecting broken executables"
-msgstr "Recollint els executables trencats"
+msgstr "Recopilant els executables trencats."
 
 #: ../../lib/entropy/qa.py:702
 msgid "don't worry about libraries that are shown here but not later."
-msgstr ""
-"no us preocupeu per les biblioteques que es mostren aquí, però que no "
-"apareixen després."
+msgstr "no us preocupeu per les biblioteques que es mostren aquí, però que no apareixen després."
 
 #: ../../lib/entropy/qa.py:723
 msgid "Scanning libraries"
@@ -2009,16 +1997,12 @@ msgstr "No hi ha més memòria! La culpa és vostra!"
 msgid ""
 "Hi. My name is Bug Reporter. I am sorry to inform you that the program "
 "crashed. Well, you know, shit happens."
-msgstr ""
-"Hola. Sóc el notificador d'errors. Sento informar-vos que el programa ha "
-"petat. Bé, ja ho sabeu, els errors passen."
+msgstr "Hola. Sóc el notificador d'errors. Sento informar-vos que el programa ha petat. Bé, ja ho sabeu, els errors passen."
 
 #: ../../client/solo/main.py:100
 msgid ""
 "But there's something you could do to help me to be a better application."
-msgstr ""
-"Però hi ha alguna cosa que podeu fer per ajudar-me a ser una aplicació "
-"millor."
+msgstr "Però hi ha alguna cosa que podeu fer per ajudar-me a ser una aplicació millor."
 
 #: ../../client/solo/main.py:106
 msgid "-- BUT, DO NOT SUBMIT THE SAME REPORT MORE THAN ONCE --"
@@ -2026,26 +2010,19 @@ msgstr "-- PERÒ NO ENVIEU EL MATEIX INFORME D'ERROR MÉS D'UNA VEGADA --"
 
 #: ../../client/solo/main.py:111
 msgid "Now I am showing you what happened. Don't panic, I'm here to help you."
-msgstr ""
-"Ara us mostro el que ha passat. No us preocupeu, sóc aquí per ajudar-vos."
+msgstr "Ara us mostro el que ha passat. No us preocupeu, sóc aquí per ajudar-vos."
 
 #: ../../client/solo/main.py:148
 msgid ""
 "Oh well, I cannot even write to TMPDIR. So, please copy the error and mail "
 "lxnay@sabayon.org."
-msgstr ""
-"Bé, vaja, ni tan sols puc escriure a TMPDIR. Per tant, si us plau, copieu "
-"l'error i envieu-lo per correu a lxnay@sabayon.org"
+msgstr "Bé, vaja, ni tan sols puc escriure a TMPDIR. Per tant, si us plau, copieu l'error i envieu-lo per correu a lxnay@sabayon.org"
 
 #: ../../client/solo/main.py:163
 msgid ""
 "Erm... Can I send the error, along with some other information\n"
-"about your hardware to my creators so they can fix me? (Your IP will be "
-"logged)"
-msgstr ""
-"Mmm... Puc enviar l'error, juntament amb alguna altra informació\n"
-"sobre el vostre maquinari, als meus creadors per tal que m'arreglin? (Es "
-"registrarà la vostra IP)"
+"about your hardware to my creators so they can fix me? (Your IP will be logged)"
+msgstr "Mmm... Puc enviar l'error, juntament amb alguna altra informació\nsobre el vostre maquinari, als meus creadors per tal que m'arreglin? (Es registrarà la vostra IP)"
 
 #: ../../client/solo/main.py:170
 msgid "Ok, ok ok ok... Sorry!"
@@ -2055,9 +2032,7 @@ msgstr "D'acord, d'acord... Ho sento!"
 msgid ""
 "If you want to be contacted back (and actively supported), also answer the "
 "questions below:"
-msgstr ""
-"Si voleu que us contactem (i rebre suport actiu), contesteu també les "
-"respostes de baix:"
+msgstr "Si voleu que us contactem (i rebre suport actiu), contesteu també les respostes de baix:"
 
 #: ../../client/solo/main.py:183
 msgid "Your Full name:"
@@ -2075,16 +2050,13 @@ msgstr "El que estàveu fent:"
 msgid ""
 "Thank you very much. The error has been reported and hopefully, the problem "
 "will be solved as soon as possible."
-msgstr ""
-"Moltes gràcies. El registre d'error s'ha enviat correctament i esperem que "
-"el problema s'arregli al més aviat possible."
+msgstr "Moltes gràcies. El registre d'error s'ha enviat correctament i esperem que el problema s'arregli al més aviat possible."
 
 #: ../../client/solo/main.py:213
 msgid ""
-"Ugh. Cannot send the report. Please mail the file below to lxnay@sabayon.org."
-msgstr ""
-"Uf! L'informe d'error no es pot enviar. Si us plau, envieu el fitxer següent "
-"per correu a lxnay@sabayon.org."
+"Ugh. Cannot send the report. Please mail the file below to "
+"lxnay@sabayon.org."
+msgstr "Uf! L'informe d'error no es pot enviar. Si us plau, envieu el fitxer següent per correu a lxnay@sabayon.org."
 
 #: ../../client/solo/main.py:233
 msgid "Entropy/Equo version mismatch"
@@ -2126,7 +2098,8 @@ msgstr "eines de cerca del dipòsit"
 #: ../../client/solo/commands/conf.py:76 ../../client/solo/commands/ugc.py:72
 #: ../../client/solo/commands/ugc.py:105 ../../client/solo/commands/ugc.py:146
 #: ../../client/solo/commands/repo.py:68
-#: ../../client/solo/commands/rescue.py:72 ../../client/solo/commands/pkg.py:73
+#: ../../client/solo/commands/rescue.py:72
+#: ../../client/solo/commands/pkg.py:73
 #: ../../client/solo/commands/preservedlibs.py:68 ../kernel-switcher:49
 msgid "available commands"
 msgstr "ordres disponibles"
@@ -2287,9 +2260,7 @@ msgstr "mostra el gràfic de dependències directes del paquet indicat"
 msgid ""
 "include system packages, build-time dependencies and circular dependencies "
 "information"
-msgstr ""
-"inclou informació dels paquets del sistema, depenències de construcció i "
-"dependències circulars"
+msgstr "inclou informació dels paquets del sistema, depenències de construcció i dependències circulars"
 
 #: ../../client/solo/commands/query.py:295
 msgid "show the inverse dependencies graph for the given package"
@@ -2675,8 +2646,7 @@ msgstr "Els dipòsits s'actualitzaran en segon terme"
 
 #: ../../client/solo/commands/update.py:134
 msgid "app-admin/rigo-daemon not installed. Update not allowed."
-msgstr ""
-"app-admin/rigo-daemon no està instal·lat. No es permet l'actualització."
+msgstr "app-admin/rigo-daemon no està instal·lat. No es permet l'actualització."
 
 #: ../../client/solo/commands/update.py:201
 msgid "Have a nice day"
@@ -2732,9 +2702,7 @@ msgstr "considera mtime en comptes de SHA256 (falsos positius per davant)"
 
 #: ../../client/solo/commands/security.py:84
 msgid "update hashes and mtime (useful after editing config files)"
-msgstr ""
-"actualitza l'empremta electrònica i mtime (útil després d'editar fitxers de "
-"configuració)"
+msgstr "actualitza l'empremta electrònica i mtime (útil després d'editar fitxers de configuració)"
 
 #: ../../client/solo/commands/security.py:88
 msgid "reinstall faulty packages"
@@ -2915,8 +2883,7 @@ msgstr "Escriviu un número"
 
 #: ../../client/solo/commands/conf.py:217
 msgid "Please choose a file to update by typing its identification number."
-msgstr ""
-"Escolliu un fitxer per actualitzar-lo escrivint-ne el número d'identificador."
+msgstr "Escolliu un fitxer per actualitzar-lo escrivint-ne el número d'identificador."
 
 #: ../../client/solo/commands/conf.py:221
 msgid "Other options are:"
@@ -2950,27 +2917,27 @@ msgstr "Si us plau, escolliu una acció per al fitxer seleccionat"
 
 #: ../../client/solo/commands/conf.py:263
 msgid "Come back to the files list"
-msgstr "Torna a la llista de fitxers"
+msgstr "Torna a la llista de fitxers."
 
 #: ../../client/solo/commands/conf.py:268
 msgid "Replace original with update"
-msgstr "Reemplaça l'original per l'actualització"
+msgstr "Reemplaça l'original per l'actualització."
 
 #: ../../client/solo/commands/conf.py:273
 msgid "Delete update, keeping original as is"
-msgstr "Elimina l'actualització i deixa l'original tal com està"
+msgstr "Elimina l'actualització i deixa l'original tal com és ara."
 
 #: ../../client/solo/commands/conf.py:278
 msgid "Edit proposed file and show diffs again"
-msgstr "Edita el fitxer proposat i torna a mostrar les diferències"
+msgstr "Edita el fitxer proposat i torna a mostrar-ne les diferències."
 
 #: ../../client/solo/commands/conf.py:283
 msgid "Interactively merge original with update"
-msgstr "Combina interactivament l'original amb l'actualització"
+msgstr "Combina interactivament l'original amb l'actualització."
 
 #: ../../client/solo/commands/conf.py:288
 msgid "Show differences again"
-msgstr "Torna a mostrar les diferències"
+msgstr "Torna a mostrar les diferències."
 
 #: ../../client/solo/commands/conf.py:384
 #: ../../client/solo/commands/conf.py:439
@@ -3141,8 +3108,7 @@ msgstr "quan s'usa amb --deep, inclou paquets virtuals"
 #: ../../client/solo/commands/install.py:142
 #: ../../client/solo/commands/upgrade.py:137
 msgid "remove package configuration files no longer needed"
-msgstr ""
-"elimina els fitxers de configuració que ja no són necessaris dels paquets"
+msgstr "elimina els fitxers de configuració que ja no són necessaris dels paquets"
 
 #: ../../client/solo/commands/remove.py:119
 msgid "force system packages removal (dangerous!)"
@@ -3239,7 +3205,7 @@ msgstr "Executant la verificació de dependències"
 
 #: ../../client/solo/commands/deptest.py:170
 msgid "No missing dependencies"
-msgstr "No manquen dependències "
+msgstr "No manquen dependències."
 
 #: ../../client/solo/commands/deptest.py:175
 msgid "These are the dependencies not found"
@@ -3315,7 +3281,8 @@ msgstr "inicieu la sessió d'un dipòsit específic"
 #: ../../client/solo/commands/ugc.py:77 ../../client/solo/commands/ugc.py:87
 #: ../../client/solo/commands/ugc.py:99 ../../client/solo/commands/ugc.py:140
 #: ../../client/solo/commands/repo.py:74 ../../client/solo/commands/repo.py:82
-#: ../../client/solo/commands/repo.py:89 ../../client/solo/commands/repo.py:112
+#: ../../client/solo/commands/repo.py:89
+#: ../../client/solo/commands/repo.py:112
 #: ../../client/solo/commands/repo.py:140
 msgid "repository name"
 msgstr "nom del dipòsit"
@@ -3330,10 +3297,9 @@ msgstr "sortiu de la sessió d'un dipòsit específic"
 
 #: ../../client/solo/commands/ugc.py:96
 msgid ""
-"manage package documents in the selected repository (comments, files, videos)"
-msgstr ""
-"gestiona documents dels paquets del dipòsit seleccionat (comentaris, "
-"fitxers, vídeos)"
+"manage package documents in the selected repository (comments, files, "
+"videos)"
+msgstr "gestiona documents dels paquets del dipòsit seleccionat (comentaris, fitxers, vídeos)"
 
 #: ../../client/solo/commands/ugc.py:104
 msgid "manage Documents"
@@ -3355,8 +3321,7 @@ msgstr "afegeix un document nou per al paquet del nom proporcionat"
 
 #: ../../client/solo/commands/ugc.py:124
 msgid "remove documents from database using their identifiers"
-msgstr ""
-"elimina documents de la base de dades a partir dels seus identificadors"
+msgstr "elimina documents de la base de dades a partir dels seus identificadors"
 
 #: ../../client/solo/commands/ugc.py:130
 msgid "document identifier"
@@ -3608,7 +3573,8 @@ msgstr "ja heu votat"
 msgid "vote added, thank you!"
 msgstr "el vot s'ha afegit, gràcies!"
 
-#: ../../client/solo/commands/repo.py:67 ../../client/solo/commands/repo.py:737
+#: ../../client/solo/commands/repo.py:67
+#: ../../client/solo/commands/repo.py:737
 msgid "manage repositories"
 msgstr "gestiona els dipòsits"
 
@@ -3964,7 +3930,7 @@ msgstr "Calculant les dependències"
 
 #: ../../client/solo/commands/_manage.py:493
 msgid "Dependencies not found"
-msgstr "No s'han trobat les dependències"
+msgstr "No s'han trobat les dependències."
 
 #: ../../client/solo/commands/_manage.py:504
 msgid "Conflicting packages were pulled in"
@@ -4021,7 +3987,7 @@ msgstr "Surt"
 
 #: ../../client/solo/commands/_manage.py:749
 msgid "Your choice (type a number and press enter)"
-msgstr "Escolliu una opció (escriviu un número i premeu retorn)"
+msgstr "Escolliu una opció (escriviu-ne el número i premeu retorn)"
 
 #: ../../client/solo/commands/_manage.py:780
 msgid "You need to accept the licenses below"
@@ -4044,8 +4010,8 @@ msgstr "No hi ha visor de fitxer"
 msgid "License saved into"
 msgstr "La llicència s'ha desat a"
 
-#: ../../client/solo/commands/rescue.py:71 ../../client/solo/commands/pkg.py:72
-#: ../../client/solo/commands/pkg.py:461
+#: ../../client/solo/commands/rescue.py:71
+#: ../../client/solo/commands/pkg.py:72 ../../client/solo/commands/pkg.py:461
 msgid "execute advanced tasks on packages"
 msgstr "executa tasques avançades en paquets"
 
@@ -4061,8 +4027,7 @@ msgstr "compacta el dipòsit dels paquets instal·lats"
 msgid ""
 "re-generate the installed packages repository using the Source Package "
 "Manager"
-msgstr ""
-"regenera el dipòsit de paquets instal·lats usant el gestor de paquets font"
+msgstr "regenera el dipòsit de paquets instal·lats usant el gestor de paquets font"
 
 #: ../../client/solo/commands/rescue.py:111
 msgid "re-generate SPM<->Entropy package UIDs mapping"
@@ -4072,14 +4037,11 @@ msgstr "regenera el mapatge d'UID entre els paquets SPM<->Entropy"
 msgid ""
 "update Entropy installed packages repository merging Source Package Manager "
 "changes"
-msgstr ""
-"actualitza el dipòsit de paquets d'Entropy instal·lats combinant els canvis "
-"del gestor de paquets font"
+msgstr "actualitza el dipòsit de paquets d'Entropy instal·lats combinant els canvis del gestor de paquets font"
 
 #: ../../client/solo/commands/rescue.py:128
 msgid "create a backup of the installed packages repository"
-msgstr ""
-"crea una còpia de seguretat del dipòsit de paquets de fitxers instal·lats"
+msgstr "crea una còpia de seguretat del dipòsit de paquets de fitxers instal·lats"
 
 #: ../../client/solo/commands/rescue.py:134
 msgid "restore a backup of the installed packages repository"
@@ -4127,9 +4089,7 @@ msgstr "La compactació ha acabat"
 msgid ""
 "the Installed Packages repository will be re-generated using the Source "
 "Package Manager"
-msgstr ""
-"el dipòsit dels paquets instal·lats es regenerarà usant el gestor de paquets "
-"font"
+msgstr "el dipòsit dels paquets instal·lats es regenerarà usant el gestor de paquets font"
 
 #: ../../client/solo/commands/rescue.py:322
 msgid "I am not joking, this is quite disruptive"
@@ -4380,11 +4340,9 @@ msgstr "instal·la o actualitza paquets o paquets de fitxers"
 
 #: ../../client/solo/commands/upgrade.py:130
 msgid ""
-"remove unmaintained packages, if any. This will respect --ask, --pretend and "
-"other switches."
-msgstr ""
-"elimina els paquets no mantinguts, si n'hi ha. Això respectarà --ask, --"
-"pretend i altres canvis."
+"remove unmaintained packages, if any. This will respect --ask, --pretend and"
+" other switches."
+msgstr "elimina els paquets no mantinguts, si n'hi ha. Això respectarà --ask, --pretend i altres canvis."
 
 #: ../../client/solo/commands/upgrade.py:201
 msgid "Calculating System Updates"
@@ -4410,16 +4368,13 @@ msgstr "No hi ha res per actualitzar"
 msgid ""
 "On the system there are packages that are not available anymore in the "
 "online repositories"
-msgstr ""
-"Al sistema hi ha paquets que ja no estan disponibles als dipòsits en línia"
+msgstr "Al sistema hi ha paquets que ja no estan disponibles als dipòsits en línia"
 
 #: ../../client/solo/commands/upgrade.py:277
 msgid ""
 "Even if they are usually harmless, it is suggested (after proper "
 "verification) to remove them."
-msgstr ""
-"Encara que normalment són inofensius, us suggerim que (després de verificar-"
-"los) els elimineu."
+msgstr "Encara que normalment són inofensius, us suggerim que (després de verificar-los) els elimineu."
 
 #: ../../client/solo/commands/upgrade.py:289
 msgid "To automatically remove them, please run: equo upgrade --purge."
@@ -4443,8 +4398,7 @@ msgstr "No hi ha res per eliminar"
 
 #: ../../client/solo/commands/upgrade.py:380
 msgid "There are more updates to install, reloading Entropy"
-msgstr ""
-"Hi ha més actualitzacions per instal·lar. Es torna a carregar l'Entropy."
+msgstr "Hi ha més actualitzacions per instal·lar. Es torna a carregar l'Entropy."
 
 #: ../../client/solo/commands/upgrade.py:400
 msgid "upgrade the system"
@@ -4535,8 +4489,7 @@ msgstr "ordena els paquets per mida"
 
 #: ../../client/solo/commands/unused.py:79
 msgid "consider packages installed with a Source Package Manager to be wanted"
-msgstr ""
-"considera els paquets instal·lats amb un Gestor de Paquets Font com a volguts"
+msgstr "considera els paquets instal·lats amb un Gestor de Paquets Font com a volguts"
 
 #: ../../client/solo/commands/unused.py:192
 msgid "Running unused packages test"
@@ -4670,9 +4623,7 @@ msgstr "l'última versió disponible és la"
 msgid ""
 "It is recommended that you upgrade to the latest before updating any other "
 "packages"
-msgstr ""
-"És recomanable que feu una actualització a l'última versió abans "
-"d'actualitzar cap altre paquet"
+msgstr "És recomanable que feu una actualització a l'última versió abans d'actualitzar cap altre paquet"
 
 #: ../../magneto/src/magneto/qt5/components.py:49
 msgid "Close"
@@ -4684,7 +4635,7 @@ msgstr "Executa el navegador d'aplicacions"
 
 #: ../../magneto/src/magneto/qt5/components.py:60
 msgid "Application updates"
-msgstr "actualitzacions de l'aplicació"
+msgstr "Actualitzacions de l'aplicació"
 
 #: ../../magneto/src/magneto/gtk/interfaces.py:147
 msgid "System Updates"
@@ -4808,14 +4759,12 @@ msgid "Repositories are being updated"
 msgstr "Actualitzant els dipòsits"
 
 #: ../../magneto/src/magneto/core/interfaces.py:392
-#, fuzzy
 msgid "Sabayon repositories status"
-msgstr "mostra l'estat dels dipòsits"
+msgstr "Estat dels repositoris del Sabayon"
 
 #: ../../magneto/src/magneto/core/interfaces.py:393
-#, fuzzy
 msgid "Repositories are being updated automatically"
-msgstr "Actualitzant els dipòsits"
+msgstr "Els repositoris s'actualitzen automàticament"
 
 #. all fine, no updates
 #: ../../magneto/src/magneto/core/interfaces.py:401
@@ -4894,6 +4843,3 @@ msgstr "Notificador d'actualitzacions de l'aplicació Magneto"
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:3
 msgid "_Load Package Manager"
 msgstr "Carrega e_l gestor de paquets"
-
-#~ msgid "Unregistering library"
-#~ msgstr "Eliminant la biblioteca del registre"

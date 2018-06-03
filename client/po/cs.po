@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Radim Horáček <hor410@gmail.com>, 2014
 # Tomáš Chvátal <tomas.chvatal@gmail.com>, 2012-2013
@@ -10,15 +10,14 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-09-10 19:06+0200\n"
-"PO-Revision-Date: 2016-11-20 06:54+0000\n"
+"PO-Revision-Date: 2017-09-19 12:06+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Czech (http://www.transifex.com/lxnay/sabayon-entropy/"
-"language/cs/)\n"
-"Language: cs\n"
+"Language-Team: Czech (http://www.transifex.com/lxnay/sabayon-entropy/language/cs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"Language: cs\n"
+"Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n <= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
 
 #: ../../lib/entropy/db/skel.py:518
 #: ../../lib/entropy/client/interfaces/package/actions/action.py:100
@@ -500,7 +499,8 @@ msgid "Repository"
 msgstr "Repozitář"
 
 #: ../../lib/entropy/client/interfaces/methods.py:112
-#: ../../client/solo/commands/pkg.py:190 ../../client/solo/commands/mask.py:101
+#: ../../client/solo/commands/pkg.py:190
+#: ../../client/solo/commands/mask.py:101
 msgid "is not available"
 msgstr "není dostupný"
 
@@ -731,9 +731,9 @@ msgstr "Vzdávám se"
 
 #: ../../lib/entropy/client/interfaces/db.py:1341
 #: ../../lib/entropy/security.py:397
-msgid "Make sure to verify the imported key and set an appropriate trust level"
-msgstr ""
-"Ujistěte se, že ověříte importovaný klíč a nastavíte vhodnou úroveň důvěry"
+msgid ""
+"Make sure to verify the imported key and set an appropriate trust level"
+msgstr "Ujistěte se, že ověříte importovaný klíč a nastavíte vhodnou úroveň důvěry"
 
 #: ../../lib/entropy/client/interfaces/db.py:1361
 msgid "This repository suports GPG-signed packages"
@@ -902,6 +902,7 @@ msgid_plural "there are"
 msgstr[0] "Existuje"
 msgstr[1] "Existují"
 msgstr[2] "Existuje"
+msgstr[3] "Existuje"
 
 #: ../../lib/entropy/client/interfaces/repository.py:215
 msgid "package file that could be removed"
@@ -909,6 +910,7 @@ msgid_plural "package files that could be removed"
 msgstr[0] "balíček, který lze odebrat"
 msgstr[1] "balíčky, které lze odebrat"
 msgstr[2] "balíčků, které lze odebrat"
+msgstr[3] "balíčků, které lze odebrat"
 
 #: ../../lib/entropy/client/interfaces/repository.py:228
 msgid "Packages are stored in"
@@ -1018,6 +1020,7 @@ msgid_plural "packages"
 msgstr[0] "balíček"
 msgstr[1] "balíčky"
 msgstr[2] "balíčků"
+msgstr[3] "balíčků"
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:846
 msgid "Some packages cannot be fetched"
@@ -1419,6 +1422,7 @@ msgid_plural "items"
 msgstr[0] "položka"
 msgstr[1] "položky"
 msgstr[2] "položek"
+msgstr[3] "položek"
 
 #: ../../lib/entropy/security.py:469
 msgid "GPG key EXPIRED for URL"
@@ -1973,8 +1977,7 @@ msgstr "balíčky s dalšími závislostmi (uzel)"
 
 #: ../../client/solo/utils.py:694
 msgid "packages already pulled in as dependency in upper levels (circularity)"
-msgstr ""
-"balíčky již vtaženy jako závislosti ve vyšších úrovních (kruhová závislost)"
+msgstr "balíčky již vtaženy jako závislosti ve vyšších úrovních (kruhová závislost)"
 
 #: ../../client/solo/utils.py:773
 msgid "Graphing"
@@ -1982,8 +1985,7 @@ msgstr "Vytvářím graf"
 
 #: ../../client/solo/main.py:40
 msgid "Installed packages repository corrupted. Please re-generate it"
-msgstr ""
-"Repozitář nainstalovaných balíčků je narušený. Prosím vytvořte jej znovu"
+msgstr "Repozitář nainstalovaných balíčků je narušený. Prosím vytvořte jej znovu"
 
 #: ../../client/solo/main.py:50
 msgid "Cannot continue"
@@ -2001,9 +2003,7 @@ msgstr "Došla paměť RAM."
 msgid ""
 "Hi. My name is Bug Reporter. I am sorry to inform you that the program "
 "crashed. Well, you know, shit happens."
-msgstr ""
-"Ahoj, jmenuji se Oznamovač chyb. Bohužel vám musím oznámit že program "
-"havaroval. No, jak víte, život je svině."
+msgstr "Ahoj, jmenuji se Oznamovač chyb. Bohužel vám musím oznámit že program havaroval. No, jak víte, život je svině."
 
 #: ../../client/solo/main.py:100
 msgid ""
@@ -2027,8 +2027,7 @@ msgstr ""
 #: ../../client/solo/main.py:163
 msgid ""
 "Erm... Can I send the error, along with some other information\n"
-"about your hardware to my creators so they can fix me? (Your IP will be "
-"logged)"
+"about your hardware to my creators so they can fix me? (Your IP will be logged)"
 msgstr ""
 
 #: ../../client/solo/main.py:170
@@ -2039,9 +2038,7 @@ msgstr "Dobře, dobře... Promiňte!"
 msgid ""
 "If you want to be contacted back (and actively supported), also answer the "
 "questions below:"
-msgstr ""
-"Pokud si přejete být kontaktováni (a získat aktivní podporu), odpovězte také "
-"na následující otázky:"
+msgstr "Pokud si přejete být kontaktováni (a získat aktivní podporu), odpovězte také na následující otázky:"
 
 #: ../../client/solo/main.py:183
 msgid "Your Full name:"
@@ -2059,16 +2056,13 @@ msgstr "Co jste dělali:"
 msgid ""
 "Thank you very much. The error has been reported and hopefully, the problem "
 "will be solved as soon as possible."
-msgstr ""
-"Děkuji. Chyba byla nahlášena a doufejme, že problém bude odstraněn co "
-"nejdříve."
+msgstr "Děkuji. Chyba byla nahlášena a doufejme, že problém bude odstraněn co nejdříve."
 
 #: ../../client/solo/main.py:213
 msgid ""
-"Ugh. Cannot send the report. Please mail the file below to lxnay@sabayon.org."
-msgstr ""
-"Ah. Nelze odeslat oznámení. Prosím odešlete následující soubor na "
-"lxnay@sabayon.org"
+"Ugh. Cannot send the report. Please mail the file below to "
+"lxnay@sabayon.org."
+msgstr "Ah. Nelze odeslat oznámení. Prosím odešlete následující soubor na lxnay@sabayon.org"
 
 #: ../../client/solo/main.py:233
 msgid "Entropy/Equo version mismatch"
@@ -2110,7 +2104,8 @@ msgstr "nástroje dotazování k repozitáři"
 #: ../../client/solo/commands/conf.py:76 ../../client/solo/commands/ugc.py:72
 #: ../../client/solo/commands/ugc.py:105 ../../client/solo/commands/ugc.py:146
 #: ../../client/solo/commands/repo.py:68
-#: ../../client/solo/commands/rescue.py:72 ../../client/solo/commands/pkg.py:73
+#: ../../client/solo/commands/rescue.py:72
+#: ../../client/solo/commands/pkg.py:73
 #: ../../client/solo/commands/preservedlibs.py:68 ../kernel-switcher:49
 msgid "available commands"
 msgstr "dostupné příkazy"
@@ -2301,6 +2296,7 @@ msgid_plural "entries"
 msgstr[0] "záznam"
 msgstr[1] "záznamy"
 msgstr[2] "záznamů"
+msgstr[3] "záznamů"
 
 #: ../../client/solo/commands/query.py:411
 #: ../../client/solo/commands/query.py:577
@@ -2714,8 +2710,7 @@ msgstr "brát v potaz mtime místo SHA256 (může způsobit falešnou detekci)"
 
 #: ../../client/solo/commands/security.py:84
 msgid "update hashes and mtime (useful after editing config files)"
-msgstr ""
-"aktualizovat otisky a mtime (užitečné po editaci konfiguračních souborů)"
+msgstr "aktualizovat otisky a mtime (užitečné po editaci konfiguračních souborů)"
 
 #: ../../client/solo/commands/security.py:88
 msgid "reinstall faulty packages"
@@ -3294,7 +3289,8 @@ msgstr "přihlásit se k zadanému repozitáři"
 #: ../../client/solo/commands/ugc.py:77 ../../client/solo/commands/ugc.py:87
 #: ../../client/solo/commands/ugc.py:99 ../../client/solo/commands/ugc.py:140
 #: ../../client/solo/commands/repo.py:74 ../../client/solo/commands/repo.py:82
-#: ../../client/solo/commands/repo.py:89 ../../client/solo/commands/repo.py:112
+#: ../../client/solo/commands/repo.py:89
+#: ../../client/solo/commands/repo.py:112
 #: ../../client/solo/commands/repo.py:140
 msgid "repository name"
 msgstr "název repozitáře"
@@ -3309,10 +3305,9 @@ msgstr "odhlásit ze zadaného repozitáře"
 
 #: ../../client/solo/commands/ugc.py:96
 msgid ""
-"manage package documents in the selected repository (comments, files, videos)"
-msgstr ""
-"spravovat dokumenty balíčku ve vybraném repozitáři (komentáře, soubory, "
-"videa)"
+"manage package documents in the selected repository (comments, files, "
+"videos)"
+msgstr "spravovat dokumenty balíčku ve vybraném repozitáři (komentáře, soubory, videa)"
 
 #: ../../client/solo/commands/ugc.py:104
 msgid "manage Documents"
@@ -3586,7 +3581,8 @@ msgstr "již hlasováno"
 msgid "vote added, thank you!"
 msgstr "hlas přidán, děkuji!"
 
-#: ../../client/solo/commands/repo.py:67 ../../client/solo/commands/repo.py:737
+#: ../../client/solo/commands/repo.py:67
+#: ../../client/solo/commands/repo.py:737
 msgid "manage repositories"
 msgstr "spravovat repozitáře"
 
@@ -3870,6 +3866,7 @@ msgid_plural "There are %s configuration files needing update"
 msgstr[0] "%s konfigurační soubor potřebuje aktualizovat"
 msgstr[1] "%s konfigurační soubory potřebují aktualizovat"
 msgstr[2] "%s konfiguračních souborů potřebuje aktualizovat"
+msgstr[3] "%s konfiguračních souborů potřebuje aktualizovat"
 
 #: ../../client/solo/commands/_manage.py:116
 msgid "Please run"
@@ -3882,6 +3879,7 @@ msgid_plural "There are %s preserved libraries on the system"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #. every package matching app-foo is masked
 #: ../../client/solo/commands/_manage.py:245
@@ -4024,8 +4022,8 @@ msgstr "Žádný prohlížeč souborů"
 msgid "License saved into"
 msgstr "Licence uložena do"
 
-#: ../../client/solo/commands/rescue.py:71 ../../client/solo/commands/pkg.py:72
-#: ../../client/solo/commands/pkg.py:461
+#: ../../client/solo/commands/rescue.py:71
+#: ../../client/solo/commands/pkg.py:72 ../../client/solo/commands/pkg.py:461
 msgid "execute advanced tasks on packages"
 msgstr "vykonat pokročilé úlohy nad balíčky"
 
@@ -4041,9 +4039,7 @@ msgstr "zkomprimovat repozitář nainstalovaných balíčků"
 msgid ""
 "re-generate the installed packages repository using the Source Package "
 "Manager"
-msgstr ""
-"znovu vytvořit repozitář nainstalovaných balíčků pomocí správce zdrojových "
-"balíčků"
+msgstr "znovu vytvořit repozitář nainstalovaných balíčků pomocí správce zdrojových balíčků"
 
 #: ../../client/solo/commands/rescue.py:111
 msgid "re-generate SPM<->Entropy package UIDs mapping"
@@ -4105,9 +4101,7 @@ msgstr "Komprese dokončena"
 msgid ""
 "the Installed Packages repository will be re-generated using the Source "
 "Package Manager"
-msgstr ""
-"repozitář nainstalovaných balíčků bude obnoven pomocí správce zdrojových "
-"balíčků"
+msgstr "repozitář nainstalovaných balíčků bude obnoven pomocí správce zdrojových balíčků"
 
 #: ../../client/solo/commands/rescue.py:322
 msgid "I am not joking, this is quite disruptive"
@@ -4358,8 +4352,8 @@ msgstr "instalovat, či aktualizovat balíčky, nebo soubory balíčků"
 
 #: ../../client/solo/commands/upgrade.py:130
 msgid ""
-"remove unmaintained packages, if any. This will respect --ask, --pretend and "
-"other switches."
+"remove unmaintained packages, if any. This will respect --ask, --pretend and"
+" other switches."
 msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:201
@@ -4386,8 +4380,7 @@ msgstr "Nic k aktualizaci"
 msgid ""
 "On the system there are packages that are not available anymore in the "
 "online repositories"
-msgstr ""
-"V systému jsou balíčky, které již nejsou dostupné na online repozitářích"
+msgstr "V systému jsou balíčky, které již nejsou dostupné na online repozitářích"
 
 #: ../../client/solo/commands/upgrade.py:277
 msgid ""
@@ -4642,9 +4635,7 @@ msgstr "nejnovější dostupná verze je"
 msgid ""
 "It is recommended that you upgrade to the latest before updating any other "
 "packages"
-msgstr ""
-"Doporučujeme Vám nejprve aktualizovat na nejnovější verzi před aktualizací "
-"libovolných dalších balíčků"
+msgstr "Doporučujeme Vám nejprve aktualizovat na nejnovější verzi před aktualizací libovolných dalších balíčků"
 
 #: ../../magneto/src/magneto/qt5/components.py:49
 msgid "Close"
@@ -4753,6 +4744,7 @@ msgid_plural "There are %s updates available"
 msgstr[0] "Je dostupná %s aktualizace"
 msgstr[1] "Jsou dostupné %s aktualizace"
 msgstr[2] "Je dostupných %s aktualizací"
+msgstr[3] "Je dostupných %s aktualizací"
 
 #: ../../magneto/src/magneto/core/interfaces.py:370
 msgid "Sabayon updates available"
@@ -4781,14 +4773,12 @@ msgid "Repositories are being updated"
 msgstr "Repozitáře se aktualizují"
 
 #: ../../magneto/src/magneto/core/interfaces.py:392
-#, fuzzy
 msgid "Sabayon repositories status"
-msgstr "zobrazit stav repozitářů"
+msgstr ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:393
-#, fuzzy
 msgid "Repositories are being updated automatically"
-msgstr "Repozitáře se aktualizují"
+msgstr ""
 
 #. all fine, no updates
 #: ../../magneto/src/magneto/core/interfaces.py:401

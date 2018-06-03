@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # greywalk <workisgreat@yandex.com>, 2012
 msgid ""
@@ -9,17 +9,14 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-09-10 19:06+0200\n"
-"PO-Revision-Date: 2016-11-20 06:54+0000\n"
+"PO-Revision-Date: 2017-09-19 12:06+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Russian (http://www.transifex.com/lxnay/sabayon-entropy/"
-"language/ru/)\n"
-"Language: ru\n"
+"Language-Team: Russian (http://www.transifex.com/lxnay/sabayon-entropy/language/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
-"%100>=11 && n%100<=14)? 2 : 3);\n"
+"Language: ru\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
 
 #: ../../lib/entropy/db/skel.py:518
 #: ../../lib/entropy/client/interfaces/package/actions/action.py:100
@@ -492,8 +489,7 @@ msgstr "Набор не найден или невозможно удалить"
 
 #: ../../lib/entropy/client/interfaces/methods.py:92
 msgid "Please update your repositories now in order to remove this message!"
-msgstr ""
-"Пожалуйста, обновите ваши репозитории сейчас, чтобы убрать это сообщение!"
+msgstr "Пожалуйста, обновите ваши репозитории сейчас, чтобы убрать это сообщение!"
 
 #: ../../lib/entropy/client/interfaces/methods.py:111
 #: ../../lib/entropy/client/interfaces/methods.py:136
@@ -502,7 +498,8 @@ msgid "Repository"
 msgstr "Репозиторий"
 
 #: ../../lib/entropy/client/interfaces/methods.py:112
-#: ../../client/solo/commands/pkg.py:190 ../../client/solo/commands/mask.py:101
+#: ../../client/solo/commands/pkg.py:190
+#: ../../client/solo/commands/mask.py:101
 msgid "is not available"
 msgstr "недоступен"
 
@@ -733,7 +730,8 @@ msgstr "Прекращаю"
 
 #: ../../lib/entropy/client/interfaces/db.py:1341
 #: ../../lib/entropy/security.py:397
-msgid "Make sure to verify the imported key and set an appropriate trust level"
+msgid ""
+"Make sure to verify the imported key and set an appropriate trust level"
 msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:1361
@@ -1352,8 +1350,7 @@ msgstr ""
 #. by the user
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1795
 msgid "Automerging config file, never modified"
-msgstr ""
-"Автообъединение конфигурационного файла, никогда не модифицировавшегося"
+msgstr "Автообъединение конфигурационного файла, никогда не модифицировавшегося"
 
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1824
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:1846
@@ -1524,8 +1521,7 @@ msgstr ""
 
 #: ../../lib/entropy/const.py:630
 msgid "Corrupted Client Repository. Please restore a backup."
-msgstr ""
-"Испорчен клиент репозитория. Пожалуйста, восстановите из резервной копии."
+msgstr "Испорчен клиент репозитория. Пожалуйста, восстановите из резервной копии."
 
 #: ../../lib/entropy/const.py:662
 msgid "reason not available"
@@ -2019,8 +2015,7 @@ msgstr ""
 
 #: ../../client/solo/main.py:111
 msgid "Now I am showing you what happened. Don't panic, I'm here to help you."
-msgstr ""
-"Теперь я покажу тебе, что случилось. Не паникуй, я здесь, чтобы помочь тебе. "
+msgstr "Теперь я покажу тебе, что случилось. Не паникуй, я здесь, чтобы помочь тебе. "
 
 #: ../../client/solo/main.py:148
 msgid ""
@@ -2031,8 +2026,7 @@ msgstr ""
 #: ../../client/solo/main.py:163
 msgid ""
 "Erm... Can I send the error, along with some other information\n"
-"about your hardware to my creators so they can fix me? (Your IP will be "
-"logged)"
+"about your hardware to my creators so they can fix me? (Your IP will be logged)"
 msgstr ""
 
 #: ../../client/solo/main.py:170
@@ -2043,9 +2037,7 @@ msgstr "Ну ладно, ладно, ладно, хорошо, ХОРОШО, И�
 msgid ""
 "If you want to be contacted back (and actively supported), also answer the "
 "questions below:"
-msgstr ""
-"Когда будешь связываться (и активно общаться с техподдержкой), ответь заодно "
-"на нижеуказанные вопросы:"
+msgstr "Когда будешь связываться (и активно общаться с техподдержкой), ответь заодно на нижеуказанные вопросы:"
 
 #: ../../client/solo/main.py:183
 msgid "Your Full name:"
@@ -2063,13 +2055,12 @@ msgstr "Чего ж ты такого наделал:"
 msgid ""
 "Thank you very much. The error has been reported and hopefully, the problem "
 "will be solved as soon as possible."
-msgstr ""
-"Спасибо тебе огромное. Данные об ошибке отправлены и, если всё будет "
-"нормально, проблема будет решена как можно раньше."
+msgstr "Спасибо тебе огромное. Данные об ошибке отправлены и, если всё будет нормально, проблема будет решена как можно раньше."
 
 #: ../../client/solo/main.py:213
 msgid ""
-"Ugh. Cannot send the report. Please mail the file below to lxnay@sabayon.org."
+"Ugh. Cannot send the report. Please mail the file below to "
+"lxnay@sabayon.org."
 msgstr ""
 
 #: ../../client/solo/main.py:233
@@ -2112,7 +2103,8 @@ msgstr ""
 #: ../../client/solo/commands/conf.py:76 ../../client/solo/commands/ugc.py:72
 #: ../../client/solo/commands/ugc.py:105 ../../client/solo/commands/ugc.py:146
 #: ../../client/solo/commands/repo.py:68
-#: ../../client/solo/commands/rescue.py:72 ../../client/solo/commands/pkg.py:73
+#: ../../client/solo/commands/rescue.py:72
+#: ../../client/solo/commands/pkg.py:73
 #: ../../client/solo/commands/preservedlibs.py:68 ../kernel-switcher:49
 msgid "available commands"
 msgstr ""
@@ -3296,7 +3288,8 @@ msgstr ""
 #: ../../client/solo/commands/ugc.py:77 ../../client/solo/commands/ugc.py:87
 #: ../../client/solo/commands/ugc.py:99 ../../client/solo/commands/ugc.py:140
 #: ../../client/solo/commands/repo.py:74 ../../client/solo/commands/repo.py:82
-#: ../../client/solo/commands/repo.py:89 ../../client/solo/commands/repo.py:112
+#: ../../client/solo/commands/repo.py:89
+#: ../../client/solo/commands/repo.py:112
 #: ../../client/solo/commands/repo.py:140
 msgid "repository name"
 msgstr ""
@@ -3311,7 +3304,8 @@ msgstr ""
 
 #: ../../client/solo/commands/ugc.py:96
 msgid ""
-"manage package documents in the selected repository (comments, files, videos)"
+"manage package documents in the selected repository (comments, files, "
+"videos)"
 msgstr ""
 
 #: ../../client/solo/commands/ugc.py:104
@@ -3405,9 +3399,7 @@ msgstr "Успешно вошли в систему как"
 
 #: ../../client/solo/commands/ugc.py:288
 msgid "From now on, any UGC action will be committed as this user"
-msgstr ""
-"С текущего момента любое действие UGC будет определено как от этого "
-"пользователя"
+msgstr "С текущего момента любое действие UGC будет определено как от этого пользователя"
 
 #: ../../client/solo/commands/ugc.py:325
 msgid "Not logged in."
@@ -3588,7 +3580,8 @@ msgstr ""
 msgid "vote added, thank you!"
 msgstr ""
 
-#: ../../client/solo/commands/repo.py:67 ../../client/solo/commands/repo.py:737
+#: ../../client/solo/commands/repo.py:67
+#: ../../client/solo/commands/repo.py:737
 msgid "manage repositories"
 msgstr ""
 
@@ -3997,8 +3990,7 @@ msgstr "Согласиться с лицензией (Я её прочитал(�
 
 #: ../../client/solo/commands/_manage.py:738
 msgid "Accept the license and don't ask anymore (I've read it)"
-msgstr ""
-"Согласиться с лицензией и больше об этом не спрашивать (Я её прочитал(а))"
+msgstr "Согласиться с лицензией и больше об этом не спрашивать (Я её прочитал(а))"
 
 #: ../../client/solo/commands/_manage.py:742
 msgid "Quit"
@@ -4029,8 +4021,8 @@ msgstr "Нет отобразителя файла"
 msgid "License saved into"
 msgstr "Лицензия сохранена в"
 
-#: ../../client/solo/commands/rescue.py:71 ../../client/solo/commands/pkg.py:72
-#: ../../client/solo/commands/pkg.py:461
+#: ../../client/solo/commands/rescue.py:71
+#: ../../client/solo/commands/pkg.py:72 ../../client/solo/commands/pkg.py:461
 msgid "execute advanced tasks on packages"
 msgstr ""
 
@@ -4339,8 +4331,7 @@ msgstr "свободного места"
 
 #: ../../client/solo/commands/install.py:487
 msgid "You don't have enough space for the installation. Free some space into"
-msgstr ""
-"У Вас недостаточно места для инсталляции. Освободите немного пространства."
+msgstr "У Вас недостаточно места для инсталляции. Освободите немного пространства."
 
 #: ../../client/solo/commands/install.py:587
 msgid "Download complete"
@@ -4360,8 +4351,8 @@ msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:130
 msgid ""
-"remove unmaintained packages, if any. This will respect --ask, --pretend and "
-"other switches."
+"remove unmaintained packages, if any. This will respect --ask, --pretend and"
+" other switches."
 msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:201
@@ -4388,8 +4379,7 @@ msgstr "Нечего обновлять"
 msgid ""
 "On the system there are packages that are not available anymore in the "
 "online repositories"
-msgstr ""
-"В системе имеются пакеты, которые более недоступны в онлайн-репозиториях"
+msgstr "В системе имеются пакеты, которые более недоступны в онлайн-репозиториях"
 
 #: ../../client/solo/commands/upgrade.py:277
 msgid ""
@@ -4644,9 +4634,7 @@ msgstr "наиболее актуальная версия -"
 msgid ""
 "It is recommended that you upgrade to the latest before updating any other "
 "packages"
-msgstr ""
-"Рекомендуется обновить до последней версии перед обновлением каких-либо "
-"других пакетов"
+msgstr "Рекомендуется обновить до последней версии перед обновлением каких-либо других пакетов"
 
 #: ../../magneto/src/magneto/qt5/components.py:49
 msgid "Close"
@@ -4784,14 +4772,12 @@ msgid "Repositories are being updated"
 msgstr "Репозитории обновляются"
 
 #: ../../magneto/src/magneto/core/interfaces.py:392
-#, fuzzy
 msgid "Sabayon repositories status"
-msgstr "в репозиториях"
+msgstr ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:393
-#, fuzzy
 msgid "Repositories are being updated automatically"
-msgstr "Репозитории обновляются"
+msgstr ""
 
 #. all fine, no updates
 #: ../../magneto/src/magneto/core/interfaces.py:401

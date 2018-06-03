@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Ivica  Kolić <ikoli@yahoo.com>, 2012-2014,2016
 msgid ""
@@ -9,16 +9,14 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-09-10 19:06+0200\n"
-"PO-Revision-Date: 2016-11-20 06:54+0000\n"
+"PO-Revision-Date: 2017-09-23 18:35+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Croatian (http://www.transifex.com/lxnay/sabayon-entropy/"
-"language/hr/)\n"
-"Language: hr\n"
+"Language-Team: Croatian (http://www.transifex.com/lxnay/sabayon-entropy/language/hr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Language: hr\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 
 #: ../../lib/entropy/db/skel.py:518
 #: ../../lib/entropy/client/interfaces/package/actions/action.py:100
@@ -500,7 +498,8 @@ msgid "Repository"
 msgstr "Repozitorij"
 
 #: ../../lib/entropy/client/interfaces/methods.py:112
-#: ../../client/solo/commands/pkg.py:190 ../../client/solo/commands/mask.py:101
+#: ../../client/solo/commands/pkg.py:190
+#: ../../client/solo/commands/mask.py:101
 msgid "is not available"
 msgstr "nije dostupno"
 
@@ -731,7 +730,8 @@ msgstr "Odustajem"
 
 #: ../../lib/entropy/client/interfaces/db.py:1341
 #: ../../lib/entropy/security.py:397
-msgid "Make sure to verify the imported key and set an appropriate trust level"
+msgid ""
+"Make sure to verify the imported key and set an appropriate trust level"
 msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:1361
@@ -1998,9 +1998,7 @@ msgstr ""
 msgid ""
 "Hi. My name is Bug Reporter. I am sorry to inform you that the program "
 "crashed. Well, you know, shit happens."
-msgstr ""
-"Haj! Moje ime je Bug Reporter. Žao mi je što vam morqam reći da se vaš "
-"program srušio. Znate, sranja se događaju."
+msgstr "Haj! Moje ime je Bug Reporter. Žao mi je što vam morqam reći da se vaš program srušio. Znate, sranja se događaju."
 
 #: ../../client/solo/main.py:100
 msgid ""
@@ -2013,8 +2011,7 @@ msgstr ""
 
 #: ../../client/solo/main.py:111
 msgid "Now I am showing you what happened. Don't panic, I'm here to help you."
-msgstr ""
-"Sada vam pokazujem što se dogodilo.Ne paničarite, ja sam tu da vam pomognem."
+msgstr "Sada vam pokazujem što se dogodilo.Ne paničarite, ja sam tu da vam pomognem."
 
 #: ../../client/solo/main.py:148
 msgid ""
@@ -2025,8 +2022,7 @@ msgstr ""
 #: ../../client/solo/main.py:163
 msgid ""
 "Erm... Can I send the error, along with some other information\n"
-"about your hardware to my creators so they can fix me? (Your IP will be "
-"logged)"
+"about your hardware to my creators so they can fix me? (Your IP will be logged)"
 msgstr ""
 
 #: ../../client/solo/main.py:170
@@ -2055,13 +2051,12 @@ msgstr "Što ste radili:"
 msgid ""
 "Thank you very much. The error has been reported and hopefully, the problem "
 "will be solved as soon as possible."
-msgstr ""
-"Puno vam hvala. Greška je prijavljena i nadajmo se , problem će biti riješen "
-"što je prije moguće."
+msgstr "Puno vam hvala. Greška je prijavljena i nadajmo se , problem će biti riješen što je prije moguće."
 
 #: ../../client/solo/main.py:213
 msgid ""
-"Ugh. Cannot send the report. Please mail the file below to lxnay@sabayon.org."
+"Ugh. Cannot send the report. Please mail the file below to "
+"lxnay@sabayon.org."
 msgstr ""
 
 #: ../../client/solo/main.py:233
@@ -2104,7 +2099,8 @@ msgstr ""
 #: ../../client/solo/commands/conf.py:76 ../../client/solo/commands/ugc.py:72
 #: ../../client/solo/commands/ugc.py:105 ../../client/solo/commands/ugc.py:146
 #: ../../client/solo/commands/repo.py:68
-#: ../../client/solo/commands/rescue.py:72 ../../client/solo/commands/pkg.py:73
+#: ../../client/solo/commands/rescue.py:72
+#: ../../client/solo/commands/pkg.py:73
 #: ../../client/solo/commands/preservedlibs.py:68 ../kernel-switcher:49
 msgid "available commands"
 msgstr "dostupne naredbe"
@@ -3287,7 +3283,8 @@ msgstr ""
 #: ../../client/solo/commands/ugc.py:77 ../../client/solo/commands/ugc.py:87
 #: ../../client/solo/commands/ugc.py:99 ../../client/solo/commands/ugc.py:140
 #: ../../client/solo/commands/repo.py:74 ../../client/solo/commands/repo.py:82
-#: ../../client/solo/commands/repo.py:89 ../../client/solo/commands/repo.py:112
+#: ../../client/solo/commands/repo.py:89
+#: ../../client/solo/commands/repo.py:112
 #: ../../client/solo/commands/repo.py:140
 msgid "repository name"
 msgstr ""
@@ -3302,7 +3299,8 @@ msgstr ""
 
 #: ../../client/solo/commands/ugc.py:96
 msgid ""
-"manage package documents in the selected repository (comments, files, videos)"
+"manage package documents in the selected repository (comments, files, "
+"videos)"
 msgstr ""
 
 #: ../../client/solo/commands/ugc.py:104
@@ -3577,7 +3575,8 @@ msgstr ""
 msgid "vote added, thank you!"
 msgstr "glas dodan, hvala vam!"
 
-#: ../../client/solo/commands/repo.py:67 ../../client/solo/commands/repo.py:737
+#: ../../client/solo/commands/repo.py:67
+#: ../../client/solo/commands/repo.py:737
 msgid "manage repositories"
 msgstr ""
 
@@ -4015,8 +4014,8 @@ msgstr "Nema preglednika datoteka"
 msgid "License saved into"
 msgstr "LIcenca spremljena u "
 
-#: ../../client/solo/commands/rescue.py:71 ../../client/solo/commands/pkg.py:72
-#: ../../client/solo/commands/pkg.py:461
+#: ../../client/solo/commands/rescue.py:71
+#: ../../client/solo/commands/pkg.py:72 ../../client/solo/commands/pkg.py:461
 msgid "execute advanced tasks on packages"
 msgstr ""
 
@@ -4325,9 +4324,7 @@ msgstr "slobodnoga prostora"
 
 #: ../../client/solo/commands/install.py:487
 msgid "You don't have enough space for the installation. Free some space into"
-msgstr ""
-"Nemate dovoljno slobodnog prostora za instalaciju.Oslobodite nešto prostora "
-"u "
+msgstr "Nemate dovoljno slobodnog prostora za instalaciju.Oslobodite nešto prostora u "
 
 #: ../../client/solo/commands/install.py:587
 msgid "Download complete"
@@ -4347,8 +4344,8 @@ msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:130
 msgid ""
-"remove unmaintained packages, if any. This will respect --ask, --pretend and "
-"other switches."
+"remove unmaintained packages, if any. This will respect --ask, --pretend and"
+" other switches."
 msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:201
@@ -4767,14 +4764,12 @@ msgid "Repositories are being updated"
 msgstr "Repozitoriji su dopunjeni"
 
 #: ../../magneto/src/magneto/core/interfaces.py:392
-#, fuzzy
 msgid "Sabayon repositories status"
-msgstr "pokaži status repozitorija"
+msgstr ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:393
-#, fuzzy
 msgid "Repositories are being updated automatically"
-msgstr "Repozitoriji su dopunjeni"
+msgstr ""
 
 #. all fine, no updates
 #: ../../magneto/src/magneto/core/interfaces.py:401

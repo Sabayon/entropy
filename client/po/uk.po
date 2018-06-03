@@ -1,23 +1,21 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-09-10 19:06+0200\n"
-"PO-Revision-Date: 2016-11-20 06:54+0000\n"
+"PO-Revision-Date: 2017-09-19 12:06+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Ukrainian (http://www.transifex.com/lxnay/sabayon-entropy/"
-"language/uk/)\n"
-"Language: uk\n"
+"Language-Team: Ukrainian (http://www.transifex.com/lxnay/sabayon-entropy/language/uk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Language: uk\n"
+"Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n % 10 == 1 && n % 100 != 11 ? 0 : n % 1 == 0 && n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 1 : n % 1 == 0 && (n % 10 ==0 || (n % 10 >=5 && n % 10 <=9) || (n % 100 >=11 && n % 100 <=14 )) ? 2: 3);\n"
 
 #: ../../lib/entropy/db/skel.py:518
 #: ../../lib/entropy/client/interfaces/package/actions/action.py:100
@@ -490,8 +488,7 @@ msgstr "Набір не знайдено або неможливо видали�
 
 #: ../../lib/entropy/client/interfaces/methods.py:92
 msgid "Please update your repositories now in order to remove this message!"
-msgstr ""
-"Будь-ласка, поновіть ваші репозиторії зараз, щоб прибрати це повідомлення!"
+msgstr "Будь-ласка, поновіть ваші репозиторії зараз, щоб прибрати це повідомлення!"
 
 #: ../../lib/entropy/client/interfaces/methods.py:111
 #: ../../lib/entropy/client/interfaces/methods.py:136
@@ -500,7 +497,8 @@ msgid "Repository"
 msgstr "Репозиторій"
 
 #: ../../lib/entropy/client/interfaces/methods.py:112
-#: ../../client/solo/commands/pkg.py:190 ../../client/solo/commands/mask.py:101
+#: ../../client/solo/commands/pkg.py:190
+#: ../../client/solo/commands/mask.py:101
 msgid "is not available"
 msgstr "недоступний"
 
@@ -731,7 +729,8 @@ msgstr "Здаюсь"
 
 #: ../../lib/entropy/client/interfaces/db.py:1341
 #: ../../lib/entropy/security.py:397
-msgid "Make sure to verify the imported key and set an appropriate trust level"
+msgid ""
+"Make sure to verify the imported key and set an appropriate trust level"
 msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:1361
@@ -901,6 +900,7 @@ msgid_plural "there are"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: ../../lib/entropy/client/interfaces/repository.py:215
 msgid "package file that could be removed"
@@ -908,6 +908,7 @@ msgid_plural "package files that could be removed"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: ../../lib/entropy/client/interfaces/repository.py:228
 msgid "Packages are stored in"
@@ -1017,6 +1018,7 @@ msgid_plural "packages"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:846
 msgid "Some packages cannot be fetched"
@@ -1418,6 +1420,7 @@ msgid_plural "items"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: ../../lib/entropy/security.py:469
 msgid "GPG key EXPIRED for URL"
@@ -1517,8 +1520,7 @@ msgstr ""
 
 #: ../../lib/entropy/const.py:630
 msgid "Corrupted Client Repository. Please restore a backup."
-msgstr ""
-"Зіпсований репозиторій користувача. Будь-ласка, відновіть з резервної копії."
+msgstr "Зіпсований репозиторій користувача. Будь-ласка, відновіть з резервної копії."
 
 #: ../../lib/entropy/const.py:662
 msgid "reason not available"
@@ -2012,8 +2014,7 @@ msgstr ""
 
 #: ../../client/solo/main.py:111
 msgid "Now I am showing you what happened. Don't panic, I'm here to help you."
-msgstr ""
-"Зараз я покажу тобі, що скоїлось. Не панікуй, я тут, аби допомогти тобі."
+msgstr "Зараз я покажу тобі, що скоїлось. Не панікуй, я тут, аби допомогти тобі."
 
 #: ../../client/solo/main.py:148
 msgid ""
@@ -2024,8 +2025,7 @@ msgstr ""
 #: ../../client/solo/main.py:163
 msgid ""
 "Erm... Can I send the error, along with some other information\n"
-"about your hardware to my creators so they can fix me? (Your IP will be "
-"logged)"
+"about your hardware to my creators so they can fix me? (Your IP will be logged)"
 msgstr ""
 
 #: ../../client/solo/main.py:170
@@ -2058,7 +2058,8 @@ msgstr ""
 
 #: ../../client/solo/main.py:213
 msgid ""
-"Ugh. Cannot send the report. Please mail the file below to lxnay@sabayon.org."
+"Ugh. Cannot send the report. Please mail the file below to "
+"lxnay@sabayon.org."
 msgstr ""
 
 #: ../../client/solo/main.py:233
@@ -2101,7 +2102,8 @@ msgstr ""
 #: ../../client/solo/commands/conf.py:76 ../../client/solo/commands/ugc.py:72
 #: ../../client/solo/commands/ugc.py:105 ../../client/solo/commands/ugc.py:146
 #: ../../client/solo/commands/repo.py:68
-#: ../../client/solo/commands/rescue.py:72 ../../client/solo/commands/pkg.py:73
+#: ../../client/solo/commands/rescue.py:72
+#: ../../client/solo/commands/pkg.py:73
 #: ../../client/solo/commands/preservedlibs.py:68 ../kernel-switcher:49
 msgid "available commands"
 msgstr ""
@@ -2292,6 +2294,7 @@ msgid_plural "entries"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: ../../client/solo/commands/query.py:411
 #: ../../client/solo/commands/query.py:577
@@ -2886,8 +2889,7 @@ msgstr ""
 
 #: ../../client/solo/commands/conf.py:217
 msgid "Please choose a file to update by typing its identification number."
-msgstr ""
-"Оберіть файл, що потребує оновлення, ввівши його ідентифікаційний номер"
+msgstr "Оберіть файл, що потребує оновлення, ввівши його ідентифікаційний номер"
 
 #: ../../client/solo/commands/conf.py:221
 msgid "Other options are:"
@@ -3285,7 +3287,8 @@ msgstr ""
 #: ../../client/solo/commands/ugc.py:77 ../../client/solo/commands/ugc.py:87
 #: ../../client/solo/commands/ugc.py:99 ../../client/solo/commands/ugc.py:140
 #: ../../client/solo/commands/repo.py:74 ../../client/solo/commands/repo.py:82
-#: ../../client/solo/commands/repo.py:89 ../../client/solo/commands/repo.py:112
+#: ../../client/solo/commands/repo.py:89
+#: ../../client/solo/commands/repo.py:112
 #: ../../client/solo/commands/repo.py:140
 msgid "repository name"
 msgstr ""
@@ -3300,7 +3303,8 @@ msgstr ""
 
 #: ../../client/solo/commands/ugc.py:96
 msgid ""
-"manage package documents in the selected repository (comments, files, videos)"
+"manage package documents in the selected repository (comments, files, "
+"videos)"
 msgstr ""
 
 #: ../../client/solo/commands/ugc.py:104
@@ -3394,8 +3398,7 @@ msgstr "Успішно ввійшли в систему як"
 
 #: ../../client/solo/commands/ugc.py:288
 msgid "From now on, any UGC action will be committed as this user"
-msgstr ""
-"З поточного моменту будь-яка дія UGC буде визначеною як від цьогокористувача"
+msgstr "З поточного моменту будь-яка дія UGC буде визначеною як від цьогокористувача"
 
 #: ../../client/solo/commands/ugc.py:325
 msgid "Not logged in."
@@ -3576,7 +3579,8 @@ msgstr ""
 msgid "vote added, thank you!"
 msgstr ""
 
-#: ../../client/solo/commands/repo.py:67 ../../client/solo/commands/repo.py:737
+#: ../../client/solo/commands/repo.py:67
+#: ../../client/solo/commands/repo.py:737
 msgid "manage repositories"
 msgstr ""
 
@@ -3860,6 +3864,7 @@ msgid_plural "There are %s configuration files needing update"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: ../../client/solo/commands/_manage.py:116
 msgid "Please run"
@@ -3872,6 +3877,7 @@ msgid_plural "There are %s preserved libraries on the system"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #. every package matching app-foo is masked
 #: ../../client/solo/commands/_manage.py:245
@@ -3983,9 +3989,7 @@ msgstr "Погодитися з ліцензією (Я її прочитав (п
 
 #: ../../client/solo/commands/_manage.py:738
 msgid "Accept the license and don't ask anymore (I've read it)"
-msgstr ""
-"Погодитися з ліцензією і більше про це не запитувати (Я її прочитав "
-"(прочитала))"
+msgstr "Погодитися з ліцензією і більше про це не запитувати (Я її прочитав (прочитала))"
 
 #: ../../client/solo/commands/_manage.py:742
 msgid "Quit"
@@ -4016,8 +4020,8 @@ msgstr "Немає переглядача файлу"
 msgid "License saved into"
 msgstr "Ліцензія збережена у"
 
-#: ../../client/solo/commands/rescue.py:71 ../../client/solo/commands/pkg.py:72
-#: ../../client/solo/commands/pkg.py:461
+#: ../../client/solo/commands/rescue.py:71
+#: ../../client/solo/commands/pkg.py:72 ../../client/solo/commands/pkg.py:461
 msgid "execute advanced tasks on packages"
 msgstr ""
 
@@ -4346,8 +4350,8 @@ msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:130
 msgid ""
-"remove unmaintained packages, if any. This will respect --ask, --pretend and "
-"other switches."
+"remove unmaintained packages, if any. This will respect --ask, --pretend and"
+" other switches."
 msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:201
@@ -4738,6 +4742,7 @@ msgid_plural "There are %s updates available"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:370
 msgid "Sabayon updates available"
@@ -4766,14 +4771,12 @@ msgid "Repositories are being updated"
 msgstr "Репозиторії оновлюються"
 
 #: ../../magneto/src/magneto/core/interfaces.py:392
-#, fuzzy
 msgid "Sabayon repositories status"
-msgstr "в репозиторіях"
+msgstr ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:393
-#, fuzzy
 msgid "Repositories are being updated automatically"
-msgstr "Репозиторії оновлюються"
+msgstr ""
 
 #. all fine, no updates
 #: ../../magneto/src/magneto/core/interfaces.py:401
