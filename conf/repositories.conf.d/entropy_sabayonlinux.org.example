@@ -101,7 +101,6 @@ pkg = http://www2.itti.ifce.edu.br/sabayon/entropy
 pkg = http://mirror.yandex.ru/sabayon/entropy
 
 # Universidade Federal do Parana', Brazil
-# pkg = ftp://sabayon.c3sl.ufpr.br/sabayon/entropy
 # pkg = rsync://sabayon.c3sl.ufpr.br/sabayon/entropy
 pkg = http://sabayon.c3sl.ufpr.br/entropy
 
