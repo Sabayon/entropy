@@ -2786,7 +2786,20 @@ def read_elf_metadata(elf_file):
 
         for line in out.split("\n"):
             if line:
-                data = line.strip().split(" ", -1)[0]
+
+                # Example of line:
+                # ELFCLASS64;;/opt/dmd-2.074/lib64;libdl.so.2,libvted-3.so.0,libgtkd-3.so.0,libX11.so.6,libphobos2.so.0.74,libpthread.so.0,libm.so.6,librt.so.1,libgcc_s.so.1,libc.so.6,ld-linux-x86-64.so.2 /var/tmp/entropy/entropy.spm._extractUmRpJu/pkg/usr/bin/tilix
+                # Normally sections contains two elements but there are
+                # cases with packages that use directory with spaces that could
+                # be greater then 2. I need drop only last.
+                sections = line.strip().split(" ", -1)
+                if len(sections) < 2:
+                    raise Exception('Unexpected output on scanelf:\n\n%s\n' % (
+                        line
+                    ))
+                else:
+                    data = ' '.join(sections[:-1])
+
                 elfclass_str, soname, runpath, libs = data.split(";")
                 libs = set(libs.split(","))
                 return {
