@@ -1,3 +1,69 @@
+commit 9e427b7c9bb3de948e941f9a09ab6051b565c401
+Author: Ettore Di Giacinto <mudler@gentoo.org>
+Date:   Wed Jul 11 18:10:19 2018 +0200
+
+    Release Entropy 312
+
+commit b253340b64720cdbf821430d89c20b03c1591e19
+Author: Geaaru <geaaru@gmail.com>
+Date:   Mon Jun 25 16:59:47 2018 +0200
+
+    Fix injection of packages with directory with spaces
+
+commit c74aade5b913974fe8ae6202984051c428e8c546
+Merge: d185e92d6 6832958ff
+Author: Ettore Di Giacinto <mudler@users.noreply.github.com>
+Date:   Fri Jun 22 10:27:02 2018 +0200
+
+    Merge pull request #46 from Ryuno-Ki/sweden-mirror
+    
+    Add mirror by Academic Computer Clib, Umeå University
+
+commit d185e92d65bcf4c7d0d3a7d72e9407f2ecaf96b2
+Merge: dd36b7e8c f47c3cb14
+Author: Ettore Di Giacinto <mudler@users.noreply.github.com>
+Date:   Fri Jun 22 10:26:44 2018 +0200
+
+    Merge pull request #48 from Ryuno-Ki/remove-dead-ftp-mirrors
+    
+    Remove dead FTP mirror.
+
+commit f47c3cb14e1ba8443788ea6281e5ade760907d99
+Author: André Jaenisch <andre.jaenisch@posteo.de>
+Date:   Tue Jun 19 23:11:36 2018 +0200
+
+    Remove dead FTP mirror.
+
+commit dd36b7e8cd31a3b07ea88d85d6314db528d4cee6
+Author: Ettore Di Giacinto <mudler@gentoo.org>
+Date:   Sun Jun 3 09:25:39 2018 +0200
+
+    [rigo/po] Update translations
+
+commit f63815cb79307b7318cb923d43825be2f3b2f1f7
+Author: Ettore Di Giacinto <mudler@gentoo.org>
+Date:   Sun Jun 3 09:25:07 2018 +0200
+
+    [server/po] Update translations
+
+commit 920b2e9926e52b29cb3697e8a156b2f13e17a7c2
+Author: Ettore Di Giacinto <mudler@gentoo.org>
+Date:   Sun Jun 3 09:24:27 2018 +0200
+
+    [client/po] Update translations
+
+commit 6832958ff46b9c2c85aa25935015d9a8ffa64e3e
+Author: André Jaenisch <andre.jaenisch@posteo.de>
+Date:   Sat Jun 2 16:33:57 2018 +0200
+
+    Add mirror by Academic Computer Clib, Umeå University
+
+commit 0d990b5e27339b4d58e73eabc5ea72808b049c72
+Author: Ettore Di Giacinto <mudler@gentoo.org>
+Date:   Wed May 30 22:13:32 2018 +0200
+
+    Tagging Entropy version 311
+
 commit 1d6fde589eabece6d2c910527866fe8476700ee3
 Author: Ettore Di Giacinto <mudler@gentoo.org>
 Date:   Wed May 30 22:13:29 2018 +0200
