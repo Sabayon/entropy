@@ -730,6 +730,25 @@ Tools to rescue the running system.
                 prefix="equo.rescue.spmsync")
             os.close(tmp_fd)
 
+            try:
+                spm_wanted_packages = spm.get_user_selected_packages()
+            except Exception as err:
+                entropy.tools.print_traceback()
+                entropy_client.output(
+                    "%s: %s" % (
+                        darkred(_("Cannot read list of user selected packages")),
+                        err,
+                        ),
+                    level="warning"
+                )
+                spm_wanted_packages = frozenset()
+
+            spm_wanted_map = {}
+            for _spm_wanted_pkg in spm_wanted_packages:
+                _stripped = entropy.dep.dep_getkey(_spm_wanted_pkg)
+                obj = spm_wanted_map.setdefault(_stripped, set())
+                obj.add(_spm_wanted_pkg)
+
             for _spm_package, _spm_package_id in to_be_added:
                 counter += 1
                 entropy_client.output(
@@ -792,8 +811,28 @@ Tools to rescue the running system.
 
                 new_package_id = inst_repo.handlePackage(
                     data, revision = data['revision'])
-                inst_repo.storeInstalledPackage(new_package_id,
-                    etpConst['spmdbid'])
+
+                def _spm_match_installed(x):
+                    try:
+                        return spm.match_installed_package(x)
+                    except KeyError:
+                        pass
+
+                spm_package_key = entropy.dep.dep_getkey(_spm_package)
+                spm_wanted_candidates = spm_wanted_map.get(spm_package_key, set())
+
+                # Avoid calling spm.match_installed_package() which can be
+                # a little slow. Now the list is reduced.
+                spm_wanted_matches = (_spm_match_installed(x)
+                                      for x in spm_wanted_candidates
+                                      if x is not None)
+                if _spm_package in spm_wanted_matches:
+                    source = etpConst['install_sources']['user']
+                else:
+                    source = etpConst['install_sources']['automatic_dependency']
+
+                inst_repo.storeInstalledPackage(
+                    new_package_id, etpConst['spmdbid'], source)
 
             inst_repo.commit()
             try:

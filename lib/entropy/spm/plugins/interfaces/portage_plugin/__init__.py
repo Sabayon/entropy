@@ -1937,6 +1937,29 @@ class PortagePlugin(SpmPlugin):
 
         return list(filter(catfilter, packages))
 
+    def get_user_selected_packages(self, root = None):
+        """
+        Reimplemented from SpmPlugin class.
+        """
+        world_atoms = set()
+
+        with self._PortageWorldSetLocker(self, root = root):
+            world_file = self.get_user_installed_packages_file(root = root)
+            enc = etpConst['conf_encoding']
+
+            try:
+                with codecs.open(world_file, "r", encoding=enc) \
+                        as world_f:
+                    world_atoms |= set((x.strip() for x in \
+                        world_f.readlines() if x.strip()))
+            except (OSError, IOError) as err:
+                if err.errno != errno.ENOENT:
+                    raise self.Error(err)
+            except UnicodeDecodeError as err:
+                raise self.Error("Portage world file is malformed")
+
+        return frozenset(world_atoms)
+
     def get_package_sets(self, builtin_sets):
         """
         Reimplemented from SpmPlugin class.
