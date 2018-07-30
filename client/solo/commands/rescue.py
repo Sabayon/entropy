@@ -778,7 +778,7 @@ Tools to rescue the running system.
                     entropy.tools.print_traceback()
                     entropy_client.output(
                         "%s, %s: %s" % (
-                            teal(spm_package),
+                            teal(_spm_package),
                             purple(_("Metadata generation error")),
                             err,
                             ),
