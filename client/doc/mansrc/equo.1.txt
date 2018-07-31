@@ -68,6 +68,9 @@ COMMANDS
 *lxnay*::
     bow to lxnay
 
+*mark*::
+    set properties on installed packages
+
 *mask*::
     mask one or more packages
 
@@ -117,7 +120,7 @@ COMMANDS
     unmask one or more packages
 
 *unusedpackages [unused]*::
-    look for unused packages (pay attention)
+    show unused packages (pay attention)
 
 *update [up]*::
     update repositories
@@ -145,9 +148,9 @@ lxnay@sabayon.org.
 SEE ALSO
 --------
     equo-cache(1), equo-cleanup(1), equo-conf(1), equo-config(1), equo-deptest(1)
-    equo-download(1), equo-hop(1), equo-install(1), equo-libtest(1), equo-mask(1)
-    equo-match(1), equo-notice(1), equo-pkg(1), equo-preservedlibs(1), equo-query(1)
-    equo-remove(1), equo-repo(1), equo-rescue(1), equo-search(1), equo-security(1)
-    equo-source(1), equo-status(1), equo-ugc(1), equo-unmask(1), equo-unusedpackages(1)
-    equo-update(1), equo-upgrade(1)
+    equo-download(1), equo-hop(1), equo-install(1), equo-libtest(1), equo-mark(1)
+    equo-mask(1), equo-match(1), equo-notice(1), equo-pkg(1), equo-preservedlibs(1)
+    equo-query(1), equo-remove(1), equo-repo(1), equo-rescue(1), equo-search(1)
+    equo-security(1), equo-source(1), equo-status(1), equo-ugc(1), equo-unmask(1)
+    equo-unusedpackages(1), equo-update(1), equo-upgrade(1)
     

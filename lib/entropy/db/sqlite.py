@@ -2329,6 +2329,15 @@ class EntropySQLiteRepository(EntropySQLRepository):
         del cached
         return obj
 
+    def setInstalledPackageSource(self, package_id, source):
+        """
+        Reimplemented from EntropySQLRepository.
+        We must handle live cache.
+        """
+        super(EntropySQLiteRepository, self).setInstalledPackageSource(
+            package_id, source)
+        self._clearLiveCache("getInstalledPackageSource")
+
     def dropInstalledPackageFromStore(self, package_id):
         """
         Reimplemented from EntropySQLRepository.

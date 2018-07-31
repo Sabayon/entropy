@@ -5056,6 +5056,14 @@ class EntropySQLRepository(EntropyRepositoryBase):
             return source[0]
         return None
 
+    def setInstalledPackageSource(self, package_id, source):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        """
+        self._cursor().execute("""
+        UPDATE installedtable SET source = ? WHERE idpackage = ?
+        """, (source, package_id,))
+
     def dropInstalledPackageFromStore(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
