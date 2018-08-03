@@ -1751,6 +1751,9 @@ class EntropySQLRepository(EntropyRepositoryBase):
                     x = self._iter.next()
                     return self._package_id, x, self._content[x]
 
+        # Needed for fix files with not ascii chars
+        self._connection().unicode()
+
         if already_formatted:
             self._cursor().executemany("""
             INSERT INTO content VALUES (?, ?, ?)
