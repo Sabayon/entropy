@@ -86,6 +86,8 @@ class SecurityTest(unittest.TestCase):
         self.assertEqual(s_rc, 0)
         self.assertEqual(self._system.available(), True)
 
+    # Asks for the passphrase.
+    @unittest.skipIf(os.getenv("ETP_TESTS_NONINTERACTIVE"), "ETP_TESTS_NONINTERACTIVE is set")
     def test_gpg_handling(self):
 
         # available keys should be empty

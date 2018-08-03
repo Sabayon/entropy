@@ -1,0 +1,15 @@
+sudo: required
+
+services:
+  - docker
+
+before_install:
+- docker pull sabayon/base-amd64
+
+script:
+- >
+    docker run -v $TRAVIS_BUILD_DIR:/entropy sabayon/base-amd64
+    bash -c "equo i dev-util/bsdiff; cd /entropy/lib/tests && LC_ALL=en_US.UTF-8 USERNAME=root ETP_TESTS_NONINTERACTIVE=1 ./run"
+
+notifications:
+  irc: "chat.freenode.net#sabayon-infra"
