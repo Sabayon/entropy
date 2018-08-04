@@ -1,0 +1,54 @@
+equo-mark(1)
+============
+:man source:   equo {equoversion}
+:man manual:   equo {equoversion}
+
+
+NAME
+----
+equo-mark - set properties on installed packages
+
+
+SYNOPSIS
+--------
+equo mark [-h] {auto,manual} ...
+
+
+INTRODUCTION
+------------
+Set properties on installed packages
+
+
+
+OPTIONS
+-------
+"equo mark" supports the following options which alters its behaviour.
+
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+ACTION
+~~~~~~
+*auto*::
+    mark package as installed to satisfy a dependency
+
+*manual*::
+    mark package as installed by user
+
+
+
+AUTHORS
+-------
+Fabio Erculiani (lxnay@sabayon.org)
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    equo(1)

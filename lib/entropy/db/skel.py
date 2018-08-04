@@ -4772,6 +4772,18 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         raise NotImplementedError()
 
+    def setInstalledPackageSource(self, package_id, source):
+        """
+        Set package source. Please refer to I{getInstalledPackageSource()} for
+        more details about this field.
+
+        @param package_id: package indentifier
+        @type package_id: int
+        @param source: install source identified
+        @type slot: int
+        """
+        raise NotImplementedError()
+
     def dropInstalledPackageFromStore(self, package_id):
         """
         Note: this is used by installed packages repository (also known as
