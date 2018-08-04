@@ -12,6 +12,7 @@ from entropy.exceptions import SecurityError
 
 class ConstTest(unittest.TestCase):
 
+    @unittest.skipIf(os.getenv("ETP_TEST_SKIP_PRIVILEGED"), "ETP_TEST_SKIP_PRIVILEGED is set")
     def test_privileges(self):
 
         self.assertTrue(os.getuid() == 0)

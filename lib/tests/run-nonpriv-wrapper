@@ -1,0 +1,87 @@
+#!/bin/bash
+
+# This is a wrapper that sets environment for running Entropy tests as
+# unprivileged user (including not in entropy/portage group), and without
+# altering the running system.
+# Because the environment is modified (or artificial, e.g. some directories are
+# empty), it might be possible that some code paths don't execute as intended.
+# If you enounter this, file a bug.
+
+# Requires bubblewrap (https://github.com/projectatomic/bubblewrap).
+
+# Usage:
+# ./nonpriv-wrapper.sh
+#    will call ./run.sh
+# ./nonpriv-wrapper.sh COMMAND [ARG ...]
+#    will run COMMAND in modified environment
+
+this_dir=$(dirname "$0") || exit 1
+
+cmd=( "$this_dir/run" )
+(( $# )) && cmd=( "$@" )
+
+# Note: cannot be on a nonexec-mounted fs due to ldd -r xxx.so.
+test_dir=/var/tmp/tdirs
+
+rm -rf "$test_dir"
+mkdir -p "$test_dir"/{var-lib-entropy,var-tmp-entropy,run,etc-entropy}
+mkdir -p "$test_dir"/{var-db,var-lib-portage}
+
+# For os.chown.
+# For is_user_in_entropy_group().
+grep -E -v "^(entropy|portage):" /etc/group > "$test_dir/etc-group"
+echo "entropy:x:$(id -g):$(whoami)" >> "$test_dir/etc-group"
+echo "portage:x:$(id -g):" >> "$test_dir/etc-group"
+
+# Checkout of Entropy can be ro. Create place for writable files normally used
+# just from the "packages" directory (get_test_generic_package, _misc.py).
+mkdir -p "$test_dir/var-tmp-entropy/test-packages-rw"
+cp -r "$this_dir/packages"/* "$test_dir/var-tmp-entropy/test-packages-rw"
+
+# For the case when os.chown is being done on this file.
+printf "product = standard\nbranch = 5\nofficial-repository-id = sabayonlinux.org\n" \
+    > "$test_dir/etc-entropy/repositories.conf"
+
+# For test_clear_cache (tests.client.EntropyClientTest).
+mkdir "$test_dir/var-lib-entropy/caches"
+echo garbage > "$test_dir/var-lib-entropy/caches/garbage-file"
+
+# For test_basic_methods (tests.spm.SpmTest).
+mkdir -p "$test_dir/var-db/pkg/sys-apps/gawk-4.2.0"
+mkdir -p "$test_dir/var-db/pkg/virtual/libc-1"
+mkdir -p "$test_dir/var-db/pkg/virtual/editor-0-r1"
+
+# For tests.security.SecurityTest.test_gpg_handling.
+mkdir -p "$test_dir/var-lib-entropy/client/database/amd64"
+
+# Some of these are .example, not real files but are good enough.
+# For security.SecurityTest.test_security_cache.
+cp -r "$this_dir/../../conf"/* "$test_dir/etc-entropy"
+mkdir "$test_dir/etc-entropy/packages/sets"
+
+realtowrapped() {
+    echo "$test_dir/$(echo "$1" | sed -e "s:^/::" -e "s:/:-:g")"
+}
+
+opts=(
+--ro-bind / /
+--dev /dev
+--bind /tmp /tmp
+--proc /proc
+--bind "$(realtowrapped /var/lib/entropy)" /var/lib/entropy
+--bind "$(realtowrapped /var/tmp/entropy)" /var/tmp/entropy
+--bind "$(realtowrapped /run)" /run
+--bind "$(realtowrapped /etc/entropy)" /etc/entropy
+
+--bind "$(realtowrapped /var/db)" /var/db
+--bind "$(realtowrapped /var/lib/portage)" /var/lib/portage
+
+--bind "$(realtowrapped /etc/group)" /etc/group
+)
+
+export ETP_TESTS_PACKAGES_RW_PATH="/var/tmp/entropy/test-packages-rw"
+
+# Disable a test that explicitly requires root (check os.getuid()).
+export ETP_TEST_SKIP_PRIVILEGED=1
+
+exec bwrap "${opts[@]}" "${cmd[@]}"
