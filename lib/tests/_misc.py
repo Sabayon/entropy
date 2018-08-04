@@ -2,7 +2,7 @@
 import os
 from entropy.exceptions import FileNotFound
 
-def get_test_generic_package(test_pkg):
+def _get_test_generic_package_path(test_pkg):
     path1 = os.path.join(os.getcwd(), "packages", test_pkg)
     path2 = os.path.join(os.getcwd(), "..", "packages", test_pkg)
     if os.path.lexists(path1):
@@ -10,6 +10,14 @@ def get_test_generic_package(test_pkg):
     elif os.path.lexists(path2):
         return path2
     raise FileNotFound("cannot find test package %s" % (test_pkg,))
+
+def get_test_generic_package(test_pkg):
+    stage_dir = os.getenv("ETP_TESTS_PACKAGES_RW_PATH")
+    if stage_dir:
+        path = os.path.join(stage_dir, test_pkg)
+    else:
+        path = _get_test_generic_package_path(test_pkg)
+    return path
 
 def get_test_package():
     test_pkg = "zlib-1.2.3-r1.tbz2"

@@ -26,7 +26,7 @@ class SecurityTest(unittest.TestCase):
         self._entropy = Client(installed_repo = False)
         self._repository = Repository(keystore_dir = self._tmp_dir)
 
-        tmp_dir = os.getenv("TMPDIR", os.getcwd())
+        tmp_dir = os.getenv("TMPDIR", etpConst['entropyunpackdir'])
         self._security_cache_dir = const_mkdtemp(
             dir=tmp_dir, prefix="entropy.SecurityTest")
         self._security_dir = const_mkdtemp(
