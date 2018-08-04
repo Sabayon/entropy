@@ -28,6 +28,6 @@ for mod in mods:
 
 rc = 0
 result = unittest.TextTestRunner(verbosity = 1).run(unittest.TestSuite(tests))
-if result.errors:
+if result.errors or result.failures:
     rc = 1
 raise SystemExit(rc)
