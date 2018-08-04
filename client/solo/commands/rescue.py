@@ -730,6 +730,8 @@ Tools to rescue the running system.
                 prefix="equo.rescue.spmsync")
             os.close(tmp_fd)
 
+            spm_wanted = _SpmUserPackages(spm)
+
             for _spm_package, _spm_package_id in to_be_added:
                 counter += 1
                 entropy_client.output(
@@ -759,7 +761,7 @@ Tools to rescue the running system.
                     entropy.tools.print_traceback()
                     entropy_client.output(
                         "%s, %s: %s" % (
-                            teal(spm_package),
+                            teal(_spm_package),
                             purple(_("Metadata generation error")),
                             err,
                             ),
@@ -792,8 +794,14 @@ Tools to rescue the running system.
 
                 new_package_id = inst_repo.handlePackage(
                     data, revision = data['revision'])
-                inst_repo.storeInstalledPackage(new_package_id,
-                    etpConst['spmdbid'])
+
+                if spm_wanted.is_user_selected(_spm_package):
+                    source = etpConst['install_sources']['user']
+                else:
+                    source = etpConst['install_sources']['automatic_dependency']
+
+                inst_repo.storeInstalledPackage(
+                    new_package_id, etpConst['spmdbid'], source)
 
             inst_repo.commit()
             try:
@@ -900,6 +908,60 @@ Tools to rescue the running system.
         if status:
             return 0
         return 1
+
+
+class _SpmUserPackages(object):
+    """
+    Helper class to handle user selected packages.
+    """
+    def __init__(self, spm):
+        self._spm = spm
+        self._wanted_packages = self._get_list()
+        self._map = self._set_map()
+
+    def _get_list(self):
+        try:
+            spm_wanted_packages = self._spm.get_user_selected_packages()
+        except Exception as err:
+            entropy.tools.print_traceback()
+            entropy_client.output(
+                "%s: %s" % (
+                    darkred(_("Cannot read list of user selected packages")),
+                    err,
+                    ),
+                level="warning"
+            )
+            spm_wanted_packages = frozenset()
+
+        return spm_wanted_packages
+
+    def _set_map(self):
+        spm_wanted_map = {}
+        for pkg in self._wanted_packages:
+            stripped = entropy.dep.dep_getkey(pkg)
+            obj = spm_wanted_map.setdefault(stripped, set())
+            obj.add(pkg)
+        return spm_wanted_map
+
+    def is_user_selected(self, pkg):
+        """
+        Determines whether a package is selected by user in SPM "world" file.
+        """
+        spm_package_key = entropy.dep.dep_getkey(pkg)
+        spm_wanted_candidates = self._map.get(spm_package_key, set())
+
+        # Avoid calling spm.match_installed_package() which can be
+        # a little slow. Now the list is reduced.
+        spm_wanted_matches = (self._spm_match_installed(x)
+                              for x in spm_wanted_candidates
+                              if x is not None)
+        return pkg in spm_wanted_matches
+
+    def _spm_match_installed(self, pkg):
+        try:
+            return self._spm.match_installed_package(pkg)
+        except KeyError:
+            return None
 
 SoloCommandDescriptor.register(
     SoloCommandDescriptor(

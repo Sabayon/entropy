@@ -1937,6 +1937,29 @@ class PortagePlugin(SpmPlugin):
 
         return list(filter(catfilter, packages))
 
+    def get_user_selected_packages(self, root = None):
+        """
+        Reimplemented from SpmPlugin class.
+        """
+        world_atoms = set()
+
+        with self._PortageWorldSetLocker(self, root = root):
+            world_file = self.get_user_installed_packages_file(root = root)
+            enc = etpConst['conf_encoding']
+
+            try:
+                with codecs.open(world_file, "r", encoding=enc) \
+                        as world_f:
+                    world_atoms |= set((x.strip() for x in \
+                        world_f.readlines() if x.strip()))
+            except (OSError, IOError) as err:
+                if err.errno != errno.ENOENT:
+                    raise self.Error(err)
+            except UnicodeDecodeError as err:
+                raise self.Error("Portage world file is malformed")
+
+        return frozenset(world_atoms)
+
     def get_package_sets(self, builtin_sets):
         """
         Reimplemented from SpmPlugin class.
@@ -3288,52 +3311,19 @@ class PortagePlugin(SpmPlugin):
             # new slot format for kernel tagged packages
             myslot = entropy.dep.remove_tag_from_slot(myslot)
 
-        keyslot = key + ":" + myslot
-        key = const_convert_to_rawstring(key)
-        world_file = self.get_user_installed_packages_file()
-        world_dir = os.path.dirname(world_file)
-        world_atoms = set()
-        enc = etpConst['conf_encoding']
-
-        try:
-
-            with self._PortageWorldSetLocker(self, root = root):
-
-                try:
-                    with codecs.open(world_file, "r", encoding=enc) \
-                            as world_f:
-                        world_atoms |= set((x.strip() for x in \
-                            world_f.readlines() if x.strip()))
-                except (OSError, IOError) as err:
-                    if err.errno != errno.ENOENT:
-                        raise
-
-                if keyslot not in world_atoms and \
-                    entropy.tools.istextfile(world_file):
-
-                    world_atoms.discard(key)
-                    world_atoms.add(keyslot)
-                    world_file_tmp = world_file+".entropy_inst"
-
-                    newline = const_convert_to_unicode("\n")
-                    with codecs.open(world_file_tmp, "w", encoding=enc) \
-                            as world_f:
-                        for item in sorted(world_atoms):
-                            world_f.write(item + newline)
-
-                    os.rename(world_file_tmp, world_file)
-
-        except (UnicodeDecodeError, UnicodeEncodeError,) as e:
-
-            mytxt = "%s: %s" % (
-                brown(_("Cannot update SPM installed pkgs file")), world_file,
-            )
-            self.__output.output(
-                red("QA: ") + mytxt + ": " + repr(e),
-                importance = 1,
-                level = "warning",
-                header = darkred("   ## ")
-            )
+        with self._PortageWorldSetLocker(self, root = root):
+            try:
+                self.__add_update_world_file(key, myslot)
+            except (UnicodeDecodeError, UnicodeEncodeError) as e:
+                mytxt = "%s: %s" % (
+                    brown(_("Cannot update SPM installed pkgs file")), world_file,
+                )
+                self.__output.output(
+                    red("QA: ") + mytxt + ": " + repr(e),
+                    importance = 1,
+                    level = "warning",
+                    header = darkred("   ## ")
+                )
 
         return counter
 
@@ -3466,6 +3456,38 @@ class PortagePlugin(SpmPlugin):
                 raise
         else:
             # this must complete successfully
+            os.rename(world_file_tmp, world_file)
+
+    def __add_update_world_file(self, key, slot):
+        keyslot = key + ":" + slot
+        key = const_convert_to_rawstring(key)
+        world_file = self.get_user_installed_packages_file()
+        world_dir = os.path.dirname(world_file)
+        world_atoms = set()
+        enc = etpConst['conf_encoding']
+
+        try:
+            with codecs.open(world_file, "r", encoding=enc) \
+                    as world_f:
+                world_atoms |= set((x.strip() for x in \
+                    world_f.readlines() if x.strip()))
+        except (OSError, IOError) as err:
+            if err.errno != errno.ENOENT:
+                raise
+
+        if keyslot not in world_atoms and \
+            entropy.tools.istextfile(world_file):
+
+            world_atoms.discard(key)
+            world_atoms.add(keyslot)
+            world_file_tmp = world_file+".entropy_inst"
+
+            newline = const_convert_to_unicode("\n")
+            with codecs.open(world_file_tmp, "w", encoding=enc) \
+                    as world_f:
+                for item in sorted(world_atoms):
+                    world_f.write(item + newline)
+
             os.rename(world_file_tmp, world_file)
 
     @staticmethod

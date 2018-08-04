@@ -589,6 +589,22 @@ class SpmPlugin(Singleton):
         """
         raise NotImplementedError()
 
+    def get_user_selected_packages(self, root = None):
+        """
+        Return installed list of packages that were selected by user as
+        selected (wanted).
+        Packages returned by this function can have a different representation
+        from what e.g. I{get_installed_packages()} returns, that is, no
+        package matching is done for performance.
+
+        @keyword root: specify an alternative root directory "/"
+        @type root: string
+        @return: list of installed packages found
+        @rtype: frozenset
+        @raise entropy.exceptions.SPMError: when something went bad
+        """
+        raise NotImplementedError()
+
     def get_package_sets(self, builtin_sets):
         """
         Package sets are groups of packages meant to ease user installation and
