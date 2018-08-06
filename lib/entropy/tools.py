@@ -1098,7 +1098,7 @@ def universal_uncompress(compressed_file, dest_path, catch_empty = False):
         for tarinfo in directories:
             epath = os.path.join(dest_path, tarinfo.name)
             try:
-                tar.chown(tarinfo, epath)
+                _tarfile_chown(tar, tarinfo, epath)
 
                 # this is mandatory on uid/gid that don't exist
                 # and in this strict order !!
@@ -2036,6 +2036,13 @@ def _fix_uid_gid(tarinfo, epath):
     except OSError:
         pass
 
+def _tarfile_chown(tar, tarinfo, targetpath):
+    if const_is_python3():
+        return tar.chown(tarinfo, targetpath,
+                         numeric_owner=False)
+    else:
+        return tar.chown(tarinfo, targetpath)
+
 def apply_tarball_ownership(filepath, prefix_path):
     """
     Given an already extracted tarball available at prefix_path, and the
@@ -2064,7 +2071,7 @@ def apply_tarball_ownership(filepath, prefix_path):
             epath = os.path.join(encoded_path, tarinfo.name)
 
             try:
-                tar.chown(tarinfo, epath)
+                _tarfile_chown(tar, tarinfo, epath)
                 _fix_uid_gid(tarinfo, epath)
                 if not os.path.islink(epath):
                     # make sure we keep the same permissions
@@ -2107,7 +2114,7 @@ def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
 
     def _setup_file_metadata(tarinfo, epath):
         try:
-            tar.chown(tarinfo, epath)
+            _tarfile_chown(tar, tarinfo, epath)
             _fix_uid_gid(tarinfo, epath)
 
             # no longer touch utime using Tarinfo, behaviour seems

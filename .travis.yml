@@ -9,7 +9,11 @@ before_install:
 script:
 - >
     docker run -v $TRAVIS_BUILD_DIR:/entropy sabayon/base-amd64
-    bash -c "equo i dev-util/bsdiff; cd /entropy/lib/tests && LC_ALL=en_US.UTF-8 USERNAME=root ETP_TESTS_NONINTERACTIVE=1 ./run"
+    bash -c "python2 --version; python3 --version"
+- >
+    docker run -v $TRAVIS_BUILD_DIR:/entropy sabayon/base-amd64
+    env LC_ALL=en_US.UTF-8 USERNAME=root ETP_TESTS_NONINTERACTIVE=1
+    bash -c 'equo i dev-util/bsdiff; cd /entropy/lib/tests && ret=0 && { python2 ./run || ret=$?; python3 ./run || ret=$?; }; exit $ret'
 
 notifications:
   irc: "chat.freenode.net#sabayon-infra"

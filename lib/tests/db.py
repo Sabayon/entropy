@@ -873,7 +873,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         assert set(data.keys()) == set(db_data.keys())
         for k, v in data.items():
             if v != db_data[k]:
-                print k, v, "vs", db_data[k]
+                print(k, v, "vs", db_data[k])
         self.assertEqual(data, db_data)
 
         set_mute(True)
