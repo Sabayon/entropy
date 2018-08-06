@@ -11,8 +11,8 @@ eit-cp - copy packages from a repository to another
 
 SYNOPSIS
 --------
-eit cp [-h] [--conservative] [--deps]
-       <source> <dest> <package> [<package> ...]
+eit cp [-h] [--conservative] [--deps] [--quick]
+       <source> <dest> [<package> [<package> ...]]
 
 
 INTRODUCTION
@@ -47,6 +47,9 @@ OPTIONAL ARGUMENTS
 
 *--deps*::
     include dependencies
+
+*--quick*::
+    no stupid questions
 
 
 

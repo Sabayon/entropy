@@ -57,7 +57,7 @@ ACTION
 
 AUTHORS
 -------
-Fabio Erculiani (lxnay@sabayon.org)
+Fabio Erculiani <lxnay@sabayon.org>
 
 REPORTING BUGS
 --------------

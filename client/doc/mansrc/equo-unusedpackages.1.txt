@@ -6,12 +6,12 @@ equo-unusedpackages(1)
 
 NAME
 ----
-equo-unusedpackages - look for unused packages (pay attention)
+equo-unusedpackages - show unused packages (pay attention)
 
 
 SYNOPSIS
 --------
-equo unusedpackages [-h] [--quiet] [--sortbysize] [--by-user]
+equo unusedpackages [-h] [--quiet] [--sortbysize] [--spm-wanted]
 
 
 INTRODUCTION
@@ -36,14 +36,15 @@ OPTIONAL ARGUMENTS
 *--sortbysize*::
     sort packages by size
 
-*--by-user*::
-    include packages installed by user
+*--spm-wanted*::
+    consider packages installed with a Source Package Manager to be wanted
 
 
 
 AUTHORS
 -------
-Fabio Erculiani (lxnay@sabayon.org)
+Fabio Erculiani <lxnay@sabayon.org>
+Slawomir Nizio <slawomir.nizio@sabayon.org>
 
 REPORTING BUGS
 --------------

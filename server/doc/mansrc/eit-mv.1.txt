@@ -11,7 +11,7 @@ eit-mv - move packages from a repository to another
 
 SYNOPSIS
 --------
-eit mv [-h] [--conservative] [--deps]
+eit mv [-h] [--conservative] [--deps] [--quick]
        <source> <dest> [<package> [<package> ...]]
 
 
@@ -37,7 +37,7 @@ POSITIONAL ARGUMENTS
     destination repository
 
 *<package>*::
-    package names (all if none)
+    package dependency
 
 OPTIONAL ARGUMENTS
 ~~~~~~~~~~~~~~~~~~
@@ -49,6 +49,9 @@ OPTIONAL ARGUMENTS
 
 *--deps*::
     include dependencies
+
+*--quick*::
+    no stupid questions
 
 
 

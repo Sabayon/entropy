@@ -12,7 +12,6 @@ equo-query - repository query tools
 SYNOPSIS
 --------
 equo query [-h] [--verbose] [--quiet]
-           
            {belongs,changelog,revdeps,description,files,installed,license,list,mimetype,associate,needed,orphans,required,sets,slot,tags,revisions,graph,revgraph,updates}
            ...
 
@@ -105,7 +104,7 @@ ACTION
 
 AUTHORS
 -------
-Fabio Erculiani (lxnay@sabayon.org)
+Fabio Erculiani <lxnay@sabayon.org>
 
 REPORTING BUGS
 --------------
