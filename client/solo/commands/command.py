@@ -10,6 +10,7 @@
 
 """
 import os
+import re
 import sys
 import argparse
 
@@ -237,6 +238,18 @@ class SoloCommand(object):
         stdout.write(" ".join(available_args) + "\n")
         stdout.flush()
 
+    def _get_authors(self):
+        """
+        Function to pull authors of a command from module's docstring.
+        """
+        authors = []
+        module = sys.modules[self.__module__]
+        for x in module.__doc__.splitlines():
+            m = re.match(r" *@author: *(.+)\s*$", x)
+            if m:
+                authors.append(m.group(1))
+        return authors
+
     def man(self):
         """
         Return a dictionary containing the following man
@@ -308,6 +321,7 @@ class SoloCommand(object):
             'seealso': self.SEE_ALSO,
             'synopsis': usage,
             'options': "\n".join(options_txt),
+            'authors': "\n".join(self._get_authors())
         }
         return data
 
