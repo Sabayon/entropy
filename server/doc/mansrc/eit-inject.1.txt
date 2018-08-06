@@ -11,7 +11,7 @@ eit-inject - inject package files into repository
 
 SYNOPSIS
 --------
-eit inject [-h] [--to <repository>] <path> [<path> ...]
+eit inject [-h] [--to <repository>] [--quick] <path> [<path> ...]
 
 
 INTRODUCTION
@@ -49,6 +49,9 @@ OPTIONAL ARGUMENTS
 
 *--to*=<repository>::
     inject into given repository
+
+*--quick*::
+    no stupid questions
 
 
 

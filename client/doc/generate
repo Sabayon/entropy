@@ -94,7 +94,7 @@ OPTIONS
 
 AUTHORS
 -------
-Fabio Erculiani (lxnay@sabayon.org)
+%(authors)s
 
 REPORTING BUGS
 --------------
@@ -136,6 +136,10 @@ for descriptor in descriptors:
             man['seealso'] = ""
         else:
             man['seealso'] = ", " + man['seealso']
+
+        if not man['authors']:
+            man['authors'] = "Fabio Erculiani <lxnay@sabayon.org>"
+
         man_txt = SPLIT_MAN % man
         split_mans.append((man['name'], man_txt))
 

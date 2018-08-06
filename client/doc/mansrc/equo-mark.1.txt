@@ -42,7 +42,7 @@ ACTION
 
 AUTHORS
 -------
-Fabio Erculiani (lxnay@sabayon.org)
+Slawomir Nizio <slawomir.nizio@sabayon.org>
 
 REPORTING BUGS
 --------------
