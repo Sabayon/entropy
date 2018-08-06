@@ -26,6 +26,7 @@ from entropy.client.interfaces.db import InstalledPackagesRepository
 from solo.commands.descriptor import SoloCommandDescriptor
 from solo.commands.command import SoloCommand, sharedlock, exclusivelock
 
+import entropy.dep
 import entropy.tools
 
 
@@ -730,7 +731,7 @@ Tools to rescue the running system.
                 prefix="equo.rescue.spmsync")
             os.close(tmp_fd)
 
-            spm_wanted = _SpmUserPackages(spm)
+            spm_wanted = _SpmUserPackages(entropy_client, spm)
 
             for _spm_package, _spm_package_id in to_be_added:
                 counter += 1
@@ -914,7 +915,8 @@ class _SpmUserPackages(object):
     """
     Helper class to handle user selected packages.
     """
-    def __init__(self, spm):
+    def __init__(self, entropy_client, spm):
+        self._entropy_client = entropy_client
         self._spm = spm
         self._wanted_packages = self._get_list()
         self._map = self._set_map()
@@ -924,7 +926,7 @@ class _SpmUserPackages(object):
             spm_wanted_packages = self._spm.get_user_selected_packages()
         except Exception as err:
             entropy.tools.print_traceback()
-            entropy_client.output(
+            self._entropy_client.output(
                 "%s: %s" % (
                     darkred(_("Cannot read list of user selected packages")),
                     err,
