@@ -492,6 +492,7 @@ class PortagePlugin(SpmPlugin):
         'depend': "DEPEND",
         'rdepend': "RDEPEND",
         'pdepend': "PDEPEND",
+        'bdepend': "BDEPEND",  # since EAPI 7
         'needed': "NEEDED",
         'needed.elf.2': "NEEDED.ELF.2",
         'inherited': "INHERITED",
@@ -705,7 +706,7 @@ class PortagePlugin(SpmPlugin):
         return ["CHOST", "COUNTER", "DEPEND", "DESCRIPTION",
             "EAPI", "HOMEPAGE", "IUSE", "KEYWORDS",
             "LICENSE", "PDEPEND", "PROPERTIES", "PROVIDE", "RDEPEND",
-            "repository", "RESTRICT", "SLOT", "USE"
+            "BDEPEND", "repository", "RESTRICT", "SLOT", "USE"
         ]
 
     def get_cache_directory(self, root = None):
@@ -1655,8 +1656,8 @@ class PortagePlugin(SpmPlugin):
             data['eapi'] = None
         portage_metadata = self._calculate_dependencies(
             data['iuse'], data['use'], data['license'], data['depend'],
-            data['rdepend'], data['pdepend'], data['provide'], data['sources'],
-            data['eapi']
+            data['rdepend'], data['pdepend'], data['bdepend'],
+            data['provide'], data['sources'], data['eapi']
         )
 
         data['license'] = " ".join(portage_metadata['LICENSE'])
@@ -1679,6 +1680,7 @@ class PortagePlugin(SpmPlugin):
             "RDEPEND": etpConst['dependency_type_ids']['rdepend_id'],
             "PDEPEND": etpConst['dependency_type_ids']['pdepend_id'],
             "DEPEND": etpConst['dependency_type_ids']['bdepend_id'],
+            "BDEPEND": etpConst['dependency_type_ids']['bdepend_id'],
         }
         dep_duplicates = set()
         for dep_key, dep_val in dep_keys.items():
@@ -1780,7 +1782,7 @@ class PortagePlugin(SpmPlugin):
 
         # clear unused metadata
         del data['use'], data['iuse'], data['depend'], data['pdepend'], \
-            data['rdepend'], data['eapi']
+            data['rdepend'], data['bdepend'], data['eapi']
 
         return data
 
@@ -4058,13 +4060,14 @@ class PortagePlugin(SpmPlugin):
         return use, disabled_use
 
     def _calculate_dependencies(self, my_iuse, my_use, my_license, my_depend,
-        my_rdepend, my_pdepend, my_provide, my_src_uri, my_eapi):
+        my_rdepend, my_pdepend, my_bdepend, my_provide, my_src_uri, my_eapi):
 
         metadata = {
             'LICENSE': my_license,
             'DEPEND': my_depend,
             'PDEPEND': my_pdepend,
             'RDEPEND': my_rdepend,
+            'BDEPEND': my_bdepend,
             'PROVIDE': my_provide,
             'SRC_URI': my_src_uri,
         }
@@ -4083,7 +4086,7 @@ class PortagePlugin(SpmPlugin):
         metadata['USE'] = sorted([const_convert_to_unicode(x) for x in use])
         metadata['USE_FORCE'] = sorted(use_force)
         variables = "LICENSE", "RDEPEND", "DEPEND", "PDEPEND", \
-            "PROVIDE", "SRC_URI"
+            "BDEPEND", "PROVIDE", "SRC_URI"
 
         for k in variables:
             try:
@@ -4565,6 +4568,10 @@ class PortagePlugin(SpmPlugin):
             },
             'depend': {
                 'path': PortagePlugin.xpak_entries['depend'],
+                'critical': False,
+            },
+            'bdepend': {
+                'path': PortagePlugin.xpak_entries['bdepend'],
                 'critical': False,
             },
             'use': {
