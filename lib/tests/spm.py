@@ -206,6 +206,7 @@ class SpmTest(unittest.TestCase):
         >=dev-libs/dbus-glib-0.72 >=x11-libs/startup-notification-0.8
         !<x11-base/xorg-x11-6.7.0-r2 >=x11-libs/cairo-1.6.0""".replace("\n", " ")
         pdepend = ""
+        bdepend = ""
         provide = ""
         sources = ""
         eapi = "2"
@@ -214,7 +215,7 @@ class SpmTest(unittest.TestCase):
         try:
             portage_metadata = spm._calculate_dependencies(
                 iuse, use, license,
-                depend, rdepend, pdepend, provide, sources, eapi)
+                depend, rdepend, pdepend, bdepend, provide, sources, eapi)
         finally:
             del os.environ['ETP_PORTAGE_CONDITIONAL_DEPS_ENABLE']
 
@@ -270,6 +271,7 @@ class SpmTest(unittest.TestCase):
         """.replace("\n", " ")
         rdepend = depend[:]
         pdepend = depend[:]
+        bdepend = []
         provide = ""
         sources = ""
         eapi = "2"
@@ -278,7 +280,7 @@ class SpmTest(unittest.TestCase):
         try:
             portage_metadata = spm._calculate_dependencies(
                 iuse, use, license,
-                depend, rdepend, pdepend, provide, sources, eapi)
+                depend, rdepend, pdepend, bdepend, provide, sources, eapi)
         finally:
             del os.environ['ETP_PORTAGE_CONDITIONAL_DEPS_ENABLE']
 
@@ -297,6 +299,64 @@ class SpmTest(unittest.TestCase):
         for k in ("RDEPEND", "PDEPEND", "DEPEND"):
             resolved_deps = portage_metadata[k]
             resolved_deps.sort()
+            self.assertEqual(resolved_deps, expected_deps)
+
+
+    def test_eapi7_portage_bdepend(self):
+
+        spm_class = self.Client.Spm_class()
+        if spm_class.PLUGIN_NAME != "portage":
+            return
+        spm = self.Client.Spm()
+
+        iuse = "system-sqlite"
+        use = "amd64 dbus elibc_glibc kernel_linux multilib " + \
+              "startup-notification userland_GNU"
+        license = "MPL-1.1 GPL-2"
+
+        depend = """
+        =mail-client/thunderbird-3.1.1-r1:2
+        x11-misc/dwm
+        """.replace("\n", " ")
+
+        rdepend = ">=mail-client/thunderbird-3"
+        pdepend = "www-client/firefox:0"
+
+        bdepend = """
+        dev-lang/python[xml]
+        virtual/pkgconfig:0/1
+        """.replace("\n", " ")
+
+        provide = ""
+        sources = ""
+        eapi = "2"
+
+        os.environ['ETP_PORTAGE_CONDITIONAL_DEPS_ENABLE'] = "1"
+        try:
+            portage_metadata = spm._calculate_dependencies(
+                iuse, use, license,
+                depend, rdepend, pdepend, bdepend, provide, sources, eapi)
+        finally:
+            del os.environ['ETP_PORTAGE_CONDITIONAL_DEPS_ENABLE']
+
+        expected = {
+            'DEPEND': [
+                "=mail-client/thunderbird-3.1.1-r1:2",
+                "x11-misc/dwm"
+            ],
+            'RDEPEND': [">=mail-client/thunderbird-3"],
+            'PDEPEND': ["www-client/firefox:0"],
+            'BDEPEND': [
+                "dev-lang/python[xml]",
+                "virtual/pkgconfig:0"
+            ]
+        }
+
+        for k in ("RDEPEND", "PDEPEND", "DEPEND", "BDEPEND"):
+            resolved_deps = portage_metadata[k]
+            resolved_deps.sort()
+            expected_deps = expected[k]
+            expected_deps.sort()
             self.assertEqual(resolved_deps, expected_deps)
 
     def test_portage_or_selector(self):
