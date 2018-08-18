@@ -1,3 +1,245 @@
+commit 12aafd8e5eb578d06d68ad93993c5046f3e91de1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 18 09:25:08 2018 +0200
+
+    Release Entropy 313
+
+commit 7e8047ccdfa4a0348a04aea60106aa8a397ef46d
+Merge: 29bb41c1c 4463b6d42
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 18 09:24:23 2018 +0200
+
+    Merge pull request #59 from Enlik/eapi7-bdepend
+    
+    [entropy.spm] add support for BDEPEND (from EAPI 7)
+
+commit 4463b6d425ef306d338b199c01632fe8e68ebd65
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Fri Aug 17 23:49:39 2018 +0200
+
+    [entropy.spm] add support for BDEPEND (from EAPI 7)
+    
+    For the purpose of Entropy binary packages, they are merged with
+    DEPEND.
+
+commit 29bb41c1cae42dc9fc4fcce40376b24e7891f490
+Merge: f02c6be0b a762d43bd
+Author: Ettore Di Giacinto <mudler@users.noreply.github.com>
+Date:   Tue Aug 14 17:41:26 2018 +0200
+
+    Merge pull request #58 from Sabayon/revert-52-master
+    
+    Revert "inject: fix store of content with utf-8 chars"
+
+commit a762d43bdcbfca6a98cc5bdcae4ce705b696712c
+Author: Ettore Di Giacinto <mudler@users.noreply.github.com>
+Date:   Sat Aug 11 16:13:54 2018 +0200
+
+    Revert "inject: fix store of content with utf-8 chars"
+
+commit f02c6be0ba173a9b3c76dc4f02119f1bace18d90
+Merge: 492bab37b 04c449531
+Author: Ettore Di Giacinto <mudler@users.noreply.github.com>
+Date:   Tue Aug 7 20:22:56 2018 +0200
+
+    Merge pull request #57 from Sabayon/rescue
+    
+    [solo.commands.rescue] trivial fixes
+
+commit 04c4495313ad7db8e7d6ded404ab04c04e9c5edd
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Mon Aug 6 23:01:17 2018 +0200
+
+    [solo.commands.rescue] trivial fixes
+    
+    - Variable entropy_client was not available where it was used.
+    - Module entropy.dep was not imported but was used. It worked as
+      the module was imported from another place, but it is better to
+      import it explicitly.
+
+commit 492bab37b4f4669a6d42bfebaf85d744e8821991
+Merge: 1962df59e 9db87b99c
+Author: Ettore Di Giacinto <mudler@users.noreply.github.com>
+Date:   Mon Aug 6 22:55:03 2018 +0200
+
+    Merge pull request #56 from Enlik/docs
+    
+    improve generation of and update docs
+
+commit 9db87b99c3eca19be93f39b388d84089952bb8f6
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Mon Aug 6 22:45:32 2018 +0200
+
+    [equo, eit] update man pages
+
+commit 789e06c12231ac9f7d850de8975b76fc0aa3833e
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Mon Aug 6 22:39:42 2018 +0200
+
+    [solo.commands.command, equo] support "authors" in docs
+    
+    Suggested by Ettore.
+    
+    My comment is that it is to have a more correct information and to give
+    credit where it is due.
+    This is not a "miscredit" towards the Creator. We know who has made this
+    possible!
+
+commit 1962df59e99437dedd7bf4cda356acc911e28b24
+Merge: f76c81f41 8643db23a
+Author: Ettore Di Giacinto <mudler@users.noreply.github.com>
+Date:   Mon Aug 6 22:29:42 2018 +0200
+
+    Merge pull request #55 from Enlik/py3
+    
+    [entropy.tools, tests] fix test and code with Python 3; add to CI
+
+commit 8643db23aa64f0a45faee6f230180f561a6a8755
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Mon Aug 6 09:37:13 2018 +0200
+
+    [entropy.tools, tests] fix test and code with Python 3; add to CI
+
+commit f76c81f4123685f0df545e7f6a617be9650cc36b
+Merge: 2469c1d0f fabb3e72d
+Author: Ettore Di Giacinto <mudler@users.noreply.github.com>
+Date:   Sun Aug 5 01:03:08 2018 +0200
+
+    Merge pull request #54 from Enlik/tests-improvement
+    
+    [tests] add lib/tests/run-nonpriv-wrapper
+
+commit fabb3e72daca67ba5d00d96dc633c10bd580544c
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Sun Aug 5 00:34:54 2018 +0200
+
+    [tests] add lib/tests/run-nonpriv-wrapper
+    
+    - runs as non-root
+    - does not require being in entropy/portage group
+        - in fact, it's better (better isolation) to run as such
+    - thus does not modify running system
+    
+    The wrapper script is ugly but very convenient.
+
+commit 8af6ececaa4a61fc0b47c34e4b3eb7fbc0261b4c
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Sun Aug 5 00:26:03 2018 +0200
+
+    stop ignoring lib/ in .gitignore
+    
+    Including a script that will be added in the next commit.
+
+commit 2469c1d0feff5712a2972d591dc7f782f7814059
+Merge: 686f7e3eb 779d40389
+Author: Ettore Di Giacinto <mudler@users.noreply.github.com>
+Date:   Sat Aug 4 23:56:28 2018 +0200
+
+    Merge pull request #53 from Enlik/ci
+    
+    [tests] exit with failure also on assetion errors
+
+commit 779d40389f01bc61915d939ef87d1a9042ff37f0
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Sat Aug 4 23:45:12 2018 +0200
+
+    [tests] exit with failure also on assetion errors
+
+commit 686f7e3ebcfb47c3a84d3eca395a27e83f7d1abb
+Merge: 83f9bbfc1 70f171913
+Author: Ettore Di Giacinto <mudler@users.noreply.github.com>
+Date:   Sat Aug 4 23:00:31 2018 +0200
+
+    Merge pull request #50 from Enlik/equo-mark
+    
+    [solo.commands.mark] new command
+
+commit 83f9bbfc1c37ba35287e47b61b55a0ec10d8eb00
+Merge: c2f66c594 b9580f824
+Author: geaaru <geaaru@gmail.com>
+Date:   Sat Aug 4 21:40:45 2018 +0200
+
+    Merge pull request #52 from geaaru/master
+    
+    inject: fix store of content with utf-8 chars
+
+commit b9580f8244ede58415ffb35ac4731a65794cf639
+Author: Geaaru <geaaru@gmail.com>
+Date:   Sat Aug 4 00:59:52 2018 +0200
+
+    inject: fix store of content with utf-8 chars
+
+commit c2f66c5943a8ea30848d0bc8a7216bba7f59f02a
+Author: Ettore Di Giacinto <mudler@users.noreply.github.com>
+Date:   Sat Aug 4 20:37:29 2018 +0200
+
+    Fix README
+
+commit 36b698b74b99c679fd0e4161293a958326c03780
+Merge: ade89ee5f 3b7181d6c
+Author: Ettore Di Giacinto <mudler@users.noreply.github.com>
+Date:   Sat Aug 4 19:55:53 2018 +0200
+
+    Merge pull request #49 from Enlik/spm-by-user
+    
+    [solo.commands.rescue] use world file to replicate by-user status
+
+commit ade89ee5fa3357202b75bf5285888c1f1b646bd1
+Merge: ebf470760 85174d39f
+Author: Ettore Di Giacinto <mudler@users.noreply.github.com>
+Date:   Sat Aug 4 19:23:54 2018 +0200
+
+    Merge pull request #51 from Sabayon/ci
+    
+    add .travis.yml
+
+commit 85174d39fa062619afcb37bd2b08b29d3253eab9
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Fri Aug 3 22:26:18 2018 +0200
+
+    add .travis.yml
+    
+    USERNAME is needed in lib/entropy/security.py.
+    Added support for ETP_TESTS_NONINTERACTIVE (and skipped one test).
+
+commit 70f1719138ecb9b982b3598605f33e6947e4d831
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Tue Jul 31 08:58:31 2018 +0200
+
+    [solo.commands.mark] new command
+
+commit 3b7181d6c958106ac2c77257b731065b61e2bd2c
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Mon Jul 30 09:11:50 2018 +0200
+
+    [solo.commands.rescue] factor out _SpmUserPackages
+
+commit fb1f0f2d82ff506c5a01ab85ca554f02d407e475
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Mon Jul 30 08:52:56 2018 +0200
+
+    [solo.commands.rescue] fix usage of a wrong variable
+
+commit e5db0d6b6e9003382dfbde041d3ee11288a91a86
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Mon Jul 30 08:49:17 2018 +0200
+
+    [solo.commands.rescue] use world file to replicate by-user status
+    
+    Uses the newly introduced function in spm: get_user_selected_packages.
+
+commit 77a5071cf5fd671f25fef2f9b3ebb6af95973edf
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Mon Jul 30 00:11:29 2018 +0200
+
+    [entropy.spm] factor out __add_update_world_file
+
+commit ebf470760cf26f612faa3cb5f4dcc4c58d30e1d1
+Author: Ettore Di Giacinto <mudler@gentoo.org>
+Date:   Wed Jul 11 18:10:27 2018 +0200
+
+    Tagging Entropy version 312
+
 commit 9e427b7c9bb3de948e941f9a09ab6051b565c401
 Author: Ettore Di Giacinto <mudler@gentoo.org>
 Date:   Wed Jul 11 18:10:19 2018 +0200
