@@ -1,3 +1,39 @@
+commit d420cf5774d85aae02d85ce729d0c29527bb7179
+Author: Ettore Di Giacinto <mudler@gentoo.org>
+Date:   Sat Sep 8 23:16:57 2018 +0200
+
+    Release Entropy 314
+
+commit b5cd3f6401562882e51500c182dec9666fd68f99
+Merge: e84620515 1bccb2858
+Author: Ettore Di Giacinto <mudler@users.noreply.github.com>
+Date:   Sat Sep 8 23:13:29 2018 +0200
+
+    Merge pull request #61 from Enlik/kswitch-revdep
+    
+    [kswitch] use reverse dep. not PROVIDE
+
+commit 1bccb285899041c99a37f9c6e3fdd58ee2621635
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Sat Sep 8 23:01:30 2018 +0200
+
+    [ci] separate commands to file, make sure there is /usr/portage/profiles
+
+commit f70b673f5e055bb097e248a14901d5460fcc1be8
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Sat Sep 8 18:21:37 2018 +0200
+
+    [kswitch] use reverse dep. not PROVIDE
+    
+    The latter method does not work nowadays, after bumping Portage
+    (2.3.40-r1) or related to EAPI 7.
+
+commit e84620515fca783002b00bebdc34c7cea33a13ba
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 18 09:25:08 2018 +0200
+
+    Tagging Entropy version 313
+
 commit 12aafd8e5eb578d06d68ad93993c5046f3e91de1
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Aug 18 09:25:08 2018 +0200
