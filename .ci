@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -x
+
+python2 --version
+python3 --version
+
+if [[ ! -e /usr/portage/profiles ]]; then
+	rsync -av -H -A -X --delete-during \
+		"rsync://rsync.at.gentoo.org/gentoo-portage/profiles/" \
+		/usr/portage/profiles || exit 1
+fi
+
+export LC_ALL=en_US.UTF-8 USERNAME=root ETP_TESTS_NONINTERACTIVE=1
+equo install dev-util/bsdiff || exit 1
+cd /entropy/lib/tests || exit 1
+
+ret=0
+python2 ./run || ret=$?
+python3 ./run || ret=$?
+exit $ret
