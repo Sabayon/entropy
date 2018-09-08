@@ -10,6 +10,7 @@ if os.path.isfile(osp.join(_base, "entropy-in-vcs-checkout")):
 del osp
 
 import argparse
+import functools
 
 from entropy.locks import EntropyResourcesLock
 from entropy.output import brown, print_warning, print_error, teal
@@ -24,21 +25,68 @@ from _entropy.solo.utils import print_package_info
 import kswitch
 
 
-if __name__ == "__main__":
+class SabayonSwitcher(argparse.Namespace):
 
-    app_name = os.path.basename(sys.argv[0])
-    parser = argparse.ArgumentParser(
-        description=_("Sabayon Kernel Switcher"),
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        prog=app_name)
+    def __init__(self, app_name='kernel-switcher'):
+        argparse.Namespace.__init__(self)
+        self.quiet = False
+        self.verbose = False
+        self.ask = False
+        self.pretend = False
+        self.from_running = False
+        self.called_method = None
+        self.kernel = None
+        self._etp_client = None
 
+        self.parser = argparse.ArgumentParser(
+            description=_("Sabayon Kernel Switcher"),
+            formatter_class=argparse.RawDescriptionHelpFormatter,
+            prog=app_name
+        )
+        self.subparsers = self.parser.add_subparsers(
+            title=app_name,
+            description=_("available commands"))
+
+        self._add_switch_sub_command()
+        self._add_list_sub_command()
+        self._add_help_sub_command()
+
+    def _add_switch_sub_command(self):
+        switch_parser = self.subparsers.add_parser(
+            "switch", help=_("install a new or just another kernel"))
+        switch_parser.set_defaults(called_method=self._switch)
+        switch_parser.add_argument(
+            "--from-running", action="store_true",
+            default=False,
+            dest='from_running',
+            help=_("use 'uname -r' to determine the running kernel"))
+        switch_parser.add_argument(
+            "kernel", metavar="<kernel>",
+            help=_("the new kernel package dependency name"))
+        self._add_standard_args(switch_parser, False)
+
+    def _add_list_sub_command(self):
+        list_parser = self.subparsers.add_parser(
+            "list", help=_("list kernels"))
+        list_parser.set_defaults(called_method=self._list)
+        self._add_standard_args(list_parser, True)
+
+    def _add_help_sub_command(self):
+        help_parser = self.subparsers.add_parser(
+            "help", help=_("this help"))
+        help_parser.set_defaults(called_method=self._print_help)
+
+    def _print_help(self):
+        self.parser.print_help()
+
+    @staticmethod
     def _add_standard_args(_parser, restricted):
         _parser.add_argument("--quiet", "-q", action="store_true",
-                            default=False,
-                            help=_("quiet mode"))
+                             default=False,
+                             help=_("quiet mode"))
         _parser.add_argument("--verbose", "-v", action="store_true",
-                            default=False,
-                            help=_("verbose mode"))
+                             default=False,
+                             help=_("verbose mode"))
         if not restricted:
             _parser.add_argument("--ask", "-a", action="store_true",
                                  default=False,
@@ -47,139 +95,120 @@ if __name__ == "__main__":
                                  default=False,
                                  help=_("just show what would be done"))
 
-    subparsers = parser.add_subparsers(
-        title="kernel-switcher",
-        description=_("available commands"))
+    def _wrap_locked_api(method):
+        @functools.wraps(method)
+        def wrapper(self, *method_args, **method_kwargs):
+            lock = EntropyResourcesLock(output=Client)
+            try:
+                lock.acquire_shared()
+                acquired = True
+                self._etp_client = Client()
+                ans = method(self, *method_args, **method_kwargs)
+            finally:
+                if self._etp_client is not None:
+                    self._etp_client.shutdown()
+                    self._etp_client = None
+                if acquired:
+                    lock.release()
+            return ans
 
-    def _wrap_locked_api(method, *args, **kwargs):
-        etp_client = None
-        acquired = False
-        lock = EntropyResourcesLock(output=Client)
-        try:
-            lock.acquire_shared()
-            acquired = True
+        return wrapper
 
-            etp_client = Client()
-
-            return method(etp_client, *args, **kwargs)
-        finally:
-            if etp_client is not None:
-                etp_client.shutdown()
-            if acquired:
-                lock.release()
-
-    def _switch_kernel(f_nsargs):
-
+    @_wrap_locked_api
+    def _switch(self):
         def _install(etp_client, matches):
             install = SoloInstall([])
-            inst_rc, _show_cfgupd = install._install_action(
+            inst_rc, _show_cfg_upd = install._install_action(
                 etp_client, True, True,
-                f_nsargs.pretend, f_nsargs.ask, f_nsargs.verbose,
-                f_nsargs.quiet, False, False, False, False, False,
+                self.pretend, self.ask, self.verbose,
+                self.quiet, False, False, False, False, False,
                 False, False, 1, [], package_matches=list(matches))
-            if _show_cfgupd:
+            if _show_cfg_upd:
                 install._show_config_files_update(etp_client)
                 install._show_preserved_libraries(etp_client)
-            if f_nsargs.pretend:
+            if self.pretend:
                 # this won't trigger any post install action
                 return 1
             return inst_rc
 
-        def _switch(etp_client):
-            switcher = kswitch.KernelSwitcher(etp_client)
-            kernel_package = f_nsargs.kernel
+        switcher = kswitch.KernelSwitcher(self._etp_client)
+        kernel_package = self.kernel
 
-            pkg_id, pkg_repo = etp_client.atom_match(kernel_package)
-            if pkg_id == -1:
-                print_error("%s: %s" % (
-                        brown(_("Package does not exist")),
-                        teal(kernel_package),))
-                return 1
-
-            kernel_match = (pkg_id, pkg_repo)
-            kernel_matches = switcher.list()
-            if kernel_match not in kernel_matches:
-                print_error(
-                    "%s: %s" % (brown(_("Not a kernel")),
-                                teal(kernel_package),))
-                return 1
-
-            try:
-                return switcher.switch(
-                    kernel_match, _install,
-                    from_running=f_nsargs.from_running)
-            except kswitch.CannotFindRunningKernel:
-                print_error(
-                    brown(_("Cannot find your currently running kernel.")))
-                print_error(
-                    brown(_("Try without --from-running.")))
-                return 1
-
-        if not entropy.tools.is_root():
-            print_error(
-                brown(_("superuser access required")))
+        pkg_id, pkg_repo = self._etp_client.atom_match(kernel_package)
+        if pkg_id == -1:
+            print_error("%s: %s" % (
+                brown(_("Package does not exist")),
+                teal(kernel_package),))
             return 1
-        return _wrap_locked_api(_switch)
 
-    def _list_kernels(f_nsargs):
+        kernel_match = (pkg_id, pkg_repo)
+        kernel_matches = switcher.list()
+        if kernel_match not in kernel_matches:
+            print_error(
+                "%s: %s" % (brown(_("Not a kernel")),
+                            teal(kernel_package),))
+            return 1
 
-        def _list(etp_client):
-            switcher = kswitch.KernelSwitcher(etp_client)
-            kernels = switcher.list()
-            if not kernels:
-                print_warning(_("No kernel packages found"))
-                return 1
+        try:
+            return switcher.switch(
+                kernel_match, _install,
+                from_running=self.from_running)
+        except kswitch.CannotFindRunningKernel:
+            print_error(
+                brown(_("Cannot find your currently running kernel.")))
+            print_error(
+                brown(_("Try without --from-running.")))
+            return 1
 
-            inst_repo = etp_client.installed_repository()
-            with inst_repo.shared():
-                for pkg_id, pkg_repo in kernels:
+    @_wrap_locked_api
+    def _list(self):
+        switcher = kswitch.KernelSwitcher(self._etp_client)
+        kernels = switcher.list()
+        if not kernels:
+            print_warning(_("No kernel packages found"))
+            return 1
 
-                    repo = etp_client.open_repository(pkg_repo)
-                    print_package_info(
-                        pkg_id, etp_client, repo,
-                        show_repo_if_quiet = True,
-                        extended=f_nsargs.verbose,
-                        quiet=f_nsargs.quiet)
-            return 0
+        inst_repo = self._etp_client.installed_repository()
+        with inst_repo.shared():
+            for pkg_id, pkg_repo in kernels:
 
-        return _wrap_locked_api(_list)
+                repo = self._etp_client.open_repository(pkg_repo)
+                print_package_info(
+                    pkg_id, self._etp_client, repo,
+                    show_repo_if_quiet=True,
+                    extended=self.verbose,
+                    quiet=self.quiet)
+        return 0
 
-    switch_parser = subparsers.add_parser(
-        "switch", help=_("install a new or just another kernel"))
-    switch_parser.set_defaults(func=_switch_kernel)
-    switch_parser.add_argument(
-        "--from-running", action="store_true",
-        default=False,
-        help=_("use 'uname -r' to determine the running kernel"))
-    switch_parser.add_argument(
-        "kernel", metavar="<kernel>",
-        help=_("the new kernel package dependency name"))
-    _add_standard_args(switch_parser, False)
+    def main(self, argv):
 
-    list_parser = subparsers.add_parser(
-        "list", help=_("list kernels"))
-    list_parser.set_defaults(func=_list_kernels)
-    _add_standard_args(list_parser, True)
+        try:
+            self.parser.parse_args(argv[1:], namespace=self)
+        except IOError:
+            self.parser.print_help()
+            return 1
 
-    help_parser = subparsers.add_parser(
-        "help", help=_("this help"))
-    def _print_help(*_args):
-        parser.print_help()
-    help_parser.set_defaults(func=_print_help)
+        try:
+            if self.called_method is None:
+                self.parser.print_help()
+                rc = 1
+            elif self.called_method in (self._switch, self._list) and \
+                    not entropy.tools.is_root():
+                print_error(
+                    brown(_("superuser access required")))
+                rc = 1
+            else:
+                rc = self.called_method()
+        except KeyboardInterrupt:
+            rc = 1
+        return rc
 
-    try:
-        nsargs = parser.parse_args(sys.argv[1:])
-    except IOError as err:
-        parser.print_help()
-        raise SystemExit(1)
 
-    # Python 3.3 bug #16308
-    if not hasattr(nsargs, "func"):
-        parser.print_help()
-        raise SystemExit(1)
+if __name__ == "__main__":
 
-    try:
-        rc = nsargs.func(nsargs)
-    except KeyboardInterrupt:
-        rc = 1
-    raise SystemExit(rc)
+    app = SabayonSwitcher(
+        app_name=os.path.basename(sys.argv[0])
+    )
+    ret = app.main(sys.argv)
+    raise SystemExit(ret)
+
