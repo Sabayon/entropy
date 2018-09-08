@@ -29,6 +29,7 @@ import entropy.tools
 
 KERNEL_BINARY_VIRTUAL = const_convert_to_unicode("virtual/linux-binary")
 KERNEL_BINARY_LTS_VIRTUAL = const_convert_to_unicode("virtual/linux-binary-lts")
+KERNEL_ATOM_PREFIX = "sys-kernel/"
 KERNELS_DIR = const_convert_to_rawstring("/etc/kernels")
 RELEASE_LEVEL = const_convert_to_rawstring("RELEASE_LEVEL")
 
@@ -155,9 +156,21 @@ class KernelSwitcher(object):
         """
         Return a list of kernel package matches.
         """
-        return self._entropy.atom_match(
+        kernel_virtual_pkgs, _rc = self._entropy.atom_match(
             KERNEL_BINARY_VIRTUAL,
             multi_match=True, multi_repo=True)
+
+        kernel_packages = []
+
+        for pkg_id, repo_id in kernel_virtual_pkgs:
+            repo = self._entropy.open_repository(repo_id)
+            kernel_pkgs = repo.retrieveReverseDependencies(pkg_id)
+            for kernel_pkg in kernel_pkgs:
+                atom = repo.retrieveAtom(kernel_pkg)
+                if atom.startswith(KERNEL_ATOM_PREFIX):
+                    kernel_packages.append((atom, kernel_pkg, repo_id))
+
+        return kernel_packages
 
     def _get_target_tag(self, kernel_match):
         """
@@ -375,7 +388,7 @@ class KernelSwitcher(object):
         @return: a sorted list of Entropy package matches
         @rtype: list
         """
-        matches, _rc = self._get_kernels()
-        key_sorter = lambda x: \
-            self._entropy.open_repository(x[1]).retrieveAtom(x[0])
-        return sorted(matches, key=key_sorter)
+        matches = self._get_kernels()
+        key_sorter = lambda x: x[0]
+        result = [x[1:3] for x in sorted(matches, key=key_sorter)]
+        return result
