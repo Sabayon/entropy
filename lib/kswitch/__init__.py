@@ -29,7 +29,7 @@ import entropy.tools
 
 KERNEL_BINARY_VIRTUAL = const_convert_to_unicode("virtual/linux-binary")
 KERNEL_BINARY_LTS_VIRTUAL = const_convert_to_unicode("virtual/linux-binary-lts")
-KERNEL_ATOM_PREFIX = "sys-kernel/"
+KERNEL_CATEGORY = const_convert_to_unicode("sys-kernel")
 KERNELS_DIR = const_convert_to_rawstring("/etc/kernels")
 RELEASE_LEVEL = const_convert_to_rawstring("RELEASE_LEVEL")
 
@@ -164,11 +164,12 @@ class KernelSwitcher(object):
 
         for pkg_id, repo_id in kernel_virtual_pkgs:
             repo = self._entropy.open_repository(repo_id)
-            kernel_pkgs = repo.retrieveReverseDependencies(pkg_id)
-            for kernel_pkg in kernel_pkgs:
-                atom = repo.retrieveAtom(kernel_pkg)
-                if atom.startswith(KERNEL_ATOM_PREFIX):
-                    kernel_packages.append((atom, kernel_pkg, repo_id))
+            kernel_pkg_ids = repo.retrieveReverseDependencies(pkg_id)
+            for kernel_pkg_id in kernel_pkg_ids:
+                atom = repo.retrieveAtom(kernel_pkg_id)
+                category = entropy.dep.dep_getcat(atom)
+                if category == KERNEL_CATEGORY:
+                    kernel_packages.append((atom, kernel_pkg_id, repo_id))
 
         return kernel_packages
 
