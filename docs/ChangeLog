@@ -1,3 +1,35 @@
+commit a5890973b12d75b0fc25135587e85c1d88d21c9a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 22 19:39:42 2018 +0200
+
+    Release Entropy 315
+
+commit 2d61be2c4c3679b60bbeb25b759294de62d6dda8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 22 19:34:17 2018 +0200
+
+    [kswitch] fix kernel-switcher behavior when kernels are in external repos.
+    
+    See the code documentation for more info.
+
+commit 9a28a9d0251a97d488c554da3b6837b508da15d2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 22 18:23:37 2018 +0200
+
+    [kswitch] write a more reliable list comprehension.
+
+commit e319701afe16bf72698689f7c2fb475e30a9a091
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 22 18:21:39 2018 +0200
+
+    [kswitch] do not rely on startswith but rather exact category matching.
+
+commit 43556ce06faceeb6e2e1357ac02a15e1f086092a
+Author: Ettore Di Giacinto <mudler@gentoo.org>
+Date:   Sat Sep 8 23:17:00 2018 +0200
+
+    Tagging Entropy version 314
+
 commit d420cf5774d85aae02d85ce729d0c29527bb7179
 Author: Ettore Di Giacinto <mudler@gentoo.org>
 Date:   Sat Sep 8 23:16:57 2018 +0200
