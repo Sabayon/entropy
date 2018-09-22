@@ -391,5 +391,5 @@ class KernelSwitcher(object):
         """
         matches = self._get_kernels()
         key_sorter = lambda x: x[0]
-        result = [x[1:3] for x in sorted(matches, key=key_sorter)]
-        return result
+        return [(pkg_id, repo_id) for _atom, pkg_id, repo_id
+                in sorted(matches, key=key_sorter)]
