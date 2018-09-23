@@ -19,6 +19,14 @@ def get_test_generic_package(test_pkg):
         path = _get_test_generic_package_path(test_pkg)
     return path
 
+def get_test_package_ca_certs():
+    test_pkg = "ca-certificates-20180409.3.37.tbz2"
+    return get_test_generic_package(test_pkg)
+
+def get_test_package_puppet_agent():
+    test_pkg = "puppet-agent-6.0.0.tbz2"
+    return get_test_generic_package(test_pkg)
+
 def get_test_package():
     test_pkg = "zlib-1.2.3-r1.tbz2"
     return get_test_generic_package(test_pkg)

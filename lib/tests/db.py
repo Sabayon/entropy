@@ -423,6 +423,32 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.assertTrue(isinstance(results, set))
         self.assertTrue(rc == 1)
 
+    def test_db_handle_unicode_puppet_agent(self):
+        test_pkg = _misc.get_test_package_puppet_agent()
+        data = self.Spm.extract_package_metadata(test_pkg)
+
+        idpackage = self.test_db.addPackage(data)
+        db_data = self.test_db.getPackageData(idpackage)
+
+        _misc.clean_pkg_metadata(db_data)
+        _misc.clean_pkg_metadata(data)
+        self.assertEqual(data, db_data)
+
+        self.test_db.removePackage(idpackage)
+
+    def test_db_handle_unicode_ca_certs(self):
+        test_pkg = _misc.get_test_package_ca_certs()
+        data = self.Spm.extract_package_metadata(test_pkg)
+
+        idpackage = self.test_db.addPackage(data)
+        db_data = self.test_db.getPackageData(idpackage)
+
+        _misc.clean_pkg_metadata(db_data)
+        _misc.clean_pkg_metadata(data)
+        self.assertEqual(data, db_data)
+
+        self.test_db.removePackage(idpackage)
+
     def test_db_insert_compare_match_utf(self):
 
         # insert/compare

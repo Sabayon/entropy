@@ -1410,7 +1410,11 @@ class PortagePlugin(SpmPlugin):
         data['datecreation'] = str(os.path.getmtime(package_file))
         data['size'] = str(entropy.tools.get_file_size(package_file))
 
-        tmp_dir = const_mkdtemp(prefix="entropy.spm._extract")
+        # This allows os.* functions on Python2 to use unicode, correctly.
+        # See the issues with puppet-agent (unit tests in db.py).
+        tmp_dir = const_convert_to_unicode(
+            const_mkdtemp(prefix="entropy.spm._extract"),
+            enctype = sys.getfilesystemencoding())
         meta_dir = os.path.join(tmp_dir, "portage")
         pkg_dir = os.path.join(tmp_dir, "pkg")
         os.mkdir(meta_dir)
@@ -3033,15 +3037,15 @@ class PortagePlugin(SpmPlugin):
         from portage.dbapi.vartree import write_contents
 
         entropy_content_iter = entropy_package_metadata['content']
-        sys_root = const_convert_to_rawstring(etpConst['systemroot'])
+        # Make sure that we use the fs encoding. This works with both
+        # old and new Entropy packages.
+        sys_root = const_convert_to_unicode(
+            etpConst['systemroot'], enctype=sys.getfilesystemencoding())
         content_meta = {}
 
         try:
-            for _package_id, _path, _ftype in entropy_content_iter:
-
-                _ftype = const_convert_to_rawstring(_ftype)
-                path_orig = const_convert_to_rawstring(_path)
-                path = sys_root + path_orig
+            for _package_id, path, _ftype in entropy_content_iter:
+                path = sys_root + path
 
                 is_sym = os.path.islink(path)
                 if os.path.isfile(path) and not is_sym:
@@ -4648,22 +4652,28 @@ class PortagePlugin(SpmPlugin):
         if os.path.isfile(content_file):
 
             with open(content_file, "rb") as f:
-                content = [const_convert_to_unicode(x) for x in f.readlines()]
+                for line in f.readlines():
+                    try:
+                        # Modern Entropy/Portage correctly use unicode.
+                        line = const_convert_to_unicode(
+                            line, enctype=sys.getfilesystemencoding())
+                    except UnicodeDecodeError:
+                        # Support for very ancient Entropy or Portage packages.
+                        line = const_convert_to_unicode(
+                            line, enctype=etpConst['conf_raw_encoding'])
 
-            outcontent = set()
-            for line in content:
-                line = line.strip().split()
-                try:
+                    line = line.strip().split(" ")
                     datatype = line[0]
                     datafile = line[1:]
+
                     if datatype == obj_t:
                         datafile = datafile[:-2]
-                        datafile = ' '.join(datafile)
+                        datafile = " ".join(datafile)
                     elif datatype in (dir_t, fif_t, dev_t):
-                        datafile = ' '.join(datafile)
+                        datafile = " ".join(datafile)
                     elif datatype == sym_t:
                         datafile = datafile[:-3]
-                        datafile = ' '.join(datafile)
+                        datafile = " ".join(datafile)
                     else:
                         myexc = "%s %s. %s." % (
                             datafile,
@@ -4675,19 +4685,22 @@ class PortagePlugin(SpmPlugin):
                         warnings.warn(
                             "Empty file path detected, skipping!")
                         continue
-                    outcontent.add((datafile, datatype))
-                except:
-                    pass
-
-            outcontent = sorted(outcontent)
-            for datafile, datatype in outcontent:
-                pkg_content[datafile] = datatype
+                    pkg_content[datafile] = datatype
 
         else:
 
             # CONTENTS is not generated when a package is emerged with
             # portage and the option -B
             # we have to use the unpacked package file and generate content dict
+            try:
+                # Modern Entropy/Portage correctly use unicode.
+                pkg_dir = const_convert_to_unicode(
+                    pkg_dir, enctype=sys.getfilesystemencoding())
+            except UnicodeDecodeError:
+                # Support for very ancient Entropy or Portage packages.
+                pkg_dir = const_convert_to_unicode(
+                    pkg_dir, enctype=etpConst['conf_raw_encoding'])
+
             tmpdir_len = len(pkg_dir)
             for currentdir, subdirs, files in os.walk(pkg_dir):
                 cur_dir = currentdir[tmpdir_len:]
