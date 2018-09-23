@@ -1862,9 +1862,9 @@ class EntropySQLRepository(EntropyRepositoryBase):
             # support both utf8 and str input
             if const_isunicode(lic_data): # encode to str
                 try:
-                    lic_data = lic_data.encode('raw_unicode_escape')
+                    lic_data = lic_data.encode(etpConst['conf_raw_encoding'])
                 except (UnicodeDecodeError,):
-                    lic_data = lic_data.encode('utf-8')
+                    lic_data = lic_data.encode(etpConst['conf_encoding'])
 
             return (mylicense, const_get_buffer()(lic_data), 0,)
 
