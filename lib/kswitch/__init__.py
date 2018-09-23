@@ -182,6 +182,62 @@ class KernelSwitcher(object):
         # binaries in their dependencies.
         return kernel_packages
 
+    def _get_installed_kernels(self, installed_repository):
+        """
+        Return a set of kernel packages that are installed on the system.
+        """
+        installed_package_ids = set()
+        # Resolve the target kernel using the installed packages repository.
+        # First, locate the virtual kernel package (if new virtuals are in
+        # use.)
+        latest_kernel, _k_rc = installed_repository.atomMatch(KERNEL_BINARY_VIRTUAL)
+        if latest_kernel == -1:
+            # Virtual package is not installed.
+            # This happens when kernel packages have been moved to the new
+            # virtual and PROVIDE is broken or no longer supported (EAPI=7?).
+            print_warning("%s: %s %s" % (
+                red(_("Attention")),
+                KERNEL_BINARY_VIRTUAL,
+                brown(_("is not installed. Unable to resolve kernel "
+                        "packages correctly. Please use --from-running or install"
+                        "the package. Is your system up-to-date?"))))
+            return installed_package_ids
+
+        # If we have resolved the package to the virtual, we need to go
+        # one level deep and retrieve the list of available kernel packages.
+        # Do not assume that we hit only one kernel package when scanning, we
+        # may have different packages in the dependency list.
+        virtual_key = entropy.dep.dep_getkey(KERNEL_BINARY_VIRTUAL)
+        latest_key_slot = installed_repository.retrieveKeySlot(latest_kernel)
+        if latest_key_slot:
+            latest_key, _unused = latest_key_slot
+        else:
+            # Cannot find installed package, give up.
+            print_warning("%s: %s" % (
+                red(_("Attention")),
+                brown(_("Unable to resolve the latest kernel metadata. Try again later."))
+            ))
+            return installed_package_ids
+
+        if virtual_key == latest_key:
+            print_info("%s: %s" % (
+                red(_("Resolving virtual kernel package")),
+                KERNEL_BINARY_VIRTUAL,
+            ))
+            # New virtual package support.
+            virtual_deps = installed_repository.retrieveRuntimeDependencies(
+                latest_kernel)
+            for virtual_dep in virtual_deps:
+                virtual_pkg_id, _v_rc = installed_repository.atomMatch(virtual_dep)
+                if virtual_pkg_id != -1:
+                    installed_package_ids.add(virtual_pkg_id)
+        else:
+            # Old virtual package detected (pre EAPI=7). Assume it's a kernel
+            # binary.
+            installed_package_ids.add(latest_kernel)
+
+        return installed_package_ids
+
     def _get_target_tag(self, kernel_match):
         """
         Get the package tag for the given kernel package match.
@@ -308,14 +364,20 @@ class KernelSwitcher(object):
                     return pkg_id, pkg_repo
 
                 with inst_repo.shared():
-                    if latest_kernel == -1:
-                        latest_kernel, _k_rc = inst_repo.atomMatch(
-                            KERNEL_BINARY_VIRTUAL)
+                    installed_package_ids = []
+
+                    if latest_kernel != -1:
+                        # We have already selected the kernel package from the kernel
+                        # that's currently running.
+                        installed_package_ids.append(latest_kernel)
+                    else:
+                        installed_package_ids.extend(
+                            self._switcher._get_installed_kernels(inst_repo))
 
                     installed_revdeps = []
-                    if (latest_kernel != -1) and self._target_tag:
+                    if installed_package_ids and self._target_tag:
                         installed_revdeps = self._entropy.get_removal_queue(
-                            [latest_kernel], recursive = False)
+                            installed_package_ids, recursive = False)
 
                     matches = map(_installed_pkgs_translator, installed_revdeps)
 
