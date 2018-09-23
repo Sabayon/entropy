@@ -465,10 +465,25 @@ class _PackageInstallRemoveAction(PackageAction):
             sys_root_item = sys_root + item
             sys_root_item_encoded = sys_root_item
             if not const_is_python3():
-                # this is coming from the db, and it's pure utf-8
-                sys_root_item_encoded = const_convert_to_rawstring(
+                # this is coming from the db, and it's pure utf-8.
+                # sometimes we need to deal with broken filesystem
+                # or path encodings, so we should try both paths, really.
+                proposed_sys_root_item_encoded = const_convert_to_rawstring(
                     sys_root_item,
                     from_enctype = etpConst['conf_raw_encoding'])
+                proposed_lexists = os.path.lexists(proposed_sys_root_item_encoded)
+                old_lexists = os.path.lexists(sys_root_item_encoded)
+                if proposed_lexists and not old_lexists:
+                    sys_root_item_encoded = proposed_sys_root_item_encoded
+                elif not proposed_lexists and old_lexists:
+                    # The rawstring version of the path does not exist, while the
+                    # original version does.
+                    # Do not replace sys_root_item_encoded then.
+                    self._entropy.logger.log(
+                        "[Package]",
+                        etpConst['logging']['verbose_loglevel_id'],
+                        "[remove] Package %s contains hostile unicode file paths." % (
+                            remove_atom,))
 
             # collision check
             if col_protect > 0:
