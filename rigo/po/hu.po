@@ -4,13 +4,14 @@
 # 
 # Translators:
 # andrewtranslates <andrewtranslates@aol.com>, 2014
+# Omar A <aliencoder@gmail.com>, 2018
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-14 16:14+0100\n"
-"PO-Revision-Date: 2017-09-19 23:30+0000\n"
-"Last-Translator: andrewtranslates <andrewtranslates@aol.com>\n"
+"POT-Creation-Date: 2018-09-23 15:40+0200\n"
+"PO-Revision-Date: 2018-09-22 13:08+0000\n"
+"Last-Translator: Omar A <aliencoder@gmail.com>\n"
 "Language-Team: Hungarian (http://www.transifex.com/lxnay/sabayon-rigo/language/hu/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -62,7 +63,7 @@ msgstr "Alkalmazás eltávolítás"
 msgid "Application download"
 msgstr "Alkalmazás letöltés"
 
-#: ../RigoDaemon/app.py:2571
+#: ../RigoDaemon/app.py:2579
 msgid "Application Install"
 msgstr "Alkalmazás telepítés"
 
@@ -135,7 +136,7 @@ msgstr "Szerkezeti függőségek"
 
 #: ../rigo/models/application.py:1543
 msgid "Post dependencies"
-msgstr ""
+msgstr "Utólagos függőség"
 
 #: ../rigo/models/application.py:1544
 msgid "Staff dependencies"
@@ -261,19 +262,19 @@ msgstr[1] "Van még <b>%i</b> frissítés"
 
 #: ../rigo/controllers/daemon.py:1165
 msgid "Congratulations, mirrors have been <b>optimized</b>!"
-msgstr ""
+msgstr "Gratulálunk tükrök <b>Optimalizálva</b>!"
 
 #: ../rigo/controllers/daemon.py:1169
 msgid "Ouch, mirrors <b>not optimized</b>, sorry!"
-msgstr ""
+msgstr "Hopp, tükrök<b>nincsennek optinalizálva,</b>bocsánat!"
 
 #: ../rigo/controllers/daemon.py:1516
 msgid "Mirrors will be optimized in <b>background</b>..."
-msgstr ""
+msgstr "Tükrök a <b>háttérbe</b> lesznek optimalizálva"
 
 #: ../rigo/controllers/daemon.py:1520
 msgid "Mirrors optimization <b>not available</b> at this time"
-msgstr ""
+msgstr "Tükör optimalizálás <b>nem elérhető</b>jelenleg"
 
 #: ../rigo/controllers/daemon.py:1929
 msgid "Waiting for <b>RigoDaemon</b>, please wait..."
@@ -313,14 +314,14 @@ msgstr "<b>%s</b>\nrésze az alap rendszernek és <b>nem</b> eltávolítható"
 msgid ""
 "<b>%s</b>\n"
 "cannot be installed at this time due to <b>missing/masked</b> dependencies or dependency <b>conflict</b>"
-msgstr ""
+msgstr "<b>%s</b>\nJelenleg nem lehet telepíteni most mert <b>hiyánjos/maszkolt</b>függőségek vaggy függőség <b>ütközés van</b>"
 
 #: ../rigo/controllers/daemon.py:2351
 #, python-format
 msgid ""
 "Installing <b>%s</b> would cause the removal of the following Applications: "
 "%s"
-msgstr ""
+msgstr "A <b>%s</b>telepitésével a kövvetkező alkalmazás eltávolitását okoza:%s"
 
 #: ../rigo/controllers/daemon.py:2543
 #, python-format
@@ -375,7 +376,7 @@ msgstr "Automatikus görgetés letiltása"
 
 #: ../rigo/ui/gtk3/controllers/work.py:104
 msgid "<i>Show <b>Application Management</b> Progress</i>"
-msgstr ""
+msgstr "<i>Mutasd<b>Alkalmazás kezelés</b>haladását</i>"
 
 #: ../rigo/ui/gtk3/controllers/work.py:296
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:82
@@ -457,8 +458,8 @@ msgstr "_Ok, köszönöm"
 #, python-format
 msgid "Rate <b>%s</b> as <b>%s</b>, with <b>%d</b> star?"
 msgid_plural "Rate <b>%s</b> as <b>%s</b>, with <b>%d</b> stars?"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Ad <b>%s</b>a <b>%s</b>, enyi <b>%d</b>csillagot?"
+msgstr[1] "Ad <b>%s</b> a <b>%s</b>, enyi <b>%d</b> csillagot?"
 
 #: ../rigo/ui/gtk3/controllers/application.py:350
 #: ../rigo/ui/gtk3/controllers/application.py:514
@@ -641,7 +642,7 @@ msgstr "Konfigurációs fájlok módosulásának mutatása"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:749
 msgid "Show (if any) the list of pending configuration file updates."
-msgstr ""
+msgstr "Mutasd (ha van) hátra maradt konfigurációs fajlok frissitését"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:758
 msgid "Show Installed Applications"
@@ -657,7 +658,7 @@ msgstr "Letöltési Sebesség Optimalizálása"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:769
 msgid "Benchmark the download mirrors to speed up Application installation."
-msgstr ""
+msgstr "Hasonlitsa össze a letőltés tükröket hogy gyorsabb legyen az alkalmazás telepitése."
 
 #: ../rigo/ui/gtk3/controllers/applications.py:778
 msgid "Show Available Kernels"
@@ -665,11 +666,11 @@ msgstr "Elérhető Kernelek megjelenítése"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:779
 msgid "Browse through the available and installable Linux kernel binaries."
-msgstr ""
+msgstr "Böngésszen az elérhető és telepithető linux kernel binárisaiba."
 
 #: ../rigo/ui/gtk3/controllers/applications.py:791
 msgid "Show Available Long-Term-Stable Kernels"
-msgstr ""
+msgstr "Mutassa az elérhető Hosszú-távu-Stabil Kernelleket"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:792
 msgid ""
@@ -938,7 +939,7 @@ msgstr[1] ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1227
 msgid "Preserved libraries detected on the system."
-msgstr ""
+msgstr "Vissza tartott könyvtárak találtunk a rendszeren."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1231
 msgid "_Update system now"
@@ -948,8 +949,8 @@ msgstr "_Rendszer frissítése most"
 #, python-format
 msgid "%(nr_ratings)i rating"
 msgid_plural "%(nr_ratings)i ratings"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%(nr_ratings)i értékelés"
+msgstr[1] "%(nr_ratings)i Értékelések"
 
 #: ../rigo/ui/gtk3/widgets/stars.py:500
 msgid "Hint: Click a star to rate this app"
@@ -1080,7 +1081,7 @@ msgstr "Tevékenység Megszakítás"
 msgid ""
 "Are you sure you want to interrupt the ongoing Activity? The interruption "
 "will occur as soon as possible, potentially not immediately."
-msgstr ""
+msgstr "Biztos hogy megszeretné szakitani a jelenlegi tevékenységet? A megszakitás minél hamarabb fog megtőrténni, lehet nem azonnal."
 
 #: ../rigo_app.py:500
 msgid "Repositories update error"

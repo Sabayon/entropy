@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-14 16:14+0100\n"
+"POT-Creation-Date: 2018-09-23 15:40+0200\n"
 "PO-Revision-Date: 2017-09-23 18:11+0000\n"
 "Last-Translator: Danilo Riffo <danriffo@gmail.com>\n"
 "Language-Team: Spanish (Chile) (http://www.transifex.com/lxnay/sabayon-rigo/language/es_CL/)\n"
@@ -62,7 +62,7 @@ msgstr "Quitar aplicación"
 msgid "Application download"
 msgstr "Descargar aplicación"
 
-#: ../RigoDaemon/app.py:2571
+#: ../RigoDaemon/app.py:2579
 msgid "Application Install"
 msgstr "Instalar aplicación"
 
