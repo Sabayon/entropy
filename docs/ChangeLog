@@ -1,3 +1,53 @@
+commit f0e6b09ee20d975ad8f997abed7e71e222c87004
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 23 15:41:48 2018 +0200
+
+    Release Entropy 316
+
+commit afda55090ecd48f5b76647ed0d87c8e50fa6993b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 23 15:41:21 2018 +0200
+
+    [rigo/po] update translations for Rigo.
+
+commit 5182a5cfeaf4b88439f785d0b53b6eb9d8cd4f1d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 23 15:40:45 2018 +0200
+
+    [rigo/pot] update rigo.pot
+
+commit fe44bb34b25d0678537efaa65df4b7e19ef9ccfe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 23 15:39:43 2018 +0200
+
+    [client/po] update .po files
+
+commit adb456d498a5186ad628b005ddc05c8f62e08ef0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 23 15:39:09 2018 +0200
+
+    Update entropy.pot
+
+commit 40405239080c926834f5e5669016969242c960ab
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 23 15:32:18 2018 +0200
+
+    [kswitch] correctly resolve external kernel modules when not using --from-running.
+    
+    Due to the migration to real virtual packages (away from PROVIDE= due
+    to EAPI=7 constraints), we failed to resolve kernel binary packages
+    correctly, thus packages that require them (external kernel modules.)
+    
+    This patch fixes it, by making sure that we resolve new virtuals correctly.
+    We expect new virtuals to list kernel packages in their RDEPEND= (runtime
+    dependecies.)
+
+commit 30ea708c4e4def921a1cbece943a77d7db06e14d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 22 19:39:42 2018 +0200
+
+    Tagging Entropy version 315
+
 commit a5890973b12d75b0fc25135587e85c1d88d21c9a
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Sep 22 19:39:42 2018 +0200
