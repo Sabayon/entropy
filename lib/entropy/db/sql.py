@@ -2438,7 +2438,9 @@ class EntropySQLRepository(EntropyRepositoryBase):
         if dbcounter:
             counter = dbcounter[0]
 
-        if (counter >= -1) or (counter is None):
+        if counter is None:
+            counter = -2
+        elif counter >= -1:
             counter = -2
         else:
             counter -= 1
