@@ -1,3 +1,58 @@
+commit a7171bdc7e599b29af152a8efee561bd75c3d4d7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 23 22:29:48 2018 +0200
+
+    Release Entropy 317
+
+commit 6b097b57cb1d8807ae1c91d7ebe9ad766f65f7d2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 23 22:25:00 2018 +0200
+
+    [entropy.db.sql] fix comparison between different types with Py3.
+
+commit e9b211eea09005e920e642245f14edf8e561e06d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 23 22:06:05 2018 +0200
+
+    [entropy.spm] improve handling of non-ascii paths (e.g. puppet-agent).
+    
+    It looks like Portage now stores unicode paths correctly in its metadata
+    as opposed to what it used to be. We need to make sure that we parse those
+    "CONTENTS" file and content metadata in general using the correct encoding.
+    This will allow us to store and retrieve such metadata from the sqlite3
+    database correctly and also match the stored paths with the filesystem
+    paths exactly.
+    
+    This commit may need a bit more real-life testing. Backward compat
+    wrt old Entropy and Portage tbz2 files should be as expected.
+    Unit tests attached.
+
+commit 34c549feb8d9bdfb957a0d863a2ae35ff156a641
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 23 21:01:26 2018 +0200
+
+    [entropy.client] handle correctly encoded file paths too.
+    
+    Historically, Portage + Py2 were not dealing well with file paths that
+    were containing non-ascii chars. The situation has apparently improved
+    and we are able to accept paths with the correct encoding in Entropy
+    (separate patch will come). We need to guard against broken paths anyway,
+    so let's try to check which one of the paths is the one that has the
+    most chance to be the right one. Also, with python3 this won't be
+    a problem anymore...
+
+commit c753f215d60212cb95c9342d0e6eb631d5b808aa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 23 20:56:04 2018 +0200
+
+    [entropy.db.sql] use etpConst instead of hardcoded encoding strings.
+
+commit eb45950648c60acad7b32b3780f712db46bca8b0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 23 15:41:49 2018 +0200
+
+    Tagging Entropy version 316
+
 commit f0e6b09ee20d975ad8f997abed7e71e222c87004
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Sep 23 15:41:48 2018 +0200
