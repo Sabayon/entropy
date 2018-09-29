@@ -6,13 +6,14 @@
 # fleischie <dicker_karl@web.de>, 2012
 # ddeimeke <dirk@deimeke.net>, 2012
 # AtomEnte <felixkeppner@web.de>, 2012
+# lxnay <lxnay@sabayon.org>, 2018
 # penguinized <penguinized@ymail.com>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-09-23 15:38+0200\n"
-"PO-Revision-Date: 2018-09-23 13:38+0000\n"
+"PO-Revision-Date: 2018-09-29 20:04+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: German (http://www.transifex.com/lxnay/sabayon-entropy/language/de/)\n"
 "MIME-Version: 1.0\n"
@@ -2522,7 +2523,7 @@ msgstr ""
 #: ../../client/solo/commands/download.py:62
 #: ../../client/solo/commands/mask.py:49
 msgid "ask before making any changes"
-msgstr "frage nach, bevor Ãƒâ€žnderungen ausgeführt werden"
+msgstr "frage nach, bevor Änderungen ausgeführt werden"
 
 #: ../../client/solo/commands/config.py:69
 #: ../../client/solo/commands/security.py:96
