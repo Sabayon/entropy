@@ -6,14 +6,14 @@
 # Elvis Angelaccio, 2013-2014
 # Elvis Angelaccio, 2012
 # Sergio <belcocco@gmail.com>, 2012
-# lxnay <lxnay@sabayon.org>, 2013
+# lxnay <lxnay@sabayon.org>, 2013,2018
 # lxnay <lxnay@sabayon.org>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-09-23 15:38+0200\n"
-"PO-Revision-Date: 2018-09-23 13:38+0000\n"
+"PO-Revision-Date: 2018-09-29 19:58+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: Italian (http://www.transifex.com/lxnay/sabayon-entropy/language/it/)\n"
 "MIME-Version: 1.0\n"
@@ -120,7 +120,7 @@ msgstr "Generazione metadati provided_libs, attendere!"
 
 #: ../../lib/entropy/db/sql.py:5492
 msgid "Spm error occurred"
-msgstr ""
+msgstr "Errore Spm"
 
 #: ../../lib/entropy/db/sql.py:5505
 msgid "Spm Unique Identifier not found for"
@@ -162,15 +162,15 @@ msgstr "Riavvia il computer ora!"
 msgid ""
 "is not installed. Unable to resolve kernel packages correctly. Please use "
 "--from-running or installthe package. Is your system up-to-date?"
-msgstr ""
+msgstr "non è installato. Impossibile risolvere i pacchetti kernel correttamente. Prova ad usare --from-running o installa il pacchetto. Il tuo sistema è aggiornato?"
 
 #: ../../lib/kswitch/__init__.py:218
 msgid "Unable to resolve the latest kernel metadata. Try again later."
-msgstr ""
+msgstr "Impossibile risolvere i metadati dell'ultimo kernel. Prova più tardi."
 
 #: ../../lib/kswitch/__init__.py:224
 msgid "Resolving virtual kernel package"
-msgstr ""
+msgstr "RIsoluzione pacchetto kernel virtuale"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:249
 msgid "Accessibility"
@@ -1431,7 +1431,7 @@ msgstr "Download aggregato"
 #: ../../lib/entropy/fetchers.py:1256
 msgid "item"
 msgid_plural "items"
-msgstr[0] "elemeto"
+msgstr[0] "elemento"
 msgstr[1] "elementi"
 
 #: ../../lib/entropy/security.py:469
@@ -2709,7 +2709,7 @@ msgstr "verifica file installati usando checksum registrati"
 
 #: ../../client/solo/commands/security.py:77
 msgid "name of package to check"
-msgstr ""
+msgstr "nome del pacchetto da controllare"
 
 #: ../../client/solo/commands/security.py:80
 msgid "consider mtime instead of SHA256 (false positives ahead)"
@@ -3954,14 +3954,14 @@ msgstr "Pacchetti in conflitto sono stati inclusi nelle dipendenze"
 #: ../../client/solo/commands/_manage.py:524
 #: ../../client/solo/commands/_manage.py:540
 msgid "required by"
-msgstr ""
+msgstr "richiesto da"
 
 #. Conflicting dependencies could have been
 #. specified by user, in which case they were
 #. not pulled in by anything.
 #: ../../client/solo/commands/_manage.py:528
 msgid "(no reverse dependencies)"
-msgstr ""
+msgstr "(nessuna dipendenza inversa)"
 
 #: ../../client/solo/commands/_manage.py:551
 msgid "Please mask conflicts using"
@@ -4149,7 +4149,7 @@ msgstr "Inizializzazione di un nuovo repository"
 
 #: ../../client/solo/commands/rescue.py:452
 msgid "Repository creation failed"
-msgstr ""
+msgstr "Creazione della repository fallita"
 
 #: ../../client/solo/commands/rescue.py:459
 msgid "Repository initialized, generating metadata"
@@ -4228,7 +4228,7 @@ msgstr "Backup della Repository dei Pacchetti di Entropy installati"
 
 #: ../../client/solo/commands/rescue.py:931
 msgid "Cannot read list of user selected packages"
-msgstr ""
+msgstr "Impossibile leggere la lista dei pacchetti selezionati dall'utente"
 
 #: ../../client/solo/commands/rescue.py:972
 msgid "tools to rescue the running system"
@@ -4347,7 +4347,7 @@ msgstr "Non hai abbastanza spazio per l'installazione. Libera un po' di spazio d
 
 #: ../../client/solo/commands/install.py:554
 msgid "No package_matches found"
-msgstr ""
+msgstr "Impossibile trovare package_matches"
 
 #: ../../client/solo/commands/install.py:641
 msgid "Download complete"
@@ -4520,11 +4520,11 @@ msgstr ""
 
 #: ../../client/solo/commands/unused.py:192
 msgid "Running unused packages test"
-msgstr ""
+msgstr "Esecuzione test pacchetti non usati"
 
 #: ../../client/solo/commands/unused.py:226
 msgid "show unused packages (pay attention)"
-msgstr ""
+msgstr "visualizza pacchetti non utilizzati (fai attenzione)"
 
 #: ../../client/solo/commands/cleanup.py:97
 msgid "remove downloaded packages and clean temp. directories"
@@ -4765,7 +4765,7 @@ msgstr "Aggiornamenti Sabayon disponibili"
 
 #: ../../magneto/src/magneto/core/interfaces.py:371
 msgid "Updates are available"
-msgstr ""
+msgstr "Aggiornamenti disponibili"
 
 #: ../../magneto/src/magneto/core/interfaces.py:374
 msgid "Upgrade now"
@@ -4787,11 +4787,11 @@ msgstr "Repository in fase di aggiornamento"
 
 #: ../../magneto/src/magneto/core/interfaces.py:392
 msgid "Sabayon repositories status"
-msgstr ""
+msgstr "Stato repository Sabayon"
 
 #: ../../magneto/src/magneto/core/interfaces.py:393
 msgid "Repositories are being updated automatically"
-msgstr ""
+msgstr "Repository in aggiornamento automatico"
 
 #. all fine, no updates
 #: ../../magneto/src/magneto/core/interfaces.py:401
