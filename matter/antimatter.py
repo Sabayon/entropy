@@ -10,14 +10,14 @@ import time
 
 os.environ["ETP_GETTEXT_DOMAIN"] = "entropy-server"
 
-# Entropy imports
-sys.path.insert(0, "/usr/lib/entropy/lib")
-sys.path.insert(0, "/usr/lib/entropy/server")
-sys.path.insert(0, "/usr/lib/entropy/client")
-sys.path.insert(0, "../lib")
-sys.path.insert(0, "../server")
-sys.path.insert(0, "../client")
-
+from os import path as osp
+_base = osp.dirname(osp.dirname(osp.realpath(__file__)))
+if os.path.isfile(osp.join(_base, "entropy-in-vcs-checkout")):
+    sys.path.insert(0, osp.join(_base, "entropy_path_loader"))
+else:
+    sys.path.insert(0, "/usr/lib/entropy/entropy_path_loader")
+del osp
+import entropy_path_loader
 
 # Entropy imports
 from entropy.output import print_info, print_error, print_warning, \
