@@ -286,6 +286,7 @@ def const_default_settings(rootdir):
         },
         'backed_up': {},
         # entropy default installation directory
+        # (excluding Python modules which can be different)
         'installdir': '/usr/lib/entropy',
 
         # directory where entropy stores its configuration
