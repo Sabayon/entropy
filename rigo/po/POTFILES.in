@@ -1,4 +1,3 @@
-RigoDaemon/app.py
 RigoDaemon/enums.py
 RigoDaemon/__init__.py
 RigoDaemon/config.py
@@ -11,6 +10,7 @@ rigo/em.py
 rigo/entropyapi.py
 rigo/version.py
 rigo/shapes.py
+RigoDaemon/app/RigoDaemon_app.py
 rigo/models/noticeboard.py
 rigo/models/configupdate.py
 rigo/models/preference.py
@@ -40,7 +40,7 @@ rigo/ui/gtk3/models/repositoryliststore.py
 rigo/ui/gtk3/models/appliststore.py
 rigo/ui/gtk3/models/preferencesliststore.py
 rigo/ui/gtk3/models/noticeboardliststore.py
-rigo/ui/gtk3/widgets/notifications.py
+rigo/ui/gtk3/widgets/terminal.py
 rigo/ui/gtk3/widgets/generictreeview.py
 rigo/ui/gtk3/widgets/stars.py
 rigo/ui/gtk3/widgets/cellrenderers.py
@@ -49,9 +49,9 @@ rigo/ui/gtk3/widgets/__init__.py
 rigo/ui/gtk3/widgets/preferencestreeview.py
 rigo/ui/gtk3/widgets/repositorytreeview.py
 rigo/ui/gtk3/widgets/grouptreeview.py
+rigo/ui/gtk3/widgets/notifications.py
 rigo/ui/gtk3/widgets/noticeboardtreeview.py
 rigo/ui/gtk3/widgets/drawing.py
-rigo/ui/gtk3/widgets/terminal.py
 rigo/ui/gtk3/widgets/confupdatetreeview.py
 rigo/ui/gtk3/widgets/images.py
 rigo/ui/gtk3/widgets/apptreeview.py
