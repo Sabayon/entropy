@@ -3,7 +3,6 @@
 . /etc/profile
 
 export ETP_REPOSITORIES_CONF="/path/to/alternative/repositories.conf"
-export PYTHONPATH="/entropy/lib"
 exit_rc="0"
 
 for path in /path/to/repository/directory/sabayonlinux.org/database/*/*/packages.db.bz2; do
