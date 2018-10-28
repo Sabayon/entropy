@@ -15,5 +15,5 @@ sudo cp polkit/org.sabayon.RigoDaemon.policy /usr/share/polkit-1/actions/ || exi
 
 cd ../ || exit 1
 # GDB?
-# sudo gdb --args python2 ./RigoDaemon/app.py --debug
-sudo python2 ./RigoDaemon/app.py --debug
+# sudo gdb --args python2 ./RigoDaemon/app/RigoDaemon_app.py --debug
+sudo python2 ./RigoDaemon/app/RigoDaemon_app.py --debug
