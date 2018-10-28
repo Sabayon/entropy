@@ -4,6 +4,7 @@ PREFIX = /usr
 VARDIR = /var
 BINDIR = $(PREFIX)/bin
 LIBDIR = $(PREFIX)/lib
+PYTHON_SITEDIR = $(LIBDIR)
 TMPFILESDIR = /usr/lib/tmpfiles.d
 DESTDIR = 
 
@@ -11,14 +12,15 @@ all:
 	for d in $(SUBDIRS); do $(MAKE) -C $$d; done
 
 install:
-	install -d $(DESTDIR)/$(LIBDIR)/entropy/lib
+	install -d $(DESTDIR)/$(LIBDIR)/entropy/lib/entropy
+	install -d $(DESTDIR)/$(PYTHON_SITEDIR)/entropy/lib
 	install -d $(DESTDIR)$(PREFIX)/sbin
 	install -d $(DESTDIR)$(BINDIR)
 	install -d -m 775 $(DESTDIR)/etc/entropy
 	install -d $(DESTDIR)/etc/env.d
 	install -d $(DESTDIR)/etc/init.d
 	install -d $(DESTDIR)/etc/logrotate.d
-	install -d $(DESTDIR)/$(LIBDIR)/entropy/services
+	install -d $(DESTDIR)/$(PYTHON_SITEDIR)/entropy/services
 	install -d $(DESTDIR)/$(TMPFILESDIR)
 
 	# Empty directories that should be created and kept
@@ -35,9 +37,11 @@ install:
 	touch $(DESTDIR)/$(VARDIR)/log/entropy/.keep
 
 	chmod +x entropy/spm/plugins/interfaces/portage_plugin/env_sourcer.sh
-	cp -Ra entropy $(DESTDIR)/$(LIBDIR)/entropy/lib/
+	cp -Ra entropy $(DESTDIR)/$(PYTHON_SITEDIR)/entropy/lib/
+	rm $(DESTDIR)/$(PYTHON_SITEDIR)/entropy/lib/entropy/revision
+	install -m 644 entropy/revision $(DESTDIR)/$(LIBDIR)/entropy/lib/entropy/
 
-	ln -sf lib $(DESTDIR)/$(LIBDIR)/entropy/libraries
+	ln -sf lib $(DESTDIR)/$(PYTHON_SITEDIR)/entropy/libraries
 	install -m 755 ../misc/entropy.sh $(DESTDIR)$(PREFIX)/sbin/
 	install -m 755 ../misc/entropy_hwgen.sh $(DESTDIR)$(BINDIR)/
 	install -m 644 ../misc/entropy.logrotate $(DESTDIR)/etc/logrotate.d/entropy
@@ -58,7 +62,7 @@ install:
 	install -m 644 ../misc/05entropy.envd $(DESTDIR)/etc/env.d/05entropy
 
 	install -m 644 ../docs/COPYING $(DESTDIR)/$(LIBDIR)/entropy/
-	cp ../entropy_path_loader $(DESTDIR)/$(LIBDIR)/entropy/ -Ra
+	cp ../entropy_path_loader $(DESTDIR)/$(PYTHON_SITEDIR)/entropy/ -Ra
 
 	install -m 644 ../conf/entropy-tmpfiles.d.conf $(DESTDIR)/$(TMPFILESDIR)/entropy.conf
 
