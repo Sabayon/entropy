@@ -29,12 +29,16 @@ os.environ['ETP_GETTEXT_DOMAIN'] = "rigo"
 import sys
 from threading import Lock, Timer
 
-sys.path.insert(0, "../lib")
-sys.path.insert(1, "../client")
-sys.path.insert(2, "./")
-sys.path.insert(3, "/usr/lib/entropy/lib")
-sys.path.insert(4, "/usr/lib/entropy/client")
-sys.path.insert(6, "/usr/lib/rigo")
+from os import path as osp
+_base = osp.dirname(osp.dirname(osp.realpath(__file__)))
+if os.path.isfile(osp.join(_base, "entropy-in-vcs-checkout")):
+    sys.path.insert(0, osp.join(_base, "entropy_path_loader"))
+else:
+    sys.path.insert(0, "/usr/lib/entropy/entropy_path_loader")
+del osp
+import entropy_path_loader
+
+entropy_path_loader.add_import_path("rigo")
 
 from gi.repository import Gtk, Gdk, GLib
 

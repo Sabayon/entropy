@@ -58,6 +58,7 @@ install:
 	install -m 644 ../misc/05entropy.envd $(DESTDIR)/etc/env.d/05entropy
 
 	install -m 644 ../docs/COPYING $(DESTDIR)/$(LIBDIR)/entropy/
+	cp ../entropy_path_loader $(DESTDIR)/$(LIBDIR)/entropy/ -Ra
 
 	install -m 644 ../conf/entropy-tmpfiles.d.conf $(DESTDIR)/$(TMPFILESDIR)/entropy.conf
 
