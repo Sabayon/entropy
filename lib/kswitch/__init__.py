@@ -151,15 +151,17 @@ class KernelSwitcher(object):
         """
         self._entropy = entropy_client
 
-    def _get_kernels(self):
+    def _get_kernels(self, virtual):
         """
         Return a set of kernel package matches.
+
+        @param virtual: the kernel virtual package name
+        @type virtual: string
         """
         # We may have virtual/ kernels in multiple repos, make sure
         # to pick them all up.
         kernel_virtual_pkgs, _rc = self._entropy.atom_match(
-            KERNEL_BINARY_VIRTUAL,
-            multi_match=True, multi_repo=True)
+            virtual, multi_match=True, multi_repo=True)
 
         # virtual/ kernels have a runtime dependency against a kernel
         # package provider. So, get the list of runtime deps from them.
@@ -447,7 +449,7 @@ class KernelSwitcher(object):
             switcher.post()
         return rc
 
-    def list(self):
+    def list(self, virtual=KERNEL_BINARY_VIRTUAL):
         """
         Return a sorted (by atom) list of currently available
         kernels.
@@ -455,12 +457,12 @@ class KernelSwitcher(object):
         This method is process and thread safe with regards to the Installed
         Packages Repository.
 
-        @param entropy_client: an Entropy Client object instance
-        @type entropy_client: entropy.client.interfaces.Client
+        @param virtual: the kernel virtual package name
+        @type virtual: string
         @return: a sorted list of Entropy package matches
         @rtype: list
         """
-        matches = self._get_kernels()
+        matches = self._get_kernels(virtual)
         key_sorter = lambda x: self._entropy.open_repository(
             x[1]).retrieveAtom(x[0])
         return sorted(matches, key=key_sorter)
