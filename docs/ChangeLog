@@ -1,3 +1,84 @@
+commit c0b065fbff4e5ba2b9b15c04042af0c7b29988f2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 3 20:18:26 2018 +0100
+
+    Release Entropy 318
+
+commit 5097f7d7a418893953561060789c91e8ade36d2e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 3 20:15:44 2018 +0100
+
+    Rigo: fix LTS and non-LTS kernel menu.
+    
+    Since Gentoo EAPI=7, old-style virtual packages have been removed.
+    We will use KernelSwitcher to get a list of kernel packages to show.
+
+commit abb7800e862c76238f57df7594969d3835aa1e0c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 3 20:14:34 2018 +0100
+
+    kswitch: allow to pass the preferred kernel virtual.
+    
+    It's possible to choose between LTS and non-LTS kernels via list() now.
+
+commit d44d473b198926266dc463c2d3fd5d8d3df8ec49
+Merge: c411a93dc 41ba9b6d6
+Author: Ettore Di Giacinto <mudler@users.noreply.github.com>
+Date:   Sun Oct 28 14:21:27 2018 +0100
+
+    Merge pull request #63 from Enlik/modules-reorg
+    
+    [*] be strict about Python modules paths being loaded
+
+commit 41ba9b6d63d4c0e76ea53f53359a669e3c89a82b
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Mon Oct 15 21:55:55 2018 +0200
+
+    [*] be strict about Python modules paths being loaded
+    
+    For convenience (seemingly, and it really is convenient) equo and other
+    tools can be run from the checkout, and Entropy modules are loaded from
+    the checkout. Now there is a strict separation when system paths and
+    when paths from the checkout are used.
+    
+    It makes it a bit more robust, secure and preditable at the cost of
+    a little more complexity.
+    
+    A pleasant side effect of this change is that it is not required to
+    change directory to the tool (to use non-system one), as paths in the
+    checkout are relative to scripts.
+    
+    Imports in lib/tests were not adjusted.
+
+commit c411a93dc50d093a98a34453ac7fdf8e02def299
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 29 22:39:44 2018 +0200
+
+    [entropy.tools] correctly parse scanelf output even when spaces are present everywhere.
+    
+    This is a ";" separated data input (even though we may get directory
+    paths containing ";"... but none so far is expected to be legit.)
+    
+    Split by ";" first and then deal with spaces in paths.
+
+commit 066ec3ac35bfe40b22deed03759f14ea8f706dff
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 29 22:04:54 2018 +0200
+
+    [client/po] Fix broken chars in German translation. See bug #5175.
+
+commit 8c786b7a05985bbaef44042635f089f9e12902c4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 29 21:59:16 2018 +0200
+
+    [client/po] fix Italian translation for "item", see bug #5312.
+
+commit 0bcf6a588571f1dd09cb61ba43adf1cdd7995f7f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 23 22:29:48 2018 +0200
+
+    Tagging Entropy version 317
+
 commit a7171bdc7e599b29af152a8efee561bd75c3d4d7
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Sep 23 22:29:48 2018 +0200
