@@ -29,6 +29,7 @@ def _startup(unlock_callback):
     import entropy_path_loader
 
     entropy_path_loader.add_import_path("rigo")
+    entropy_path_loader.add_import_path("magneto")
 
     startup_delay = None
     for arg in sys.argv[1:]:
