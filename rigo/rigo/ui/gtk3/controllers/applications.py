@@ -83,8 +83,8 @@ class ApplicationsViewController(GObject.Object):
     SHOW_EXACT_MATCH = "in:exact"
     SHOW_CATEGORY_KEY = "in:category"
     SHOW_QUEUE_KEY = "in:queue"
-    SHOW_KERNEL_BINS_KEY = kswitch.KERNEL_BINARY_VIRTUAL
-    SHOW_KERNEL_LTS_BINS_KEY = kswitch.KERNEL_BINARY_LTS_VIRTUAL
+    SHOW_KERNEL_BINS_KEY = "in:kernels"
+    SHOW_KERNEL_LTS_BINS_KEY = "in:kernels-lts"
 
     def __init__(self, activity_rwsem, entropy_client, entropy_ws,
                  nc, bottom_nc, rigo_service, prefc, icons, nf_box,
@@ -107,6 +107,7 @@ class ApplicationsViewController(GObject.Object):
         self._bottom_nc = bottom_nc
         self._prefc = prefc
 
+        self._kswitch = kswitch.KernelSwitcher(self._entropy)
         self._cacher = EntropyCacher()
         self._search_thread_mutex = Lock()
 
@@ -478,7 +479,20 @@ class ApplicationsViewController(GObject.Object):
                 repository_ids = self._entropy.repositories()
             self._service.optimize_mirrors(repository_ids)
 
+        def _in_kernels_generic(kernel_virtual):
+            with self._entropy.rwsem().reader():
+                pkg_matches = self._kswitch.list(virtual=kernel_virtual)
+            self.set_many_safe(pkg_matches, _from_search=True)
+
+        def _in_kernels():
+            _in_kernels_generic(kswitch.KERNEL_BINARY_VIRTUAL)
+
+        def _in_kernels_lts():
+            _in_kernels_generic(kswitch.KERNEL_BINARY_LTS_VIRTUAL)
+
         special_keys_map = {
+            "in:kernels": _in_kernels,
+            "in:kernels-lts": _in_kernels_lts,
             "in:confupdate": self._service.configuration_updates,
             self.SHOW_QUEUE_KEY: self._show_action_queue_items,
             "in:config": _in_config,
@@ -782,11 +796,8 @@ class ApplicationsViewController(GObject.Object):
         self._prefc.append(pref)
 
         def _show_kernel_lts_bins():
-            query = "%s %s" % (
-                ApplicationsViewController.SHOW_EXACT_MATCH,
-                ApplicationsViewController.SHOW_KERNEL_LTS_BINS_KEY,
-            )
-            self._search(query, _force=True)
+            self._search(ApplicationsViewController.SHOW_KERNEL_LTS_BINS_KEY,
+                         _force=True)
         pref = Preference(
             -2, _("Show Available Long-Term-Stable Kernels"),
              _("Browse through the available and installable Linux "
