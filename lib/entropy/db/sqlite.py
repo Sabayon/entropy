@@ -700,6 +700,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         """
         Reimplemented from EntropySQLRepository.
         """
+        # commit is required for use vacuum with py3.6
+        # See issue: https://github.com/ghaering/pysqlite/issues/109
+        # and pr for details: https://github.com/Sabayon/entropy/pull/66
+        self.commit()
         self._cursor().execute("vacuum")
 
     def initializeRepository(self):
