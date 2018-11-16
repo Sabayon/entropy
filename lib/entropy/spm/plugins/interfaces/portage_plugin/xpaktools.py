@@ -2,6 +2,7 @@
 """
 
     @author: Fabio Erculiani <lxnay@sabayon.org>
+    @author: Slawomir Nizio <slawomir.nizio@sabayon.org>
     @contact: lxnay@sabayon.org
     @copyright: Fabio Erculiani
     @license: GPL-2
@@ -107,52 +108,58 @@ def suck_xpak(tbz2file, xpakpath):
     @return: 
     @rtype: 
     """
+    if const_is_python3():
+        xpak_end = b"XPAKSTOP"
+        xpak_start = b"XPAKPACK"
+    else:
+        xpak_end = "XPAKSTOP"
+        xpak_start = "XPAKPACK"
+
+    chunk_size = 2048
+
+    # Sanity check: makes the position calculations easier (seek_length below).
+    assert len(xpak_end) == len(xpak_start)
+
     old, db = None, None
     try:
         old = open(tbz2file, "rb")
         db = open(xpakpath, "wb")
-        # position old to the end
-        old.seek(0, os.SEEK_END)
-        # read backward until we find
-        n_bytes = old.tell()
-        counter = n_bytes - 1
-        if const_is_python3():
-            xpak_end = b"XPAKSTOP"
-            xpak_start = b"XPAKPACK"
-            xpak_entry_point = b"X"
-        else:
-            xpak_end = "XPAKSTOP"
-            xpak_start = "XPAKPACK"
-            xpak_entry_point = "X"
-
-        xpak_tag_len = len(xpak_start)
-        chunk_len = 3
         data_start_position = None
         data_end_position = None
+        # position old to the end
+        old.seek(0, os.SEEK_END)
+        n_bytes = old.tell()
 
-        while counter >= (0 - chunk_len):
+        chunk_size = min(chunk_size, n_bytes)
 
-            old.seek(counter - n_bytes, os.SEEK_END)
-            if (n_bytes - (abs(counter - n_bytes))) < chunk_len:
-                chunk_len = 1
-            read_bytes = old.read(chunk_len)
-            read_len = len(read_bytes)
+        # position one chunk from the end, then continue
+        seek_pos = n_bytes - chunk_size
 
-            entry_idx = read_bytes.rfind(xpak_entry_point)
-            if entry_idx != -1:
+        while True:
+            old.seek(seek_pos, os.SEEK_SET)
+            read_bytes = old.read(chunk_size)
 
-                cut_gotten = read_bytes[entry_idx:]
-                offset = xpak_tag_len - len(cut_gotten)
-                chunk = cut_gotten + old.read(offset)
+            end_idx = read_bytes.rfind(xpak_end)
+            if end_idx != -1:
+                if data_start_position is None:
+                    data_end_position = seek_pos + end_idx + len(xpak_end)
+                    # avoid START after END in rfind()
+                    read_bytes = read_bytes[:end_idx]
 
-                if (chunk == xpak_end) and (data_start_position is None):
-                    data_end_position = old.tell()
-
-                elif (chunk == xpak_start) and (data_end_position is not None):
-                    data_start_position = old.tell() - xpak_tag_len
+            start_idx = read_bytes.rfind(xpak_start)
+            if start_idx != -1:
+                if data_end_position is not None:
+                    data_start_position = seek_pos + start_idx
                     break
 
-            counter -= read_len
+            if seek_pos == 0:
+                break
+
+            # Make sure the seeks are so that there is enough overlap.
+            seek_length = chunk_size - (len(xpak_start) - 1)
+            seek_pos -= seek_length
+            if seek_pos < 0:
+                seek_pos = 0
 
         if data_start_position is None:
             return False
