@@ -1,68 +1,69 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Michael R. Lawrence <mike@michaellawrenceit.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-23 15:40+0200\n"
+"POT-Creation-Date: 2018-10-28 19:51+0100\n"
 "PO-Revision-Date: 2017-09-23 19:52+0000\n"
 "Last-Translator: Michael R. Lawrence <mike@michaellawrenceit.com>\n"
-"Language-Team: Japanese (http://www.transifex.com/lxnay/sabayon-rigo/language/ja/)\n"
+"Language-Team: Japanese (http://www.transifex.com/lxnay/sabayon-rigo/"
+"language/ja/)\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: ja\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../RigoDaemon/app.py:129
+#: ../RigoDaemon/app/RigoDaemon_app.py:135
 msgid "Downloading"
 msgstr "ダウンロード"
 
-#: ../RigoDaemon/app.py:131
+#: ../RigoDaemon/app/RigoDaemon_app.py:137
 msgid "Uploading"
 msgstr "アップロード"
 
-#: ../RigoDaemon/app.py:935
+#: ../RigoDaemon/app/RigoDaemon_app.py:941
 msgid "Internal activity in progress"
 msgstr "進行中の内部活動"
 
-#: ../RigoDaemon/app.py:937
+#: ../RigoDaemon/app/RigoDaemon_app.py:943
 msgid "Upgrade in progress"
 msgstr "進行中のアップグレード"
 
-#: ../RigoDaemon/app.py:939
+#: ../RigoDaemon/app/RigoDaemon_app.py:945
 msgid "Repositories update in progress"
 msgstr "進行中のリポジトリの更新"
 
-#: ../RigoDaemon/app.py:941
+#: ../RigoDaemon/app/RigoDaemon_app.py:947
 msgid "Applications management in progress"
 msgstr "進行中のアプリケーション管理"
 
-#: ../RigoDaemon/app.py:1446 ../rigo_app.py:785
+#: ../RigoDaemon/app/RigoDaemon_app.py:1452 ../rigo_app.py:789
 msgid "Not authorized"
 msgstr "承認されない"
 
-#: ../RigoDaemon/app.py:1480
+#: ../RigoDaemon/app/RigoDaemon_app.py:1486
 msgid "No repositories configured"
 msgstr "有効化、無効化、またはリポジトリの名前を変更します。"
 
-#: ../RigoDaemon/app.py:1485
+#: ../RigoDaemon/app/RigoDaemon_app.py:1491
 msgid "Unhandled Exception"
 msgstr "未処理例外"
 
-#: ../RigoDaemon/app.py:2044
+#: ../RigoDaemon/app/RigoDaemon_app.py:2050
 msgid "Application Removal"
 msgstr "アプリケーションの削除"
 
-#: ../RigoDaemon/app.py:2468
+#: ../RigoDaemon/app/RigoDaemon_app.py:2474
 msgid "Application download"
 msgstr "アプリケーションのダウンロード"
 
-#: ../RigoDaemon/app.py:2579
+#: ../RigoDaemon/app/RigoDaemon_app.py:2585
 msgid "Application Install"
 msgstr "アプリケーションがインストール"
 
@@ -176,7 +177,7 @@ msgid ", <b>%i</b> Application enqueued so far..."
 msgid_plural ", <b>%i</b> Applications enqueued so far..."
 msgstr[0] ", <b>%i</b> アプリケーションでは、これまでにキューに入れられた..."
 
-#: ../rigo/controllers/daemon.py:790 ../rigo_app.py:165
+#: ../rigo/controllers/daemon.py:790 ../rigo_app.py:169
 msgid "Application"
 msgstr "アプリケーション"
 
@@ -235,15 +236,15 @@ msgstr "エラーが発生しました"
 #: ../rigo/controllers/daemon.py:837
 #: ../rigo/ui/gtk3/controllers/application.py:412
 #: ../rigo/ui/gtk3/controllers/application.py:499
-#: ../rigo/ui/gtk3/controllers/application.py:582 ../rigo_app.py:510
-#: ../rigo_app.py:539
+#: ../rigo/ui/gtk3/controllers/application.py:582 ../rigo_app.py:514
+#: ../rigo_app.py:543
 msgid "Ok, thanks"
 msgstr "さて、感謝"
 
 #: ../rigo/controllers/daemon.py:838
 #: ../rigo/ui/gtk3/controllers/notifications.py:225
 #: ../rigo/ui/gtk3/controllers/notifications.py:241
-#: ../rigo/ui/gtk3/controllers/notifications.py:259 ../rigo_app.py:540
+#: ../rigo/ui/gtk3/controllers/notifications.py:259 ../rigo_app.py:544
 msgid "Show me"
 msgstr "見せて"
 
@@ -304,14 +305,20 @@ msgstr "さて"
 msgid ""
 "<b>%s</b>\n"
 "is part of the Base System and <b>cannot</b> be removed"
-msgstr "<b>%s</b>\n基本システムの一部であり、<b>を削除することはできません</b>"
+msgstr ""
+"<b>%s</b>\n"
+"基本システムの一部であり、<b>を削除することはできません</b>"
 
 #: ../rigo/controllers/daemon.py:2289
 #, python-format
 msgid ""
 "<b>%s</b>\n"
-"cannot be installed at this time due to <b>missing/masked</b> dependencies or dependency <b>conflict</b>"
-msgstr "<b>%s</b>\n<b>見つからないために/マスクされ</b>た依存関係や<b>依存関係の競合</b>に、この時点でインストールすることはできません。"
+"cannot be installed at this time due to <b>missing/masked</b> dependencies "
+"or dependency <b>conflict</b>"
+msgstr ""
+"<b>%s</b>\n"
+"<b>見つからないために/マスクされ</b>た依存関係や<b>依存関係の競合</b>に、この"
+"時点でインストールすることはできません。"
 
 #: ../rigo/controllers/daemon.py:2351
 #, python-format
@@ -331,7 +338,9 @@ msgstr "オーケー"
 
 #: ../rigo/controllers/daemon.py:2812
 msgid "<b>System Upgrade</b> has begun, now go make some coffee"
-msgstr "<b>システムのアップグレード</b>が開始された、現在いくつかのコーヒーを作るに行く"
+msgstr ""
+"<b>システムのアップグレード</b>が開始された、現在いくつかのコーヒーを作るに行"
+"く"
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:221
 msgid "Repositories Update in <b>progress</b>..."
@@ -407,7 +416,7 @@ msgstr "コンフィギュレーション·ファイルを<b>マージ</b>する
 msgid "Cannot <b>discard</b> configuration file"
 msgstr "<b>破棄</b>の設定ファイルはできません"
 
-#: ../rigo/ui/gtk3/controllers/group.py:90 ../rigo_app.py:183
+#: ../rigo/ui/gtk3/controllers/group.py:90 ../rigo_app.py:187
 msgid "Application Groups"
 msgstr "アプリケーショングループ"
 
@@ -422,12 +431,15 @@ msgstr "きれいなエントロピーWebサービス·セッション"
 #: ../rigo/ui/gtk3/controllers/application.py:174
 msgid ""
 "Discard any registered login credential used to send votes and comments."
-msgstr "投票とコメントを送信するために使用される、登録されたログイン資格情報を破棄します。"
+msgstr ""
+"投票とコメントを送信するために使用される、登録されたログイン資格情報を破棄し"
+"ます。"
 
 #: ../rigo/ui/gtk3/controllers/application.py:313
 #, python-format
 msgid "Logged in as <b>%s</b>! How about your <b>vote</b>?"
-msgstr "としてログイン<b>%s</b>を！どのようにあなたの<b>投票</b>はどうでしょうか？"
+msgstr ""
+"としてログイン<b>%s</b>を！どのようにあなたの<b>投票</b>はどうでしょうか？"
 
 #: ../rigo/ui/gtk3/controllers/application.py:320
 msgid "_Vote now"
@@ -637,7 +649,9 @@ msgstr "表示設定ファイルのアップデート"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:749
 msgid "Show (if any) the list of pending configuration file updates."
-msgstr "コンフィギュレーション·ファイルの更新、保留中の一覧を表示します。（もしあれば）"
+msgstr ""
+"コンフィギュレーション·ファイルの更新、保留中の一覧を表示します。（もしあれ"
+"ば）"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:758
 msgid "Show Installed Applications"
@@ -653,7 +667,9 @@ msgstr "ダウンロード速度を最適化する"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:769
 msgid "Benchmark the download mirrors to speed up Application installation."
-msgstr "ベンチマークダウンロードミラーは、アプリケーションのインストールを高速化する。"
+msgstr ""
+"ベンチマークダウンロードミラーは、アプリケーションのインストールを高速化す"
+"る。"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:778
 msgid "Show Available Kernels"
@@ -668,271 +684,9 @@ msgid "Show Available Long-Term-Stable Kernels"
 msgstr "示されるすべての長期安定Linuxベースのカーネル"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:792
-msgid ""
-"Browse through the available and installable Linux LTS kernel binaries."
-msgstr "利用可能とインストール可能なLinuxのLTSのカーネルバイナリなどをご覧ください。"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:182
-#, python-format
-msgid "There is <b>%d</b> update"
-msgid_plural "There are <b>%d</b> updates"
-msgstr[0] "<b>%d</b> の更新があります"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:188
-#, python-format
-msgid "and <b>%d</b> security update"
-msgid_plural "and <b>%d</b> security updates"
-msgstr[0] "と <b>%d</b> セキュリティ更新プログラム"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:194
-#: ../rigo/ui/gtk3/widgets/notifications.py:1222
-msgid "What to do?"
-msgstr "何をすべきか？"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:198
-msgid "Updates available, how about installing them?"
-msgstr "利用可能な更新,どのようにそれらをインストールしてはどうでしょうか？"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:201
-msgid "_Update"
-msgstr "_リポジトリの更新エラーが"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:202
-msgid "_Show"
-msgstr "_ショー"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:203
-#: ../rigo/ui/gtk3/widgets/notifications.py:1232
-msgid "_Ignore"
-msgstr "_無視する"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:204
-msgid "Srsly, ignore!"
-msgstr "真剣に、無視?！"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:256
-msgid "The list of available Applications is old, <b>update now</b>?"
-msgstr "使用可能なアプリケーションのリストが古い、<B>今すぐ更新！</ B>"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:259
-msgid "Repositories should be downloaded, <b>update now</b>?"
-msgstr "リポジトリは、ダウンロードする必要があります, <b>今すぐアップデート</b>?"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:262
-msgid "I dunno dude, I'd say Yes"
-msgstr "私は男を知らない、私はそう言うと思います"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:265
-msgid "_Yes, why not?"
-msgstr "_うん、そうしよう"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:266
-msgid "_No, thanks"
-msgstr "_遠慮し"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:306
-msgid "You need to login to Entropy Web Services"
-msgstr "あなたは、エントロピーのWebサービスにログインする必要があります"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:310
-msgid "_Login"
-msgstr "_ログイン"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:311
-msgid "Register"
-msgstr "登録"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:316
-#: ../rigo/ui/gtk3/widgets/notifications.py:1145
-msgid "_Cancel"
-msgstr "_キャンセル"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:327
-msgid "Username"
-msgstr "ユーザ名"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:337
-msgid "Password"
-msgstr "パスワード"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:370
-msgid "Login <b>error</b>!"
-msgstr "<b>ログインエラー</b>!"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:424
-msgid ""
-"Cannot connect to Entropy Web Services, are you connected to the "
-"<b>interweb</b>?"
-msgstr "エントロピーWebサービスに接続できない、あなたがに接続されている<B>インターネット</ B>？"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:428
-msgid "Don't ask me..."
-msgstr "私に聞かないでください..."
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:431
-msgid "_Of course not"
-msgstr "_もちろん違います"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:439
-msgid "A watched pot never boils"
-msgstr "待つ身は長い"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:498
-#, python-format
-msgid ""
-"You are required to <b>review</b> and <b>accept</b> the following licenses "
-"before continuing: %s"
-msgstr "あなたがする必要がある <B>レビュー</ B>と<B>受け入れる</ B> 続行する前に以下のライセンス: %s"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:503
-#, python-format
-msgid ""
-"<b>%s</b> Application or one of its dependencies is distributed with the "
-"following licenses: %s"
-msgstr "<b>%s</b> アプリケーションまたはその依存関係の1つは、以下のライセンスで配布されている: %s"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:521
-msgid "Make sure to review all the licenses"
-msgstr "必ずすべてのライセンスを確認すること"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:525
-#: ../rigo/ui/gtk3/widgets/notifications.py:815
-#: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:95
-msgid "Accept"
-msgstr "受け入れる"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:526
-msgid "Accept forever"
-msgstr "永遠に受け入れる"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:528
-#: ../rigo/ui/gtk3/widgets/notifications.py:816
-msgid "Decline"
-msgstr "断る"
-
-#. if apps:
-#. self.add_button(_("Remove safe"), self._on_remove_safe)
-#. self.add_button(_("Remove All"), self._on_remove_all)
-#: ../rigo/ui/gtk3/widgets/notifications.py:652
-#: ../rigo/ui/gtk3/widgets/notifications.py:1089
-msgid "Close"
-msgstr "終了"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:669
-msgid ""
-"Several <b>Applications</b>, no longer maintained by this distribution, have"
-" been found on your <b>System</b>. Some of them might require <b>manual "
-"review</b> before being uninstalled. Click on the Apps to expand."
-msgstr "いくつかの<B>用途</ B> もはやこの分布によって維持、で発見されていないあなたの <B>システム</ B>。そのうちのいくつかは必要になる場合があります<B>マニュアルレビュー</ B>アンインストールされる前に。展開するアプリケーションをクリックします。"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:677
-msgid "Manual review"
-msgstr "マニュアルレビュー"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:681
-msgid "Safe to drop"
-msgstr "落としても安全"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:784
-#, python-format
-msgid ""
-"<b>%s</b> Application requires the installation of the following "
-"Applications: %s"
-msgstr "<b>%s</b> アプリケーションは、以下のアプリケーションをインストールする必要があります: %s"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:798
-msgid "Show full list"
-msgstr "全リストを表示"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:858
-#, python-format
-msgid ""
-"<b>%s</b> Application requires the removal of the following Applications: %s"
-msgstr "<b>%s</b> アプリケーションは、以下のアプリケーションの除去を必要と: %s"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:907
-msgid "Confirm"
-msgstr "確認する"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:908
-msgid "Undo"
-msgstr "ゆるめる"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:969
-#, python-format
-msgid "<b>%s</b> Application Action will start in <big><b>%d</b></big> second"
-msgid_plural ""
-"<b>%s</b> Application Action will start in <big><b>%d</b></big> seconds"
-msgstr[0] "<b>%s</b> アプリケーションアクションで起動します<big><b>%d</b></big> セカンド"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:1020
-#, python-format
-msgid "There is <b>%d</b> configuration file update"
-msgid_plural "There are <b>%d</b> configuration file updates"
-msgstr[0] " <b>%d</b>コンフィギュレーション·ファイルの更新があります"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:1026
-msgid ""
-"It is <b>extremely</b> important to update these configuration files before "
-"<b>rebooting</b> the System."
-msgstr "それは、</ B>極端を<b>さ 前にこれらの設定ファイルを更新することが重要<b>再起動</b>システム。"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:1037
-#: ../rigo/ui/gtk3/widgets/notifications.py:1087
-msgid "Let me see"
-msgstr "そうねぇ"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:1038
-msgid "Happily ignore"
-msgstr "喜んで無視"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:1071
-#, python-format
-msgid "There is <b>%d</b> notice from a repository"
-msgid_plural "There are <b>%d</b> notices from repositories"
-msgstr[0] "リポジトリから<b>%d</b>の通知があります"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:1077
-msgid "It is <b>extremely</b> important to always read them."
-msgstr "それは　<B>非常に</ B>　常にそれらを読むことが重要です。"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:1088
-msgid "Stop annoying me"
-msgstr "迷惑な私を停止"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:1136
-msgid "You are about to rename a Repository"
-msgstr "あなたは、リポジトリの名前を変更しようとしています"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:1140
-msgid "_Rename"
-msgstr "_名前を変更"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:1155
-msgid "Repository name"
-msgstr "リポジトリ名"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:1187
-msgid "<b>Invalid</b> Repository name!"
-msgstr "<b>無効な</b>リポジトリ名！"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:1197
-msgid "Repository rename <b>not allowed</b>!"
-msgstr "リポジトリの名前変更 <b>許可されていない</b>!"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:1217
-#, python-format
-msgid "There is <b>%d</b> preserved library on the system"
-msgid_plural "There are <b>%d</b> preserved libraries on the system"
-msgstr[0] "システム上<b>%d</b>保存のライブラリがあります。"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:1227
-msgid "Preserved libraries detected on the system."
-msgstr "プリザーブドフラワーのライブラリは、システム上で検出されました。"
-
-#: ../rigo/ui/gtk3/widgets/notifications.py:1231
-msgid "_Update system now"
-msgstr "_更新システムになりました"
+msgid "Browse through the available and installable Linux LTS kernel binaries."
+msgstr ""
+"利用可能とインストール可能なLinuxのLTSのカーネルバイナリなどをご覧ください。"
 
 #: ../rigo/ui/gtk3/widgets/stars.py:400
 #, python-format
@@ -997,6 +751,284 @@ msgstr "改称する"
 msgid "View"
 msgstr "観る"
 
+#: ../rigo/ui/gtk3/widgets/notifications.py:182
+#, python-format
+msgid "There is <b>%d</b> update"
+msgid_plural "There are <b>%d</b> updates"
+msgstr[0] "<b>%d</b> の更新があります"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:188
+#, python-format
+msgid "and <b>%d</b> security update"
+msgid_plural "and <b>%d</b> security updates"
+msgstr[0] "と <b>%d</b> セキュリティ更新プログラム"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:194
+#: ../rigo/ui/gtk3/widgets/notifications.py:1222
+msgid "What to do?"
+msgstr "何をすべきか？"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:198
+msgid "Updates available, how about installing them?"
+msgstr "利用可能な更新,どのようにそれらをインストールしてはどうでしょうか？"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:201
+msgid "_Update"
+msgstr "_リポジトリの更新エラーが"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:202
+msgid "_Show"
+msgstr "_ショー"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:203
+#: ../rigo/ui/gtk3/widgets/notifications.py:1232
+msgid "_Ignore"
+msgstr "_無視する"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:204
+msgid "Srsly, ignore!"
+msgstr "真剣に、無視?！"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:256
+msgid "The list of available Applications is old, <b>update now</b>?"
+msgstr "使用可能なアプリケーションのリストが古い、<B>今すぐ更新！</ B>"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:259
+msgid "Repositories should be downloaded, <b>update now</b>?"
+msgstr ""
+"リポジトリは、ダウンロードする必要があります, <b>今すぐアップデート</b>?"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:262
+msgid "I dunno dude, I'd say Yes"
+msgstr "私は男を知らない、私はそう言うと思います"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:265
+msgid "_Yes, why not?"
+msgstr "_うん、そうしよう"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:266
+msgid "_No, thanks"
+msgstr "_遠慮し"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:306
+msgid "You need to login to Entropy Web Services"
+msgstr "あなたは、エントロピーのWebサービスにログインする必要があります"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:310
+msgid "_Login"
+msgstr "_ログイン"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:311
+msgid "Register"
+msgstr "登録"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:316
+#: ../rigo/ui/gtk3/widgets/notifications.py:1145
+msgid "_Cancel"
+msgstr "_キャンセル"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:327
+msgid "Username"
+msgstr "ユーザ名"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:337
+msgid "Password"
+msgstr "パスワード"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:370
+msgid "Login <b>error</b>!"
+msgstr "<b>ログインエラー</b>!"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:424
+msgid ""
+"Cannot connect to Entropy Web Services, are you connected to the "
+"<b>interweb</b>?"
+msgstr ""
+"エントロピーWebサービスに接続できない、あなたがに接続されている<B>インター"
+"ネット</ B>？"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:428
+msgid "Don't ask me..."
+msgstr "私に聞かないでください..."
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:431
+msgid "_Of course not"
+msgstr "_もちろん違います"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:439
+msgid "A watched pot never boils"
+msgstr "待つ身は長い"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:498
+#, python-format
+msgid ""
+"You are required to <b>review</b> and <b>accept</b> the following licenses "
+"before continuing: %s"
+msgstr ""
+"あなたがする必要がある <B>レビュー</ B>と<B>受け入れる</ B> 続行する前に以下"
+"のライセンス: %s"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:503
+#, python-format
+msgid ""
+"<b>%s</b> Application or one of its dependencies is distributed with the "
+"following licenses: %s"
+msgstr ""
+"<b>%s</b> アプリケーションまたはその依存関係の1つは、以下のライセンスで配布さ"
+"れている: %s"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:521
+msgid "Make sure to review all the licenses"
+msgstr "必ずすべてのライセンスを確認すること"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:525
+#: ../rigo/ui/gtk3/widgets/notifications.py:815
+#: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:95
+msgid "Accept"
+msgstr "受け入れる"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:526
+msgid "Accept forever"
+msgstr "永遠に受け入れる"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:528
+#: ../rigo/ui/gtk3/widgets/notifications.py:816
+msgid "Decline"
+msgstr "断る"
+
+#. if apps:
+#. self.add_button(_("Remove safe"), self._on_remove_safe)
+#. self.add_button(_("Remove All"), self._on_remove_all)
+#: ../rigo/ui/gtk3/widgets/notifications.py:652
+#: ../rigo/ui/gtk3/widgets/notifications.py:1089
+msgid "Close"
+msgstr "終了"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:669
+msgid ""
+"Several <b>Applications</b>, no longer maintained by this distribution, have "
+"been found on your <b>System</b>. Some of them might require <b>manual "
+"review</b> before being uninstalled. Click on the Apps to expand."
+msgstr ""
+"いくつかの<B>用途</ B> もはやこの分布によって維持、で発見されていないあなた"
+"の <B>システム</ B>。そのうちのいくつかは必要になる場合があります<B>マニュア"
+"ルレビュー</ B>アンインストールされる前に。展開するアプリケーションをクリック"
+"します。"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:677
+msgid "Manual review"
+msgstr "マニュアルレビュー"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:681
+msgid "Safe to drop"
+msgstr "落としても安全"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:784
+#, python-format
+msgid ""
+"<b>%s</b> Application requires the installation of the following "
+"Applications: %s"
+msgstr ""
+"<b>%s</b> アプリケーションは、以下のアプリケーションをインストールする必要が"
+"あります: %s"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:798
+msgid "Show full list"
+msgstr "全リストを表示"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:858
+#, python-format
+msgid ""
+"<b>%s</b> Application requires the removal of the following Applications: %s"
+msgstr "<b>%s</b> アプリケーションは、以下のアプリケーションの除去を必要と: %s"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:907
+msgid "Confirm"
+msgstr "確認する"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:908
+msgid "Undo"
+msgstr "ゆるめる"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:969
+#, python-format
+msgid "<b>%s</b> Application Action will start in <big><b>%d</b></big> second"
+msgid_plural ""
+"<b>%s</b> Application Action will start in <big><b>%d</b></big> seconds"
+msgstr[0] ""
+"<b>%s</b> アプリケーションアクションで起動します<big><b>%d</b></big> セカンド"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:1020
+#, python-format
+msgid "There is <b>%d</b> configuration file update"
+msgid_plural "There are <b>%d</b> configuration file updates"
+msgstr[0] " <b>%d</b>コンフィギュレーション·ファイルの更新があります"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:1026
+msgid ""
+"It is <b>extremely</b> important to update these configuration files before "
+"<b>rebooting</b> the System."
+msgstr ""
+"それは、</ B>極端を<b>さ 前にこれらの設定ファイルを更新することが重要<b>再起"
+"動</b>システム。"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:1037
+#: ../rigo/ui/gtk3/widgets/notifications.py:1087
+msgid "Let me see"
+msgstr "そうねぇ"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:1038
+msgid "Happily ignore"
+msgstr "喜んで無視"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:1071
+#, python-format
+msgid "There is <b>%d</b> notice from a repository"
+msgid_plural "There are <b>%d</b> notices from repositories"
+msgstr[0] "リポジトリから<b>%d</b>の通知があります"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:1077
+msgid "It is <b>extremely</b> important to always read them."
+msgstr "それは　<B>非常に</ B>　常にそれらを読むことが重要です。"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:1088
+msgid "Stop annoying me"
+msgstr "迷惑な私を停止"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:1136
+msgid "You are about to rename a Repository"
+msgstr "あなたは、リポジトリの名前を変更しようとしています"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:1140
+msgid "_Rename"
+msgstr "_名前を変更"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:1155
+msgid "Repository name"
+msgstr "リポジトリ名"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:1187
+msgid "<b>Invalid</b> Repository name!"
+msgstr "<b>無効な</b>リポジトリ名！"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:1197
+msgid "Repository rename <b>not allowed</b>!"
+msgstr "リポジトリの名前変更 <b>許可されていない</b>!"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:1217
+#, python-format
+msgid "There is <b>%d</b> preserved library on the system"
+msgid_plural "There are <b>%d</b> preserved libraries on the system"
+msgstr[0] "システム上<b>%d</b>保存のライブラリがあります。"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:1227
+msgid "Preserved libraries detected on the system."
+msgstr "プリザーブドフラワーのライブラリは、システム上で検出されました。"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:1231
+msgid "_Update system now"
+msgstr "_更新システムになりました"
+
 #: ../rigo/ui/gtk3/widgets/noticeboardtreeview.py:55
 msgid "Show"
 msgstr "ショー"
@@ -1025,138 +1057,140 @@ msgstr "詳細情報"
 msgid "<i>Browse <b>Applications</b> with ease</i>"
 msgstr "<I>ブラウズ<B>アプリケーション</ b>を簡単に</ I>"
 
-#: ../rigo_app.py:112
+#: ../rigo_app.py:116
 msgid "Hey hey hey!"
 msgstr "ちょっとちょっとちょっと！"
 
-#: ../rigo_app.py:113
+#: ../rigo_app.py:117
 msgid "Rigo is working, are you sure?"
 msgstr "リゴが機能している、あなたはよろしいですか？"
 
-#: ../rigo_app.py:159
+#: ../rigo_app.py:163
 msgid "Search"
 msgstr "探す"
 
-#: ../rigo_app.py:162 ../rigo_app.py:896 ../data/ui/gtk3/rigo.ui.h:1
+#: ../rigo_app.py:166 ../rigo_app.py:900 ../data/ui/gtk3/rigo.ui.h:1
 msgid "Rigo Application Browser"
 msgstr "リゴアプリケーションブラウザ"
 
-#: ../rigo_app.py:168
+#: ../rigo_app.py:172
 msgid "Working Hard"
 msgstr "コリガン"
 
-#: ../rigo_app.py:171
+#: ../rigo_app.py:175
 msgid "Wake Up"
 msgstr "目覚める"
 
-#: ../rigo_app.py:174
+#: ../rigo_app.py:178
 msgid "Important Stuff"
 msgstr "重要な事柄"
 
-#: ../rigo_app.py:177
+#: ../rigo_app.py:181
 msgid "Breaking Stuff"
 msgstr "ブレイキング·スタッフ"
 
-#: ../rigo_app.py:180
+#: ../rigo_app.py:184
 msgid "Repository Stuff"
 msgstr "リポジトリスタッフ"
 
-#: ../rigo_app.py:473
+#: ../rigo_app.py:477
 msgid "Activity Interruption"
 msgstr "活動の中断"
 
-#: ../rigo_app.py:475
+#: ../rigo_app.py:479
 msgid ""
 "Are you sure you want to interrupt the ongoing Activity? The interruption "
 "will occur as soon as possible, potentially not immediately."
-msgstr "あなたが現在進行中の活動を中断してもよろしいですか？中断は、潜在的にはない、すぐに、可能な限り早く行われます。"
+msgstr ""
+"あなたが現在進行中の活動を中断してもよろしいですか？中断は、潜在的にはない、"
+"すぐに、可能な限り早く行われます。"
 
-#: ../rigo_app.py:500
+#: ../rigo_app.py:504
 msgid "Repositories update error"
 msgstr "リポジトリの更新エラーが"
 
-#: ../rigo_app.py:504
+#: ../rigo_app.py:508
 msgid "Repositories updated <b>successfully</b>!"
 msgstr "リポジトリは<b>に成功</b>に更新！"
 
-#: ../rigo_app.py:522
+#: ../rigo_app.py:526
 msgid "Application Management Error"
 msgstr "アプリケーション管理エラー"
 
-#: ../rigo_app.py:523
+#: ../rigo_app.py:527
 msgid "please check the management log"
 msgstr "管理ログをチェックしてください"
 
-#: ../rigo_app.py:526
+#: ../rigo_app.py:530
 msgid "System Upgrade Error"
 msgstr "システムアップグレードエラー"
 
-#: ../rigo_app.py:527
+#: ../rigo_app.py:531
 msgid "please check the upgrade log"
 msgstr "アップグレードログを確認してください"
 
-#: ../rigo_app.py:531
+#: ../rigo_app.py:535
 msgid "Applications managed <b>successfully</b>!"
 msgstr "マネージアプリケーション <b>首尾よく！</b>"
 
-#: ../rigo_app.py:533
+#: ../rigo_app.py:537
 msgid "System Upgraded <b>successfully</b>!"
 msgstr "システムアップグレード<b>首尾よく！</b>"
 
-#: ../rigo_app.py:786
+#: ../rigo_app.py:790
 msgid "You are not authorized to run Rigo"
 msgstr "あなたはリゴを実行する権限がありません"
 
-#: ../rigo_app.py:794 ../rigo_app.py:805 ../rigo_app.py:823 ../rigo_app.py:878
-#: ../rigo_app.py:889 ../rigo_app.py:920
+#: ../rigo_app.py:798 ../rigo_app.py:809 ../rigo_app.py:827 ../rigo_app.py:882
+#: ../rigo_app.py:893 ../rigo_app.py:924
 msgid "Rigo"
 msgstr "リゴ"
 
-#: ../rigo_app.py:795
+#: ../rigo_app.py:799
 msgid "RigoDaemon service is not available"
 msgstr "リゴデーモンサービスは利用できません"
 
-#: ../rigo_app.py:807
+#: ../rigo_app.py:811
 msgid "API mismatch, please update Rigo and RigoDaemon"
 msgstr "APIの不一致は、リゴとリゴデーモンを更新してください"
 
-#: ../rigo_app.py:824
+#: ../rigo_app.py:828
 msgid "Another Application Manager is active"
 msgstr "他のアプリケーションマネージャは、アクティブになっている"
 
-#: ../rigo_app.py:841
+#: ../rigo_app.py:845
 msgid "Background Service is currently not available"
 msgstr "バックグラウンドサービスは現在使用できません"
 
-#: ../rigo_app.py:871
+#: ../rigo_app.py:875
 msgid "Background Service is currently busy"
 msgstr "バックグラウンドサービスは現在ビジー状態です"
 
-#: ../rigo_app.py:873
+#: ../rigo_app.py:877
 msgid "Background Service is incompatible with Rigo"
 msgstr "バックグラウンドサービスはリゴと互換性がありません"
 
-#: ../rigo_app.py:885
+#: ../rigo_app.py:889
 msgid "Background Service is currently unavailable"
 msgstr "バックグラウンドサービスは現在利用できません"
 
-#: ../rigo_app.py:950
+#: ../rigo_app.py:954
 msgid "Happy St. Valentine <3 <3 !"
 msgstr "ハッピーバレンタインデー<3<3！"
 
-#: ../rigo_app.py:952
+#: ../rigo_app.py:956
 msgid "Merry Xmas \\o/ !"
 msgstr "メリークリスマス \\o/ !"
 
-#: ../rigo_app.py:954
+#: ../rigo_app.py:958
 msgid "Happy birthday to my authoooooor!"
 msgstr "私の作者に誕生日おめでとう！"
 
-#: ../rigo_app.py:956
+#: ../rigo_app.py:960
 msgid "<=|=< (this is optimistically a fish)"
 msgstr "<=|=<（これは楽観魚です)"
 
-#: ../rigo_app.py:961
+#: ../rigo_app.py:965
 msgid "Woot, thanks"
 msgstr "熱烈、感謝"
 

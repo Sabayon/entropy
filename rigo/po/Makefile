@@ -9,6 +9,7 @@ CATALOGS = $(shell ls *.po)
 FMTCATALOGS = $(patsubst %.po,%.mo,$(CATALOGS))
 GTKBFILES = ../data/ui/gtk3/rigo.ui
 PYFILES =  $(wildcard ../RigoDaemon/*.py) $(wildcard ../rigo/*.py) \
+	$(wildcard ../RigoDaemon/app/*.py) \
 	$(wildcard ../rigo/models/*.py) \
 	$(wildcard ../rigo/controllers/*.py) \
 	$(wildcard ../rigo/ui/*.py) $(wildcard ../rigo/ui/gtk3/*.py) \

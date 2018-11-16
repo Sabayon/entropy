@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # joostruis <joostruis@gmail.com>, 2014,2016
 # joost_op <joostruis@sabayon.org>, 2012
@@ -12,61 +12,62 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-23 15:40+0200\n"
+"POT-Creation-Date: 2018-10-28 19:51+0100\n"
 "PO-Revision-Date: 2017-09-19 12:06+0000\n"
 "Last-Translator: joostruis <joostruis@gmail.com>\n"
-"Language-Team: Dutch (http://www.transifex.com/lxnay/sabayon-rigo/language/nl/)\n"
+"Language-Team: Dutch (http://www.transifex.com/lxnay/sabayon-rigo/language/"
+"nl/)\n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: nl\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../RigoDaemon/app.py:129
+#: ../RigoDaemon/app/RigoDaemon_app.py:135
 msgid "Downloading"
 msgstr "Downloaden"
 
-#: ../RigoDaemon/app.py:131
+#: ../RigoDaemon/app/RigoDaemon_app.py:137
 msgid "Uploading"
 msgstr "Aan het uploaden"
 
-#: ../RigoDaemon/app.py:935
+#: ../RigoDaemon/app/RigoDaemon_app.py:941
 msgid "Internal activity in progress"
 msgstr "Interne activiteit aan de gang"
 
-#: ../RigoDaemon/app.py:937
+#: ../RigoDaemon/app/RigoDaemon_app.py:943
 msgid "Upgrade in progress"
 msgstr "Bezig met upgrade"
 
-#: ../RigoDaemon/app.py:939
+#: ../RigoDaemon/app/RigoDaemon_app.py:945
 msgid "Repositories update in progress"
 msgstr "Bezig met vernieuwen van repostories"
 
-#: ../RigoDaemon/app.py:941
+#: ../RigoDaemon/app/RigoDaemon_app.py:947
 msgid "Applications management in progress"
 msgstr "Applicatiebeheer is bezig"
 
-#: ../RigoDaemon/app.py:1446 ../rigo_app.py:785
+#: ../RigoDaemon/app/RigoDaemon_app.py:1452 ../rigo_app.py:789
 msgid "Not authorized"
 msgstr "Niet geautoriseerd"
 
-#: ../RigoDaemon/app.py:1480
+#: ../RigoDaemon/app/RigoDaemon_app.py:1486
 msgid "No repositories configured"
 msgstr "Geen repositories geconfigureerd"
 
-#: ../RigoDaemon/app.py:1485
+#: ../RigoDaemon/app/RigoDaemon_app.py:1491
 msgid "Unhandled Exception"
 msgstr "Onverwerkte uitzondering"
 
-#: ../RigoDaemon/app.py:2044
+#: ../RigoDaemon/app/RigoDaemon_app.py:2050
 msgid "Application Removal"
 msgstr "Toepassing verwijderen"
 
-#: ../RigoDaemon/app.py:2468
+#: ../RigoDaemon/app/RigoDaemon_app.py:2474
 msgid "Application download"
 msgstr "Toepassing downloaden"
 
-#: ../RigoDaemon/app.py:2579
+#: ../RigoDaemon/app/RigoDaemon_app.py:2585
 msgid "Application Install"
 msgstr "Toepassing installeren"
 
@@ -181,7 +182,7 @@ msgid_plural ", <b>%i</b> Applications enqueued so far..."
 msgstr[0] ", <b>%i</b> Toepassing tot nu toe in de wachtrij..."
 msgstr[1] ", <b>%i</b> Toepassingen tot nu toe in de wachtrij..."
 
-#: ../rigo/controllers/daemon.py:790 ../rigo_app.py:165
+#: ../rigo/controllers/daemon.py:790 ../rigo_app.py:169
 msgid "Application"
 msgstr "Toepassing"
 
@@ -240,15 +241,15 @@ msgstr "Een fout is opgetreden"
 #: ../rigo/controllers/daemon.py:837
 #: ../rigo/ui/gtk3/controllers/application.py:412
 #: ../rigo/ui/gtk3/controllers/application.py:499
-#: ../rigo/ui/gtk3/controllers/application.py:582 ../rigo_app.py:510
-#: ../rigo_app.py:539
+#: ../rigo/ui/gtk3/controllers/application.py:582 ../rigo_app.py:514
+#: ../rigo_app.py:543
 msgid "Ok, thanks"
 msgstr "Ok, bedankt"
 
 #: ../rigo/controllers/daemon.py:838
 #: ../rigo/ui/gtk3/controllers/notifications.py:225
 #: ../rigo/ui/gtk3/controllers/notifications.py:241
-#: ../rigo/ui/gtk3/controllers/notifications.py:259 ../rigo_app.py:540
+#: ../rigo/ui/gtk3/controllers/notifications.py:259 ../rigo_app.py:544
 msgid "Show me"
 msgstr "Details"
 
@@ -277,7 +278,8 @@ msgstr "Download locaties worden geoptimaliseerd in de <b>achtergrond</b>..."
 
 #: ../rigo/controllers/daemon.py:1520
 msgid "Mirrors optimization <b>not available</b> at this time"
-msgstr "Download locatie optimalisatie is <b>niet beschikbaar</b> op dit moment"
+msgstr ""
+"Download locatie optimalisatie is <b>niet beschikbaar</b> op dit moment"
 
 #: ../rigo/controllers/daemon.py:1929
 msgid "Waiting for <b>RigoDaemon</b>, please wait..."
@@ -310,21 +312,29 @@ msgstr "Ok dan"
 msgid ""
 "<b>%s</b>\n"
 "is part of the Base System and <b>cannot</b> be removed"
-msgstr "<b>%s</b>\nis een onderdeel van het basissysteem en <b> kan niet </b> verwijderd worden"
+msgstr ""
+"<b>%s</b>\n"
+"is een onderdeel van het basissysteem en <b> kan niet </b> verwijderd worden"
 
 #: ../rigo/controllers/daemon.py:2289
 #, python-format
 msgid ""
 "<b>%s</b>\n"
-"cannot be installed at this time due to <b>missing/masked</b> dependencies or dependency <b>conflict</b>"
-msgstr "<b>%s</b>\nkan niet worden geïnstalleerd op dit moment als gevolg van <b>ontbrekende/gemaskerde</b> afhankelijkheden of afhankelijkheid <b> conflict </b>"
+"cannot be installed at this time due to <b>missing/masked</b> dependencies "
+"or dependency <b>conflict</b>"
+msgstr ""
+"<b>%s</b>\n"
+"kan niet worden geïnstalleerd op dit moment als gevolg van <b>ontbrekende/"
+"gemaskerde</b> afhankelijkheden of afhankelijkheid <b> conflict </b>"
 
 #: ../rigo/controllers/daemon.py:2351
 #, python-format
 msgid ""
 "Installing <b>%s</b> would cause the removal of the following Applications: "
 "%s"
-msgstr "Het installeren van <b>%s</b> zou het verwijderen van de volgende toepassingen veroorzaken: %s"
+msgstr ""
+"Het installeren van <b>%s</b> zou het verwijderen van de volgende "
+"toepassingen veroorzaken: %s"
 
 #: ../rigo/controllers/daemon.py:2543
 #, python-format
@@ -414,7 +424,7 @@ msgstr "Kan configuratie bestanden niet <b>samenvoegen</b>"
 msgid "Cannot <b>discard</b> configuration file"
 msgstr "Kan configuratie bestand niet <b>verwijderen</b>"
 
-#: ../rigo/ui/gtk3/controllers/group.py:90 ../rigo_app.py:183
+#: ../rigo/ui/gtk3/controllers/group.py:90 ../rigo_app.py:187
 msgid "Application Groups"
 msgstr "Applicatiegroepen"
 
@@ -429,7 +439,9 @@ msgstr "Entropy Web Service Session opschonen"
 #: ../rigo/ui/gtk3/controllers/application.py:174
 msgid ""
 "Discard any registered login credential used to send votes and comments."
-msgstr "Verwijder geregistreerde login referenties die gebruikt zijn voor het stemmen en reacties."
+msgstr ""
+"Verwijder geregistreerde login referenties die gebruikt zijn voor het "
+"stemmen en reacties."
 
 #: ../rigo/ui/gtk3/controllers/application.py:313
 #, python-format
@@ -645,7 +657,9 @@ msgstr "Toon Configuratie bestanden updates"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:749
 msgid "Show (if any) the list of pending configuration file updates."
-msgstr "Toon (indien van toepassing) de lijst van lopende configuratie bestanden updates."
+msgstr ""
+"Toon (indien van toepassing) de lijst van lopende configuratie bestanden "
+"updates."
 
 #: ../rigo/ui/gtk3/controllers/applications.py:758
 msgid "Show Installed Applications"
@@ -661,7 +675,9 @@ msgstr "Optimaliseer downloadsnelheid"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:769
 msgid "Benchmark the download mirrors to speed up Application installation."
-msgstr "Test de downloadsnelheid van verschillende locaties om het Applicatie installatieproces te versnellen."
+msgstr ""
+"Test de downloadsnelheid van verschillende locaties om het Applicatie "
+"installatieproces te versnellen."
 
 #: ../rigo/ui/gtk3/controllers/applications.py:778
 msgid "Show Available Kernels"
@@ -676,9 +692,72 @@ msgid "Show Available Long-Term-Stable Kernels"
 msgstr "Toon beschikbare lange termijn ondersteunde kernels"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:792
-msgid ""
-"Browse through the available and installable Linux LTS kernel binaries."
+msgid "Browse through the available and installable Linux LTS kernel binaries."
 msgstr "Blader door de beschikbare en installeerbare Linux LTS kernel binaries"
+
+#: ../rigo/ui/gtk3/widgets/stars.py:400
+#, python-format
+msgid "%(nr_ratings)i rating"
+msgid_plural "%(nr_ratings)i ratings"
+msgstr[0] "%(nr_ratings)i beoordeling"
+msgstr[1] "%(nr_ratings)i beoordelingen"
+
+#: ../rigo/ui/gtk3/widgets/stars.py:500
+msgid "Hint: Click a star to rate this app"
+msgstr "Tip: Klik op een ster om toepassing te beoordelen"
+
+#. unrated caption
+#: ../rigo/ui/gtk3/widgets/stars.py:501
+msgid "Awful"
+msgstr "Slecht"
+
+#. 1 star rating
+#: ../rigo/ui/gtk3/widgets/stars.py:502
+msgid "Poor"
+msgstr "Matig"
+
+#. 2 star rating
+#: ../rigo/ui/gtk3/widgets/stars.py:503
+msgid "Adequate"
+msgstr "Voldoende"
+
+#. 3 star rating
+#: ../rigo/ui/gtk3/widgets/stars.py:504
+msgid "Good"
+msgstr "Goed"
+
+#. 4 star rating
+#: ../rigo/ui/gtk3/widgets/stars.py:505
+msgid "Excellent"
+msgstr "Uitstekend"
+
+#: ../rigo/ui/gtk3/widgets/comments.py:91
+msgid "Cannot remove comment"
+msgstr "Kan reactie niet verwijderen"
+
+#: ../rigo/ui/gtk3/widgets/comments.py:128
+msgid "remove"
+msgstr "verwijder"
+
+#: ../rigo/ui/gtk3/widgets/preferencestreeview.py:48
+msgid "Run"
+msgstr "Uitvoeren"
+
+#: ../rigo/ui/gtk3/widgets/repositorytreeview.py:62
+msgid "Enable"
+msgstr "Inschakelen"
+
+#: ../rigo/ui/gtk3/widgets/repositorytreeview.py:63
+msgid "Disable"
+msgstr "Uitschakelen"
+
+#: ../rigo/ui/gtk3/widgets/repositorytreeview.py:69
+msgid "Rename"
+msgstr "Hernoem"
+
+#: ../rigo/ui/gtk3/widgets/grouptreeview.py:48
+msgid "View"
+msgstr "Bekijk"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:182
 #, python-format
@@ -773,7 +852,9 @@ msgstr "Inlog <b>fout</b>!"
 msgid ""
 "Cannot connect to Entropy Web Services, are you connected to the "
 "<b>interweb</b>?"
-msgstr "Kan geen verbinding maken met Entropy Web Services, bent u verbonden met het <b>interweb</b>?"
+msgstr ""
+"Kan geen verbinding maken met Entropy Web Services, bent u verbonden met het "
+"<b>interweb</b>?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:428
 msgid "Don't ask me..."
@@ -792,14 +873,18 @@ msgstr "Een pan die je in de gaten houd overkookt nooit"
 msgid ""
 "You are required to <b>review</b> and <b>accept</b> the following licenses "
 "before continuing: %s"
-msgstr "U bent verplicht om het te <b>lezen</b> en de volgende licenties te <b>accepteren</b> voordat u verder gaat: %s"
+msgstr ""
+"U bent verplicht om het te <b>lezen</b> en de volgende licenties te "
+"<b>accepteren</b> voordat u verder gaat: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:503
 #, python-format
 msgid ""
 "<b>%s</b> Application or one of its dependencies is distributed with the "
 "following licenses: %s"
-msgstr "<b>%s</b> Toepassing of een van haar afhankelijkheden wordt gedistribueerd met de volgende licenties: %s"
+msgstr ""
+"<b>%s</b> Toepassing of een van haar afhankelijkheden wordt gedistribueerd "
+"met de volgende licenties: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:521
 msgid "Make sure to review all the licenses"
@@ -830,10 +915,14 @@ msgstr "Sluiten"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:669
 msgid ""
-"Several <b>Applications</b>, no longer maintained by this distribution, have"
-" been found on your <b>System</b>. Some of them might require <b>manual "
+"Several <b>Applications</b>, no longer maintained by this distribution, have "
+"been found on your <b>System</b>. Some of them might require <b>manual "
 "review</b> before being uninstalled. Click on the Apps to expand."
-msgstr "Verschillende <b>Toepassingen</b> zijn niet langer onderhouden door deze distributie die zijn gevonden in uw <b>Systeem</b>. Sommigen van hen zouden een <b>handmatige controle</b> nodig kunnen hebben alvorens te worden verwijderd. Klik op Toepassing om uit te breiden."
+msgstr ""
+"Verschillende <b>Toepassingen</b> zijn niet langer onderhouden door deze "
+"distributie die zijn gevonden in uw <b>Systeem</b>. Sommigen van hen zouden "
+"een <b>handmatige controle</b> nodig kunnen hebben alvorens te worden "
+"verwijderd. Klik op Toepassing om uit te breiden."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:677
 msgid "Manual review"
@@ -848,7 +937,9 @@ msgstr "Veilig te laten vallen"
 msgid ""
 "<b>%s</b> Application requires the installation of the following "
 "Applications: %s"
-msgstr "<b>%s</b> De toepassing vereist de installatie van de volgende toepassingen: %s"
+msgstr ""
+"<b>%s</b> De toepassing vereist de installatie van de volgende toepassingen: "
+"%s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:798
 msgid "Show full list"
@@ -858,7 +949,9 @@ msgstr "Toon de volledige lijst"
 #, python-format
 msgid ""
 "<b>%s</b> Application requires the removal of the following Applications: %s"
-msgstr "<b>%s</b>  toepassing vereist het verwijderen van de volgende toepassingen: %s"
+msgstr ""
+"<b>%s</b>  toepassing vereist het verwijderen van de volgende toepassingen: "
+"%s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:907
 msgid "Confirm"
@@ -873,8 +966,10 @@ msgstr "Ongedaan maken"
 msgid "<b>%s</b> Application Action will start in <big><b>%d</b></big> second"
 msgid_plural ""
 "<b>%s</b> Application Action will start in <big><b>%d</b></big> seconds"
-msgstr[0] "<b>%s</b> Toepassing actie zal starten in <big><b>%d</b></big seconden"
-msgstr[1] "<b>%s</b> Toepassing actie zal starten in <big><b>%d</b></big seconden"
+msgstr[0] ""
+"<b>%s</b> Toepassing actie zal starten in <big><b>%d</b></big seconden"
+msgstr[1] ""
+"<b>%s</b> Toepassing actie zal starten in <big><b>%d</b></big seconden"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1020
 #, python-format
@@ -887,7 +982,9 @@ msgstr[1] "Er zijn <b>%d</b> configuratiebestanden om te updaten"
 msgid ""
 "It is <b>extremely</b> important to update these configuration files before "
 "<b>rebooting</b> the System."
-msgstr "Het is <b>zeer</b> belangrijk om deze configuratiebestanden te updaten, voordat u het <b>systeem opnieuw op start</b>"
+msgstr ""
+"Het is <b>zeer</b> belangrijk om deze configuratiebestanden te updaten, "
+"voordat u het <b>systeem opnieuw op start</b>"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1037
 #: ../rigo/ui/gtk3/widgets/notifications.py:1087
@@ -948,70 +1045,6 @@ msgstr "Beveiligde bibliotheken gevonden in het systeem."
 msgid "_Update system now"
 msgstr "_Update systeem nu"
 
-#: ../rigo/ui/gtk3/widgets/stars.py:400
-#, python-format
-msgid "%(nr_ratings)i rating"
-msgid_plural "%(nr_ratings)i ratings"
-msgstr[0] "%(nr_ratings)i beoordeling"
-msgstr[1] "%(nr_ratings)i beoordelingen"
-
-#: ../rigo/ui/gtk3/widgets/stars.py:500
-msgid "Hint: Click a star to rate this app"
-msgstr "Tip: Klik op een ster om toepassing te beoordelen"
-
-#. unrated caption
-#: ../rigo/ui/gtk3/widgets/stars.py:501
-msgid "Awful"
-msgstr "Slecht"
-
-#. 1 star rating
-#: ../rigo/ui/gtk3/widgets/stars.py:502
-msgid "Poor"
-msgstr "Matig"
-
-#. 2 star rating
-#: ../rigo/ui/gtk3/widgets/stars.py:503
-msgid "Adequate"
-msgstr "Voldoende"
-
-#. 3 star rating
-#: ../rigo/ui/gtk3/widgets/stars.py:504
-msgid "Good"
-msgstr "Goed"
-
-#. 4 star rating
-#: ../rigo/ui/gtk3/widgets/stars.py:505
-msgid "Excellent"
-msgstr "Uitstekend"
-
-#: ../rigo/ui/gtk3/widgets/comments.py:91
-msgid "Cannot remove comment"
-msgstr "Kan reactie niet verwijderen"
-
-#: ../rigo/ui/gtk3/widgets/comments.py:128
-msgid "remove"
-msgstr "verwijder"
-
-#: ../rigo/ui/gtk3/widgets/preferencestreeview.py:48
-msgid "Run"
-msgstr "Uitvoeren"
-
-#: ../rigo/ui/gtk3/widgets/repositorytreeview.py:62
-msgid "Enable"
-msgstr "Inschakelen"
-
-#: ../rigo/ui/gtk3/widgets/repositorytreeview.py:63
-msgid "Disable"
-msgstr "Uitschakelen"
-
-#: ../rigo/ui/gtk3/widgets/repositorytreeview.py:69
-msgid "Rename"
-msgstr "Hernoem"
-
-#: ../rigo/ui/gtk3/widgets/grouptreeview.py:48
-msgid "View"
-msgstr "Bekijk"
-
 #: ../rigo/ui/gtk3/widgets/noticeboardtreeview.py:55
 msgid "Show"
 msgstr "Laat zien"
@@ -1040,138 +1073,140 @@ msgstr "Meer info"
 msgid "<i>Browse <b>Applications</b> with ease</i>"
 msgstr "<i>Met gemak bladeren door <b>toepassingen</b></i>"
 
-#: ../rigo_app.py:112
+#: ../rigo_app.py:116
 msgid "Hey hey hey!"
 msgstr "Hey hey hey!"
 
-#: ../rigo_app.py:113
+#: ../rigo_app.py:117
 msgid "Rigo is working, are you sure?"
 msgstr "Rigo is bezig, weet je het zeker?"
 
-#: ../rigo_app.py:159
+#: ../rigo_app.py:163
 msgid "Search"
 msgstr "Zoeken"
 
-#: ../rigo_app.py:162 ../rigo_app.py:896 ../data/ui/gtk3/rigo.ui.h:1
+#: ../rigo_app.py:166 ../rigo_app.py:900 ../data/ui/gtk3/rigo.ui.h:1
 msgid "Rigo Application Browser"
 msgstr "Rigo Applicatie Browser"
 
-#: ../rigo_app.py:168
+#: ../rigo_app.py:172
 msgid "Working Hard"
 msgstr "Druk bezig"
 
-#: ../rigo_app.py:171
+#: ../rigo_app.py:175
 msgid "Wake Up"
 msgstr "Wakker worden"
 
-#: ../rigo_app.py:174
+#: ../rigo_app.py:178
 msgid "Important Stuff"
 msgstr "Belangrijke zaken"
 
-#: ../rigo_app.py:177
+#: ../rigo_app.py:181
 msgid "Breaking Stuff"
 msgstr "Bezig met zaken"
 
-#: ../rigo_app.py:180
+#: ../rigo_app.py:184
 msgid "Repository Stuff"
 msgstr "Repository zaken"
 
-#: ../rigo_app.py:473
+#: ../rigo_app.py:477
 msgid "Activity Interruption"
 msgstr "Proces onderbreking"
 
-#: ../rigo_app.py:475
+#: ../rigo_app.py:479
 msgid ""
 "Are you sure you want to interrupt the ongoing Activity? The interruption "
 "will occur as soon as possible, potentially not immediately."
-msgstr "Weet je zeker dat je het proces wil onderbreken? De onderbreking zal zo snel mogelijk plaatsvinden, maar niet onmiddellijk."
+msgstr ""
+"Weet je zeker dat je het proces wil onderbreken? De onderbreking zal zo snel "
+"mogelijk plaatsvinden, maar niet onmiddellijk."
 
-#: ../rigo_app.py:500
+#: ../rigo_app.py:504
 msgid "Repositories update error"
 msgstr "Repositories update fout"
 
-#: ../rigo_app.py:504
+#: ../rigo_app.py:508
 msgid "Repositories updated <b>successfully</b>!"
 msgstr "Repositories <b>succesvol</b> geüpdatet!"
 
-#: ../rigo_app.py:522
+#: ../rigo_app.py:526
 msgid "Application Management Error"
 msgstr "Apllicatie beheer fout"
 
-#: ../rigo_app.py:523
+#: ../rigo_app.py:527
 msgid "please check the management log"
 msgstr "Controleer het Management logbestand"
 
-#: ../rigo_app.py:526
+#: ../rigo_app.py:530
 msgid "System Upgrade Error"
 msgstr "Systeem Upgrade fout"
 
-#: ../rigo_app.py:527
+#: ../rigo_app.py:531
 msgid "please check the upgrade log"
 msgstr "Controleer het Upgrade logbestand"
 
-#: ../rigo_app.py:531
+#: ../rigo_app.py:535
 msgid "Applications managed <b>successfully</b>!"
 msgstr "Applicatie beheer <b>succesvol</b>!"
 
-#: ../rigo_app.py:533
+#: ../rigo_app.py:537
 msgid "System Upgraded <b>successfully</b>!"
 msgstr "Systeem Upgrade <b>succesvol</b>!"
 
-#: ../rigo_app.py:786
+#: ../rigo_app.py:790
 msgid "You are not authorized to run Rigo"
 msgstr "Onvoldoende rechten om Rigo uit te voeren"
 
-#: ../rigo_app.py:794 ../rigo_app.py:805 ../rigo_app.py:823 ../rigo_app.py:878
-#: ../rigo_app.py:889 ../rigo_app.py:920
+#: ../rigo_app.py:798 ../rigo_app.py:809 ../rigo_app.py:827 ../rigo_app.py:882
+#: ../rigo_app.py:893 ../rigo_app.py:924
 msgid "Rigo"
 msgstr "Rigo"
 
-#: ../rigo_app.py:795
+#: ../rigo_app.py:799
 msgid "RigoDaemon service is not available"
 msgstr "RigoDaemon service is niet beschikbaar"
 
-#: ../rigo_app.py:807
+#: ../rigo_app.py:811
 msgid "API mismatch, please update Rigo and RigoDaemon"
 msgstr "API fout, update alsjeblieft Rigo en RigoDaemon"
 
-#: ../rigo_app.py:824
+#: ../rigo_app.py:828
 msgid "Another Application Manager is active"
 msgstr "Er is al een Applicatie beheer actief"
 
-#: ../rigo_app.py:841
+#: ../rigo_app.py:845
 msgid "Background Service is currently not available"
 msgstr "Achtergrond service is momenteel niet beschikbaar"
 
-#: ../rigo_app.py:871
+#: ../rigo_app.py:875
 msgid "Background Service is currently busy"
 msgstr "Achtergrond service is momenteel bezig"
 
-#: ../rigo_app.py:873
+#: ../rigo_app.py:877
 msgid "Background Service is incompatible with Rigo"
 msgstr "Achtergrond service is niet compatible met Rigo"
 
-#: ../rigo_app.py:885
+#: ../rigo_app.py:889
 msgid "Background Service is currently unavailable"
 msgstr "Achtergrond service is momenteel niet beschikbaar"
 
-#: ../rigo_app.py:950
+#: ../rigo_app.py:954
 msgid "Happy St. Valentine <3 <3 !"
 msgstr "Fijne Valentijnsdag <3 <3 !"
 
-#: ../rigo_app.py:952
+#: ../rigo_app.py:956
 msgid "Merry Xmas \\o/ !"
 msgstr "Vrolijk kerstfeest \\o/ !"
 
-#: ../rigo_app.py:954
+#: ../rigo_app.py:958
 msgid "Happy birthday to my authoooooor!"
 msgstr "Fijne verjaardag Fabio!"
 
-#: ../rigo_app.py:956
+#: ../rigo_app.py:960
 msgid "<=|=< (this is optimistically a fish)"
 msgstr "<=|=< (Dit is, optimistisch gezien, een vis)"
 
-#: ../rigo_app.py:961
+#: ../rigo_app.py:965
 msgid "Woot, thanks"
 msgstr "Top! Bedankt!"
 

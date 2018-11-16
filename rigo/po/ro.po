@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Cristian Gherman <cgherman@mandrivausers.ro>, 2013-2014
 # dmfkun <dmfkun@gmail.com>, 2012
@@ -13,61 +13,63 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-23 15:40+0200\n"
+"POT-Creation-Date: 2018-10-28 19:51+0100\n"
 "PO-Revision-Date: 2017-09-19 12:06+0000\n"
 "Last-Translator: Baadur Jobava <jobaval10n@gmail.com>\n"
-"Language-Team: Romanian (http://www.transifex.com/lxnay/sabayon-rigo/language/ro/)\n"
+"Language-Team: Romanian (http://www.transifex.com/lxnay/sabayon-rigo/"
+"language/ro/)\n"
+"Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: ro\n"
-"Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?2:1));\n"
+"Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?"
+"2:1));\n"
 
-#: ../RigoDaemon/app.py:129
+#: ../RigoDaemon/app/RigoDaemon_app.py:135
 msgid "Downloading"
 msgstr "Se descarcă"
 
-#: ../RigoDaemon/app.py:131
+#: ../RigoDaemon/app/RigoDaemon_app.py:137
 msgid "Uploading"
 msgstr "Se încarcă"
 
-#: ../RigoDaemon/app.py:935
+#: ../RigoDaemon/app/RigoDaemon_app.py:941
 msgid "Internal activity in progress"
 msgstr "Activitate internă în desfășurare"
 
-#: ../RigoDaemon/app.py:937
+#: ../RigoDaemon/app/RigoDaemon_app.py:943
 msgid "Upgrade in progress"
 msgstr "Actualizare în curs"
 
-#: ../RigoDaemon/app.py:939
+#: ../RigoDaemon/app/RigoDaemon_app.py:945
 msgid "Repositories update in progress"
 msgstr "Actualizarea arhivelor in desfășurare"
 
-#: ../RigoDaemon/app.py:941
+#: ../RigoDaemon/app/RigoDaemon_app.py:947
 msgid "Applications management in progress"
 msgstr "Gestiunea aplicațiilor în desfășurare"
 
-#: ../RigoDaemon/app.py:1446 ../rigo_app.py:785
+#: ../RigoDaemon/app/RigoDaemon_app.py:1452 ../rigo_app.py:789
 msgid "Not authorized"
 msgstr "Neautorizat"
 
-#: ../RigoDaemon/app.py:1480
+#: ../RigoDaemon/app/RigoDaemon_app.py:1486
 msgid "No repositories configured"
 msgstr "Niciun depozit configurat"
 
-#: ../RigoDaemon/app.py:1485
+#: ../RigoDaemon/app/RigoDaemon_app.py:1491
 msgid "Unhandled Exception"
 msgstr "Excepție negestionată"
 
-#: ../RigoDaemon/app.py:2044
+#: ../RigoDaemon/app/RigoDaemon_app.py:2050
 msgid "Application Removal"
 msgstr "Eliminare aplicație"
 
-#: ../RigoDaemon/app.py:2468
+#: ../RigoDaemon/app/RigoDaemon_app.py:2474
 msgid "Application download"
 msgstr "Descărcare aplicație"
 
-#: ../RigoDaemon/app.py:2579
+#: ../RigoDaemon/app/RigoDaemon_app.py:2585
 msgid "Application Install"
 msgstr "Instalare aplicație"
 
@@ -183,7 +185,7 @@ msgstr[0] "Pana acum e <b>%i</b> aplicație în coada de rulare..."
 msgstr[1] "Pana acum sunt <b>%i</b> aplicații în coada de rulare..."
 msgstr[2] "Pana acum sunt <b>%i</b> de aplicații în coada de rulare..."
 
-#: ../rigo/controllers/daemon.py:790 ../rigo_app.py:165
+#: ../rigo/controllers/daemon.py:790 ../rigo_app.py:169
 msgid "Application"
 msgstr "Aplicație"
 
@@ -242,15 +244,15 @@ msgstr "A apărut o eroare"
 #: ../rigo/controllers/daemon.py:837
 #: ../rigo/ui/gtk3/controllers/application.py:412
 #: ../rigo/ui/gtk3/controllers/application.py:499
-#: ../rigo/ui/gtk3/controllers/application.py:582 ../rigo_app.py:510
-#: ../rigo_app.py:539
+#: ../rigo/ui/gtk3/controllers/application.py:582 ../rigo_app.py:514
+#: ../rigo_app.py:543
 msgid "Ok, thanks"
 msgstr "Bine, mulțumesc"
 
 #: ../rigo/controllers/daemon.py:838
 #: ../rigo/ui/gtk3/controllers/notifications.py:225
 #: ../rigo/ui/gtk3/controllers/notifications.py:241
-#: ../rigo/ui/gtk3/controllers/notifications.py:259 ../rigo_app.py:540
+#: ../rigo/ui/gtk3/controllers/notifications.py:259 ../rigo_app.py:544
 msgid "Show me"
 msgstr "Arată-mi"
 
@@ -313,21 +315,29 @@ msgstr "Bine atunci"
 msgid ""
 "<b>%s</b>\n"
 "is part of the Base System and <b>cannot</b> be removed"
-msgstr "<b>%s</b>\nface parte din sistemul de bază și <b>nu poate fi</b> înlăturat"
+msgstr ""
+"<b>%s</b>\n"
+"face parte din sistemul de bază și <b>nu poate fi</b> înlăturat"
 
 #: ../rigo/controllers/daemon.py:2289
 #, python-format
 msgid ""
 "<b>%s</b>\n"
-"cannot be installed at this time due to <b>missing/masked</b> dependencies or dependency <b>conflict</b>"
-msgstr "<b>%s</b>\nnu poate fi instalat în acest moment datorită unui fișier <b>șters/mascat</b>, dependența sau dependențele sunt în <b>conflict</b>"
+"cannot be installed at this time due to <b>missing/masked</b> dependencies "
+"or dependency <b>conflict</b>"
+msgstr ""
+"<b>%s</b>\n"
+"nu poate fi instalat în acest moment datorită unui fișier <b>șters/mascat</"
+"b>, dependența sau dependențele sunt în <b>conflict</b>"
 
 #: ../rigo/controllers/daemon.py:2351
 #, python-format
 msgid ""
 "Installing <b>%s</b> would cause the removal of the following Applications: "
 "%s"
-msgstr "Instalarea aplicației <b>%s</b> ar putea cauza înlăturarea următoarelor aplicații: %s"
+msgstr ""
+"Instalarea aplicației <b>%s</b> ar putea cauza înlăturarea următoarelor "
+"aplicații: %s"
 
 #: ../rigo/controllers/daemon.py:2543
 #, python-format
@@ -418,7 +428,7 @@ msgstr "Nu poate <b>contopi</b> fișierul de configurație"
 msgid "Cannot <b>discard</b> configuration file"
 msgstr "Nu se poate <b>renunța la</b> fișierul de configurație"
 
-#: ../rigo/ui/gtk3/controllers/group.py:90 ../rigo_app.py:183
+#: ../rigo/ui/gtk3/controllers/group.py:90 ../rigo_app.py:187
 msgid "Application Groups"
 msgstr "Grupuri de aplicații"
 
@@ -433,7 +443,9 @@ msgstr "Curăță sesiunea Entropy Web Services"
 #: ../rigo/ui/gtk3/controllers/application.py:174
 msgid ""
 "Discard any registered login credential used to send votes and comments."
-msgstr "Renunță la orice acreditări ale utilizatorilor înregistrați folosite la trimiterea de voturi și comentarii."
+msgstr ""
+"Renunță la orice acreditări ale utilizatorilor înregistrați folosite la "
+"trimiterea de voturi și comentarii."
 
 #: ../rigo/ui/gtk3/controllers/application.py:313
 #, python-format
@@ -465,8 +477,10 @@ msgstr "_Ok, mulțumesc"
 #, python-format
 msgid "Rate <b>%s</b> as <b>%s</b>, with <b>%d</b> star?"
 msgid_plural "Rate <b>%s</b> as <b>%s</b>, with <b>%d</b> stars?"
-msgstr[0] "Apreciaza <b>%s</b> ca si <b>%s</b> sau ca si <b>%d</b> cu o steluta ?"
-msgstr[1] "Apreciaza <b>%s</b> ca si <b>%s</b> sau ca si <b>%d</b> cu o steluta ?"
+msgstr[0] ""
+"Apreciaza <b>%s</b> ca si <b>%s</b> sau ca si <b>%d</b> cu o steluta ?"
+msgstr[1] ""
+"Apreciaza <b>%s</b> ca si <b>%s</b> sau ca si <b>%d</b> cu o steluta ?"
 msgstr[2] "Apreciază <b>%s</b> ca <b>%s</b>, cu <b>%d</b> steluțe?"
 
 #: ../rigo/ui/gtk3/controllers/application.py:350
@@ -650,7 +664,9 @@ msgstr "Arată actualizări pentru fișierele de configurație"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:749
 msgid "Show (if any) the list of pending configuration file updates."
-msgstr "Arată (dacă este vreuna) lista de actualizări în așteptare pentru fișierele de configurație."
+msgstr ""
+"Arată (dacă este vreuna) lista de actualizări în așteptare pentru fișierele "
+"de configurație."
 
 #: ../rigo/ui/gtk3/controllers/applications.py:758
 msgid "Show Installed Applications"
@@ -666,7 +682,9 @@ msgstr "Optimizează viteza de descărcare"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:769
 msgid "Benchmark the download mirrors to speed up Application installation."
-msgstr "Testează oglinzile de descărcare pentru a îmbunătăți viteza de instalare a aplicațiilor."
+msgstr ""
+"Testează oglinzile de descărcare pentru a îmbunătăți viteza de instalare a "
+"aplicațiilor."
 
 #: ../rigo/ui/gtk3/controllers/applications.py:778
 msgid "Show Available Kernels"
@@ -674,16 +692,82 @@ msgstr "Afișează nucleele disponibile"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:779
 msgid "Browse through the available and installable Linux kernel binaries."
-msgstr "Răsfoiește printre nucleele disponibile și instalabile în formă binară."
+msgstr ""
+"Răsfoiește printre nucleele disponibile și instalabile în formă binară."
 
 #: ../rigo/ui/gtk3/controllers/applications.py:791
 msgid "Show Available Long-Term-Stable Kernels"
 msgstr "Arată nucleele disponibile stabile pe termen lung"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:792
-msgid ""
-"Browse through the available and installable Linux LTS kernel binaries."
-msgstr "Răsfoiește printre nucleele binare disponibile și instalabile Linux LTS."
+msgid "Browse through the available and installable Linux LTS kernel binaries."
+msgstr ""
+"Răsfoiește printre nucleele binare disponibile și instalabile Linux LTS."
+
+#: ../rigo/ui/gtk3/widgets/stars.py:400
+#, python-format
+msgid "%(nr_ratings)i rating"
+msgid_plural "%(nr_ratings)i ratings"
+msgstr[0] "%(nr_ratings)i apreciere"
+msgstr[1] "%(nr_ratings)i aprecieri"
+msgstr[2] "%(nr_ratings)i aprecieri"
+
+#: ../rigo/ui/gtk3/widgets/stars.py:500
+msgid "Hint: Click a star to rate this app"
+msgstr "O idee: Clic pe o steluță pentru a aprecia"
+
+#. unrated caption
+#: ../rigo/ui/gtk3/widgets/stars.py:501
+msgid "Awful"
+msgstr "Groaznic"
+
+#. 1 star rating
+#: ../rigo/ui/gtk3/widgets/stars.py:502
+msgid "Poor"
+msgstr "Slab"
+
+#. 2 star rating
+#: ../rigo/ui/gtk3/widgets/stars.py:503
+msgid "Adequate"
+msgstr "Adecvat"
+
+#. 3 star rating
+#: ../rigo/ui/gtk3/widgets/stars.py:504
+msgid "Good"
+msgstr "Bun"
+
+#. 4 star rating
+#: ../rigo/ui/gtk3/widgets/stars.py:505
+msgid "Excellent"
+msgstr "Excelent"
+
+#: ../rigo/ui/gtk3/widgets/comments.py:91
+msgid "Cannot remove comment"
+msgstr "Nu se poate șterge comentariul"
+
+#: ../rigo/ui/gtk3/widgets/comments.py:128
+msgid "remove"
+msgstr "șterge"
+
+#: ../rigo/ui/gtk3/widgets/preferencestreeview.py:48
+msgid "Run"
+msgstr "Rulează"
+
+#: ../rigo/ui/gtk3/widgets/repositorytreeview.py:62
+msgid "Enable"
+msgstr "Activează"
+
+#: ../rigo/ui/gtk3/widgets/repositorytreeview.py:63
+msgid "Disable"
+msgstr "Dezactivează"
+
+#: ../rigo/ui/gtk3/widgets/repositorytreeview.py:69
+msgid "Rename"
+msgstr "Redenumeşte"
+
+#: ../rigo/ui/gtk3/widgets/grouptreeview.py:48
+msgid "View"
+msgstr "Vizualizează"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:182
 #, python-format
@@ -780,7 +864,9 @@ msgstr "<b>Eroare</b> de autentificare!"
 msgid ""
 "Cannot connect to Entropy Web Services, are you connected to the "
 "<b>interweb</b>?"
-msgstr "Nu se poate conecta la Entropy Web Services, sunteți conectat la <b>interneți</b>?"
+msgstr ""
+"Nu se poate conecta la Entropy Web Services, sunteți conectat la "
+"<b>interneți</b>?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:428
 msgid "Don't ask me..."
@@ -799,14 +885,18 @@ msgstr "Un cazan supravegheat, niciodată nu fierbe"
 msgid ""
 "You are required to <b>review</b> and <b>accept</b> the following licenses "
 "before continuing: %s"
-msgstr "Trebuie să <b>analizați</b> și să <b>acceptați</b> următoarele licențe înainte de a continua:%s"
+msgstr ""
+"Trebuie să <b>analizați</b> și să <b>acceptați</b> următoarele licențe "
+"înainte de a continua:%s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:503
 #, python-format
 msgid ""
 "<b>%s</b> Application or one of its dependencies is distributed with the "
 "following licenses: %s"
-msgstr "Aplicația <b>%s</b> sau una din dependențele ei este distribuita sub următoarele licențe: %s"
+msgstr ""
+"Aplicația <b>%s</b> sau una din dependențele ei este distribuita sub "
+"următoarele licențe: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:521
 msgid "Make sure to review all the licenses"
@@ -837,10 +927,14 @@ msgstr "Închide"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:669
 msgid ""
-"Several <b>Applications</b>, no longer maintained by this distribution, have"
-" been found on your <b>System</b>. Some of them might require <b>manual "
+"Several <b>Applications</b>, no longer maintained by this distribution, have "
+"been found on your <b>System</b>. Some of them might require <b>manual "
 "review</b> before being uninstalled. Click on the Apps to expand."
-msgstr "Au fost găsite mai multe <b>aplicații</b>  în <b>sistemul</b> dumneavoastră ce nu mai sunt întreținute de această distribuție. Unele pot avea nevoie de <b>recenzie manuală</b> înainte de a fi dezinstalate. Apăsați pe Apps pentru extindere."
+msgstr ""
+"Au fost găsite mai multe <b>aplicații</b>  în <b>sistemul</b> dumneavoastră "
+"ce nu mai sunt întreținute de această distribuție. Unele pot avea nevoie de "
+"<b>recenzie manuală</b> înainte de a fi dezinstalate. Apăsați pe Apps pentru "
+"extindere."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:677
 msgid "Manual review"
@@ -880,9 +974,12 @@ msgstr "Anulează"
 msgid "<b>%s</b> Application Action will start in <big><b>%d</b></big> second"
 msgid_plural ""
 "<b>%s</b> Application Action will start in <big><b>%d</b></big> seconds"
-msgstr[0] "Acțiunea de aplicație <b>%s</b> va începe în <big><b>%d</b></big> secundă"
-msgstr[1] "Acțiunea de aplicație <b>%s</b> va începe în <big><b>%d</b></big> secunde"
-msgstr[2] "Acțiunea de aplicație <b>%s</b> va începe în <big><b>%d</b></big> de secunde"
+msgstr[0] ""
+"Acțiunea de aplicație <b>%s</b> va începe în <big><b>%d</b></big> secundă"
+msgstr[1] ""
+"Acțiunea de aplicație <b>%s</b> va începe în <big><b>%d</b></big> secunde"
+msgstr[2] ""
+"Acțiunea de aplicație <b>%s</b> va începe în <big><b>%d</b></big> de secunde"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1020
 #, python-format
@@ -896,7 +993,9 @@ msgstr[2] "Sunt <b>%d</b> de actualizări pentru fișierele de configurație"
 msgid ""
 "It is <b>extremely</b> important to update these configuration files before "
 "<b>rebooting</b> the System."
-msgstr "Este <b>extrem</b> de importantă actualizarea fișierelor de configurație înainte de <b>repornirea</b> sistemului"
+msgstr ""
+"Este <b>extrem</b> de importantă actualizarea fișierelor de configurație "
+"înainte de <b>repornirea</b> sistemului"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1037
 #: ../rigo/ui/gtk3/widgets/notifications.py:1087
@@ -959,71 +1058,6 @@ msgstr "S-au detectat biblioteci protejate pe sistem."
 msgid "_Update system now"
 msgstr "_Actualizează sistemul acum"
 
-#: ../rigo/ui/gtk3/widgets/stars.py:400
-#, python-format
-msgid "%(nr_ratings)i rating"
-msgid_plural "%(nr_ratings)i ratings"
-msgstr[0] "%(nr_ratings)i apreciere"
-msgstr[1] "%(nr_ratings)i aprecieri"
-msgstr[2] "%(nr_ratings)i aprecieri"
-
-#: ../rigo/ui/gtk3/widgets/stars.py:500
-msgid "Hint: Click a star to rate this app"
-msgstr "O idee: Clic pe o steluță pentru a aprecia"
-
-#. unrated caption
-#: ../rigo/ui/gtk3/widgets/stars.py:501
-msgid "Awful"
-msgstr "Groaznic"
-
-#. 1 star rating
-#: ../rigo/ui/gtk3/widgets/stars.py:502
-msgid "Poor"
-msgstr "Slab"
-
-#. 2 star rating
-#: ../rigo/ui/gtk3/widgets/stars.py:503
-msgid "Adequate"
-msgstr "Adecvat"
-
-#. 3 star rating
-#: ../rigo/ui/gtk3/widgets/stars.py:504
-msgid "Good"
-msgstr "Bun"
-
-#. 4 star rating
-#: ../rigo/ui/gtk3/widgets/stars.py:505
-msgid "Excellent"
-msgstr "Excelent"
-
-#: ../rigo/ui/gtk3/widgets/comments.py:91
-msgid "Cannot remove comment"
-msgstr "Nu se poate șterge comentariul"
-
-#: ../rigo/ui/gtk3/widgets/comments.py:128
-msgid "remove"
-msgstr "șterge"
-
-#: ../rigo/ui/gtk3/widgets/preferencestreeview.py:48
-msgid "Run"
-msgstr "Rulează"
-
-#: ../rigo/ui/gtk3/widgets/repositorytreeview.py:62
-msgid "Enable"
-msgstr "Activează"
-
-#: ../rigo/ui/gtk3/widgets/repositorytreeview.py:63
-msgid "Disable"
-msgstr "Dezactivează"
-
-#: ../rigo/ui/gtk3/widgets/repositorytreeview.py:69
-msgid "Rename"
-msgstr "Redenumeşte"
-
-#: ../rigo/ui/gtk3/widgets/grouptreeview.py:48
-msgid "View"
-msgstr "Vizualizează"
-
 #: ../rigo/ui/gtk3/widgets/noticeboardtreeview.py:55
 msgid "Show"
 msgstr "Arată"
@@ -1052,138 +1086,140 @@ msgstr "Mai multe informații"
 msgid "<i>Browse <b>Applications</b> with ease</i>"
 msgstr "<i>Răsfoiește <b>Aplicații</b> cu ușurință<i>"
 
-#: ../rigo_app.py:112
+#: ../rigo_app.py:116
 msgid "Hey hey hey!"
 msgstr "Salut salut salut!"
 
-#: ../rigo_app.py:113
+#: ../rigo_app.py:117
 msgid "Rigo is working, are you sure?"
 msgstr "Rigo funcționează, ești sigur ?"
 
-#: ../rigo_app.py:159
+#: ../rigo_app.py:163
 msgid "Search"
 msgstr "Caută"
 
-#: ../rigo_app.py:162 ../rigo_app.py:896 ../data/ui/gtk3/rigo.ui.h:1
+#: ../rigo_app.py:166 ../rigo_app.py:900 ../data/ui/gtk3/rigo.ui.h:1
 msgid "Rigo Application Browser"
 msgstr "Browserul de aplicații Rigo"
 
-#: ../rigo_app.py:168
+#: ../rigo_app.py:172
 msgid "Working Hard"
 msgstr "Se lucrează din greu"
 
-#: ../rigo_app.py:171
+#: ../rigo_app.py:175
 msgid "Wake Up"
 msgstr "Trezește"
 
-#: ../rigo_app.py:174
+#: ../rigo_app.py:178
 msgid "Important Stuff"
 msgstr "Chestii importante"
 
-#: ../rigo_app.py:177
+#: ../rigo_app.py:181
 msgid "Breaking Stuff"
 msgstr "Cele mai noi chestii"
 
-#: ../rigo_app.py:180
+#: ../rigo_app.py:184
 msgid "Repository Stuff"
 msgstr "Chestii despre depozit"
 
-#: ../rigo_app.py:473
+#: ../rigo_app.py:477
 msgid "Activity Interruption"
 msgstr "Întrerupere activitate"
 
-#: ../rigo_app.py:475
+#: ../rigo_app.py:479
 msgid ""
 "Are you sure you want to interrupt the ongoing Activity? The interruption "
 "will occur as soon as possible, potentially not immediately."
-msgstr "Sigur doriți să întrerupeți activitatea? Întreruperea ei se realiza cât mai rapid posibil, dar posibil nu imediat."
+msgstr ""
+"Sigur doriți să întrerupeți activitatea? Întreruperea ei se realiza cât mai "
+"rapid posibil, dar posibil nu imediat."
 
-#: ../rigo_app.py:500
+#: ../rigo_app.py:504
 msgid "Repositories update error"
 msgstr "Eroare la actualizarea depozitelor"
 
-#: ../rigo_app.py:504
+#: ../rigo_app.py:508
 msgid "Repositories updated <b>successfully</b>!"
 msgstr "Depozitele au fost actualizate <b>cu succes</b>!"
 
-#: ../rigo_app.py:522
+#: ../rigo_app.py:526
 msgid "Application Management Error"
 msgstr "Eroare la gestiunea aplicațiilor"
 
-#: ../rigo_app.py:523
+#: ../rigo_app.py:527
 msgid "please check the management log"
 msgstr "va rugam verificați jurnalul de gestionare"
 
-#: ../rigo_app.py:526
+#: ../rigo_app.py:530
 msgid "System Upgrade Error"
 msgstr "Eroare la actualizarea sistemului"
 
-#: ../rigo_app.py:527
+#: ../rigo_app.py:531
 msgid "please check the upgrade log"
 msgstr "va rugam verificați jurnalul de actualizare"
 
-#: ../rigo_app.py:531
+#: ../rigo_app.py:535
 msgid "Applications managed <b>successfully</b>!"
 msgstr "Aplicațiile au fost gestionate <b>cu succes</b>!"
 
-#: ../rigo_app.py:533
+#: ../rigo_app.py:537
 msgid "System Upgraded <b>successfully</b>!"
 msgstr "Sistemul a fost actualizat <b>cu succes</b>!"
 
-#: ../rigo_app.py:786
+#: ../rigo_app.py:790
 msgid "You are not authorized to run Rigo"
 msgstr "Nu sunteți autorizați să rulați Rigo"
 
-#: ../rigo_app.py:794 ../rigo_app.py:805 ../rigo_app.py:823 ../rigo_app.py:878
-#: ../rigo_app.py:889 ../rigo_app.py:920
+#: ../rigo_app.py:798 ../rigo_app.py:809 ../rigo_app.py:827 ../rigo_app.py:882
+#: ../rigo_app.py:893 ../rigo_app.py:924
 msgid "Rigo"
 msgstr "Rigo"
 
-#: ../rigo_app.py:795
+#: ../rigo_app.py:799
 msgid "RigoDaemon service is not available"
 msgstr "Serviciul RigoDaemon nu este disponibil"
 
-#: ../rigo_app.py:807
+#: ../rigo_app.py:811
 msgid "API mismatch, please update Rigo and RigoDaemon"
 msgstr "Nepotrivire API, vă rugăm să actualizați Rigo și RigoDaemon"
 
-#: ../rigo_app.py:824
+#: ../rigo_app.py:828
 msgid "Another Application Manager is active"
 msgstr "Un alt manager de aplicații este activ"
 
-#: ../rigo_app.py:841
+#: ../rigo_app.py:845
 msgid "Background Service is currently not available"
 msgstr "Serviciul de fundal nu este disponibil momentan"
 
-#: ../rigo_app.py:871
+#: ../rigo_app.py:875
 msgid "Background Service is currently busy"
 msgstr "Serviciul de fundal este ocupat momentan"
 
-#: ../rigo_app.py:873
+#: ../rigo_app.py:877
 msgid "Background Service is incompatible with Rigo"
 msgstr "Serviciul de fundal este incompatibil cu Rigo"
 
-#: ../rigo_app.py:885
+#: ../rigo_app.py:889
 msgid "Background Service is currently unavailable"
 msgstr "Serviciul de fundal nu este momentan disponibil"
 
-#: ../rigo_app.py:950
+#: ../rigo_app.py:954
 msgid "Happy St. Valentine <3 <3 !"
 msgstr "Sa aveți un Sf. Valentin plăcut <3 <3 !"
 
-#: ../rigo_app.py:952
+#: ../rigo_app.py:956
 msgid "Merry Xmas \\o/ !"
 msgstr "Crăciun fericit \\o/ !"
 
-#: ../rigo_app.py:954
+#: ../rigo_app.py:958
 msgid "Happy birthday to my authoooooor!"
 msgstr "Spuneți la „La Mulți Ani!” autorului meu!"
 
-#: ../rigo_app.py:956
+#: ../rigo_app.py:960
 msgid "<=|=< (this is optimistically a fish)"
 msgstr "<=|=< (într-o viziune optimistă, acesta este un pește)"
 
-#: ../rigo_app.py:961
+#: ../rigo_app.py:965
 msgid "Woot, thanks"
 msgstr "Ce, mulțumesc"
 

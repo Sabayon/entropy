@@ -14,22 +14,23 @@ import os
 import errno
 import sys
 import time
-# never load entropy package here, --no-pid-handling is added below after this
-# point and will cause lock stealing.
+
+from os import path as osp
+_base = osp.dirname(
+    osp.dirname(osp.dirname(osp.realpath(__file__))))
+if os.path.isfile(osp.join(_base, "entropy-in-vcs-checkout")):
+    sys.path.insert(0, osp.join(_base, "entropy_path_loader"))
+else:
+    sys.path.insert(0, "/usr/lib/entropy/entropy_path_loader")
+del osp
+import entropy_path_loader
+
+entropy_path_loader.add_import_path("rigo")
+entropy_path_loader.add_import_path("magneto")
+
+from entropy.locks import SimpleFileLock
 
 def _startup(unlock_callback):
-    from os import path as osp
-    _base = osp.dirname(
-        osp.dirname(osp.dirname(osp.realpath(__file__))))
-    if os.path.isfile(osp.join(_base, "entropy-in-vcs-checkout")):
-        sys.path.insert(0, osp.join(_base, "entropy_path_loader"))
-    else:
-        sys.path.insert(0, "/usr/lib/entropy/entropy_path_loader")
-    del osp
-    import entropy_path_loader
-
-    entropy_path_loader.add_import_path("rigo")
-
     startup_delay = None
     for arg in sys.argv[1:]:
         if arg.startswith("--startup-delay="):
@@ -104,7 +105,6 @@ if __name__ == "__main__":
         if os.path.isdir(user_home):
             magneto_lock_dir = user_home
 
-    from entropy.locks import SimpleFileLock
     lock_map = {}
     magneto_lock = os.path.join(magneto_lock_dir, magneto_lock_file)
     acquired = SimpleFileLock.acquire(magneto_lock, lock_map)

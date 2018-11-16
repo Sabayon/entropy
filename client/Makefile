@@ -3,13 +3,15 @@ SUBDIRS = doc po
 PREFIX = /usr
 BINDIR = $(PREFIX)/bin
 LIBDIR = $(PREFIX)/lib
+PYTHON_SITEDIR = $(LIBDIR)
 DESTDIR = 
 
 all:
 	for d in $(SUBDIRS); do $(MAKE) -C $$d; done
 
 install:
-	install -d $(DESTDIR)/$(LIBDIR)/entropy/client/solo/commands
+	install -d $(DESTDIR)/$(LIBDIR)/entropy/client
+	install -d $(DESTDIR)/$(PYTHON_SITEDIR)/entropy/client/solo/commands
 	install -d -m 775 $(DESTDIR)/etc/entropy
 	install -d $(DESTDIR)$(BINDIR)
 	install -d $(DESTDIR)$(PREFIX)/share/man/man1
@@ -17,8 +19,8 @@ install:
 	# copying portage bashrc
 	install -m 644 ../conf/client.conf $(DESTDIR)/etc/entropy/
 
-	install -m 644 solo/*.py $(DESTDIR)/$(LIBDIR)/entropy/client/solo/
-	install -m 644 solo/commands/*.py $(DESTDIR)/$(LIBDIR)/entropy/client/solo/commands/
+	install -m 644 solo/*.py $(DESTDIR)/$(PYTHON_SITEDIR)/entropy/client/solo/
+	install -m 644 solo/commands/*.py $(DESTDIR)/$(PYTHON_SITEDIR)/entropy/client/solo/commands/
 	install -m 644 revision $(DESTDIR)/$(LIBDIR)/entropy/client/
 	install -m 755 equo.py $(DESTDIR)/$(BINDIR)/equo
 	install -m 755 kernel-switcher $(DESTDIR)/$(BINDIR)/

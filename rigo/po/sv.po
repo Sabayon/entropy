@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Patrik Karlsson <patrik@trixon.se>, 2010,2012
 # Marcus <peruvian.torch550@gmail.com>, 2012
@@ -10,61 +10,62 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-23 15:40+0200\n"
+"POT-Creation-Date: 2018-10-28 19:51+0100\n"
 "PO-Revision-Date: 2017-09-19 12:06+0000\n"
 "Last-Translator: Marcus <peruvian.torch550@gmail.com>\n"
-"Language-Team: Swedish (http://www.transifex.com/lxnay/sabayon-rigo/language/sv/)\n"
+"Language-Team: Swedish (http://www.transifex.com/lxnay/sabayon-rigo/language/"
+"sv/)\n"
+"Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: sv\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../RigoDaemon/app.py:129
+#: ../RigoDaemon/app/RigoDaemon_app.py:135
 msgid "Downloading"
 msgstr "Hämtar"
 
-#: ../RigoDaemon/app.py:131
+#: ../RigoDaemon/app/RigoDaemon_app.py:137
 msgid "Uploading"
 msgstr "Laddar upp"
 
-#: ../RigoDaemon/app.py:935
+#: ../RigoDaemon/app/RigoDaemon_app.py:941
 msgid "Internal activity in progress"
 msgstr "En intern altivitet körs"
 
-#: ../RigoDaemon/app.py:937
+#: ../RigoDaemon/app/RigoDaemon_app.py:943
 msgid "Upgrade in progress"
 msgstr "Uppgradering körs"
 
-#: ../RigoDaemon/app.py:939
+#: ../RigoDaemon/app/RigoDaemon_app.py:945
 msgid "Repositories update in progress"
 msgstr "Uppdatering utav förråden körs"
 
-#: ../RigoDaemon/app.py:941
+#: ../RigoDaemon/app/RigoDaemon_app.py:947
 msgid "Applications management in progress"
 msgstr "Pakethantering körs"
 
-#: ../RigoDaemon/app.py:1446 ../rigo_app.py:785
+#: ../RigoDaemon/app/RigoDaemon_app.py:1452 ../rigo_app.py:789
 msgid "Not authorized"
 msgstr "Inte auktoriserad"
 
-#: ../RigoDaemon/app.py:1480
+#: ../RigoDaemon/app/RigoDaemon_app.py:1486
 msgid "No repositories configured"
 msgstr "Inga förråd konfigurerade"
 
-#: ../RigoDaemon/app.py:1485
+#: ../RigoDaemon/app/RigoDaemon_app.py:1491
 msgid "Unhandled Exception"
 msgstr "Ohanterat undantag"
 
-#: ../RigoDaemon/app.py:2044
+#: ../RigoDaemon/app/RigoDaemon_app.py:2050
 msgid "Application Removal"
 msgstr "Programborttagning"
 
-#: ../RigoDaemon/app.py:2468
+#: ../RigoDaemon/app/RigoDaemon_app.py:2474
 msgid "Application download"
 msgstr "Programhämtning"
 
-#: ../RigoDaemon/app.py:2579
+#: ../RigoDaemon/app/RigoDaemon_app.py:2585
 msgid "Application Install"
 msgstr "Programinstallation"
 
@@ -179,7 +180,7 @@ msgid_plural ", <b>%i</b> Applications enqueued so far..."
 msgstr[0] ", <b>%i</b> Program som hittills köats"
 msgstr[1] ", <b>%i</b> Programmen som hittills köats"
 
-#: ../rigo/controllers/daemon.py:790 ../rigo_app.py:165
+#: ../rigo/controllers/daemon.py:790 ../rigo_app.py:169
 msgid "Application"
 msgstr "Program"
 
@@ -238,15 +239,15 @@ msgstr "Ett fel uppstod"
 #: ../rigo/controllers/daemon.py:837
 #: ../rigo/ui/gtk3/controllers/application.py:412
 #: ../rigo/ui/gtk3/controllers/application.py:499
-#: ../rigo/ui/gtk3/controllers/application.py:582 ../rigo_app.py:510
-#: ../rigo_app.py:539
+#: ../rigo/ui/gtk3/controllers/application.py:582 ../rigo_app.py:514
+#: ../rigo_app.py:543
 msgid "Ok, thanks"
 msgstr "Ok, tack"
 
 #: ../rigo/controllers/daemon.py:838
 #: ../rigo/ui/gtk3/controllers/notifications.py:225
 #: ../rigo/ui/gtk3/controllers/notifications.py:241
-#: ../rigo/ui/gtk3/controllers/notifications.py:259 ../rigo_app.py:540
+#: ../rigo/ui/gtk3/controllers/notifications.py:259 ../rigo_app.py:544
 msgid "Show me"
 msgstr "Visa mig"
 
@@ -308,14 +309,20 @@ msgstr "Okej då"
 msgid ""
 "<b>%s</b>\n"
 "is part of the Base System and <b>cannot</b> be removed"
-msgstr "<b>%s</b>\nÄr en del av bassystemet och  <b>kan inte</b> tas bort"
+msgstr ""
+"<b>%s</b>\n"
+"Är en del av bassystemet och  <b>kan inte</b> tas bort"
 
 #: ../rigo/controllers/daemon.py:2289
 #, python-format
 msgid ""
 "<b>%s</b>\n"
-"cannot be installed at this time due to <b>missing/masked</b> dependencies or dependency <b>conflict</b>"
-msgstr "<b>%s</b>\nKan inte installeras på grund utav <b>saknade/maskerade</b> beroenden eller beroende <b>konflikt</b> "
+"cannot be installed at this time due to <b>missing/masked</b> dependencies "
+"or dependency <b>conflict</b>"
+msgstr ""
+"<b>%s</b>\n"
+"Kan inte installeras på grund utav <b>saknade/maskerade</b> beroenden eller "
+"beroende <b>konflikt</b> "
 
 #: ../rigo/controllers/daemon.py:2351
 #, python-format
@@ -412,7 +419,7 @@ msgstr "Kan inte <b>sammanfoga</b> konfigurationsfil"
 msgid "Cannot <b>discard</b> configuration file"
 msgstr "Kan inte <b>avvisa</b> konfigurationsfil"
 
-#: ../rigo/ui/gtk3/controllers/group.py:90 ../rigo_app.py:183
+#: ../rigo/ui/gtk3/controllers/group.py:90 ../rigo_app.py:187
 msgid "Application Groups"
 msgstr "Programkategorier"
 
@@ -427,12 +434,15 @@ msgstr "Rensa Enteropys Session av WebbTjänster "
 #: ../rigo/ui/gtk3/controllers/application.py:174
 msgid ""
 "Discard any registered login credential used to send votes and comments."
-msgstr "Ta bort dina registrerade inloggningsuppgifter som använts för att skicka betyg och kommentarer."
+msgstr ""
+"Ta bort dina registrerade inloggningsuppgifter som använts för att skicka "
+"betyg och kommentarer."
 
 #: ../rigo/ui/gtk3/controllers/application.py:313
 #, python-format
 msgid "Logged in as <b>%s</b>! How about your <b>vote</b>?"
-msgstr "Inloggad som <b>%s</b>! Hur skulle det vara att sätta ett <b>betyg</b>?"
+msgstr ""
+"Inloggad som <b>%s</b>! Hur skulle det vara att sätta ett <b>betyg</b>?"
 
 #: ../rigo/ui/gtk3/controllers/application.py:320
 msgid "_Vote now"
@@ -506,7 +516,8 @@ msgstr "Din kommentar har lagts till, Tack!"
 #: ../rigo/ui/gtk3/controllers/application.py:579
 #, python-format
 msgid "Comment submit error: <i>%s</i>"
-msgstr "Fel uppstod när din kommentar skulle läggas till, testa igen: <i>%s</i>"
+msgstr ""
+"Fel uppstod när din kommentar skulle läggas till, testa igen: <i>%s</i>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:637
 #, python-format
@@ -659,7 +670,9 @@ msgstr "Optimera hämtningshastigheten"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:769
 msgid "Benchmark the download mirrors to speed up Application installation."
-msgstr "Sortera speglarna för att optimera hastigeten och på så sätt snabba upp installationer."
+msgstr ""
+"Sortera speglarna för att optimera hastigeten och på så sätt snabba upp "
+"installationer."
 
 #: ../rigo/ui/gtk3/controllers/applications.py:778
 msgid "Show Available Kernels"
@@ -674,9 +687,72 @@ msgid "Show Available Long-Term-Stable Kernels"
 msgstr "Visa dom tillgängliga LTS kärnorna"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:792
-msgid ""
-"Browse through the available and installable Linux LTS kernel binaries."
+msgid "Browse through the available and installable Linux LTS kernel binaries."
 msgstr "Bläddra bland dom tillgängliga Linux LTS kärn-binärer"
+
+#: ../rigo/ui/gtk3/widgets/stars.py:400
+#, python-format
+msgid "%(nr_ratings)i rating"
+msgid_plural "%(nr_ratings)i ratings"
+msgstr[0] "%(nr_ratings)i betyg"
+msgstr[1] "%(nr_ratings)i betygen"
+
+#: ../rigo/ui/gtk3/widgets/stars.py:500
+msgid "Hint: Click a star to rate this app"
+msgstr "Tips: Klicka på en stjärna för att betygsätta programmet"
+
+#. unrated caption
+#: ../rigo/ui/gtk3/widgets/stars.py:501
+msgid "Awful"
+msgstr "Fruktansvärt"
+
+#. 1 star rating
+#: ../rigo/ui/gtk3/widgets/stars.py:502
+msgid "Poor"
+msgstr "Dåligt"
+
+#. 2 star rating
+#: ../rigo/ui/gtk3/widgets/stars.py:503
+msgid "Adequate"
+msgstr "Godkänt"
+
+#. 3 star rating
+#: ../rigo/ui/gtk3/widgets/stars.py:504
+msgid "Good"
+msgstr "Bra"
+
+#. 4 star rating
+#: ../rigo/ui/gtk3/widgets/stars.py:505
+msgid "Excellent"
+msgstr "Otroligt bra"
+
+#: ../rigo/ui/gtk3/widgets/comments.py:91
+msgid "Cannot remove comment"
+msgstr "Kommentaren kan inte tas bort"
+
+#: ../rigo/ui/gtk3/widgets/comments.py:128
+msgid "remove"
+msgstr "ta bort"
+
+#: ../rigo/ui/gtk3/widgets/preferencestreeview.py:48
+msgid "Run"
+msgstr "Kör"
+
+#: ../rigo/ui/gtk3/widgets/repositorytreeview.py:62
+msgid "Enable"
+msgstr "Aktivera"
+
+#: ../rigo/ui/gtk3/widgets/repositorytreeview.py:63
+msgid "Disable"
+msgstr "Inaktivera"
+
+#: ../rigo/ui/gtk3/widgets/repositorytreeview.py:69
+msgid "Rename"
+msgstr "Döp om"
+
+#: ../rigo/ui/gtk3/widgets/grouptreeview.py:48
+msgid "View"
+msgstr "Granska"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:182
 #, python-format
@@ -771,7 +847,9 @@ msgstr "Inloggnings<b>fel</b>!"
 msgid ""
 "Cannot connect to Entropy Web Services, are you connected to the "
 "<b>interweb</b>?"
-msgstr "Kan inte ansluta till Entropys Webbjänst. Är du ansluten till <b>internet</b>?"
+msgstr ""
+"Kan inte ansluta till Entropys Webbjänst. Är du ansluten till <b>internet</"
+"b>?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:428
 msgid "Don't ask me..."
@@ -783,7 +861,9 @@ msgstr "_Självklart inte"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:439
 msgid "A watched pot never boils"
-msgstr "Hur skulle du gilla om jag tittade dig över axeln när du jobbar? Låt mig va!!!"
+msgstr ""
+"Hur skulle du gilla om jag tittade dig över axeln när du jobbar? Låt mig "
+"va!!!"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:498
 #, python-format
@@ -797,7 +877,9 @@ msgstr "Du måste <b>granska</b> och <b>acceptera</b> följande licenser: %s"
 msgid ""
 "<b>%s</b> Application or one of its dependencies is distributed with the "
 "following licenses: %s"
-msgstr "<b>%s</b> Programmet eller något av dess beroenden är distributerade med följande licenser: %s"
+msgstr ""
+"<b>%s</b> Programmet eller något av dess beroenden är distributerade med "
+"följande licenser: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:521
 msgid "Make sure to review all the licenses"
@@ -828,10 +910,13 @@ msgstr "Stäng"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:669
 msgid ""
-"Several <b>Applications</b>, no longer maintained by this distribution, have"
-" been found on your <b>System</b>. Some of them might require <b>manual "
+"Several <b>Applications</b>, no longer maintained by this distribution, have "
+"been found on your <b>System</b>. Some of them might require <b>manual "
 "review</b> before being uninstalled. Click on the Apps to expand."
-msgstr " <b>Program</b>som inte längre underhålls av Sabayon har hittats på ditt <b>System</b>. Du bör <b>granska</b> dessa innan om du tänker avinstallera dom. Klicka på programmet för att öppna."
+msgstr ""
+" <b>Program</b>som inte längre underhålls av Sabayon har hittats på ditt "
+"<b>System</b>. Du bör <b>granska</b> dessa innan om du tänker avinstallera "
+"dom. Klicka på programmet för att öppna."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:677
 msgid "Manual review"
@@ -846,7 +931,8 @@ msgstr "Säkert att släppa"
 msgid ""
 "<b>%s</b> Application requires the installation of the following "
 "Applications: %s"
-msgstr "<b>%s</b> Installationen kräver att följande program också installeras: %s"
+msgstr ""
+"<b>%s</b> Installationen kräver att följande program också installeras: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:798
 msgid "Show full list"
@@ -885,7 +971,9 @@ msgstr[1] "Det finns <b>%d</b> uppdateringar för konfigurationsfiler"
 msgid ""
 "It is <b>extremely</b> important to update these configuration files before "
 "<b>rebooting</b> the System."
-msgstr "Det är <b>extremt</b> viktigt att uppdatera dem innan du <b>startar om</b> systemet."
+msgstr ""
+"Det är <b>extremt</b> viktigt att uppdatera dem innan du <b>startar om</b> "
+"systemet."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1037
 #: ../rigo/ui/gtk3/widgets/notifications.py:1087
@@ -946,70 +1034,6 @@ msgstr "Bevarade bibliotek har påträffats på systemet."
 msgid "_Update system now"
 msgstr "_Uppdatera systemet nu"
 
-#: ../rigo/ui/gtk3/widgets/stars.py:400
-#, python-format
-msgid "%(nr_ratings)i rating"
-msgid_plural "%(nr_ratings)i ratings"
-msgstr[0] "%(nr_ratings)i betyg"
-msgstr[1] "%(nr_ratings)i betygen"
-
-#: ../rigo/ui/gtk3/widgets/stars.py:500
-msgid "Hint: Click a star to rate this app"
-msgstr "Tips: Klicka på en stjärna för att betygsätta programmet"
-
-#. unrated caption
-#: ../rigo/ui/gtk3/widgets/stars.py:501
-msgid "Awful"
-msgstr "Fruktansvärt"
-
-#. 1 star rating
-#: ../rigo/ui/gtk3/widgets/stars.py:502
-msgid "Poor"
-msgstr "Dåligt"
-
-#. 2 star rating
-#: ../rigo/ui/gtk3/widgets/stars.py:503
-msgid "Adequate"
-msgstr "Godkänt"
-
-#. 3 star rating
-#: ../rigo/ui/gtk3/widgets/stars.py:504
-msgid "Good"
-msgstr "Bra"
-
-#. 4 star rating
-#: ../rigo/ui/gtk3/widgets/stars.py:505
-msgid "Excellent"
-msgstr "Otroligt bra"
-
-#: ../rigo/ui/gtk3/widgets/comments.py:91
-msgid "Cannot remove comment"
-msgstr "Kommentaren kan inte tas bort"
-
-#: ../rigo/ui/gtk3/widgets/comments.py:128
-msgid "remove"
-msgstr "ta bort"
-
-#: ../rigo/ui/gtk3/widgets/preferencestreeview.py:48
-msgid "Run"
-msgstr "Kör"
-
-#: ../rigo/ui/gtk3/widgets/repositorytreeview.py:62
-msgid "Enable"
-msgstr "Aktivera"
-
-#: ../rigo/ui/gtk3/widgets/repositorytreeview.py:63
-msgid "Disable"
-msgstr "Inaktivera"
-
-#: ../rigo/ui/gtk3/widgets/repositorytreeview.py:69
-msgid "Rename"
-msgstr "Döp om"
-
-#: ../rigo/ui/gtk3/widgets/grouptreeview.py:48
-msgid "View"
-msgstr "Granska"
-
 #: ../rigo/ui/gtk3/widgets/noticeboardtreeview.py:55
 msgid "Show"
 msgstr "Visa"
@@ -1038,138 +1062,140 @@ msgstr "Mer information"
 msgid "<i>Browse <b>Applications</b> with ease</i>"
 msgstr "<i>Sök <b>Program</b> enkelt och bekvämt</i>"
 
-#: ../rigo_app.py:112
+#: ../rigo_app.py:116
 msgid "Hey hey hey!"
 msgstr "Hörru du du!!!"
 
-#: ../rigo_app.py:113
+#: ../rigo_app.py:117
 msgid "Rigo is working, are you sure?"
 msgstr "Rigo arbetar! Är du verkligen säker?"
 
-#: ../rigo_app.py:159
+#: ../rigo_app.py:163
 msgid "Search"
 msgstr "Sök"
 
-#: ../rigo_app.py:162 ../rigo_app.py:896 ../data/ui/gtk3/rigo.ui.h:1
+#: ../rigo_app.py:166 ../rigo_app.py:900 ../data/ui/gtk3/rigo.ui.h:1
 msgid "Rigo Application Browser"
 msgstr "Rigo ProgramHanteraren"
 
-#: ../rigo_app.py:168
+#: ../rigo_app.py:172
 msgid "Working Hard"
 msgstr "Arbetar Hårt"
 
-#: ../rigo_app.py:171
+#: ../rigo_app.py:175
 msgid "Wake Up"
 msgstr "Vakna"
 
-#: ../rigo_app.py:174
+#: ../rigo_app.py:178
 msgid "Important Stuff"
 msgstr "Viktiga grejer"
 
-#: ../rigo_app.py:177
+#: ../rigo_app.py:181
 msgid "Breaking Stuff"
 msgstr "Förstör Grejer "
 
-#: ../rigo_app.py:180
+#: ../rigo_app.py:184
 msgid "Repository Stuff"
 msgstr "Förrådsgrejer"
 
-#: ../rigo_app.py:473
+#: ../rigo_app.py:477
 msgid "Activity Interruption"
 msgstr "Avbryt pågående aktivitet"
 
-#: ../rigo_app.py:475
+#: ../rigo_app.py:479
 msgid ""
 "Are you sure you want to interrupt the ongoing Activity? The interruption "
 "will occur as soon as possible, potentially not immediately."
-msgstr "Är du säker på att du vill avbryta pågående aktivitet? Avbrottet kommer ske snarast möjligt."
+msgstr ""
+"Är du säker på att du vill avbryta pågående aktivitet? Avbrottet kommer ske "
+"snarast möjligt."
 
-#: ../rigo_app.py:500
+#: ../rigo_app.py:504
 msgid "Repositories update error"
 msgstr "Fel vid uppdatering utav förråd"
 
-#: ../rigo_app.py:504
+#: ../rigo_app.py:508
 msgid "Repositories updated <b>successfully</b>!"
 msgstr "Uppdatering av förråden <b>lyckades</b>!"
 
-#: ../rigo_app.py:522
+#: ../rigo_app.py:526
 msgid "Application Management Error"
 msgstr "Fel vid programhantering"
 
-#: ../rigo_app.py:523
+#: ../rigo_app.py:527
 msgid "please check the management log"
 msgstr "Var vänlig och kolla i hanteringsloggen"
 
-#: ../rigo_app.py:526
+#: ../rigo_app.py:530
 msgid "System Upgrade Error"
 msgstr "Ett fel inträffade vid systemuppgradering"
 
-#: ../rigo_app.py:527
+#: ../rigo_app.py:531
 msgid "please check the upgrade log"
 msgstr "Var vänlig och kolla i uppgraderingsloggen"
 
-#: ../rigo_app.py:531
+#: ../rigo_app.py:535
 msgid "Applications managed <b>successfully</b>!"
 msgstr "Programhanteringen <b>lyckades</b>!"
 
-#: ../rigo_app.py:533
+#: ../rigo_app.py:537
 msgid "System Upgraded <b>successfully</b>!"
 msgstr "Systemet Uppgraderades <b>utan problem</b>!"
 
-#: ../rigo_app.py:786
+#: ../rigo_app.py:790
 msgid "You are not authorized to run Rigo"
 msgstr "Du har inte tillstånd att köra Rigo!"
 
-#: ../rigo_app.py:794 ../rigo_app.py:805 ../rigo_app.py:823 ../rigo_app.py:878
-#: ../rigo_app.py:889 ../rigo_app.py:920
+#: ../rigo_app.py:798 ../rigo_app.py:809 ../rigo_app.py:827 ../rigo_app.py:882
+#: ../rigo_app.py:893 ../rigo_app.py:924
 msgid "Rigo"
 msgstr "Rigo"
 
-#: ../rigo_app.py:795
+#: ../rigo_app.py:799
 msgid "RigoDaemon service is not available"
 msgstr "Rigos Daemon är inte tillgänglig"
 
-#: ../rigo_app.py:807
+#: ../rigo_app.py:811
 msgid "API mismatch, please update Rigo and RigoDaemon"
 msgstr "API matchar inte. Var vänlig att uppdatera Rigo och RigoDaemon"
 
-#: ../rigo_app.py:824
+#: ../rigo_app.py:828
 msgid "Another Application Manager is active"
 msgstr "En annan programhanterare körs"
 
-#: ../rigo_app.py:841
+#: ../rigo_app.py:845
 msgid "Background Service is currently not available"
 msgstr "Bakgrundstjänsten är för tillfället inte tillgänlig"
 
-#: ../rigo_app.py:871
+#: ../rigo_app.py:875
 msgid "Background Service is currently busy"
 msgstr "Bakgrundstjänsten är upptagen för tillfället"
 
-#: ../rigo_app.py:873
+#: ../rigo_app.py:877
 msgid "Background Service is incompatible with Rigo"
 msgstr "Bakgrundstjänsten är inkompatibel med Rigo"
 
-#: ../rigo_app.py:885
+#: ../rigo_app.py:889
 msgid "Background Service is currently unavailable"
 msgstr "Bakgrundstjänsten är för tillfället inte tillgänlig"
 
-#: ../rigo_app.py:950
+#: ../rigo_app.py:954
 msgid "Happy St. Valentine <3 <3 !"
 msgstr "Glad alla hjärtans dag <3 <3 !"
 
-#: ../rigo_app.py:952
+#: ../rigo_app.py:956
 msgid "Merry Xmas \\o/ !"
 msgstr "God jul  \\o/ !"
 
-#: ../rigo_app.py:954
+#: ../rigo_app.py:958
 msgid "Happy birthday to my authoooooor!"
 msgstr "Happy birthday to my authoooooor!"
 
-#: ../rigo_app.py:956
+#: ../rigo_app.py:960
 msgid "<=|=< (this is optimistically a fish)"
 msgstr "<=|=<  (för optimisten är detta en fisk)"
 
-#: ../rigo_app.py:961
+#: ../rigo_app.py:965
 msgid "Woot, thanks"
 msgstr "Vaaaaaaa, tack"
 

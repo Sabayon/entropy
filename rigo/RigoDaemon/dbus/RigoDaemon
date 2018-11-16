@@ -3,4 +3,4 @@
 if [ -f "/etc/profile" ]; then
 	. /etc/profile
 fi
-exec /usr/lib/rigo/RigoDaemon/app.py "$@"
+exec /usr/libexec/RigoDaemon_app.py "$@"

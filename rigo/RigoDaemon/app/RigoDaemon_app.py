@@ -53,8 +53,8 @@ if "--daemon-logging" in sys.argv:
 
 
 from os import path as osp
-_base = osp.dirname(
-    osp.dirname(osp.dirname(osp.realpath(__file__))))
+_base = osp.dirname(osp.dirname(
+    osp.dirname(osp.dirname(osp.realpath(__file__)))))
 if os.path.isfile(osp.join(_base, "entropy-in-vcs-checkout")):
     sys.path.insert(0, osp.join(_base, "entropy_path_loader"))
 else:

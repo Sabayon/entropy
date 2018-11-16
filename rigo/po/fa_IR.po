@@ -1,68 +1,69 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # rootergod <rootergod@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-23 15:40+0200\n"
+"POT-Creation-Date: 2018-10-28 19:51+0100\n"
 "PO-Revision-Date: 2017-09-23 19:52+0000\n"
 "Last-Translator: rootergod <rootergod@gmail.com>\n"
-"Language-Team: Persian (Iran) (http://www.transifex.com/lxnay/sabayon-rigo/language/fa_IR/)\n"
+"Language-Team: Persian (Iran) (http://www.transifex.com/lxnay/sabayon-rigo/"
+"language/fa_IR/)\n"
+"Language: fa_IR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fa_IR\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: ../RigoDaemon/app.py:129
+#: ../RigoDaemon/app/RigoDaemon_app.py:135
 msgid "Downloading"
 msgstr "در حال دانلود"
 
-#: ../RigoDaemon/app.py:131
+#: ../RigoDaemon/app/RigoDaemon_app.py:137
 msgid "Uploading"
 msgstr "در حال اپلود"
 
-#: ../RigoDaemon/app.py:935
+#: ../RigoDaemon/app/RigoDaemon_app.py:941
 msgid "Internal activity in progress"
 msgstr "فعالیت داخلی در حال انجام هست"
 
-#: ../RigoDaemon/app.py:937
+#: ../RigoDaemon/app/RigoDaemon_app.py:943
 msgid "Upgrade in progress"
 msgstr "بروز رسانی در حال اجراست"
 
-#: ../RigoDaemon/app.py:939
+#: ../RigoDaemon/app/RigoDaemon_app.py:945
 msgid "Repositories update in progress"
 msgstr "بروز رسانی مخازن در حال اجراست"
 
-#: ../RigoDaemon/app.py:941
+#: ../RigoDaemon/app/RigoDaemon_app.py:947
 msgid "Applications management in progress"
 msgstr "برنامه مدیریت در حال اجراست"
 
-#: ../RigoDaemon/app.py:1446 ../rigo_app.py:785
+#: ../RigoDaemon/app/RigoDaemon_app.py:1452 ../rigo_app.py:789
 msgid "Not authorized"
 msgstr "غیر مجاز"
 
-#: ../RigoDaemon/app.py:1480
+#: ../RigoDaemon/app/RigoDaemon_app.py:1486
 msgid "No repositories configured"
 msgstr "مخازن تنظیم نشده‌اند"
 
-#: ../RigoDaemon/app.py:1485
+#: ../RigoDaemon/app/RigoDaemon_app.py:1491
 msgid "Unhandled Exception"
 msgstr "مورد انجام نشد"
 
-#: ../RigoDaemon/app.py:2044
+#: ../RigoDaemon/app/RigoDaemon_app.py:2050
 msgid "Application Removal"
 msgstr "پاک کردن برنامه"
 
-#: ../RigoDaemon/app.py:2468
+#: ../RigoDaemon/app/RigoDaemon_app.py:2474
 msgid "Application download"
 msgstr "دانلود برنامه"
 
-#: ../RigoDaemon/app.py:2579
+#: ../RigoDaemon/app/RigoDaemon_app.py:2585
 msgid "Application Install"
 msgstr "نصب برنامه"
 
@@ -177,7 +178,7 @@ msgid_plural ", <b>%i</b> Applications enqueued so far..."
 msgstr[0] ", <b>%i</b> برنامه‌ها در صف انتظار تا الان..."
 msgstr[1] ", <b>%i</b> برنامه‌ها در صف انتظار تا الان..."
 
-#: ../rigo/controllers/daemon.py:790 ../rigo_app.py:165
+#: ../rigo/controllers/daemon.py:790 ../rigo_app.py:169
 msgid "Application"
 msgstr "برنامه"
 
@@ -236,15 +237,15 @@ msgstr "خطای رخ داده است"
 #: ../rigo/controllers/daemon.py:837
 #: ../rigo/ui/gtk3/controllers/application.py:412
 #: ../rigo/ui/gtk3/controllers/application.py:499
-#: ../rigo/ui/gtk3/controllers/application.py:582 ../rigo_app.py:510
-#: ../rigo_app.py:539
+#: ../rigo/ui/gtk3/controllers/application.py:582 ../rigo_app.py:514
+#: ../rigo_app.py:543
 msgid "Ok, thanks"
 msgstr "بسیارخوب،سپاسگزارم"
 
 #: ../rigo/controllers/daemon.py:838
 #: ../rigo/ui/gtk3/controllers/notifications.py:225
 #: ../rigo/ui/gtk3/controllers/notifications.py:241
-#: ../rigo/ui/gtk3/controllers/notifications.py:259 ../rigo_app.py:540
+#: ../rigo/ui/gtk3/controllers/notifications.py:259 ../rigo_app.py:544
 msgid "Show me"
 msgstr "مشاهده"
 
@@ -306,14 +307,20 @@ msgstr "بسیارخوب، بعد از آن"
 msgid ""
 "<b>%s</b>\n"
 "is part of the Base System and <b>cannot</b> be removed"
-msgstr "<b>%s</b>\nقسمتی از سیستم اصلی هست و <b> قابلیت </b> پاک شدن ندارد"
+msgstr ""
+"<b>%s</b>\n"
+"قسمتی از سیستم اصلی هست و <b> قابلیت </b> پاک شدن ندارد"
 
 #: ../rigo/controllers/daemon.py:2289
 #, python-format
 msgid ""
 "<b>%s</b>\n"
-"cannot be installed at this time due to <b>missing/masked</b> dependencies or dependency <b>conflict</b>"
-msgstr "<b>%s</b>\nدرحال حاضر امکان نصب نیست بخاطر <b>missing/masked</b> وابستگی‌ها و داشتن <b>تداخل</b>"
+"cannot be installed at this time due to <b>missing/masked</b> dependencies "
+"or dependency <b>conflict</b>"
+msgstr ""
+"<b>%s</b>\n"
+"درحال حاضر امکان نصب نیست بخاطر <b>missing/masked</b> وابستگی‌ها و داشتن "
+"<b>تداخل</b>"
 
 #: ../rigo/controllers/daemon.py:2351
 #, python-format
@@ -333,7 +340,9 @@ msgstr "بسیار خوب"
 
 #: ../rigo/controllers/daemon.py:2812
 msgid "<b>System Upgrade</b> has begun, now go make some coffee"
-msgstr "<b>بروز رسانی سیستم</b> شروع شده ، برای اینکه کلافه نشین چایی برای خودتون درست کنید"
+msgstr ""
+"<b>بروز رسانی سیستم</b> شروع شده ، برای اینکه کلافه نشین چایی برای خودتون "
+"درست کنید"
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:221
 msgid "Repositories Update in <b>progress</b>..."
@@ -410,7 +419,7 @@ msgstr "نمیتونم <b>ادغام</b> کنم فایل پیکربندی رو"
 msgid "Cannot <b>discard</b> configuration file"
 msgstr "نمیتونم <b>نادیده</b> بگیرم فایل پیکربندی رو"
 
-#: ../rigo/ui/gtk3/controllers/group.py:90 ../rigo_app.py:183
+#: ../rigo/ui/gtk3/controllers/group.py:90 ../rigo_app.py:187
 msgid "Application Groups"
 msgstr "گروه برنامه‌ها"
 
@@ -641,7 +650,8 @@ msgstr "نشان دادن بروز رسانی فایل های پیکربندی"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:749
 msgid "Show (if any) the list of pending configuration file updates."
-msgstr "نشان دادن ( اگر چیزی باشه ) لیست فایل های پیکربندی که منتظر بروز رسانی هستند"
+msgstr ""
+"نشان دادن ( اگر چیزی باشه ) لیست فایل های پیکربندی که منتظر بروز رسانی هستند"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:758
 msgid "Show Installed Applications"
@@ -672,9 +682,72 @@ msgid "Show Available Long-Term-Stable Kernels"
 msgstr "نمایش کرنل‌های بلندمدت که موجود هستند"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:792
-msgid ""
-"Browse through the available and installable Linux LTS kernel binaries."
+msgid "Browse through the available and installable Linux LTS kernel binaries."
 msgstr "جستجو از طریق کرنل‌‌های بلندمدت که موجود و قابل نصب هست"
+
+#: ../rigo/ui/gtk3/widgets/stars.py:400
+#, python-format
+msgid "%(nr_ratings)i rating"
+msgid_plural "%(nr_ratings)i ratings"
+msgstr[0] "%(nr_ratings)i ارزیابی"
+msgstr[1] "%(nr_ratings)i ارزیابی"
+
+#: ../rigo/ui/gtk3/widgets/stars.py:500
+msgid "Hint: Click a star to rate this app"
+msgstr "نکته : بروری ستاره کلیک کنید برای ارزیابی این برنامه"
+
+#. unrated caption
+#: ../rigo/ui/gtk3/widgets/stars.py:501
+msgid "Awful"
+msgstr "افتضاح"
+
+#. 1 star rating
+#: ../rigo/ui/gtk3/widgets/stars.py:502
+msgid "Poor"
+msgstr "ضعیف"
+
+#. 2 star rating
+#: ../rigo/ui/gtk3/widgets/stars.py:503
+msgid "Adequate"
+msgstr "معمولی"
+
+#. 3 star rating
+#: ../rigo/ui/gtk3/widgets/stars.py:504
+msgid "Good"
+msgstr "خوب"
+
+#. 4 star rating
+#: ../rigo/ui/gtk3/widgets/stars.py:505
+msgid "Excellent"
+msgstr "عالی"
+
+#: ../rigo/ui/gtk3/widgets/comments.py:91
+msgid "Cannot remove comment"
+msgstr "نمی‌توانید نظر رو پاک کنید"
+
+#: ../rigo/ui/gtk3/widgets/comments.py:128
+msgid "remove"
+msgstr "پاک کردن"
+
+#: ../rigo/ui/gtk3/widgets/preferencestreeview.py:48
+msgid "Run"
+msgstr "اجرا"
+
+#: ../rigo/ui/gtk3/widgets/repositorytreeview.py:62
+msgid "Enable"
+msgstr "فعال کردن"
+
+#: ../rigo/ui/gtk3/widgets/repositorytreeview.py:63
+msgid "Disable"
+msgstr "غیرفعال کردن"
+
+#: ../rigo/ui/gtk3/widgets/repositorytreeview.py:69
+msgid "Rename"
+msgstr "تغییر اسم"
+
+#: ../rigo/ui/gtk3/widgets/grouptreeview.py:48
+msgid "View"
+msgstr "نمایش"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:182
 #, python-format
@@ -769,7 +842,9 @@ msgstr "ورود <b>با خطا مواجه شد</b>!"
 msgid ""
 "Cannot connect to Entropy Web Services, are you connected to the "
 "<b>interweb</b>?"
-msgstr "دسترسی به سرویس تحت وب Entropy میسر نیست مطمین هستید <b>که متصل به اینترنت هستید</b>؟"
+msgstr ""
+"دسترسی به سرویس تحت وب Entropy میسر نیست مطمین هستید <b>که متصل به اینترنت "
+"هستید</b>؟"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:428
 msgid "Don't ask me..."
@@ -788,7 +863,9 @@ msgstr " آب که از سر گذشت چه یک وجب چه صد وجب، صبر
 msgid ""
 "You are required to <b>review</b> and <b>accept</b> the following licenses "
 "before continuing: %s"
-msgstr "لازمه که شما  <b>مرور</b> و <b>قبول</b> کنید مجوزها رو قبل اینکه ادامه بدین: %s"
+msgstr ""
+"لازمه که شما  <b>مرور</b> و <b>قبول</b> کنید مجوزها رو قبل اینکه ادامه بدین: "
+"%s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:503
 #, python-format
@@ -826,10 +903,13 @@ msgstr "بستن"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:669
 msgid ""
-"Several <b>Applications</b>, no longer maintained by this distribution, have"
-" been found on your <b>System</b>. Some of them might require <b>manual "
+"Several <b>Applications</b>, no longer maintained by this distribution, have "
+"been found on your <b>System</b>. Some of them might require <b>manual "
 "review</b> before being uninstalled. Click on the Apps to expand."
-msgstr "چندین <b>برنامه</b>، که دیگه توسعه داده نمیشن توسط این توزیع داخل <b>سیستم</b> شما پیدا شده لازمه بعضی از آنها <b>مرور دستی</b> بشن قبل اینکه پاک بشن . بروی برنامه کلیک کنید تا باز بشن"
+msgstr ""
+"چندین <b>برنامه</b>، که دیگه توسعه داده نمیشن توسط این توزیع داخل <b>سیستم</"
+"b> شما پیدا شده لازمه بعضی از آنها <b>مرور دستی</b> بشن قبل اینکه پاک بشن . "
+"بروی برنامه کلیک کنید تا باز بشن"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:677
 msgid "Manual review"
@@ -883,7 +963,9 @@ msgstr[1] "تعدادی <b>%d</b> فایلهای پیکربندی برای به�
 msgid ""
 "It is <b>extremely</b> important to update these configuration files before "
 "<b>rebooting</b> the System."
-msgstr "<b>خیلی</b>مهم هست فایل های پیکربندی رو به‌روز رسانی کنید قبل اینکه  <b>سیستم</b> ریست کنید."
+msgstr ""
+"<b>خیلی</b>مهم هست فایل های پیکربندی رو به‌روز رسانی کنید قبل اینکه  "
+"<b>سیستم</b> ریست کنید."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1037
 #: ../rigo/ui/gtk3/widgets/notifications.py:1087
@@ -944,70 +1026,6 @@ msgstr "کتابخانه‌های حفاظت شده بروی سیستم شناس
 msgid "_Update system now"
 msgstr "_بروز رسانی سیستم حالا"
 
-#: ../rigo/ui/gtk3/widgets/stars.py:400
-#, python-format
-msgid "%(nr_ratings)i rating"
-msgid_plural "%(nr_ratings)i ratings"
-msgstr[0] "%(nr_ratings)i ارزیابی"
-msgstr[1] "%(nr_ratings)i ارزیابی"
-
-#: ../rigo/ui/gtk3/widgets/stars.py:500
-msgid "Hint: Click a star to rate this app"
-msgstr "نکته : بروری ستاره کلیک کنید برای ارزیابی این برنامه"
-
-#. unrated caption
-#: ../rigo/ui/gtk3/widgets/stars.py:501
-msgid "Awful"
-msgstr "افتضاح"
-
-#. 1 star rating
-#: ../rigo/ui/gtk3/widgets/stars.py:502
-msgid "Poor"
-msgstr "ضعیف"
-
-#. 2 star rating
-#: ../rigo/ui/gtk3/widgets/stars.py:503
-msgid "Adequate"
-msgstr "معمولی"
-
-#. 3 star rating
-#: ../rigo/ui/gtk3/widgets/stars.py:504
-msgid "Good"
-msgstr "خوب"
-
-#. 4 star rating
-#: ../rigo/ui/gtk3/widgets/stars.py:505
-msgid "Excellent"
-msgstr "عالی"
-
-#: ../rigo/ui/gtk3/widgets/comments.py:91
-msgid "Cannot remove comment"
-msgstr "نمی‌توانید نظر رو پاک کنید"
-
-#: ../rigo/ui/gtk3/widgets/comments.py:128
-msgid "remove"
-msgstr "پاک کردن"
-
-#: ../rigo/ui/gtk3/widgets/preferencestreeview.py:48
-msgid "Run"
-msgstr "اجرا"
-
-#: ../rigo/ui/gtk3/widgets/repositorytreeview.py:62
-msgid "Enable"
-msgstr "فعال کردن"
-
-#: ../rigo/ui/gtk3/widgets/repositorytreeview.py:63
-msgid "Disable"
-msgstr "غیرفعال کردن"
-
-#: ../rigo/ui/gtk3/widgets/repositorytreeview.py:69
-msgid "Rename"
-msgstr "تغییر اسم"
-
-#: ../rigo/ui/gtk3/widgets/grouptreeview.py:48
-msgid "View"
-msgstr "نمایش"
-
 #: ../rigo/ui/gtk3/widgets/noticeboardtreeview.py:55
 msgid "Show"
 msgstr "نمایش"
@@ -1036,138 +1054,140 @@ msgstr "اطلاعات بیشتر"
 msgid "<i>Browse <b>Applications</b> with ease</i>"
 msgstr "<i>جستجو <b>برنامه‌ها</b> براحتی</i>"
 
-#: ../rigo_app.py:112
+#: ../rigo_app.py:116
 msgid "Hey hey hey!"
 msgstr "هی هی هی !"
 
-#: ../rigo_app.py:113
+#: ../rigo_app.py:117
 msgid "Rigo is working, are you sure?"
 msgstr "ًRigo در حال کار هستش، شما مطمین هستین ؟"
 
-#: ../rigo_app.py:159
+#: ../rigo_app.py:163
 msgid "Search"
 msgstr "جستجو"
 
-#: ../rigo_app.py:162 ../rigo_app.py:896 ../data/ui/gtk3/rigo.ui.h:1
+#: ../rigo_app.py:166 ../rigo_app.py:900 ../data/ui/gtk3/rigo.ui.h:1
 msgid "Rigo Application Browser"
 msgstr "جستجوگر برنامه Rigo"
 
-#: ../rigo_app.py:168
+#: ../rigo_app.py:172
 msgid "Working Hard"
 msgstr "در حال کار بسختی"
 
-#: ../rigo_app.py:171
+#: ../rigo_app.py:175
 msgid "Wake Up"
 msgstr "بیدار شو"
 
-#: ../rigo_app.py:174
+#: ../rigo_app.py:178
 msgid "Important Stuff"
 msgstr "چیزهای مهم"
 
-#: ../rigo_app.py:177
+#: ../rigo_app.py:181
 msgid "Breaking Stuff"
 msgstr "چیزهای مضر"
 
-#: ../rigo_app.py:180
+#: ../rigo_app.py:184
 msgid "Repository Stuff"
 msgstr "مخزن اساسی"
 
-#: ../rigo_app.py:473
+#: ../rigo_app.py:477
 msgid "Activity Interruption"
 msgstr "قطع فعالیت"
 
-#: ../rigo_app.py:475
+#: ../rigo_app.py:479
 msgid ""
 "Are you sure you want to interrupt the ongoing Activity? The interruption "
 "will occur as soon as possible, potentially not immediately."
-msgstr "آیا مطمین هستین که مخواهید فعالیتی در حال اجراست رو قطع کنید ؟ در اسرع وقت این اتفاق روی نمیده، بلافاصله انجام نمیشه"
+msgstr ""
+"آیا مطمین هستین که مخواهید فعالیتی در حال اجراست رو قطع کنید ؟ در اسرع وقت "
+"این اتفاق روی نمیده، بلافاصله انجام نمیشه"
 
-#: ../rigo_app.py:500
+#: ../rigo_app.py:504
 msgid "Repositories update error"
 msgstr "خطای بروز رسانی مخازن"
 
-#: ../rigo_app.py:504
+#: ../rigo_app.py:508
 msgid "Repositories updated <b>successfully</b>!"
 msgstr "مخازن بروز رسانی شد <b>با موفقیت</b>!"
 
-#: ../rigo_app.py:522
+#: ../rigo_app.py:526
 msgid "Application Management Error"
 msgstr "خطای برنامه مدیریت"
 
-#: ../rigo_app.py:523
+#: ../rigo_app.py:527
 msgid "please check the management log"
 msgstr "لطفا لاگ مدیریت را بررسی کنید"
 
-#: ../rigo_app.py:526
+#: ../rigo_app.py:530
 msgid "System Upgrade Error"
 msgstr "خطای بروز رسانی سیستم"
 
-#: ../rigo_app.py:527
+#: ../rigo_app.py:531
 msgid "please check the upgrade log"
 msgstr "لطفا لاگ بروز رسانی بررسی کنید"
 
-#: ../rigo_app.py:531
+#: ../rigo_app.py:535
 msgid "Applications managed <b>successfully</b>!"
 msgstr "برنامه‌‌ها مدیریت شدند <b>بطور موفقیت آمیز</b>!"
 
-#: ../rigo_app.py:533
+#: ../rigo_app.py:537
 msgid "System Upgraded <b>successfully</b>!"
 msgstr "بروز رسانی سیستم انجام شد <b>بطور موفقیت آمیز</b>!"
 
-#: ../rigo_app.py:786
+#: ../rigo_app.py:790
 msgid "You are not authorized to run Rigo"
 msgstr "شما مجاز به اجرا کردن Rigo نیستین"
 
-#: ../rigo_app.py:794 ../rigo_app.py:805 ../rigo_app.py:823 ../rigo_app.py:878
-#: ../rigo_app.py:889 ../rigo_app.py:920
+#: ../rigo_app.py:798 ../rigo_app.py:809 ../rigo_app.py:827 ../rigo_app.py:882
+#: ../rigo_app.py:893 ../rigo_app.py:924
 msgid "Rigo"
 msgstr "Rigo"
 
-#: ../rigo_app.py:795
+#: ../rigo_app.py:799
 msgid "RigoDaemon service is not available"
 msgstr "سرویس RigoDaemon موجود نیست"
 
-#: ../rigo_app.py:807
+#: ../rigo_app.py:811
 msgid "API mismatch, please update Rigo and RigoDaemon"
 msgstr "API نادرست، بروز رسانی کنید : Rigo and RigoDaemon"
 
-#: ../rigo_app.py:824
+#: ../rigo_app.py:828
 msgid "Another Application Manager is active"
 msgstr "برنامه مدیریت دیگری فعال هست"
 
-#: ../rigo_app.py:841
+#: ../rigo_app.py:845
 msgid "Background Service is currently not available"
 msgstr "سرویس پیش‌زمینه در حال حاضر موجود نیست"
 
-#: ../rigo_app.py:871
+#: ../rigo_app.py:875
 msgid "Background Service is currently busy"
 msgstr "سرویس پیش‌زمینه در حال حاضر مشغول هست"
 
-#: ../rigo_app.py:873
+#: ../rigo_app.py:877
 msgid "Background Service is incompatible with Rigo"
 msgstr "سرویس پیش‌زمینه ناسازگار هست با Rigo"
 
-#: ../rigo_app.py:885
+#: ../rigo_app.py:889
 msgid "Background Service is currently unavailable"
 msgstr "سرویس پیش‌زمینه در حال حاضر دردسترس نیست"
 
-#: ../rigo_app.py:950
+#: ../rigo_app.py:954
 msgid "Happy St. Valentine <3 <3 !"
 msgstr "روز عشاق گرامی باد !!!"
 
-#: ../rigo_app.py:952
+#: ../rigo_app.py:956
 msgid "Merry Xmas \\o/ !"
 msgstr "سال روز تولد حضرت عیسی گرامی باد !!!"
 
-#: ../rigo_app.py:954
+#: ../rigo_app.py:958
 msgid "Happy birthday to my authoooooor!"
 msgstr "تولدم مبارک باشه برای نویسنده‌ام !!!"
 
-#: ../rigo_app.py:956
+#: ../rigo_app.py:960
 msgid "<=|=< (this is optimistically a fish)"
 msgstr "<=|=< (ماهی بصورت خوش بینانه)"
 
-#: ../rigo_app.py:961
+#: ../rigo_app.py:965
 msgid "Woot, thanks"
 msgstr "اوو، بسیارخوب"
 
