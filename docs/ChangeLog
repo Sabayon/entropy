@@ -1,3 +1,103 @@
+commit e16a1585ec8bc95965ef846537b66bc935b0ba52
+Author: Ettore Di Giacinto <mudler@gentoo.org>
+Date:   Thu Nov 22 21:59:03 2018 +0100
+
+    Release Entropy 319
+
+commit 6eedde723759cd72a7a1b3397d705bbefbec71ad
+Merge: 450456a4e a0d8c18b4
+Author: Ettore Di Giacinto <mudler@users.noreply.github.com>
+Date:   Fri Nov 16 18:30:32 2018 +0100
+
+    Merge pull request #67 from Enlik/fasterxpak
+    
+    [entropy.spm] speed up xpak finding
+
+commit 450456a4ec024f50819b20fa8e886bb69af901a9
+Merge: 1c083477d f4332c76c
+Author: Ettore Di Giacinto <mudler@users.noreply.github.com>
+Date:   Fri Nov 16 18:29:44 2018 +0100
+
+    Merge pull request #65 from Enlik/modules-reorg
+    
+    Preparation for installation in Python-specific directories
+
+commit a0d8c18b49ddfefd2dd79386c6138720ac1fd8a2
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Wed Nov 14 09:10:34 2018 +0100
+
+    [entropy.spm] speed up xpak finding
+    
+    Now it's chunk based, so fewer reads and seeks, and searching itself
+    is improved as well.
+
+commit 1c083477dc33c082d4fb71bdd2ea7a75d191a73e
+Merge: 2c1e3855b 4b728b998
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 5 10:07:02 2018 +0100
+
+    Merge pull request #66 from geaaru/eit-push-py36
+    
+    Fix vacuum on py3.6
+
+commit 4b728b998e8a4dd9c3ccad946bef0aa778c7f982
+Author: Geaaru <geaaru@gmail.com>
+Date:   Sun Nov 4 17:01:27 2018 +0100
+
+    Fix vacuum on py3.6
+    
+    pysqlite has a bug on use VACUUM with py3.6 (see https://github.com/ghaering/pysqlite/issues/109)
+    
+    Hereinafter, exception related to eit push --quick --force <REPO> command:
+    
+    Traceback (most recent call last):
+      File "/usr/lib/entropy/lib/entropy/db/sql.py", line 166, in _proxy_call
+        return method(*args, **kwargs)
+    sqlite3.OperationalError: cannot VACUUM from within a transaction
+    
+    During handling of the above exception, another exception occurred:
+    
+    Traceback (most recent call last):
+      File "/usr/bin/eit", line 17, in <module>
+        main()
+      File "/usr/lib/entropy/server/eit/main.py", line 114, in main
+        exit_st = func(*func_args)
+      File "/usr/lib/entropy/server/eit/commands/command.py", line 237, in _call_exclusive
+        return func(server)
+      File "/usr/lib/entropy/server/eit/commands/push.py", line 172, in _push
+        rc = self._push_repo(entropy_server, repository_id)
+      File "/usr/lib/entropy/server/eit/commands/push.py", line 184, in _push_repo
+        rc = self.__push_repo(entropy_server, repository_id)
+      File "/usr/lib/entropy/server/eit/commands/push.py", line 309, in __push_repo
+        sts = self.__sync_repo(entropy_server, repository_id)
+      File "/usr/lib/entropy/server/eit/commands/push.py", line 262, in __sync_repo
+        enable_download = False, force = self._force)
+      File "/usr/lib/entropy/lib/entropy/server/interfaces/mirrors.py", line 1673, in sync_repository
+        enable_upload, enable_download, force = force)
+      File "/usr/lib/entropy/lib/entropy/server/interfaces/db.py", line 231, in update
+        enable_upload, enable_download, force = force).update()
+      File "/usr/lib/entropy/lib/entropy/server/interfaces/db.py", line 404, in update
+        rc, fine_uris, broken_uris = self._sync()
+      File "/usr/lib/entropy/lib/entropy/server/interfaces/db.py", line 1873, in _sync
+        broken_uris = self._upload(uris)
+      File "/usr/lib/entropy/lib/entropy/server/interfaces/db.py", line 1529, in _upload
+        self._shrink_and_close(dbconn)
+      File "/usr/lib/entropy/lib/entropy/server/interfaces/db.py", line 1234, in _shrink_and_close
+        entropy_repository.vacuum()
+      File "/usr/lib/entropy/lib/entropy/db/sqlite.py", line 703, in vacuum
+        self._cursor().execute("vacuum")
+      File "/usr/lib/entropy/lib/entropy/db/sqlite.py", line 58, in execute
+        cur = self._proxy_call(self._cur.execute, *args, **kwargs)
+      File "/usr/lib/entropy/lib/entropy/db/sql.py", line 173, in _proxy_call
+        raise OperationalError(err)
+    entropy.db.exceptions.OperationalError: cannot VACUUM from within a transaction
+
+commit 2c1e3855b9dfeb181897d1a57d318a7fb10e03aa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 3 20:18:26 2018 +0100
+
+    Tagging Entropy version 318
+
 commit c0b065fbff4e5ba2b9b15c04042af0c7b29988f2
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Nov 3 20:18:26 2018 +0100
@@ -20,6 +120,112 @@ Date:   Sat Nov 3 20:14:34 2018 +0100
     kswitch: allow to pass the preferred kernel virtual.
     
     It's possible to choose between LTS and non-LTS kernels via list() now.
+
+commit f4332c76c821ccde1ae66def3970c32b1e77355b
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Sat Nov 3 18:07:07 2018 +0100
+
+    [magneto] import entropy modules at upper level
+    
+    Otherwise "entropy" module loading logic was delayed, excluding this
+    import (which was done early, before entropy_path_loader logic):
+    
+        from entropy.locks import SimpleFileLock
+    
+    and it failed when system wide PYTHONPATH is dropped.
+    
+    There was a comment not to do an early import due to --no-pid-handling.
+    The comment was added in:
+    
+        commit 59e5fd737e9360329d1a627ce49322f89274ca9d
+        Date:   Tue Mar 1 13:13:18 2011 +0100
+    
+            [magneto] fix lock file handling
+    
+    but then the logic was reworked in:
+    
+        commit 5d315c70bdbd455dc46f680b54275cb59853dd43
+        Date:   Sun Feb 24 23:34:49 2013 +0100
+    
+            [entropy.const] drop /var/run/entropy/entropy.lock file and directory handling
+    
+    and then passing --no-pid-handling (which was unused at this point) from
+    mangeto file was removed in:
+    
+        commit 83b8991c95d080973631a5c1e36af6a7573eeed9
+        Date:   Wed Feb 27 20:59:14 2013 +0000
+    
+            [magneto] rewrite systray icons management, improve KDE, GNOME and MATE integration
+
+commit 110b590fc58f0713fbd5034919791b47f4000caf
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Sat Nov 3 17:48:38 2018 +0100
+
+    [magneto] import also magneto (fix)
+
+commit 4297d175302208d30f656a7ca06925e6d60a582d
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Sun Oct 28 21:56:41 2018 +0100
+
+    [misc, services] remove useless setting of PYTHONPATH
+
+commit 65b634adb2186db169cbb16ad8e9577290a987dc
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Sun Oct 28 21:54:28 2018 +0100
+
+    [entropy.const] comment on the 'installdir' key
+
+commit 33966f4f311532ccf09430c84e5616fcb95472ac
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Sun Oct 28 21:42:41 2018 +0100
+
+    [*] allow setting PYTHON_SITEDIR for make
+    
+    This way a proper separation between Python installs can be achieved.
+    
+    With no PYTHON_SITEDIR, installation paths are exactly the same as
+    before this change.
+    
+    In practise, passing nonstandard path will break Entropy but so it is
+    also with the currently available LIBDIR. This is a concern of a future
+    improvement (at least the PYTHON_SITEDIR path, not necessarily LIBDIR as
+    PYTHON_SITEDIR *will* be different if it's installed in Python specific
+    directories).
+
+commit 0ccbc1f093099aa979e4702851eb6597e9160fa1
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Sun Oct 28 19:53:53 2018 +0100
+
+    [Rigo] update ("reformat" only) translations
+    
+    Due to a change of a .py file.
+
+commit 96909f6d29db26a7e1597cb908e70bc6731262c2
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Sun Oct 28 19:48:07 2018 +0100
+
+    [rigo/po] add RigoDaemon_app.py to POTFILES.in
+
+commit b44be655b26a35d1c7dcebb6afbf28914d866c0e
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Sun Oct 28 19:28:21 2018 +0100
+
+    [magneto] remove wrapper, install the main Python file to PATH directly
+    
+    The wrapper was making it more difficult to use the correct system wide
+    Python implementation.
+
+commit 90ecb5b00d294b98c732e12ffe39b5a7ff6dfe30
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Sun Oct 28 19:07:12 2018 +0100
+
+    [RigoDaemon] make the application part be in /usr/libexec
+    
+    This way there is no hardcoded /usr/lib/rigo, and the "executable" part
+    is in a well known location which can be replicated on system for
+    different Python implementations. (As in: it will be like /usr/bin/foo.py
+    which on Gentoo links to a system wrapper making it use configured
+    Python.)
 
 commit d44d473b198926266dc463c2d3fd5d8d3df8ec49
 Merge: c411a93dc 41ba9b6d6
