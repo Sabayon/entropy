@@ -15,9 +15,9 @@ import argparse
 from entropy.i18n import _, ngettext
 from entropy.output import darkred, blue, brown, darkgreen, purple
 
-from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.command import SoloCommand, sharedlock
-from solo.utils import print_table, print_package_info
+from _entropy.solo.commands.descriptor import SoloCommandDescriptor
+from _entropy.solo.commands.command import SoloCommand, sharedlock
+from _entropy.solo.utils import print_table, print_package_info
 
 import entropy.dep
 

@@ -23,8 +23,9 @@ from entropy.exceptions import SystemDatabaseError
 from entropy.db.exceptions import OperationalError, DatabaseError
 from entropy.client.interfaces.db import InstalledPackagesRepository
 
-from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.command import SoloCommand, sharedlock, exclusivelock
+from _entropy.solo.commands.descriptor import SoloCommandDescriptor
+from _entropy.solo.commands.command import SoloCommand, sharedlock, \
+        exclusivelock
 
 import entropy.dep
 import entropy.tools

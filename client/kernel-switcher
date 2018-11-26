@@ -18,8 +18,8 @@ from entropy.client.interfaces import Client
 import entropy.dep
 import entropy.tools
 
-from solo.commands.install import SoloInstall
-from solo.utils import print_package_info
+from _entropy.solo.commands.install import SoloInstall
+from _entropy.solo.utils import print_package_info
 
 import kswitch
 

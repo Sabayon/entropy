@@ -31,7 +31,8 @@ def add_import_path(mod):
 mods = (
     "client",
     "server",
-    "lib"
+    "lib",
+    "entropy_path_loader/compat"
 )
 
 for mod in mods:

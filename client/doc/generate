@@ -13,7 +13,7 @@ if os.path.isfile(osp.join(_base, "entropy-in-vcs-checkout")):
     import entropy_path_loader
 del osp
 
-from solo.commands.descriptor import SoloCommandDescriptor
+from _entropy.solo.commands.descriptor import SoloCommandDescriptor
 
 MAN_HEADER="""\
 EQUO(1)

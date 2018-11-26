@@ -16,9 +16,9 @@ import argparse
 from entropy.i18n import _
 from entropy.const import etpConst
 
-from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.command import SoloCommand
-from solo.utils import cleanup
+from _entropy.solo.commands.descriptor import SoloCommandDescriptor
+from _entropy.solo.commands.command import SoloCommand
+from _entropy.solo.utils import cleanup
 
 class SoloCleanup(SoloCommand):
     """

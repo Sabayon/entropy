@@ -308,7 +308,7 @@ else:
 
         # this test might be considered controversial, for now, let's keep it
         # here, we use equo stuff to make sure it keeps working
-        from solo.commands.pkg import SoloPkg
+        from _entropy.solo.commands.pkg import SoloPkg
 
         # we need to tweak the default unpack dir to make pkg install available
         # for uids != 0

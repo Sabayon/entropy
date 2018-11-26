@@ -15,8 +15,8 @@ from entropy.i18n import _
 from entropy.output import TextInterface
 from entropy.cache import EntropyCacher
 
-from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.command import SoloCommand
+from _entropy.solo.commands.descriptor import SoloCommandDescriptor
+from _entropy.solo.commands.command import SoloCommand
 
 class SoloYell(SoloCommand):
     """

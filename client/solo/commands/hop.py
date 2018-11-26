@@ -16,8 +16,8 @@ from entropy.i18n import _
 from entropy.output import brown, purple, teal, darkred, bold, \
     red, darkgreen
 
-from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.command import SoloCommand, exclusivelock
+from _entropy.solo.commands.descriptor import SoloCommandDescriptor
+from _entropy.solo.commands.command import SoloCommand, exclusivelock
 
 class SoloHop(SoloCommand):
     """

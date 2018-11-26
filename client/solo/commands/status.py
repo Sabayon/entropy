@@ -19,8 +19,8 @@ from entropy.const import etpConst, const_convert_to_unicode
 
 import entropy.tools
 
-from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.command import SoloCommand
+from _entropy.solo.commands.descriptor import SoloCommandDescriptor
+from _entropy.solo.commands.command import SoloCommand
 
 class SoloStatus(SoloCommand):
     """

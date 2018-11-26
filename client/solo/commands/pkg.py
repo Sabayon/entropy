@@ -23,8 +23,8 @@ from entropy.output import darkgreen, teal, brown, purple, darkred, blue
 import entropy.tools
 import entropy.dep
 
-from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.command import SoloCommand, sharedlock
+from _entropy.solo.commands.descriptor import SoloCommandDescriptor
+from _entropy.solo.commands.command import SoloCommand, sharedlock
 
 
 class SoloPkg(SoloCommand):

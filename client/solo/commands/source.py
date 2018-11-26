@@ -16,8 +16,8 @@ import argparse
 from entropy.i18n import _
 from entropy.output import darkred, darkgreen, blue
 
-from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands._manage import SoloManage
+from _entropy.solo.commands.descriptor import SoloCommandDescriptor
+from _entropy.solo.commands._manage import SoloManage
 
 class SoloSource(SoloManage):
     """

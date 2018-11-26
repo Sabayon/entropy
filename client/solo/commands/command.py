@@ -26,7 +26,7 @@ from entropy.core.settings.base import SystemSettings
 
 import entropy.tools
 
-from solo.utils import enlightenatom
+from _entropy.solo.utils import enlightenatom
 
 
 def _fix_argparse_print_help():

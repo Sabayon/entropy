@@ -20,8 +20,8 @@ from entropy.output import red, blue, brown, darkgreen
 
 import entropy.tools
 
-from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.command import SoloCommand, sharedlock
+from _entropy.solo.commands.descriptor import SoloCommandDescriptor
+from _entropy.solo.commands.command import SoloCommand, sharedlock
 
 
 class SoloUnused(SoloCommand):

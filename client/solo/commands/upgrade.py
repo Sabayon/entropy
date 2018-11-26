@@ -20,9 +20,9 @@ from entropy.locks import EntropyResourcesLock
 
 import entropy.tools
 
-from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.install import SoloInstall
-from solo.commands.remove import SoloRemove
+from _entropy.solo.commands.descriptor import SoloCommandDescriptor
+from _entropy.solo.commands.install import SoloInstall
+from _entropy.solo.commands.remove import SoloRemove
 
 
 class SoloUpgrade(SoloInstall, SoloRemove):

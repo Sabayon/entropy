@@ -28,8 +28,8 @@ from entropy.output import readtext, darkgreen, brown, teal, purple, \
 
 import entropy.tools
 
-from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.command import SoloCommand
+from _entropy.solo.commands.descriptor import SoloCommandDescriptor
+from _entropy.solo.commands.command import SoloCommand
 
 
 class SoloConf(SoloCommand):
