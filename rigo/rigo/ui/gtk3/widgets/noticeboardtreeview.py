@@ -23,10 +23,11 @@ from gi.repository import Gtk, GObject
 from .cellrenderers import CellButtonRenderer, CellRendererNoticeView, \
     NoticeCellButtonIDs
 
-from rigo.utils import open_url
-from rigo.ui.gtk3.models.noticeboardliststore import NoticeBoardListStore
+from _entropy.rigo.utils import open_url
+from _entropy.rigo.ui.gtk3.models.noticeboardliststore import \
+    NoticeBoardListStore
 
-from rigo.ui.gtk3.widgets.generictreeview import GenericTreeView
+from _entropy.rigo.ui.gtk3.widgets.generictreeview import GenericTreeView
 
 
 class NoticeBoardTreeView(GenericTreeView):

@@ -24,3 +24,6 @@ sys.modules['_entropy.eit'] = eit
 
 import matter
 sys.modules['_entropy.matter'] = matter
+
+import rigo
+sys.modules['_entropy.rigo'] = rigo

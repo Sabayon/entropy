@@ -20,8 +20,8 @@ this program; if not, write to the Free Software Foundation, Inc.,
 """
 from gi.repository import Gtk, Pango, GObject, GLib
 
-from rigo.utils import escape_markup
-from rigo.ui.gtk3.widgets.notifications import NotificationBox
+from _entropy.rigo.utils import escape_markup
+from _entropy.rigo.ui.gtk3.widgets.notifications import NotificationBox
 
 from entropy.i18n import _
 from entropy.misc import ParallelTask

@@ -26,12 +26,12 @@ from threading import Lock, Semaphore, Timer
 
 from gi.repository import Gtk, GLib, GObject
 
-from rigo.paths import CONF_DIR
-from rigo.enums import RigoViewStates, AppActions, Icons
-from rigo.models.application import Application, ApplicationMetadata
-from rigo.models.preference import Preference
-from rigo.utils import escape_markup, prepare_markup
-from rigo.ui.gtk3.widgets.notifications import \
+from _entropy.rigo.paths import CONF_DIR
+from _entropy.rigo.enums import RigoViewStates, AppActions, Icons
+from _entropy.rigo.models.application import Application, ApplicationMetadata
+from _entropy.rigo.models.preference import Preference
+from _entropy.rigo.utils import escape_markup, prepare_markup
+from _entropy.rigo.ui.gtk3.widgets.notifications import \
     NotificationBox
 
 from entropy.cache import EntropyCacher

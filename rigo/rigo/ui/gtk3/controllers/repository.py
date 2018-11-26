@@ -24,12 +24,12 @@ import errno
 
 from gi.repository import Gtk, GObject, GLib
 
-from rigo.enums import Icons, RigoViewStates
-from rigo.utils import prepare_markup
-from rigo.models.repository import Repository
-from rigo.ui.gtk3.widgets.notifications import NotificationBox, \
+from _entropy.rigo.enums import Icons, RigoViewStates
+from _entropy.rigo.utils import prepare_markup
+from _entropy.rigo.models.repository import Repository
+from _entropy.rigo.ui.gtk3.widgets.notifications import NotificationBox, \
     RenameRepositoryNotificationBox
-from rigo.models.preference import Preference
+from _entropy.rigo.models.preference import Preference
 
 from entropy.const import const_debug_write
 from entropy.misc import ParallelTask

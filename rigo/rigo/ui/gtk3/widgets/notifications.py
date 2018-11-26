@@ -25,11 +25,11 @@ from threading import Timer, Semaphore, Lock
 
 from gi.repository import Gtk, GLib, GObject, Pango
 
-from rigo.em import StockEms
-from rigo.utils import build_register_url, open_url, escape_markup, \
+from _entropy.rigo.em import StockEms
+from _entropy.rigo.utils import build_register_url, open_url, escape_markup, \
     prepare_markup
-from rigo.models.application import Application
-from rigo.enums import AppActions, LocalActivityStates, RigoViewStates
+from _entropy.rigo.models.application import Application
+from _entropy.rigo.enums import AppActions, LocalActivityStates, RigoViewStates
 
 from entropy.const import etpConst, const_convert_to_unicode, \
     const_debug_write, const_mkstemp

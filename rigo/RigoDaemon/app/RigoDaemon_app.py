@@ -58,7 +58,6 @@ _base = osp.dirname(osp.dirname(
 if os.path.isfile(osp.join(_base, "entropy-in-vcs-checkout")):
     sys.path.insert(0, osp.join(_base, "entropy_path_loader"))
     import entropy_path_loader
-    entropy_path_loader.add_import_path("rigo")
 del osp
 
 from entropy.cache import EntropyCacher

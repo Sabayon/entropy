@@ -27,10 +27,11 @@ from entropy.i18n import _
 from .cellrenderers import CellButtonRenderer, \
     CellRendererConfigUpdateView, ConfigUpdateCellButtonIDs
 
-from rigo.em import em, StockEms, Ems
-from rigo.ui.gtk3.models.confupdateliststore import ConfigUpdatesListStore
+from _entropy.rigo.em import em, StockEms, Ems
+from _entropy.rigo.ui.gtk3.models.confupdateliststore import \
+    ConfigUpdatesListStore
 
-from rigo.ui.gtk3.widgets.generictreeview import GenericTreeView
+from _entropy.rigo.ui.gtk3.widgets.generictreeview import GenericTreeView
 
 
 class ConfigUpdatesTreeView(GenericTreeView):

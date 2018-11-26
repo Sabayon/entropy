@@ -23,9 +23,10 @@ from gi.repository import Gtk, GObject
 from .cellrenderers import CellButtonRenderer, CellRendererPreferenceView, \
     PreferenceCellButtonIDs
 
-from rigo.ui.gtk3.models.preferencesliststore import PreferencesListStore
+from _entropy.rigo.ui.gtk3.models.preferencesliststore import \
+    PreferencesListStore
 
-from rigo.ui.gtk3.widgets.generictreeview import GenericTreeView
+from _entropy.rigo.ui.gtk3.widgets.generictreeview import GenericTreeView
 
 from entropy.i18n import _
 

@@ -21,16 +21,16 @@ this program; if not, write to the Free Software Foundation, Inc.,
 
 from gi.repository import Gtk, Gdk, GLib, GObject
 
-from rigo.em import StockEms
-from rigo.enums import AppActions, RigoViewStates
-from rigo.ui.gtk3.widgets.notifications import NotificationBox, \
+from _entropy.rigo.em import StockEms
+from _entropy.rigo.enums import AppActions, RigoViewStates
+from _entropy.rigo.ui.gtk3.widgets.notifications import NotificationBox, \
     LoginNotificationBox
-from rigo.ui.gtk3.widgets.stars import ReactiveStar
-from rigo.ui.gtk3.widgets.comments import CommentBox
-from rigo.ui.gtk3.widgets.images import ImageBox
-from rigo.utils import build_application_store_url, \
+from _entropy.rigo.ui.gtk3.widgets.stars import ReactiveStar
+from _entropy.rigo.ui.gtk3.widgets.comments import CommentBox
+from _entropy.rigo.ui.gtk3.widgets.images import ImageBox
+from _entropy.rigo.utils import build_application_store_url, \
     escape_markup, prepare_markup
-from rigo.models.preference import Preference
+from _entropy.rigo.models.preference import Preference
 
 from RigoDaemon.enums import AppActions as DaemonAppActions, \
     ActivityStates as DaemonActivityStates

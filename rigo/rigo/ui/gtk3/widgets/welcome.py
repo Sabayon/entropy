@@ -22,7 +22,7 @@ import os
 
 from gi.repository import Gtk
 
-from rigo.paths import DATA_DIR
+from _entropy.rigo.paths import DATA_DIR
 
 from entropy.i18n import _
 

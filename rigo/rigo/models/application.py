@@ -41,8 +41,8 @@ from entropy.client.services.interfaces import ClientWebService, \
 import entropy.tools
 import entropy.dep
 
-from rigo.enums import Icons
-from rigo.utils import build_application_store_url, escape_markup, \
+from _entropy.rigo.enums import Icons
+from _entropy.rigo.utils import build_application_store_url, escape_markup, \
     prepare_markup
 
 

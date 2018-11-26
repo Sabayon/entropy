@@ -34,6 +34,7 @@ mod_paths = (
     "lib",
     "magneto/src",
     "matter",
+    "rigo",
     "entropy_path_loader/compat"
 )
 

@@ -28,19 +28,19 @@ import dbus
 
 from gi.repository import Gtk, GLib, GObject
 
-from rigo.enums import AppActions, RigoViewStates, \
+from _entropy.rigo.enums import AppActions, RigoViewStates, \
     LocalActivityStates
-from rigo.models.application import Application
-from rigo.models.configupdate import ConfigUpdate
-from rigo.models.noticeboard import Notice
-from rigo.ui.gtk3.widgets.notifications import NotificationBox, \
+from _entropy.rigo.models.application import Application
+from _entropy.rigo.models.configupdate import ConfigUpdate
+from _entropy.rigo.models.noticeboard import Notice
+from _entropy.rigo.ui.gtk3.widgets.notifications import NotificationBox, \
     PleaseWaitNotificationBox, LicensesNotificationBox, \
     OrphanedAppsNotificationBox, InstallNotificationBox, \
     RemovalNotificationBox, QueueActionNotificationBox, \
     UpdatesNotificationBox, RepositoriesUpdateNotificationBox, \
     PreservedLibsNotificationBox
 
-from rigo.utils import prepare_markup
+from _entropy.rigo.utils import prepare_markup
 
 from RigoDaemon.enums import ActivityStates as DaemonActivityStates, \
     AppActions as DaemonAppActions, \

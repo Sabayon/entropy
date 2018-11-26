@@ -22,7 +22,7 @@ import os
 import tempfile
 from threading import Lock
 
-from rigo.paths import CONF_DIR
+from _entropy.rigo.paths import CONF_DIR
 
 from entropy.misc import ReadersWritersSemaphore
 from entropy.services.client import WebService

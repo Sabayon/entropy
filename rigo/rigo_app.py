@@ -34,51 +34,58 @@ _base = osp.dirname(osp.dirname(osp.realpath(__file__)))
 if os.path.isfile(osp.join(_base, "entropy-in-vcs-checkout")):
     sys.path.insert(0, osp.join(_base, "entropy_path_loader"))
     import entropy_path_loader
-    entropy_path_loader.add_import_path("rigo")
 del osp
 
 from gi.repository import Gtk, Gdk, GLib
 
-from rigo.paths import DATA_DIR
-from rigo.enums import RigoViewStates, LocalActivityStates
-from rigo.entropyapi import EntropyWebService, EntropyClient as Client
-from rigo.ui.gtk3.widgets.apptreeview import AppTreeView
-from rigo.ui.gtk3.widgets.confupdatetreeview import ConfigUpdatesTreeView
-from rigo.ui.gtk3.widgets.noticeboardtreeview import NoticeBoardTreeView
-from rigo.ui.gtk3.widgets.preferencestreeview import PreferencesTreeView
-from rigo.ui.gtk3.widgets.grouptreeview import GroupTreeView
-from rigo.ui.gtk3.widgets.repositorytreeview import RepositoryTreeView
-from rigo.ui.gtk3.widgets.notifications import NotificationBox
-from rigo.ui.gtk3.controllers.applications import \
+from _entropy.rigo.paths import DATA_DIR
+from _entropy.rigo.enums import RigoViewStates, LocalActivityStates
+from _entropy.rigo.entropyapi import EntropyWebService, EntropyClient as Client
+from _entropy.rigo.ui.gtk3.widgets.apptreeview import AppTreeView
+from _entropy.rigo.ui.gtk3.widgets.confupdatetreeview import \
+    ConfigUpdatesTreeView
+from _entropy.rigo.ui.gtk3.widgets.noticeboardtreeview import \
+    NoticeBoardTreeView
+from _entropy.rigo.ui.gtk3.widgets.preferencestreeview import \
+    PreferencesTreeView
+from _entropy.rigo.ui.gtk3.widgets.grouptreeview import GroupTreeView
+from _entropy.rigo.ui.gtk3.widgets.repositorytreeview import RepositoryTreeView
+from _entropy.rigo.ui.gtk3.widgets.notifications import NotificationBox
+from _entropy.rigo.ui.gtk3.controllers.applications import \
     ApplicationsViewController
-from rigo.ui.gtk3.controllers.application import \
+from _entropy.rigo.ui.gtk3.controllers.application import \
     ApplicationViewController
-from rigo.ui.gtk3.controllers.confupdate import \
+from _entropy.rigo.ui.gtk3.controllers.confupdate import \
     ConfigUpdatesViewController
-from rigo.ui.gtk3.controllers.noticeboard import \
+from _entropy.rigo.ui.gtk3.controllers.noticeboard import \
     NoticeBoardViewController
-from rigo.ui.gtk3.controllers.preference import \
+from _entropy.rigo.ui.gtk3.controllers.preference import \
     PreferenceViewController
-from rigo.ui.gtk3.controllers.repository import \
+from _entropy.rigo.ui.gtk3.controllers.repository import \
     RepositoryViewController
-from rigo.ui.gtk3.controllers.group import \
+from _entropy.rigo.ui.gtk3.controllers.group import \
     GroupViewController
 
-from rigo.ui.gtk3.controllers.notifications import \
+from _entropy.rigo.ui.gtk3.controllers.notifications import \
     UpperNotificationViewController, BottomNotificationViewController
-from rigo.ui.gtk3.controllers.work import \
+from _entropy.rigo.ui.gtk3.controllers.work import \
     WorkViewController
-from rigo.ui.gtk3.widgets.welcome import WelcomeBox
-from rigo.ui.gtk3.models.appliststore import AppListStore
-from rigo.ui.gtk3.models.confupdateliststore import ConfigUpdatesListStore
-from rigo.ui.gtk3.models.noticeboardliststore import NoticeBoardListStore
-from rigo.ui.gtk3.models.preferencesliststore import PreferencesListStore
-from rigo.ui.gtk3.models.groupliststore import GroupListStore
-from rigo.ui.gtk3.models.repositoryliststore import RepositoryListStore
-from rigo.ui.gtk3.utils import init_sc_css_provider, get_sc_icon_theme
+from _entropy.rigo.ui.gtk3.widgets.welcome import WelcomeBox
+from _entropy.rigo.ui.gtk3.models.appliststore import AppListStore
+from _entropy.rigo.ui.gtk3.models.confupdateliststore import \
+    ConfigUpdatesListStore
+from _entropy.rigo.ui.gtk3.models.noticeboardliststore import \
+    NoticeBoardListStore
+from _entropy.rigo.ui.gtk3.models.preferencesliststore import \
+    PreferencesListStore
+from _entropy.rigo.ui.gtk3.models.groupliststore import \
+    GroupListStore
+from _entropy.rigo.ui.gtk3.models.repositoryliststore import \
+    RepositoryListStore
+from _entropy.rigo.ui.gtk3.utils import init_sc_css_provider, get_sc_icon_theme
 
-from rigo.utils import escape_markup
-from rigo.controllers.daemon import RigoServiceController
+from _entropy.rigo.utils import escape_markup
+from _entropy.rigo.controllers.daemon import RigoServiceController
 
 from RigoDaemon.enums import ActivityStates as DaemonActivityStates
 

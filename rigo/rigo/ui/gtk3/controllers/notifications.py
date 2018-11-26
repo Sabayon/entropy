@@ -21,8 +21,8 @@ this program; if not, write to the Free Software Foundation, Inc.,
 
 from gi.repository import Gtk, GLib, GObject
 
-from rigo.enums import LocalActivityStates
-from rigo.ui.gtk3.widgets.notifications import NotificationBox, \
+from _entropy.rigo.enums import LocalActivityStates
+from _entropy.rigo.ui.gtk3.widgets.notifications import NotificationBox, \
     ConnectivityNotificationBox
 
 from entropy.misc import ParallelTask

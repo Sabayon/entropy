@@ -19,7 +19,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 """
 
-from rigo.utils import prepare_markup, escape_markup
+from _entropy.rigo.utils import prepare_markup, escape_markup
 
 class Group(object):
 
