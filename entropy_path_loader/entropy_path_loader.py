@@ -32,6 +32,7 @@ mods = (
     "client",
     "server",
     "lib",
+    "magneto/src",
     "entropy_path_loader/compat"
 )
 

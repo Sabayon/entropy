@@ -17,9 +17,9 @@ import time
 import subprocess
 
 # applet imports
-from magneto.core import config
-from magneto.core.interfaces import MagnetoCore
-from magneto.gtk3.components import AppletNoticeWindow
+from _entropy.magneto.core import config
+from _entropy.magneto.core.interfaces import MagnetoCore
+from _entropy.magneto.gtk3.components import AppletNoticeWindow
 
 # Entropy imports
 from entropy.i18n import _

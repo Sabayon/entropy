@@ -28,7 +28,7 @@ from entropy.i18n import _, ngettext
 from entropy.misc import ParallelTask
 
 # Magneto imports
-from magneto.core import config
+from _entropy.magneto.core import config
 
 # RigoDaemon imports
 from RigoDaemon.config import DbusConfig

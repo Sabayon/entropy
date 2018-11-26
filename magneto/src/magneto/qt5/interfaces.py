@@ -19,9 +19,9 @@ from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, \
     QAction, QDialog
 
 # Magneto imports
-from magneto.core import config
-from magneto.core.interfaces import MagnetoCore
-from magneto.qt5.components import AppletNoticeWindow
+from _entropy.magneto.core import config
+from _entropy.magneto.core.interfaces import MagnetoCore
+from _entropy.magneto.qt5.components import AppletNoticeWindow
 
 # Entropy imports
 from entropy.i18n import _
