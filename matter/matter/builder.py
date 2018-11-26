@@ -19,8 +19,8 @@ import shutil
 import subprocess
 import tempfile
 
-from matter.utils import mkstemp, mkdtemp, print_traceback
-from matter.output import is_stdout_a_tty, print_info, print_warning, \
+from _entropy.matter.utils import mkstemp, mkdtemp, print_traceback
+from _entropy.matter.output import is_stdout_a_tty, print_info, print_warning, \
     print_error, getcolor, darkgreen, purple, brown
 
 # default mandatory features

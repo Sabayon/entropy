@@ -21,3 +21,6 @@ sys.modules['_entropy.magneto'] = magneto
 
 import eit
 sys.modules['_entropy.eit'] = eit
+
+import matter
+sys.modules['_entropy.matter'] = matter

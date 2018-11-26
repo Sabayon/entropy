@@ -17,11 +17,12 @@ import subprocess
 import sys
 import threading
 
-from matter.binpms.base import BaseBinaryResourceLock, \
+from _entropy.matter.binpms.base import BaseBinaryResourceLock, \
     BaseBinaryPMS
-from matter.spec import MatterSpec, MatterSpecParser, GenericSpecFunctions
-from matter.output import print_info, print_warning, print_error
-from matter.utils import print_traceback
+from _entropy.matter.spec import MatterSpec, MatterSpecParser, \
+    GenericSpecFunctions
+from _entropy.matter.output import print_info, print_warning, print_error
+from _entropy.matter.utils import print_traceback
 
 
 os.environ["ETP_GETTEXT_DOMAIN"] = "entropy-server"

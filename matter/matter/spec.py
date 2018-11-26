@@ -12,7 +12,7 @@
 import os
 import shlex
 
-from matter.utils import convert_to_unicode, get_stringtype
+from _entropy.matter.utils import convert_to_unicode, get_stringtype
 
 
 class GenericSpecFunctions(object):

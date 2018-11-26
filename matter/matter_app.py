@@ -18,10 +18,9 @@ _base = osp.dirname(osp.dirname(osp.realpath(__file__)))
 if os.path.isfile(osp.join(_base, "entropy-in-vcs-checkout")):
     sys.path.insert(0, osp.join(_base, "entropy_path_loader"))
     import entropy_path_loader
-    entropy_path_loader.add_import_path("matter")
 del osp
 
-from matter.main import main
+from _entropy.matter.main import main
 
 if __name__ == "__main__":
     sys.argv[0] = "matter"

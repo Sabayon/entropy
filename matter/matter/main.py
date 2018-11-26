@@ -17,14 +17,13 @@ import argparse
 import collections
 
 # keep these before PackageBuilder due to the os.environ stuff inside
-from matter.binpms.base import BaseBinaryPMS, BaseBinaryResourceLock
-from matter.builder import PackageBuilder
-from matter.lock import MatterResourceLock
-from matter.output import purple, darkgreen, print_info, \
+from _entropy.matter.binpms.base import BaseBinaryPMS, BaseBinaryResourceLock
+from _entropy.matter.builder import PackageBuilder
+from _entropy.matter.lock import MatterResourceLock
+from _entropy.matter.output import purple, darkgreen, print_info, \
     print_generic, print_warning, print_error, is_stdout_a_tty, nocolor
-from matter.spec import SpecParser, MatterSpec
-from matter.utils import print_exception
-
+from _entropy.matter.spec import SpecParser, MatterSpec
+from _entropy.matter.utils import print_exception
 
 def install_exception_handler():
     sys.excepthook = handle_exception
@@ -260,7 +259,7 @@ def main():
         nocolor()
 
     # Load Binary PMS modules
-    import matter.binpms as _pms
+    import _entropy.matter.binpms as _pms
     pms_dir = os.path.dirname(_pms.__file__)
     for thing in os.listdir(pms_dir):
         if thing.startswith("__init__.py"):
@@ -274,7 +273,7 @@ def main():
 
         name = os.path.basename(thing)
         name = name.rstrip(".py")
-        package = "matter.binpms.%s" % (name,)
+        package = "_entropy.matter.binpms.%s" % (name,)
 
         try:
             importlib.import_module(package)  # they will then register
