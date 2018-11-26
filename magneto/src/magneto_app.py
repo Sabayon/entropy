@@ -20,13 +20,10 @@ _base = osp.dirname(
     osp.dirname(osp.dirname(osp.realpath(__file__))))
 if os.path.isfile(osp.join(_base, "entropy-in-vcs-checkout")):
     sys.path.insert(0, osp.join(_base, "entropy_path_loader"))
-else:
-    sys.path.insert(0, "/usr/lib/entropy/entropy_path_loader")
+    import entropy_path_loader
+    entropy_path_loader.add_import_path("rigo")
+    entropy_path_loader.add_import_path("magneto")
 del osp
-import entropy_path_loader
-
-entropy_path_loader.add_import_path("rigo")
-entropy_path_loader.add_import_path("magneto")
 
 from entropy.locks import SimpleFileLock
 
