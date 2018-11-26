@@ -87,7 +87,7 @@ from _entropy.rigo.ui.gtk3.utils import init_sc_css_provider, get_sc_icon_theme
 from _entropy.rigo.utils import escape_markup
 from _entropy.rigo.controllers.daemon import RigoServiceController
 
-from RigoDaemon.enums import ActivityStates as DaemonActivityStates
+from _entropy.RigoDaemon.enums import ActivityStates as DaemonActivityStates
 
 from entropy.const import const_debug_write, dump_signal
 from entropy.misc import TimeScheduled, ParallelTask, ReadersWritersSemaphore

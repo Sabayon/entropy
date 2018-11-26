@@ -95,10 +95,10 @@ import kswitch
 import entropy.tools
 import entropy.dep
 
-from RigoDaemon.enums import ActivityStates, AppActions, \
+from _entropy.RigoDaemon.enums import ActivityStates, AppActions, \
     AppTransactionOutcome, AppTransactionStates
-from RigoDaemon.config import DbusConfig, PolicyActions
-from RigoDaemon.authentication import AuthenticationController
+from _entropy.RigoDaemon.config import DbusConfig, PolicyActions
+from _entropy.RigoDaemon.authentication import AuthenticationController
 
 TEXT = TextInterface()
 DAEMON_LOGFILE = os.path.join(etpConst['syslogdir'], "rigo-daemon.log")

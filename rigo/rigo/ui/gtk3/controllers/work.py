@@ -27,7 +27,7 @@ from _entropy.rigo.ui.gtk3.widgets.terminal import TerminalWidget
 
 from _entropy.rigo.enums import Icons
 from _entropy.rigo.utils import escape_markup, prepare_markup
-from RigoDaemon.enums import AppActions as DaemonAppActions
+from _entropy.RigoDaemon.enums import AppActions as DaemonAppActions
 
 from entropy.i18n import _, ngettext
 

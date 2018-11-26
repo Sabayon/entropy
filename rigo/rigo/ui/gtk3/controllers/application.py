@@ -32,7 +32,7 @@ from _entropy.rigo.utils import build_application_store_url, \
     escape_markup, prepare_markup
 from _entropy.rigo.models.preference import Preference
 
-from RigoDaemon.enums import AppActions as DaemonAppActions, \
+from _entropy.RigoDaemon.enums import AppActions as DaemonAppActions, \
     ActivityStates as DaemonActivityStates
 
 from entropy.const import etpConst, const_debug_write, \

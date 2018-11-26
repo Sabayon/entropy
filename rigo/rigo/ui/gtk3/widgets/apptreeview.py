@@ -32,7 +32,7 @@ from _entropy.rigo.enums import Icons, AppActions
 from _entropy.rigo.models.application import Application
 from _entropy.rigo.ui.gtk3.widgets.generictreeview import GenericTreeView
 
-from RigoDaemon.enums import AppActions as DaemonAppActions, \
+from _entropy.RigoDaemon.enums import AppActions as DaemonAppActions, \
     ActivityStates as DaemonActivityStates
 
 

@@ -42,11 +42,12 @@ from _entropy.rigo.ui.gtk3.widgets.notifications import NotificationBox, \
 
 from _entropy.rigo.utils import prepare_markup
 
-from RigoDaemon.enums import ActivityStates as DaemonActivityStates, \
+from _entropy.RigoDaemon.enums import \
+    ActivityStates as DaemonActivityStates, \
     AppActions as DaemonAppActions, \
     AppTransactionOutcome as DaemonAppTransactionOutcome, \
     AppTransactionStates as DaemonAppTransactionStates
-from RigoDaemon.config import DbusConfig as DaemonDbusConfig
+from _entropy.RigoDaemon.config import DbusConfig as DaemonDbusConfig
 
 from entropy.const import const_debug_write, \
     const_debug_enabled, etpConst

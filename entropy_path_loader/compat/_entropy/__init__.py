@@ -27,3 +27,6 @@ sys.modules['_entropy.matter'] = matter
 
 import rigo
 sys.modules['_entropy.rigo'] = rigo
+
+import RigoDaemon
+sys.modules['_entropy.RigoDaemon'] = RigoDaemon
