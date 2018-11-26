@@ -18,3 +18,6 @@ sys.modules['_entropy.solo'] = solo
 
 import magneto
 sys.modules['_entropy.magneto'] = magneto
+
+import eit
+sys.modules['_entropy.eit'] = eit

@@ -27,9 +27,9 @@ from entropy.client.interfaces.db import InstalledPackagesRepository
 
 import entropy.tools
 
-from eit.commands.descriptor import EitCommandDescriptor
-from eit.commands.command import EitCommand
-from eit.commands.push import EitPush
+from _entropy.eit.commands.descriptor import EitCommandDescriptor
+from _entropy.eit.commands.command import EitCommand
+from _entropy.eit.commands.push import EitPush
 
 
 class EitPull(EitCommand):

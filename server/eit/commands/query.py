@@ -16,9 +16,9 @@ from entropy.output import purple, darkgreen, bold, brown, teal
 from entropy.const import etpConst
 from entropy.i18n import _
 
-from eit.commands.descriptor import EitCommandDescriptor
-from eit.commands.command import EitCommand
-from eit.utils import print_package_info
+from _entropy.eit.commands.descriptor import EitCommandDescriptor
+from _entropy.eit.commands.command import EitCommand
+from _entropy.eit.utils import print_package_info
 
 class EitQuery(EitCommand):
     """

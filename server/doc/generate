@@ -13,7 +13,7 @@ if os.path.isfile(osp.join(_base, "entropy-in-vcs-checkout")):
     import entropy_path_loader
 del osp
 
-from eit.commands.descriptor import EitCommandDescriptor
+from _entropy.eit.commands.descriptor import EitCommandDescriptor
 
 MAN_HEADER="""\
 EIT(1)

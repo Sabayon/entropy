@@ -15,8 +15,8 @@ import argparse
 from entropy.i18n import _
 from entropy.output import bold, purple, darkgreen, blue, brown, teal
 
-from eit.commands.descriptor import EitCommandDescriptor
-from eit.commands.command import EitCommand
+from _entropy.eit.commands.descriptor import EitCommandDescriptor
+from _entropy.eit.commands.command import EitCommand
 
 
 class EitFiles(EitCommand):

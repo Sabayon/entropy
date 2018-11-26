@@ -16,9 +16,9 @@ from entropy.i18n import _
 from entropy.output import blue, darkgreen, purple, teal
 from entropy.server.interfaces import RepositoryConfigParser
 
-from eit.commands.descriptor import EitCommandDescriptor
-from eit.commands.command import EitCommand
-from eit.utils import print_table
+from _entropy.eit.commands.descriptor import EitCommandDescriptor
+from _entropy.eit.commands.command import EitCommand
+from _entropy.eit.utils import print_table
 
 
 class EitRepo(EitCommand):

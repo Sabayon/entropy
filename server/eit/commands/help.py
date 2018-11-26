@@ -14,9 +14,9 @@ import argparse
 from entropy.i18n import _
 from entropy.output import teal, purple, darkgreen
 
-from eit.colorful import ColorfulFormatter
-from eit.commands.descriptor import EitCommandDescriptor
-from eit.commands.command import EitCommand
+from _entropy.eit.colorful import ColorfulFormatter
+from _entropy.eit.commands.descriptor import EitCommandDescriptor
+from _entropy.eit.commands.command import EitCommand
 
 class EitHelp(EitCommand):
     """

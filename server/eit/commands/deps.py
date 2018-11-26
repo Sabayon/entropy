@@ -16,8 +16,8 @@ from entropy.i18n import _
 from entropy.const import etpConst
 from entropy.output import purple, darkgreen, brown, teal, blue
 
-from eit.commands.descriptor import EitCommandDescriptor
-from eit.commands.command import EitCommand
+from _entropy.eit.commands.descriptor import EitCommandDescriptor
+from _entropy.eit.commands.command import EitCommand
 
 
 class EitDeps(EitCommand):

@@ -15,8 +15,8 @@ import argparse
 from entropy.i18n import _
 from entropy.output import darkgreen
 
-from eit.commands.descriptor import EitCommandDescriptor
-from eit.commands.pull import EitPull
+from _entropy.eit.commands.descriptor import EitCommandDescriptor
+from _entropy.eit.commands.pull import EitPull
 
 
 class EitReset(EitPull):

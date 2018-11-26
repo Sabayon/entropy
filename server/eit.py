@@ -11,6 +11,6 @@ if os.path.isfile(osp.join(_base, "entropy-in-vcs-checkout")):
     import entropy_path_loader
 del osp
 
-from eit.main import main
+from _entropy.eit.main import main
 sys.argv[0] = "eit"
 main()
