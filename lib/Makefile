@@ -13,15 +13,18 @@ all:
 
 install:
 	install -d $(DESTDIR)/$(LIBDIR)/entropy/lib/entropy
-	install -d $(DESTDIR)/$(PYTHON_SITEDIR)/entropy/lib
+	install -d $(DESTDIR)/$(PYTHON_SITEDIR)
+	install -d $(DESTDIR)/$(PYTHON_SITEDIR)/_entropy
 	install -d $(DESTDIR)$(PREFIX)/sbin
 	install -d $(DESTDIR)$(BINDIR)
 	install -d -m 775 $(DESTDIR)/etc/entropy
 	install -d $(DESTDIR)/etc/env.d
 	install -d $(DESTDIR)/etc/init.d
 	install -d $(DESTDIR)/etc/logrotate.d
-	install -d $(DESTDIR)/$(PYTHON_SITEDIR)/entropy/services
 	install -d $(DESTDIR)/$(TMPFILESDIR)
+
+	# Make it a package
+	touch $(DESTDIR)/$(PYTHON_SITEDIR)/_entropy/__init__.py
 
 	# Empty directories that should be created and kept
 	install -d -m 775 $(DESTDIR)$(VARDIR)/tmp/entropy
@@ -37,11 +40,10 @@ install:
 	touch $(DESTDIR)/$(VARDIR)/log/entropy/.keep
 
 	chmod +x entropy/spm/plugins/interfaces/portage_plugin/env_sourcer.sh
-	cp -Ra entropy $(DESTDIR)/$(PYTHON_SITEDIR)/entropy/lib/
-	rm $(DESTDIR)/$(PYTHON_SITEDIR)/entropy/lib/entropy/revision
+	cp -Ra entropy $(DESTDIR)/$(PYTHON_SITEDIR)
+	rm $(DESTDIR)/$(PYTHON_SITEDIR)/entropy/revision
 	install -m 644 entropy/revision $(DESTDIR)/$(LIBDIR)/entropy/lib/entropy/
 
-	ln -sf lib $(DESTDIR)/$(PYTHON_SITEDIR)/entropy/libraries
 	install -m 755 ../misc/entropy.sh $(DESTDIR)$(PREFIX)/sbin/
 	install -m 755 ../misc/entropy_hwgen.sh $(DESTDIR)$(BINDIR)/
 	install -m 644 ../misc/entropy.logrotate $(DESTDIR)/etc/logrotate.d/entropy

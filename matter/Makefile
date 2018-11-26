@@ -4,7 +4,7 @@ LIBDIR = $(PREFIX)/lib
 PYTHON_SITEDIR = $(LIBDIR)
 SBINDIR = $(PREFIX)/sbin
 DESTDIR = 
-MATTER_PYDIR = $(DESTDIR)$(PYTHON_SITEDIR)/matter
+MATTER_PYDIR = $(DESTDIR)$(PYTHON_SITEDIR)/_entropy
 
 all:
 	for d in $(SUBDIRS); do $(MAKE) -C $$d; done
