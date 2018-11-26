@@ -20,7 +20,7 @@ base_dir = osp.dirname(osp.dirname(osp.realpath(__file__)))
 in_checkout = osp.isfile(osp.join(base_dir, "entropy-in-vcs-checkout"))
 
 
-def add_import_path(path):
+def _add_import_path(path):
     if not in_checkout:
         raise RuntimeError(
             "entropy_path_loader used when not in checkout")
@@ -39,4 +39,4 @@ mod_paths = (
 )
 
 for path in mod_paths:
-    add_import_path(path)
+    _add_import_path(path)
