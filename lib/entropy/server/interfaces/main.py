@@ -6112,7 +6112,8 @@ class Server(Client):
                 return False
         return True
 
-    def _package_injector(self, repository_id, package_files, inject = False):
+    def _package_injector(self, repository_id, package_files, inject=False,
+        reset_revision = False):
 
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
 
@@ -6213,29 +6214,36 @@ class Server(Client):
 
         myserver_repos = list(srv_set['repositories'].keys())
 
-        ### since we are handling more repositories, we need to make sure
-        ### that there are no packages in other repositories with same atom
-        ### and greater revision
-        rev_test_atom = mydata['atom']
-        max_rev = -1
-        for myrepo in myserver_repos:
+        update_revision = False
+        if reset_revision:
+            revision = 0
+            update_revision = True
+        else:
+            ### since we are handling more repositories, we need to make sure
+            ### that there are no packages in other repositories with same atom
+            ### and greater revision
+            rev_test_atom = mydata['atom']
+            max_rev = -1
+            for myrepo in myserver_repos:
 
-            # not myself
-            if myrepo == repository_id:
-                continue
+                # not myself
+                if myrepo == repository_id:
+                    continue
 
-            mydbconn = self.open_server_repository(myrepo, read_only = True,
-                no_upload = True)
+                mydbconn = self.open_server_repository(myrepo, read_only = True,
+                    no_upload = True)
 
-            myrepo_package_ids = mydbconn.getPackageIds(rev_test_atom)
-            for myrepo_package_id in myrepo_package_ids:
-                myrev = mydbconn.retrieveRevision(myrepo_package_id)
-                if myrev > max_rev:
-                    max_rev = myrev
+                myrepo_package_ids = mydbconn.getPackageIds(rev_test_atom)
+                for myrepo_package_id in myrepo_package_ids:
+                    myrev = mydbconn.retrieveRevision(myrepo_package_id)
+                    if myrev > max_rev:
+                        max_rev = myrev
 
-        if max_rev >= revision:
-            max_rev += 1
-            revision = max_rev
+            if max_rev >= revision:
+                revision = max_rev + 1
+                update_revision = True
+
+        if update_revision:
             mydata['revision'] = revision
             # update revision for pkg now
             dbconn.setRevision(package_id, revision)
@@ -6855,7 +6863,7 @@ class Server(Client):
         return qa_success
 
     def add_packages_to_repository(self, repository_id, packages_data,
-        ask = True):
+        ask = True, reset_revision = False):
         """
         Add package files to given repository. packages_data contains a list
         of tuples composed by (path to package files, execute_injection boolean).
@@ -6869,6 +6877,8 @@ class Server(Client):
             While the others represent further package files.
             If one ends with eptConst['packagesdebugext'], it will be considered
             as debuginfo package file.
+        @param reset_revision if true ignore package revision and force
+            a reset of revision to zero.
         @type packages_data: list
         @return: list (set) of package identifiers added
         @rtype: set
@@ -6921,7 +6931,8 @@ class Server(Client):
             try:
                 # add to database
                 package_id, destination_paths = self._package_injector(
-                    repository_id, package_filepaths, inject = inject)
+                    repository_id, package_filepaths, inject = inject,
+                    reset_revision = reset_revision)
                 package_ids_added.add(package_id)
                 to_be_injected.add((package_id, destination_paths[0]))
             except Exception as err:

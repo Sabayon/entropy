@@ -34,6 +34,7 @@ class EitInject(EitCommand):
         self._packages = []
         # ask user before any critical operation
         self._ask = True
+        self._reset_revision = False
 
     def _get_parser(self):
         descriptor = EitCommandDescriptor.obtain_descriptor(
@@ -51,6 +52,9 @@ class EitInject(EitCommand):
         parser.add_argument("--quick", action="store_true",
                             default=not self._ask,
                             help=_("no stupid questions"))
+        parser.add_argument("--reset-revision", action="store_true",
+                            default=self._reset_revision,
+                            help=_("reset revision to 0 (advanced)"))
         return parser
 
     INTRODUCTION = """\
@@ -83,6 +87,7 @@ repositories as much as you can.
             return parser.print_help, []
 
         self._ask = not nsargs.quick
+        self._reset_revision = nsargs.reset_revision
         self._packages += nsargs.packages
         return self._call_exclusive, [self._inject, nsargs.to]
 
@@ -127,7 +132,8 @@ repositories as much as you can.
         repository_id = entropy_server.repository()
         etp_pkg_files = [([x], True,) for x in etp_pkg_files]
         package_ids = entropy_server.add_packages_to_repository(
-            repository_id, etp_pkg_files, ask=self._ask)
+            repository_id, etp_pkg_files, ask=self._ask,
+            reset_revision=self._reset_revision)
         if package_ids:
             # checking dependencies and print issues
             entropy_server.extended_dependencies_test([repository_id])
