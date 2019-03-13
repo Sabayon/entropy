@@ -21,9 +21,9 @@ from entropy.exceptions import DependenciesNotRemovable
 
 import entropy.tools
 
-from solo.utils import enlightenatom
-from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands._manage import SoloManage
+from _entropy.solo.utils import enlightenatom
+from _entropy.solo.commands.descriptor import SoloCommandDescriptor
+from _entropy.solo.commands._manage import SoloManage
 
 class SoloRemove(SoloManage):
     """

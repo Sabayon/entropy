@@ -29,8 +29,8 @@ from gi.repository import Vte, Gdk
 
 from entropy.const import etpConst, const_isunicode
 
-from rigo.paths import CONF_DIR
-from rigo.utils import prepare_markup
+from _entropy.rigo.paths import CONF_DIR
+from _entropy.rigo.utils import prepare_markup
 
 import entropy.tools
 from entropy.const import etpConst

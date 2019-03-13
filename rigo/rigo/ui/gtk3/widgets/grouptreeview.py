@@ -23,9 +23,9 @@ from gi.repository import Gtk, GObject
 from .cellrenderers import CellButtonRenderer, CellRendererGroupView, \
     GroupCellButtonIDs
 
-from rigo.ui.gtk3.models.groupliststore import GroupListStore
+from _entropy.rigo.ui.gtk3.models.groupliststore import GroupListStore
 
-from rigo.ui.gtk3.widgets.generictreeview import GenericTreeView
+from _entropy.rigo.ui.gtk3.widgets.generictreeview import GenericTreeView
 
 from entropy.i18n import _
 

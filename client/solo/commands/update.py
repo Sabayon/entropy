@@ -22,8 +22,8 @@ from entropy.client.interfaces.noticeboard import NoticeBoard
 
 import entropy.tools
 
-from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.command import SoloCommand
+from _entropy.solo.commands.descriptor import SoloCommandDescriptor
+from _entropy.solo.commands.command import SoloCommand
 
 class SoloUpdate(SoloCommand):
     """

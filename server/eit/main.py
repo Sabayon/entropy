@@ -19,7 +19,7 @@ from entropy.output import print_error
 import entropy.tools
 
 from entropy.exceptions import OnlineMirrorError
-from eit.commands.descriptor import EitCommandDescriptor
+from _entropy.eit.commands.descriptor import EitCommandDescriptor
 
 
 def handle_exception(exc_class, exc_instance, exc_tb):

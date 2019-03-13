@@ -17,11 +17,12 @@ import subprocess
 import sys
 import threading
 
-from matter.binpms.base import BaseBinaryResourceLock, \
+from _entropy.matter.binpms.base import BaseBinaryResourceLock, \
     BaseBinaryPMS
-from matter.spec import MatterSpec, MatterSpecParser, GenericSpecFunctions
-from matter.output import print_info, print_warning, print_error
-from matter.utils import print_traceback
+from _entropy.matter.spec import MatterSpec, MatterSpecParser, \
+    GenericSpecFunctions
+from _entropy.matter.output import print_info, print_warning, print_error
+from _entropy.matter.utils import print_traceback
 
 
 os.environ["ETP_GETTEXT_DOMAIN"] = "entropy-server"
@@ -33,10 +34,8 @@ _base = osp.dirname(
     osp.dirname(osp.dirname(osp.dirname(osp.realpath(__file__)))))
 if os.path.isfile(osp.join(_base, "entropy-in-vcs-checkout")):
     sys.path.insert(0, osp.join(_base, "entropy_path_loader"))
-else:
-    sys.path.insert(0, "/usr/lib/entropy/entropy_path_loader")
+    import entropy_path_loader
 del osp
-import entropy_path_loader
 
 from entropy.exceptions import PermissionDenied, OnlineMirrorError
 from entropy.server.interfaces import Server

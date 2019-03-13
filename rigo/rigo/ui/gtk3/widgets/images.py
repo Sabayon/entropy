@@ -23,12 +23,12 @@ from threading import Lock
 
 from gi.repository import Gtk, Gdk, Pango, GObject, GdkPixbuf
 
-from rigo.utils import escape_markup
-from rigo.ui.gtk3.utils import get_sc_icon_theme
-from rigo.paths import DATA_DIR
-from rigo.enums import Icons
-from rigo.utils import open_url
-from rigo.ui.gtk3.models.appliststore import AppListStore
+from _entropy.rigo.utils import escape_markup
+from _entropy.rigo.ui.gtk3.utils import get_sc_icon_theme
+from _entropy.rigo.paths import DATA_DIR
+from _entropy.rigo.enums import Icons
+from _entropy.rigo.utils import open_url
+from _entropy.rigo.ui.gtk3.models.appliststore import AppListStore
 
 from entropy.client.services.interfaces import Document, DocumentFactory
 from entropy.i18n import _

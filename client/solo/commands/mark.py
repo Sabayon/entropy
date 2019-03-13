@@ -16,8 +16,8 @@ from entropy.i18n import _
 from entropy.const import etpConst, const_convert_to_unicode
 from entropy.output import darkred, red, blue, brown, teal, purple
 
-from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.command import SoloCommand, exclusivelock
+from _entropy.solo.commands.descriptor import SoloCommandDescriptor
+from _entropy.solo.commands.command import SoloCommand, exclusivelock
 
 
 class SoloMark(SoloCommand):

@@ -20,13 +20,8 @@ _base = osp.dirname(
     osp.dirname(osp.dirname(osp.realpath(__file__))))
 if os.path.isfile(osp.join(_base, "entropy-in-vcs-checkout")):
     sys.path.insert(0, osp.join(_base, "entropy_path_loader"))
-else:
-    sys.path.insert(0, "/usr/lib/entropy/entropy_path_loader")
+    import entropy_path_loader
 del osp
-import entropy_path_loader
-
-entropy_path_loader.add_import_path("rigo")
-entropy_path_loader.add_import_path("magneto")
 
 from entropy.locks import SimpleFileLock
 
@@ -50,34 +45,34 @@ def _startup(unlock_callback):
     is_mate = desktop_session == "MATE"
 
     if "--kde" in sys.argv:
-        from magneto.qt5.interfaces import Magneto
+        from _entropy.magneto.qt5.interfaces import Magneto
     elif "--gtk" in sys.argv:
-        from magneto.gtk.interfaces import Magneto
+        from _entropy.magneto.gtk.interfaces import Magneto
     elif "--gtk3" in sys.argv:
-        from magneto.gtk3.interfaces import Magneto
+        from _entropy.magneto.gtk3.interfaces import Magneto
     else:
         if kde_env is not None:
             # this is KDE!
             try:
-                from magneto.qt5.interfaces import Magneto
+                from _entropy.magneto.qt5.interfaces import Magneto
             except (ImportError, RuntimeError,):
                 # try GTK3, then GTK
                 try:
-                    from magneto.gtk3.interfaces import Magneto
+                    from _entropy.magneto.gtk3.interfaces import Magneto
                 except ImportError:
-                    from magneto.gtk.interfaces import Magneto
+                    from _entropy.magneto.gtk.interfaces import Magneto
         elif is_mate:
             # Load GTK2, fallback to GTK3
             try:
-                from magneto.gtk.interfaces import Magneto
+                from _entropy.magneto.gtk.interfaces import Magneto
             except ImportError:
-                from magneto.gtk3.interfaces import Magneto
+                from _entropy.magneto.gtk3.interfaces import Magneto
         else:
             # load GTK3, fallback to GTK2
             try:
-                from magneto.gtk3.interfaces import Magneto
+                from _entropy.magneto.gtk3.interfaces import Magneto
             except ImportError:
-                from magneto.gtk.interfaces import Magneto
+                from _entropy.magneto.gtk.interfaces import Magneto
 
     import entropy.tools
     magneto = Magneto()

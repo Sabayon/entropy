@@ -25,11 +25,11 @@ import tempfile
 
 from gi.repository import GObject, GLib
 
-from rigo.paths import CONF_DIR
-from rigo.ui.gtk3.widgets.notifications import \
+from _entropy.rigo.paths import CONF_DIR
+from _entropy.rigo.ui.gtk3.widgets.notifications import \
     NoticeBoardNotificationBox
-from rigo.enums import RigoViewStates
-from rigo.utils import open_url
+from _entropy.rigo.enums import RigoViewStates
+from _entropy.rigo.utils import open_url
 
 from entropy.cache import EntropyCacher
 from entropy.const import etpConst

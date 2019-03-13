@@ -22,7 +22,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 """
 from gi.repository import Gtk, Gdk, GObject
 
-from rigo.em import em, StockEms, Ems
+from _entropy.rigo.em import em, StockEms, Ems
 
 
 class GenericTreeView(Gtk.TreeView):

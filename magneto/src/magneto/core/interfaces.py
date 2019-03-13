@@ -28,11 +28,11 @@ from entropy.i18n import _, ngettext
 from entropy.misc import ParallelTask
 
 # Magneto imports
-from magneto.core import config
+from _entropy.magneto.core import config
 
 # RigoDaemon imports
-from RigoDaemon.config import DbusConfig
-from RigoDaemon.enums import ActivityStates
+from _entropy.RigoDaemon.config import DbusConfig
+from _entropy.RigoDaemon.enums import ActivityStates
 
 
 class MagnetoIconMap(object):

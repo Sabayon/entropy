@@ -14,8 +14,8 @@ import argparse
 
 from entropy.i18n import _
 
-from eit.commands.descriptor import EitCommandDescriptor
-from eit.commands.commit import EitCommit
+from _entropy.eit.commands.descriptor import EitCommandDescriptor
+from _entropy.eit.commands.commit import EitCommit
 
 
 class EitRepack(EitCommit):

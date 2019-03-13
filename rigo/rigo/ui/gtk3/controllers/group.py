@@ -24,10 +24,10 @@ import errno
 
 from gi.repository import Gtk, GObject, GLib
 
-from rigo.enums import Icons, RigoViewStates
-from rigo.utils import prepare_markup
-from rigo.models.preference import Preference
-from rigo.models.group import Group
+from _entropy.rigo.enums import Icons, RigoViewStates
+from _entropy.rigo.utils import prepare_markup
+from _entropy.rigo.models.preference import Preference
+from _entropy.rigo.models.group import Group
 
 from entropy.const import const_debug_write
 from entropy.misc import ParallelTask

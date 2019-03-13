@@ -8,8 +8,9 @@
 
     B{Python module path setter}.
 
-    This is a module that sets paths to other modules, which can be installed
-    on system or taken from sources checkout.
+    This module sets paths to other modules from sources checkout.
+    It must not be imported in case of installed application, system wide or
+    otherwise.
 
 """
 import sys
@@ -18,30 +19,24 @@ from os import path as osp
 base_dir = osp.dirname(osp.dirname(osp.realpath(__file__)))
 in_checkout = osp.isfile(osp.join(base_dir, "entropy-in-vcs-checkout"))
 
-# Ugly, can go away if paths are in sys.path.
-mods_outside_entropy_dir = set([
-    "rigo",
-    "matter"
-])
 
-
-def add_import_path(mod):
-    if in_checkout:
-        base = base_dir
-    elif mod in mods_outside_entropy_dir:
-        base = "/usr/lib"
-    else:
-        base = "/usr/lib/entropy"
-
-    lib = osp.join(base, mod)
+def _add_import_path(path):
+    if not in_checkout:
+        raise RuntimeError(
+            "entropy_path_loader used when not in checkout")
+    lib = osp.join(base_dir, path)
     sys.path.insert(0, lib)
 
 
-mods = (
+mod_paths = (
     "client",
     "server",
-    "lib"
+    "lib",
+    "magneto/src",
+    "matter",
+    "rigo",
+    "entropy_path_loader/compat"
 )
 
-for mod in mods:
-    add_import_path(mod)
+for path in mod_paths:
+    _add_import_path(path)

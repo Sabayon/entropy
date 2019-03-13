@@ -15,8 +15,8 @@ import argparse
 
 from entropy.i18n import _
 
-from eit.commands.descriptor import EitCommandDescriptor
-from eit.commands.cp import EitCp
+from _entropy.eit.commands.descriptor import EitCommandDescriptor
+from _entropy.eit.commands.cp import EitCp
 
 
 class EitMv(EitCp):

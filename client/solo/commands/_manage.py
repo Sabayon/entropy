@@ -30,8 +30,8 @@ from entropy.client.interfaces.package.preservedlibs import PreservedLibraries
 import entropy.tools
 import entropy.dep
 
-from solo.utils import enlightenatom, get_entropy_webservice
-from solo.commands.command import SoloCommand
+from _entropy.solo.utils import enlightenatom, get_entropy_webservice
+from _entropy.solo.commands.command import SoloCommand
 
 class SoloManage(SoloCommand):
     """

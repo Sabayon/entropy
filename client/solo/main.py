@@ -25,8 +25,8 @@ from entropy.exceptions import SystemDatabaseError, OnlineMirrorError, \
 
 import entropy.tools
 
-from solo.commands.descriptor import SoloCommandDescriptor
-from solo.utils import read_client_release
+from _entropy.solo.commands.descriptor import SoloCommandDescriptor
+from _entropy.solo.utils import read_client_release
 
 def handle_exception(exc_class, exc_instance, exc_tb):
 

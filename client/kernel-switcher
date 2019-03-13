@@ -6,10 +6,8 @@ from os import path as osp
 _base = osp.dirname(osp.dirname(osp.realpath(__file__)))
 if os.path.isfile(osp.join(_base, "entropy-in-vcs-checkout")):
     sys.path.insert(0, osp.join(_base, "entropy_path_loader"))
-else:
-    sys.path.insert(0, "/usr/lib/entropy/entropy_path_loader")
+    import entropy_path_loader
 del osp
-import entropy_path_loader
 
 import argparse
 
@@ -20,8 +18,8 @@ from entropy.client.interfaces import Client
 import entropy.dep
 import entropy.tools
 
-from solo.commands.install import SoloInstall
-from solo.utils import print_package_info
+from _entropy.solo.commands.install import SoloInstall
+from _entropy.solo.utils import print_package_info
 
 import kswitch
 

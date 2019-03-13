@@ -29,8 +29,8 @@ from gi.repository import Gtk, Gdk, GObject
 
 from entropy.i18n import _
 
-from rigo.shapes import ShapeStar
-from rigo.em import StockEms, em, small_em, big_em
+from _entropy.rigo.shapes import ShapeStar
+from _entropy.rigo.em import StockEms, em, small_em, big_em
 
 
 _star_surface_cache = {}

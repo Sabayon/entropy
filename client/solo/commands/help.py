@@ -14,9 +14,9 @@ import argparse
 from entropy.i18n import _
 from entropy.output import teal, purple, darkgreen
 
-from solo.colorful import ColorfulFormatter
-from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.command import SoloCommand
+from _entropy.solo.colorful import ColorfulFormatter
+from _entropy.solo.commands.descriptor import SoloCommandDescriptor
+from _entropy.solo.commands.command import SoloCommand
 
 class SoloHelp(SoloCommand):
     """

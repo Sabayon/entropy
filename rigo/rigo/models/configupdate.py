@@ -25,8 +25,8 @@ from threading import Semaphore
 
 from gi.repository import Gtk, GLib
 
-from rigo.utils import escape_markup, prepare_markup, open_editor
-from rigo.ui.gtk3.widgets.notifications import NotificationBox
+from _entropy.rigo.utils import escape_markup, prepare_markup, open_editor
+from _entropy.rigo.ui.gtk3.widgets.notifications import NotificationBox
 
 from entropy.const import const_file_writable
 from entropy.i18n import _

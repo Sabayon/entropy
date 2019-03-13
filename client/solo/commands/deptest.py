@@ -16,8 +16,8 @@ import time
 from entropy.i18n import _
 from entropy.output import darkred, blue, darkgreen
 
-from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.install import SoloInstall
+from _entropy.solo.commands.descriptor import SoloCommandDescriptor
+from _entropy.solo.commands.install import SoloInstall
 
 class SoloDeptest(SoloInstall):
     """

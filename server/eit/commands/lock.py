@@ -16,8 +16,8 @@ from entropy.i18n import _
 from entropy.output import darkgreen, brown, purple, blue, darkred
 from entropy.transceivers import EntropyTransceiver
 
-from eit.commands.descriptor import EitCommandDescriptor
-from eit.commands.command import EitCommand
+from _entropy.eit.commands.descriptor import EitCommandDescriptor
+from _entropy.eit.commands.command import EitCommand
 
 
 class EitLock(EitCommand):

@@ -17,7 +17,7 @@ import os
 import shutil
 import subprocess
 
-from matter.output import print_info, print_warning
+from _entropy.matter.output import print_info, print_warning
 
 
 class BaseBinaryResourceLock(object):

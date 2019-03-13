@@ -17,9 +17,9 @@ from entropy.const import const_convert_to_unicode
 from entropy.output import purple, teal, darkred, brown, red, \
     darkgreen, blue
 
-from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.command import SoloCommand
-from solo.utils import enlightenatom
+from _entropy.solo.commands.descriptor import SoloCommandDescriptor
+from _entropy.solo.commands.command import SoloCommand
+from _entropy.solo.utils import enlightenatom
 
 class SoloMaskUnmask(SoloCommand):
 

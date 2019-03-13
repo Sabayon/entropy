@@ -23,8 +23,8 @@ from gi.repository import Gtk, GObject
 from .cellrenderers import CellButtonRenderer, CellRendererRepositoryView, \
     RepositoryCellButtonIDs
 
-from rigo.ui.gtk3.models.repositoryliststore import RepositoryListStore
-from rigo.ui.gtk3.widgets.generictreeview import GenericTreeView
+from _entropy.rigo.ui.gtk3.models.repositoryliststore import RepositoryListStore
+from _entropy.rigo.ui.gtk3.widgets.generictreeview import GenericTreeView
 
 
 class RepositoryTreeView(GenericTreeView):

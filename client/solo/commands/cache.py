@@ -15,8 +15,8 @@ import argparse
 from entropy.i18n import _
 from entropy.output import blue, brown, darkgreen
 
-from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.command import SoloCommand, sharedlock
+from _entropy.solo.commands.descriptor import SoloCommandDescriptor
+from _entropy.solo.commands.command import SoloCommand, sharedlock
 
 class SoloCache(SoloCommand):
     """

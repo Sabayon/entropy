@@ -21,7 +21,7 @@ for py_file in os.listdir(_cur_dir):
     if py_file.startswith("_"):
         continue
     # strip .py
-    _mod = "solo.commands." + py_file[:-3]
+    _mod = "_entropy.solo.commands." + py_file[:-3]
     if _mod in _excluded_mods:
         continue
     try:

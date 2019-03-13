@@ -21,7 +21,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 import hashlib
 import email.utils
 
-from rigo.utils import prepare_markup, escape_markup
+from _entropy.rigo.utils import prepare_markup, escape_markup
 
 from entropy.i18n import _
 

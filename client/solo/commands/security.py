@@ -19,9 +19,9 @@ from entropy.output import darkgreen, darkred, brown, blue, red, \
 
 import entropy.tools
 
-from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.install import SoloInstall
-from solo.utils import print_table
+from _entropy.solo.commands.descriptor import SoloCommandDescriptor
+from _entropy.solo.commands.install import SoloInstall
+from _entropy.solo.utils import print_table
 
 
 class SoloSecurity(SoloInstall):

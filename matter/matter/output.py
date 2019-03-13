@@ -17,7 +17,7 @@ import errno
 import os
 import sys
 
-from matter.utils import is_python3
+from _entropy.matter.utils import is_python3
 
 
 stuff = {}

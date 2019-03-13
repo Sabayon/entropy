@@ -23,8 +23,8 @@ from threading import Lock, Semaphore
 
 from gi.repository import Gtk, GLib, GObject, GdkPixbuf
 
-from rigo.enums import Icons
-from rigo.models.application import Application, ApplicationMetadata
+from _entropy.rigo.enums import Icons
+from _entropy.rigo.models.application import Application, ApplicationMetadata
 
 from entropy.const import const_debug_write, const_debug_enabled
 

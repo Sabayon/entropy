@@ -21,9 +21,9 @@ from entropy.const import etpConst
 
 import entropy.tools
 
-from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.command import SoloCommand
-from solo.utils import print_table
+from _entropy.solo.commands.descriptor import SoloCommandDescriptor
+from _entropy.solo.commands.command import SoloCommand
+from _entropy.solo.utils import print_table
 
 class SoloRepo(SoloCommand):
     """

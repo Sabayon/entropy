@@ -27,12 +27,12 @@ from entropy.i18n import _
 from .cellrenderers import CellRendererAppView, CellButtonRenderer, \
     CellButtonIDs
 
-from rigo.em import em, StockEms
-from rigo.enums import Icons, AppActions
-from rigo.models.application import Application
-from rigo.ui.gtk3.widgets.generictreeview import GenericTreeView
+from _entropy.rigo.em import em, StockEms
+from _entropy.rigo.enums import Icons, AppActions
+from _entropy.rigo.models.application import Application
+from _entropy.rigo.ui.gtk3.widgets.generictreeview import GenericTreeView
 
-from RigoDaemon.enums import AppActions as DaemonAppActions, \
+from _entropy.RigoDaemon.enums import AppActions as DaemonAppActions, \
     ActivityStates as DaemonActivityStates
 
 

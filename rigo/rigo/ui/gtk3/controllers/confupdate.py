@@ -22,9 +22,9 @@ from gi.repository import GObject, Gtk, GLib
 
 from threading import Lock
 
-from rigo.ui.gtk3.widgets.notifications import \
+from _entropy.rigo.ui.gtk3.widgets.notifications import \
     ConfigUpdatesNotificationBox, NotificationBox
-from rigo.utils import prepare_markup
+from _entropy.rigo.utils import prepare_markup
 
 from entropy.i18n import _
 from entropy.const import const_debug_write

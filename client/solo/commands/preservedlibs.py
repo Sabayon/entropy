@@ -18,10 +18,10 @@ from entropy.output import brown, blue, darkred, darkgreen, purple, teal
 
 from entropy.client.interfaces.package import preservedlibs
 
-from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.command import SoloCommand, sharedlock
+from _entropy.solo.commands.descriptor import SoloCommandDescriptor
+from _entropy.solo.commands.command import SoloCommand, sharedlock
 
-from solo.utils import enlightenatom
+from _entropy.solo.utils import enlightenatom
 
 
 class SoloPreservedLibs(SoloCommand):

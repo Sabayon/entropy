@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 import sys
-sys.path.insert(0, 'client')
-sys.path.insert(0, '../../client')
-sys.path.insert(0, '.')
-sys.path.insert(0, '../')
 import unittest
 import os
 import shutil
 import signal
 import time
+
+from os import path as osp
+_base = osp.dirname(osp.dirname(osp.dirname(osp.realpath(__file__))))
+sys.path.insert(0, osp.join(_base, "entropy_path_loader"))
+import entropy_path_loader
+del osp
 
 from entropy.client.interfaces import Client
 from entropy.client.interfaces.db import InstalledPackagesRepository
@@ -308,7 +310,7 @@ else:
 
         # this test might be considered controversial, for now, let's keep it
         # here, we use equo stuff to make sure it keeps working
-        from solo.commands.pkg import SoloPkg
+        from _entropy.solo.commands.pkg import SoloPkg
 
         # we need to tweak the default unpack dir to make pkg install available
         # for uids != 0

@@ -25,9 +25,9 @@ from gi.repository import GLib, Gtk, Gdk, GObject, Pango
 
 from threading import Lock, Timer
 
-from rigo.em import Ems
-from rigo.utils import escape_markup
-from rigo.enums import Icons
+from _entropy.rigo.em import Ems
+from _entropy.rigo.utils import escape_markup
+from _entropy.rigo.enums import Icons
 
 from .stars import StarRenderer, StarSize
 

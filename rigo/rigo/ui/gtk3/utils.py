@@ -28,7 +28,7 @@ from gi.repository import Gtk, GdkPixbuf, GObject
 
 from entropy.const import const_mkstemp
 
-from rigo.paths import ICON_PATH
+from _entropy.rigo.paths import ICON_PATH
 
 LOG = logging.getLogger(__name__)
 

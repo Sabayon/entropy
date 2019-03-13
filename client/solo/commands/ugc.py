@@ -24,9 +24,9 @@ from entropy.client.services.interfaces import Document, DocumentFactory, \
 
 import entropy.tools
 
-from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.command import SoloCommand
-from solo.utils import get_entropy_webservice as _get_service
+from _entropy.solo.commands.descriptor import SoloCommandDescriptor
+from _entropy.solo.commands.command import SoloCommand
+from _entropy.solo.utils import get_entropy_webservice as _get_service
 
 
 class SoloUgc(SoloCommand):

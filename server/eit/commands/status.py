@@ -18,9 +18,9 @@ from entropy.i18n import _
 from entropy.output import darkgreen, teal, brown, darkred, \
     bold, purple, blue
 
-from eit.commands.descriptor import EitCommandDescriptor
-from eit.commands.command import EitCommand
-from eit.utils import print_table
+from _entropy.eit.commands.descriptor import EitCommandDescriptor
+from _entropy.eit.commands.command import EitCommand
+from _entropy.eit.utils import print_table
 
 
 class EitStatus(EitCommand):

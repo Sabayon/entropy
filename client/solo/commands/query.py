@@ -22,10 +22,10 @@ from entropy.output import darkgreen, darkred, blue, teal, purple, brown, \
 
 import entropy.tools
 
-from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.command import SoloCommand, sharedlock
-from solo.utils import print_package_info, print_table, get_file_mime, \
-    graph_packages, revgraph_packages
+from _entropy.solo.commands.descriptor import SoloCommandDescriptor
+from _entropy.solo.commands.command import SoloCommand, sharedlock
+from _entropy.solo.utils import print_package_info, print_table, \
+    get_file_mime, graph_packages, revgraph_packages
 
 
 class SoloQuery(SoloCommand):
@@ -725,7 +725,7 @@ Repository query tools.
         Solo Query Installed command.
         Alias of "solo search --installed".
         """
-        from solo.commands.search import SoloSearch
+        from _entropy.solo.commands.search import SoloSearch
         search = SoloSearch(
             self._nsargs, quiet=self._nsargs.quiet,
             verbose=self._nsargs.verbose,
