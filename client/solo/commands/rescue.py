@@ -107,6 +107,12 @@ Tools to rescue the running system.
             help=_("re-generate the installed packages repository"
                    " using the Source Package Manager"))
         generate_parser.set_defaults(func=self._generate)
+        generate_parser.add_argument(
+            "--force-non-interactive",
+            action="store_true",
+            default=False,
+            help=("Do not ask for confirmation (caution: resets"
+                  " packages database)."))
         _commands["generate"] = {}
 
         spmuids_parser = subparsers.add_parser(
@@ -329,21 +335,22 @@ Tools to rescue the running system.
             level="warning",
             importance=1)
 
-        rc = entropy_client.ask_question(
-            "  %s" % (_("Understood ?"),))
-        if rc == _("No"):
-            return 1
-        rc = entropy_client.ask_question(
-            "  %s" % (_("Really ?"),) )
-        if rc == _("No"):
-            return 1
-        rc = entropy_client.ask_question(
-            "  %s. %s" % (
-                _("This is your last chance"),
-                _("Ok?"),)
-            )
-        if rc == _("No"):
-            return 1
+        if not self._nsargs.force_non_interactive:
+            rc = entropy_client.ask_question(
+                "  %s" % (_("Understood ?"),))
+            if rc == _("No"):
+                return 1
+            rc = entropy_client.ask_question(
+                "  %s" % (_("Really ?"),) )
+            if rc == _("No"):
+                return 1
+            rc = entropy_client.ask_question(
+                "  %s. %s" % (
+                    _("This is your last chance"),
+                    _("Ok?"),)
+                )
+            if rc == _("No"):
+                return 1
 
         # clean caches
         spm = entropy_client.Spm()
