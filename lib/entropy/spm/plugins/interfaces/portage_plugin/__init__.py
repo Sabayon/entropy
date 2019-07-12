@@ -4052,8 +4052,8 @@ class PortagePlugin(SpmPlugin):
     def _resolve_useflags(self, iuse_list, use_list, use_force):
         use = set()
         disabled_use = set()
-        plus = const_convert_to_rawstring("+")
-        minus = const_convert_to_rawstring("-")
+        plus = const_convert_to_unicode("+")
+        minus = const_convert_to_unicode("-")
         for myiuse in iuse_list:
             if myiuse[0] in (plus, minus,):
                 myiuse = myiuse[1:]
