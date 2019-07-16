@@ -183,35 +183,23 @@ class SoloCommand(object):
         This method implements bash completion through
         a hierarchical (commands) dictionary object.
         """
-        # navigate through commands, finding the list of commands
         _commands = commands
 
-        if not self._args:
-            # show all the commands
-            outcome += sorted(commands.keys())
-
-        for index, item in enumerate(self._args):
-            if item in _commands:
-                _commands = commands[item]
-                if index == (len(self._args) - 1):
-                    # if this is the last one, generate
-                    # proper outcome elements.
-                    outcome += sorted(_commands.keys())
-                    # reset last_arg so that outcome list
-                    # won't be filtered
-                    last_arg = ""
-            elif index == (len(self._args) - 1):
-                # if this is the last one, and item
-                # is not in _commands, outcome becomes
-                # _commands.keys()
-                outcome += sorted(_commands.keys())
-                # no need to break here
-            else:
-                # item not in commands, but that's not the
-                # last one, we must generate proper outcome
-                # elements and stop right after
-                outcome += sorted(_commands.keys())
+        last_arg_recognised = False
+        for item in self._args:
+            if item not in _commands:
+                last_arg_recognised = False
                 break
+            last_arg_recognised = True
+            if item.startswith("-"):
+                continue
+            _commands = _commands[item]
+
+        outcome += sorted(_commands.keys())
+
+        if last_arg_recognised:
+            # Make it so all outcomes will be displayed, not filtered out.
+            last_arg = None
 
         return self._bashcomp(sys.stdout, last_arg, outcome)
 
