@@ -124,7 +124,7 @@ Report unused packages that could be removed.
             if _filter_user(pkg_id):
                 return True
 
-            repo = inst_repo.getInstalledPackageRepository(x)
+            repo = inst_repo.getInstalledPackageRepository(pkg_id)
             if repo is None:
                 # sensible default
                 return False
