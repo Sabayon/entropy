@@ -1927,7 +1927,7 @@ def istextfile(filename, blocksize = 512):
     try:
         with open(filename, "r") as f:
             r = istext(f.read(blocksize))
-    except (OSError, IOError):
+    except (OSError, IOError, UnicodeDecodeError):
         return False
     return r
 
