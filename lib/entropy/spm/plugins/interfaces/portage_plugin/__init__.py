@@ -2086,7 +2086,7 @@ class PortagePlugin(SpmPlugin):
 
             qfile_args = (qfile_exec, "-q", "-C", "-R", root,)
             if exact_match:
-                qfile_args += ("-e",)
+                qfile_args += ("-v",)
 
             rc = 0
             for filename in paths:
