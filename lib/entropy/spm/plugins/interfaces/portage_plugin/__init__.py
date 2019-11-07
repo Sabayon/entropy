@@ -2084,7 +2084,7 @@ class PortagePlugin(SpmPlugin):
         qfile_exec = "/usr/bin/qfile"
         if os.path.lexists(qfile_exec):
 
-            qfile_args = (qfile_exec, "-q", "-C", "-R", root,)
+            qfile_args = (qfile_exec, "-q", "-C", "--skip-plibreg", "-R", root,)
             if exact_match:
                 qfile_args += ("-v",)
 
