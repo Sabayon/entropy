@@ -1,3 +1,357 @@
+commit f2cac41869cbf0ba1b0397842000d7d300c9d1c5
+Author: Ettore Di Giacinto <mudler@gentoo.org>
+Date:   Thu Nov 7 17:21:28 2019 +0100
+
+    Release Entropy 320
+
+commit b55adfafe8dfe55313ac6a95c74f8bccc0cd07f0
+Merge: d2c1bcd13 54a3e5001
+Author: geaaru <geaaru@sabayonlinux.org>
+Date:   Sat Oct 5 11:26:28 2019 +0200
+
+    Merge pull request #79 from Enlik/qfile-no-e
+    
+    [entropy.spm] adapt to qfile from portage-utils-0.80
+
+commit 54a3e50017d20bb29c80504b3857debc6bd24570
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Wed Oct 2 01:58:43 2019 +0200
+
+    [entropy.spm] adapt to qfile from portage-utils-0.80
+    
+    In 0.74 -e was available, and in 0.80 it is not present.
+    In both versions, and with the same set of options used, -e and -v
+    provide the same result so -v is now used to work on both.
+    
+    Changed in portage-utils, commit 951a8711a59b1a7d49125f5f5214ff1ae9e50074:
+    
+        qfile: drop non-functional --exact option
+    
+        Bug: https://bugs.gentoo.org/678632
+
+commit d2c1bcd13b2b3269c8630f9d2fc7caf28a053656
+Merge: 67cde5ac5 84ff77970
+Author: Enlik <slawomir.nizio@sabayon.org>
+Date:   Sun Aug 18 21:27:49 2019 +0200
+
+    Merge pull request #76 from geaaru/fix-unused
+    
+    unused: fix wrong variable reference
+
+commit 67cde5ac5cec2cfaac78ccb77ceb6d1faf7b3d26
+Merge: 0b2444840 8647a8739
+Author: geaaru <geaaru@sabayonlinux.org>
+Date:   Sat Aug 17 19:21:15 2019 +0200
+
+    Merge pull request #78 from geaaru/fix-utf8-issue
+    
+    Handle unicode decode error as not text file - #77
+
+commit 8647a8739d61bc084cf80a8263afb4dd63151e6f
+Author: Daniele Rondina <geaaru@sabayonlinux.org>
+Date:   Sat Aug 17 17:16:51 2019 +0200
+
+    Handle unicode decode error as not text file - #77
+
+commit 84ff779709a6c28886fa6472a5055f1e7b87c175
+Author: Daniele Rondina <geaaru@sabayonlinux.org>
+Date:   Thu Aug 15 11:29:18 2019 +0200
+
+    unused: Fix search with spm
+
+commit 0b24448404d1efd9dd5451d5aab270b00cd6fe18
+Merge: fa6068b2e b2c8e2c81
+Author: geaaru <geaaru@sabayonlinux.org>
+Date:   Thu Jul 18 16:39:53 2019 +0200
+
+    Merge pull request #75 from Enlik/completions
+    
+    [solo.commands.command] simplify and improve bash completions
+
+commit b2c8e2c819da74f5f77395aaa796b64678150635
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Tue Jul 16 08:35:32 2019 +0200
+
+    [solo.commands.command] simplify and improve bash completions
+    
+    Note: <tab> below can mean double <tab>.
+    
+    This commit fixes cases such like the following ones:
+    
+    * crash (issue !73) - e.g. KeyError: u'--mtime':
+        - equo security oscheck --mtime <tab>
+        - equo query graph --complete <tab>
+          (this was due to a typo in variable name)
+    
+    * now prints options, previously it didn't:
+        - equo install -a <tab>
+    
+    * crashed, or (with only variable name fixed) didn't print all options:
+        - equo security oscheck --mtime <tab>
+          (note that it worked with more special -q instead of --mtime etc.)
+    
+    * didn't print all options:
+        - equo query list installed <tab>
+          (now shows also --by-user)
+    
+    The following behaviour is still buggy:
+    
+    * last typed word (note: no space before <tab>) disappears upon completion:
+        - equo security oscheck<tab>
+          (not a regression)
+        - equo install --deep<tab>
+          (here it's an option; regression! - previously it didn't complete but
+          didn't cause the word to be erased either)
+    
+    These can be corrected reliably when something like ${COMP_WORDS[COMP_CWORD]}
+    (from complete -F) is passed to the Python side.
+    Without this it's not possible to distinguish between `recognized_option<tab>`
+    (completion of recognized_option) and `recognized_option <tab>`.
+
+commit fa6068b2e477b39ee244634d7ceea08d95dd3d5d
+Merge: 6628e0dd8 427bc90bc
+Author: geaaru <geaaru@sabayonlinux.org>
+Date:   Fri Jul 12 22:42:29 2019 +0200
+
+    Merge pull request #70 from geaaru/arm-iuse-fix
+    
+    Fix handling IUSE with default options with Python 3
+
+commit 427bc90bc04432897cd23d639ef6c8053daf4e96
+Author: Geaaru <geaaru@gmail.com>
+Date:   Sat Feb 23 12:36:04 2019 +0100
+
+    Process IUSE with default option correctly
+    
+    On ARM environment injection of packages doesn't handle
+    correctly IUSE with default options (+)/(-) and this
+    doesn't expose correctly the USE flags of the package for dependencies
+    test.
+    
+    Example:
+    
+      ╠  @@ Searching...
+      ╠      @@ Package: app-arch/xz-utils-5.2.4-r2 branch: 5, [__system__]
+      ╠          Category:        app-arch
+      ╠          Name:            xz-utils
+      ╠          Masked:          False
+      ╠          Installed:       version: 5.2.4-r2 ~ tag: NoTag ~ revision:
+      9999
+      ╠          Slot:            0
+      ╠          Size:            29.3kB
+      ╠          Download:
+      packages/armv7l/5/app-arch/app-arch:xz-utils-5.2.4-r2.efbac860e08851659458db1e4b55a03c3f3711e0.tbz2
+      ╠          Checksum:        0
+      ╠          SHA1:            efbac860e08851659458db1e4b55a03c3f3711e0
+      ╠          SHA256:
+      69989fb2f120539938b060531ba17e8cc2e2e3ed879ef937aacc5f2b9abcfc70
+      ╠          GPG:             No
+      ╠          ## Dependencies:
+      ╠          ##               [3] >=app-portage/elt-patches-20170815
+      ╠          ##               Legend:
+      ╠          ##               {0} Runtime dependency
+      ╠          ##               {1} Post dependency
+      ╠          ##               {2} Manually added (by staff) dependency
+      ╠          ##               {3} Build dependency
+      ╠          ## Conflicts:
+      ╠          ##               <app-arch/lzma-4.63
+      ╠          ##               <app-arch/p7zip-4.57
+      ╠          ##               app-arch/lzma-utils
+      ╠          Homepage:        https://tukaani.org/xz/
+      ╠          Description:     utils for managing LZMA compressed
+      ╠                           files
+      ╠          USE flags:       -+extra-filters -+threads -abi_mips_n32
+      ╠                           -abi_mips_n64 -abi_mips_o32
+      ╠                           -abi_ppc_32 -abi_ppc_64 -abi_s390_32
+      ╠                           -abi_s390_64 -abi_x86_32 -abi_x86_64
+      ╠                           -abi_x86_x32 -elibc_FreeBSD
+      ╠                           -static-libs arm armv5te armv6
+      ╠                           armv6t2 big-endian cpu_flags_arm_edsp
+      ╠                           cpu_flags_arm_thumb cpu_flags_arm_thumb2
+      ╠                           cpu_flags_arm_v4 cpu_flags_arm_v5
+      ╠                           cpu_flags_arm_v6 cpu_flags_arm_v7
+      ╠                           cpu_flags_arm_vfp elibc_glibc
+      ╠                           kernel_linux nls userland_GNU
+    
+    USE flags extra-filters and threads MUST in the format:
+    
+    ╠          USE flags:       -abi_mips_n32 -abi_mips_n64
+    ╠                           -abi_mips_o32 -abi_ppc_32 -abi_ppc_64
+    ╠                           -abi_s390_32 -abi_s390_64 -abi_x86_32
+    ╠                           -abi_x86_64 -abi_x86_x32 -elibc_FreeBSD
+    ╠                           -static-libs arm armv5te armv6
+    ╠                           armv6t2 big-endian cpu_flags_arm_edsp
+    ╠                           cpu_flags_arm_thumb cpu_flags_arm_thumb2
+    ╠                           cpu_flags_arm_v4 cpu_flags_arm_v5
+    ╠                           cpu_flags_arm_v6 cpu_flags_arm_v7
+    ╠                           cpu_flags_arm_vfp elibc_glibc
+    ╠                           extra-filters kernel_linux nls
+    ╠                           threads userland_GNU
+
+commit 6628e0dd81ad5e0bb2569866bef546c91f6f70ff
+Merge: 35a3fa3c7 cdaffff03
+Author: Ettore Di Giacinto <mudler@users.noreply.github.com>
+Date:   Thu Mar 14 20:25:43 2019 +0100
+
+    Merge pull request #72 from geaaru/equo-generate
+    
+    Improve equo generate subcommand for CI
+
+commit cdaffff03bb7d9bc747ccb6ed59e478354f00281
+Author: Daniele Rondina <geaaru@sabayonlinux.org>
+Date:   Sun Feb 24 11:42:02 2019 +0100
+
+    Improve equo generate subcommand for CI
+    
+    Add option --force-non-interactive to generate
+    sub command to avoid use of expect tool.
+
+commit 35a3fa3c7576abfb31df11666a4ac2f1a33f600b
+Merge: cd640cebd 545b5a7ca
+Author: Ettore Di Giacinto <mudler@users.noreply.github.com>
+Date:   Wed Mar 13 22:48:40 2019 +0100
+
+    Merge pull request #68 from Enlik/modules-reorg
+    
+    Make Entropy able to work from within Python site directory
+
+commit cd640cebd352331add906240856138e79a321411
+Merge: 7a4cf787b 215e5b019
+Author: Ettore Di Giacinto <mudler@users.noreply.github.com>
+Date:   Wed Mar 6 21:07:47 2019 +0100
+
+    Merge pull request #71 from geaaru/inject-reset-revision
+    
+    eit: Add --reset-revision option to inject command
+
+commit 215e5b019e10e13b0a1db8bc19e9fe1eca6b1344
+Author: Daniele Rondina <geaaru@sabayonlinux.org>
+Date:   Sat Feb 23 17:46:21 2019 +0100
+
+    eit: Add --reset-revision option to inject command
+
+commit 545b5a7ca4b6b51cb9c1c6242433aa0ed2bee6b1
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Mon Nov 26 21:02:54 2018 +0100
+
+    [tests] fix import path
+    
+    It couldn't find and load _entropy.solo.commands.pkg.
+
+commit 7fe54dc2e04d58b3e4f8312d5464ea67de588a6c
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Mon Nov 26 20:15:36 2018 +0100
+
+    [entropy_path_loader] make _add_import_path private
+
+commit ed93a3737d2d150287346b86736ca8639e22ee65
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Mon Nov 26 20:15:36 2018 +0100
+
+    update RigoDaemon imports
+
+commit 503e7077f30c58bac7e42db3b03edeb092e21043
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Mon Nov 26 20:15:36 2018 +0100
+
+    update rigo imports
+
+commit 3e74fa847c62cd7372f55bec2aef1a0f2edb4e5e
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Mon Nov 26 20:15:36 2018 +0100
+
+    update matter imports
+
+commit 321d59614f20d119972a50fbc2368ad522aa3d72
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Mon Nov 26 20:15:36 2018 +0100
+
+    update eit imports + minor rename in entropy_path_loader
+
+commit 713cf0e927ea46228b5bb07dc4b938f4829d0987
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Mon Nov 26 20:15:36 2018 +0100
+
+    usage magneto imports
+
+commit 7cf7e1f6b7cbce4d7f5094ab4d2f1cb6023f7d71
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Mon Nov 26 20:15:36 2018 +0100
+
+    convert solo imports, with needed changes to entropy_path_loader
+    
+    The module entropy_path_loader (used only for running from within the
+    checkout; otherwise not even installed) is made to provide the _entropy
+    namespace.
+    
+    (Other ideas instead of this entropy_path_loader change would be to
+    reorganise files layout; drop support for running from the checkout as
+    is - and perhaps require virtualenvs; require sourcing a script that
+    sets PYTHONPATH. However, as implemented, it is not intrusive, and the
+    good part is that it is quite isolated, not used in normal usage after
+    installation. Basically, it only does sys.path + provides _entropy
+    namespace.)
+
+commit 6d4a3f09e6fd0beddaa567ffa9aef8d10d236f4a
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Mon Nov 26 20:15:36 2018 +0100
+
+    makefiles: establish a layout for sitedir installs
+    
+    The idea is that:
+    - entropy.* imports will work as before (so any 3rd party clients will
+      work as always) - installed in "entropy" package,
+    - new "_entropy" package to hold a namespace for private modules (like
+      ones that required adding special directories to sys.path).
+      (Underscored name for a top level Python module is not very common...
+      anyway, it was inspired by "_emerge.")
+    
+    Layout:
+    site-packages/
+        entropy (backwards compatible)
+            const.py
+            ...
+        kswitch (also toplevel to keep compatibility)
+            ...
+        _entropy
+            eit
+            magneto
+            matter
+            rigo
+            RigoDaemon
+            solo
+    
+    (Note that site-packages does not need to be actually Python's
+    site-packages directory but anything as it is controlled by an argument
+    to make. It is however intended to be the sitedir.)
+    
+    Another idea for a layout would be one that mimics sources checkout, but
+    the layout there is somewhat scattered. (And some ugliness would be
+    needed to make them modules before implicit namespaces from Python 3.3.
+    Anyway, imports would be long and ugly.)
+    
+    Now, the layout of installed Entropy is lean; installation to virtualenv
+    is also possible (though there would be a need to call scripts like
+    "python equo.py" as shebangs are not converted).
+    
+    Follow up changes are needed to make it work.
+
+commit 252c260f06c07d745b97cbfc37c86b446b2c171e
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Mon Nov 26 20:15:36 2018 +0100
+
+    use entropy_path_loader only for running from the checkout
+    
+    After this commit alone it would not work when installed (unless module
+    paths are set in a special way). Next changes will introduce
+    installation to site-packages so no custom PYTHONPATH will be necessary.
+
+commit 7a4cf787b8653bd95d843e8c2416ffa5e26392a6
+Author: Ettore Di Giacinto <mudler@gentoo.org>
+Date:   Thu Nov 22 21:59:21 2018 +0100
+
+    Tagging Entropy version 319
+
 commit e16a1585ec8bc95965ef846537b66bc935b0ba52
 Author: Ettore Di Giacinto <mudler@gentoo.org>
 Date:   Thu Nov 22 21:59:03 2018 +0100
