@@ -2100,13 +2100,16 @@ class PortagePlugin(SpmPlugin):
                     matches.clear()
                     break
 
-                pkgs = set([x.strip() for x in proc.stdout.readlines()])
+                out = proc.stdout.read()
+                if const_is_python3():
+                    out = const_convert_to_unicode(out)
+
+                proc.stdout.close()
+                pkgs = set([x.strip() for x in out.splitlines()])
                 for pkg in pkgs:
                     slot = self.get_installed_package_metadata(pkg, "SLOT")
                     obj = matches.setdefault((pkg, slot,), set())
                     obj.add(filename)
-
-                proc.stdout.close()
 
             if rc == 0:
                 return matches
