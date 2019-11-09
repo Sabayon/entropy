@@ -1346,7 +1346,16 @@ class DependencyRewriter(object):
         new_deps = []
         for dep in self.deps:
             clean_dep = dep_getkey(dep)
-            dep_prefix, dep_postfix = dep.split(clean_dep, 1)
+
+            try:
+                dep_prefix, dep_postfix = dep.split(clean_dep, 1)
+            except ValueError:
+                # String could not be split into two parts;
+                # dep_getkey(dep) is not in dep.
+                # E.g. dep_getkey("a/b[c];d/e[f]")  =>  a/b;d/e
+                # Consider the rule as not matched.
+                new_deps.append(dep)
+                continue
 
             use_flags_list, clean_use_flags_list = self._use_flags_from_dep(dep_postfix)
 
