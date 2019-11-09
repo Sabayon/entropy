@@ -534,6 +534,15 @@ class DependencyRewriterBasicAttrsTests(unittest.TestCase, MatchedChangedTestsMi
         self._expected_changed = False
         self._validate()
 
+    def test_not_matched_for_complex_dep(self):
+        # entropy.dep.dep_getkey("a/b[c];d/e[f]")  => a/b;d/e
+        # Something like this would make it crash.
+        self._rule = "from-dep=x11-misc/lightdm to-dep=x11-misc/lightdm"
+        self._deps = ["a/b[c];d/e[f]"]
+        self._expected_matched = False
+        self._expected_changed = False
+        self._validate()
+
 
 if __name__ == '__main__':
     unittest.main()
