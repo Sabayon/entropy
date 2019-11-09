@@ -184,12 +184,15 @@ class ConfigurationFiles(dict):
         if _vanished():
             return True
 
+        source_unicode = self._unicode_path(source)
+        destination_unicode = self._unicode_path(destination)
+
         # first diff test
         try:
             exit_st = getstatusoutput(
                 'diff -Nua "%s" "%s" | grep '
                 '"^[+-][^+-]" | grep -v \'# .Header:.*\'' % (
-                    source, destination,))[1]
+                    source_unicode, destination_unicode,))[1]
         except (OSError, IOError):
             exit_st = 1
         if exit_st == os.EX_OK:
@@ -204,7 +207,7 @@ class ConfigurationFiles(dict):
                 'egrep \'^[+-]\' | '
                 'egrep -v \'^[+-][\t ]*#|^--- |^\+\+\+ \' | '
                 'egrep -qv \'^[-+][\t ]*$\'' % (
-                    source, destination,), shell = True)
+                    source_unicode, destination_unicode,), shell = True)
         except (IOError, OSError,):
             exit_st = 0
         if exit_st == 1:
@@ -282,8 +285,8 @@ class ConfigurationFiles(dict):
             self._entropy.output(
                 "%s: %s" % (
                     brown(_("Found update")),
-                    self._unicode_path(
-                        darkgreen(filepath)),),
+                    darkgreen(
+                        self._unicode_path(filepath)),),
                 importance = 0,
                 level = "info"
             )
@@ -297,6 +300,7 @@ class ConfigurationFiles(dict):
         # NOTE: with Python 3.x we can remove const_convert...
         # and avoid using _encode_path.
         cfg_pfx = const_convert_to_rawstring("._cfg")
+        underscore = const_convert_to_rawstring("_")
 
         for path in client_conf_protect:
             path = self._encode_path(path)
@@ -323,7 +327,7 @@ class ConfigurationFiles(dict):
                         int(number)
                     except ValueError:
                         continue # not a valid etc-update file
-                    if item[9] != "_": # no valid format provided
+                    if item[9:10] != underscore: # no valid format provided
                         continue
 
                     filepath = os.path.join(currentdir, item)
