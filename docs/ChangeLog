@@ -1,3 +1,33 @@
+commit d2328561d9c8ae324280df63849316f15f7f0389
+Author: Ettore Di Giacinto <mudler@gentoo.org>
+Date:   Sun Nov 10 15:53:52 2019 +0100
+
+    Release Entropy 322
+
+commit 1d327450820c835ce6c146f9478478060e7a9789
+Merge: cf50abb57 6bdcd152c
+Author: Ettore Di Giacinto <mudler@users.noreply.github.com>
+Date:   Sun Nov 10 15:53:05 2019 +0100
+
+    Merge pull request #83 from Enlik/py3-fixes
+    
+    [entropy.client.misc] correct ConfigurationFiles with Python 3
+
+commit cf50abb578497901d693946dd52f5c604404b0bb
+Merge: 15d2b3b21 7fc5bd338
+Author: Ettore Di Giacinto <mudler@users.noreply.github.com>
+Date:   Sun Nov 10 15:48:32 2019 +0100
+
+    Merge pull request #82 from Enlik/qfile-no-plib
+    
+    [entropy.spm] search_path_owners (qfile) fixes
+
+commit 15d2b3b217b0c9988ab1f736874881bdc1932592
+Author: Ettore Di Giacinto <mudler@gentoo.org>
+Date:   Sun Nov 10 15:44:21 2019 +0100
+
+    Tagging Entropy version 321
+
 commit 00afcc3c101521dc261c3e42afd0ac17faad2748
 Author: Ettore Di Giacinto <mudler@gentoo.org>
 Date:   Sun Nov 10 15:44:18 2019 +0100
@@ -18,6 +48,52 @@ Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
 Date:   Sat Nov 9 12:20:46 2019 +0100
 
     [entropy.core] fix DependencyRewriter with or-dependencies
+
+commit 6bdcd152c80df0bb2d771337d453cd45f54e2735
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Sat Nov 9 12:12:06 2019 +0100
+
+    [entropy.client.misc] correct ConfigurationFiles with Python 3
+    
+    1. Command to execute (diff) was getting arguments like b"path".
+    2. Crash when priting message.
+    3. In Python 3, b'x'[0] is int, not str, so a test (if) was (silently)
+    always true. This way, upon eit commit (at least) and with Python 3,
+    warning about not merged configuration files was newer printed.
+    
+    (3) prevented prior discovery of (1) and (2).
+    
+    Based on my checks, there are no more problems like (3), but I cannot
+    tell for sure.
+
+commit 7fc5bd33805830172327513fc6c73dcdc12edde5
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Fri Nov 8 01:19:01 2019 +0100
+
+    [entropy.spm] fix search_paths_owners (qfile) with Python 3
+
+commit 998cd2d755497129b72ec1ce73defb4618a2e8a7
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Thu Nov 7 23:12:31 2019 +0100
+
+    [entropy.spm] adapt to qfile from portage-utils-0.81
+    
+    [Not tagged so in their git repository... whatever.]
+    
+    With -R / it prints bogus lines making Entropy crash:
+    
+      File "/usr/lib64/python2.7/site-packages/portage/dbapi/vartree.py", line 748, in aux_get
+        raise KeyError(mycpv)
+    KeyError: 'plib_registry:'
+    
+    The change was done in portage-utils, commit f05c78008b1754a79e31e793a67d07ed8f5d11bc
+    
+        Make qfile also check the prune lib registry
+    
+    and the problem with qfile was reported to Gentoo in bug 699558.
+    
+    It will break with older qfile but Entropy should fallback to slower,
+    non-qfile code branch.
 
 commit 65c28deb2ed5a68875bc6209e4f11420aae71a27
 Author: Ettore Di Giacinto <mudler@gentoo.org>
