@@ -1,3 +1,30 @@
+commit 00afcc3c101521dc261c3e42afd0ac17faad2748
+Author: Ettore Di Giacinto <mudler@gentoo.org>
+Date:   Sun Nov 10 15:44:18 2019 +0100
+
+    Release Entropy 321
+
+commit d68f5debbdb3ef27f7f091a6a6d258c2f02e0a42
+Merge: 65c28deb2 c6ab5d28e
+Author: geaaru <geaaru@sabayonlinux.org>
+Date:   Sat Nov 9 17:01:55 2019 +0100
+
+    Merge pull request #84 from Enlik/rewriter-bugfix
+    
+    [entropy.core] fix DependencyRewriter with or-dependencies
+
+commit c6ab5d28e287b9f0c74269ad295fcdf9dc03fe08
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Sat Nov 9 12:20:46 2019 +0100
+
+    [entropy.core] fix DependencyRewriter with or-dependencies
+
+commit 65c28deb2ed5a68875bc6209e4f11420aae71a27
+Author: Ettore Di Giacinto <mudler@gentoo.org>
+Date:   Thu Nov 7 17:21:33 2019 +0100
+
+    Tagging Entropy version 320
+
 commit f2cac41869cbf0ba1b0397842000d7d300c9d1c5
 Author: Ettore Di Giacinto <mudler@gentoo.org>
 Date:   Thu Nov 7 17:21:28 2019 +0100
