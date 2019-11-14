@@ -5384,7 +5384,15 @@ class Server(Client):
 
         srv_dbcache = self._server_dbcache
         if srv_dbcache is not None:
-            for item in srv_dbcache.keys():
+            # list() is for Python3. Because _sync_package_sets may open a
+            # repository (and add it to the cache), Python would complain:
+            # "RuntimeError: dictionary changed size during iteration." With
+            # list() (which creates copy of keys at a given point of time),
+            # there is a risk that newly added connection(s) would not be
+            # closed, but the last close_repositories() runs with sets being
+            # marked as already synchronized, so the repository is not opened
+            # (added) again to the cache, and each of srv_dbcache is handled.
+            for item in list(srv_dbcache.keys()):
                 try:
                     srv_dbcache[item].close()
                 except ProgrammingError: # already closed?
