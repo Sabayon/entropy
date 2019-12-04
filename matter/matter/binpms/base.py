@@ -86,7 +86,7 @@ class BaseBinaryPMS(object):
         """
         group = parser.add_argument_group("Portage Binary PMS")
         group.add_argument(
-            "--portage-pkgpush", metavar="<exec>", type=file,
+            "--portage-pkgpush", metavar="<exec>", type=open,
             help="executable called during the binary packages "
             "push phase, it takes the committed packages directory "
             "path as first argument (a custom PKGDIR, see Portage "

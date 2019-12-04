@@ -78,10 +78,10 @@ class EitKey(EitCommand):
         import_parser.add_argument("repo", metavar="<repo>",
                                    help=_("repository"))
         import_parser.add_argument("privkey",
-            metavar="<private key>", type=file,
+            metavar="<private key>", type=open,
             help=_("private key path"))
         import_parser.add_argument("pubkey",
-            metavar="<pub key path>", type=file,
+            metavar="<pub key path>", type=open,
             help=_("public key path"))
         import_parser.set_defaults(func=self._import)
 

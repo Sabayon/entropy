@@ -37,7 +37,8 @@ from entropy.core import Singleton
 from entropy.cache import EntropyCacher
 from entropy.const import const_debug_write, const_setup_file, etpConst, \
     const_convert_to_rawstring, const_isunicode, const_isstring, \
-    const_convert_to_unicode, const_isstring, const_debug_enabled
+    const_convert_to_unicode, const_isstring, const_debug_enabled, \
+    const_isfileobj
 from entropy.core.settings.base import SystemSettings
 from entropy.exceptions import EntropyException
 import entropy.tools
@@ -535,7 +536,7 @@ class WebService(object):
                 if isinstance(params[k], (tuple, list)) \
                     and (len(params[k]) == 2):
                     f_name, f_obj = params[k]
-                    if isinstance(f_obj, file):
+                    if const_isfileobj(f_obj):
                         file_params[k] = params[k]
                         del params[k]
                 elif const_isunicode(params[k]):

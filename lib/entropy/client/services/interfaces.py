@@ -21,7 +21,7 @@ import time
 import codecs
 
 from entropy.const import const_is_python3, const_debug_write, \
-    const_dir_writable
+    const_dir_writable, const_isfileobj
 
 if const_is_python3():
     from io import StringIO
@@ -391,7 +391,7 @@ class DocumentFactory(object):
         """
         Validate input file object.
         """
-        if not isinstance(f_obj, file):
+        if not const_isfileobj(f_obj):
             raise AssertionError("not a file object")
         if f_obj.tell() != 0:
             raise AssertionError("file position != 0")
