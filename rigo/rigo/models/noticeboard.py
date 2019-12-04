@@ -23,6 +23,8 @@ import email.utils
 
 from _entropy.rigo.utils import prepare_markup, escape_markup
 
+from entropy.const import const_convert_to_rawstring
+
 
 class Notice(object):
 
@@ -94,13 +96,17 @@ class Notice(object):
         Return a stringy hash
         """
         m = hashlib.md5()
-        m.update(self.repository() + "|")
-        m.update("%s|" % (self.notice_id(),))
-        m.update(self.date() + "|")
-        m.update(self.description() + "|")
-        m.update(self.title() + "|")
-        m.update(self.link() + "|")
-        m.update(self.guid())
+        items = (
+            self.repository() + "|",
+            "%s|" % (self.notice_id(),),
+            self.date() + "|",
+            self.description() + "|",
+            self.title() + "|",
+            self.link() + "|",
+            self.guid()
+        )
+        for item in items:
+            m.update(const_convert_to_rawstring(item))
         return m.hexdigest()
 
     def get_markup(self):

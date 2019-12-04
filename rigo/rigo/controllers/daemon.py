@@ -50,7 +50,7 @@ from _entropy.RigoDaemon.enums import \
 from _entropy.RigoDaemon.config import DbusConfig as DaemonDbusConfig
 
 from entropy.const import const_debug_write, \
-    const_debug_enabled, etpConst
+    const_debug_enabled, const_is_python3, etpConst
 from entropy.locks import EntropyResourcesLock
 from entropy.misc import ParallelTask
 from entropy.exceptions import EntropyPackageException
@@ -248,7 +248,10 @@ class RigoServiceController(GObject.Object):
         """
         Convert dbus.String() to unicode object
         """
-        return dbus_string.decode(etpConst['conf_encoding'])
+        if const_is_python3():
+            return str(dbus_string)
+        else:
+            return dbus_string.decode(etpConst['conf_encoding'])
 
     def set_applications_controller(self, avc):
         """
