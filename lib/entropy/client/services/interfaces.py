@@ -285,10 +285,16 @@ class Document(dict):
         url = self.document_url()
         if url is None:
             return None
+
+        b64_url = \
+                const_convert_to_unicode(
+                    base64.urlsafe_b64encode(
+                        const_convert_to_rawstring(url)))
+
         return os.path.join(WebService.CACHE_DIR,
             "documents", self.repository_id(),
             str(self.document_id()),
-            base64.urlsafe_b64encode(url))
+            b64_url)
 
 class DocumentList(list):
     """
