@@ -22,7 +22,7 @@ from threading import Lock
 # Entropy imports
 from entropy.output import nocolor
 from entropy.client.interfaces import Client
-from entropy.const import etpConst, const_debug_write
+from entropy.const import etpConst, const_debug_write, const_is_python3
 import entropy.tools
 from entropy.i18n import _, ngettext
 from entropy.misc import ParallelTask
@@ -322,7 +322,10 @@ class MagnetoCore(MagnetoCoreUI):
         """
         Convert dbus.String() to unicode object
         """
-        return dbus_string.decode(etpConst['conf_encoding'])
+        if const_is_python3():
+            return str(dbus_string)
+        else:
+            return dbus_string.decode(etpConst['conf_encoding'])
 
     def _updates_available_signal(self, update, update_atoms,
                                   remove, remove_atoms,

@@ -72,7 +72,7 @@ EntropyRepositoryCachePolicies.DEFAULT_CACHE_POLICY = _NONE_POL
 
 from entropy.const import etpConst, const_convert_to_rawstring, \
     initconfig_entropy_constants, const_debug_write, dump_signal, \
-    const_mkstemp
+    const_mkstemp, const_is_python3
 from entropy.locks import EntropyResourcesLock, UpdatesNotificationResourceLock
 from entropy.exceptions import DependenciesNotFound, \
     DependenciesCollision, DependenciesNotRemovable, SystemDatabaseError, \
@@ -1159,7 +1159,10 @@ class RigoDaemonService(dbus.service.Object):
         """
         Convert dbus.String() to unicode object
         """
-        return dbus_string.decode(etpConst['conf_encoding'])
+        if const_is_python3():
+            return str(dbus_string)
+        else:
+            return dbus_string.decode(etpConst['conf_encoding'])
 
     def _execute_mainloop(self, function, *args, **kwargs):
         """
