@@ -27,7 +27,8 @@ import codecs
 
 from gi.repository import Vte, Gdk
 
-from entropy.const import etpConst, const_isunicode
+from entropy.const import etpConst, const_isunicode, \
+    const_convert_to_rawstring
 
 from _entropy.rigo.paths import CONF_DIR
 from _entropy.rigo.utils import prepare_markup
@@ -202,4 +203,6 @@ class TerminalWidget(Vte.Terminal):
             return Vte.Terminal.feed(self, txt, raw_txt_len)
         except TypeError:
             # Vte.Terminal 0.32.x
-            return Vte.Terminal.feed(self, prepare_markup(txt))
+            txt = const_convert_to_rawstring(
+                txt, from_enctype=etpConst['conf_encoding'])
+            return Vte.Terminal.feed(self, txt)
