@@ -1033,7 +1033,9 @@ class TextInterface(object):
                     else:
                         while True:
                             try:
-                                myresult = readtext(input_text+": ", password = password).decode('utf-8')
+                                myresult = readtext(input_text+": ", password = password)
+                                if not const_is_python3():
+                                    myresult = myresult.decode("utf-8")
                             except UnicodeDecodeError:
                                 continue
                             break
