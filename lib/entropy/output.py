@@ -489,6 +489,12 @@ def _std_write(msg, stderr = False):
     if stderr:
         obj = sys.stderr
 
+    if const_is_python3() and not const_isunicode(msg):
+        obj.flush()
+        obj.buffer.write(msg)
+        obj.flush()
+        return
+
     try:
         obj.write(msg)
     except UnicodeEncodeError:
