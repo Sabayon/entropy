@@ -162,22 +162,28 @@ def print_traceback(f = None):
     """
     traceback.print_exc(file = f)
 
-def get_traceback(tb_obj = None):
+def get_traceback(tb_obj = None, exc_info = None):
     """
     Return last available Python traceback.
 
     @return: traceback data
     @rtype: string
-    @keyword tb_obj: Python traceback object
+    @keyword tb_obj: Python traceback object; ignored when exc_info is provided
     @type tb_obj: Python traceback instance
+    @keyword exc_info: tuple as in sys.exc_info()
+    @type tb_obj: tuple
     """
     if const_is_python3():
         from io import StringIO
     else:
         from cStringIO import StringIO
     buf = StringIO()
-    if tb_obj is not None:
+    if exc_info is not None:
+        traceback.print_exception(*exc_info, file = buf)
+    elif tb_obj is not None:
+        # legacy way, kept for compatibiilty
         if const_is_python3():
+            # does not print all exception data
             traceback.print_tb(tb_obj, file = buf)
         else:
             traceback.print_last(tb_obj, file = buf)

@@ -62,7 +62,8 @@ def handle_exception(exc_class, exc_instance, exc_tb):
     if exc_class is KeyboardInterrupt:
         os._exit(1)
 
-    t_back = entropy.tools.get_traceback(tb_obj = exc_tb)
+    t_back = entropy.tools.get_traceback(
+        exc_info = (exc_class, exc_instance, exc_tb))
     if const_debug_enabled():
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__

@@ -20,13 +20,10 @@ import hashlib
 import time
 import codecs
 
-from entropy.const import const_is_python3, const_debug_write, \
-    const_dir_writable, const_isfileobj
+from entropy.const import const_debug_write, const_dir_writable, \
+    const_isfileobj
 
-if const_is_python3():
-    from io import StringIO
-else:
-    from cStringIO import StringIO
+from io import BytesIO
 
 from entropy.const import const_get_stringtype, etpConst, const_setup_perms, \
     const_convert_to_rawstring, const_convert_to_unicode, const_mkstemp
@@ -1492,10 +1489,11 @@ class ClientWebService(WebService):
         file_params = {}
         for k, v in error_params.items():
             if isinstance(v, const_get_stringtype()):
-                sio = StringIO()
-                sio.write(v)
-                sio.seek(0)
-                file_params[k] = (k + ".txt", sio)
+                bio = BytesIO()
+                v_raw = const_convert_to_rawstring(v)
+                bio.write(v_raw)
+                bio.seek(0)
+                file_params[k] = (k + ".txt", bio)
             else:
                 params[k] = v
         self._method_getter("report_error", params,
