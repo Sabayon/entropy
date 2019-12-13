@@ -682,10 +682,6 @@ class QAInterface(TextInterface, EntropyPluginStore):
                     percent = True,
                     header = "  "
                 )
-            try:
-                ldpath = ldpath.encode('utf-8')
-            except (UnicodeEncodeError,):
-                ldpath = ldpath.encode(sys.getfilesystemencoding())
             mywalk_iter = os.walk(etpConst['systemroot'] + ldpath)
 
             for x in map(_are_elfs, mywalk_iter):

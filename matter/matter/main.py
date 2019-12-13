@@ -331,7 +331,7 @@ Available Binary PMSs:
 
     # * instead of + in order to support --sync only tasks
     parser.add_argument(
-        "spec", nargs="+", metavar="<spec>", type=file,
+        "spec", nargs="+", metavar="<spec>", type=open,
         help="matter spec file")
 
     default_pms = avail_binpms[0]
@@ -360,11 +360,11 @@ Available Binary PMSs:
         "careful wrt the current system status.",
         action="store_true")
 
-    parser.add_argument("--pre", metavar="<exec>", type=file,
+    parser.add_argument("--pre", metavar="<exec>", type=open,
         help="executable to be called once for setup purposes.",
         default=None)
 
-    parser.add_argument("--post", metavar="<exec>", type=file,
+    parser.add_argument("--post", metavar="<exec>", type=open,
         help="executable to be called once for teardown purposes.",
         default=None)
 

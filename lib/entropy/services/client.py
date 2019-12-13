@@ -21,7 +21,7 @@ import ssl
 import socket
 
 from entropy.const import const_is_python3, const_convert_to_rawstring, \
-    const_get_int, const_mkstemp, const_dir_writable
+    const_get_int, const_mkstemp, const_dir_writable, const_get_int
 
 if const_is_python3():
     import http.client as httplib
@@ -37,7 +37,8 @@ from entropy.core import Singleton
 from entropy.cache import EntropyCacher
 from entropy.const import const_debug_write, const_setup_file, etpConst, \
     const_convert_to_rawstring, const_isunicode, const_isstring, \
-    const_convert_to_unicode, const_isstring, const_debug_enabled
+    const_convert_to_unicode, const_isstring, const_debug_enabled, \
+    const_isfileobj
 from entropy.core.settings.base import SystemSettings
 from entropy.exceptions import EntropyException
 import entropy.tools
@@ -443,7 +444,7 @@ class WebService(object):
         def _cast_to_str(value):
             if value is None:
                 return const_convert_to_rawstring("")
-            elif isinstance(value, (int, float, long)):
+            elif isinstance(value, const_get_int() + (float,)):
                 return const_convert_to_rawstring(value)
             elif isinstance(value, (list, tuple)):
                 return repr(value)
@@ -452,20 +453,29 @@ class WebService(object):
         tmp_fd, tmp_path = const_mkstemp(prefix="_encode_multipart_form")
         tmp_f = os.fdopen(tmp_fd, "ab+")
         tmp_f.truncate(0)
-        crlf = '\r\n'
+
+        crlf = const_convert_to_rawstring('\r\n')
+        dashes = const_convert_to_rawstring("--")
+        raw_boundary = const_convert_to_rawstring(boundary)
         for key, value in params.items():
-            tmp_f.write("--" + boundary + crlf)
-            tmp_f.write("Content-Disposition: form-data; name=\"%s\"" % (
-                key,))
+            tmp_f.write(dashes + raw_boundary + crlf)
+            tmp_f.write(
+                const_convert_to_rawstring(
+                    "Content-Disposition: form-data; name=\"%s\"" % (key,)))
             tmp_f.write(crlf + crlf + _cast_to_str(value) + crlf)
         for key, (f_name, f_obj) in file_params.items():
-            tmp_f.write("--" + boundary + crlf)
+            tmp_f.write(dashes + raw_boundary + crlf)
             tmp_f.write(
-                "Content-Disposition: form-data; name=\"%s\"; filename=\"%s\"" % (
-                    key, f_name,))
+                const_convert_to_rawstring(
+                    "Content-Disposition: form-data; name=\"%s\"; filename=\"%s\"" % (
+                        key, f_name,)))
             tmp_f.write(crlf)
-            tmp_f.write("Content-Type: application/octet-stream" + crlf)
-            tmp_f.write("Content-Transfer-Encoding: binary" + crlf + crlf)
+            tmp_f.write(
+                const_convert_to_rawstring(
+                    "Content-Type: application/octet-stream") + crlf)
+            tmp_f.write(
+                const_convert_to_rawstring(
+                    "Content-Transfer-Encoding: binary") + crlf + crlf)
             f_obj.seek(0)
             while True:
                 chunk = f_obj.read(65536)
@@ -474,7 +484,7 @@ class WebService(object):
                 tmp_f.write(chunk)
             tmp_f.write(crlf)
 
-        tmp_f.write("--" + boundary + "--" + crlf + crlf)
+        tmp_f.write(dashes + raw_boundary + dashes + crlf + crlf)
         tmp_f.flush()
         return tmp_f, tmp_path
 
@@ -535,7 +545,7 @@ class WebService(object):
                 if isinstance(params[k], (tuple, list)) \
                     and (len(params[k]) == 2):
                     f_name, f_obj = params[k]
-                    if isinstance(f_obj, file):
+                    if const_isfileobj(f_obj):
                         file_params[k] = params[k]
                         del params[k]
                 elif const_isunicode(params[k]):

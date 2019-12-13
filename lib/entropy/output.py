@@ -489,6 +489,12 @@ def _std_write(msg, stderr = False):
     if stderr:
         obj = sys.stderr
 
+    if const_is_python3() and not const_isunicode(msg):
+        obj.flush()
+        obj.buffer.write(msg)
+        obj.flush()
+        return
+
     try:
         obj.write(msg)
     except UnicodeEncodeError:
@@ -1033,7 +1039,9 @@ class TextInterface(object):
                     else:
                         while True:
                             try:
-                                myresult = readtext(input_text+": ", password = password).decode('utf-8')
+                                myresult = readtext(input_text+": ", password = password)
+                                if not const_is_python3():
+                                    myresult = myresult.decode("utf-8")
                             except UnicodeDecodeError:
                                 continue
                             break

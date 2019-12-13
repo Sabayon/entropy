@@ -20,13 +20,10 @@ import hashlib
 import time
 import codecs
 
-from entropy.const import const_is_python3, const_debug_write, \
-    const_dir_writable
+from entropy.const import const_debug_write, const_dir_writable, \
+    const_isfileobj
 
-if const_is_python3():
-    from io import StringIO
-else:
-    from cStringIO import StringIO
+from io import BytesIO
 
 from entropy.const import const_get_stringtype, etpConst, const_setup_perms, \
     const_convert_to_rawstring, const_convert_to_unicode, const_mkstemp
@@ -285,10 +282,16 @@ class Document(dict):
         url = self.document_url()
         if url is None:
             return None
+
+        b64_url = \
+                const_convert_to_unicode(
+                    base64.urlsafe_b64encode(
+                        const_convert_to_rawstring(url)))
+
         return os.path.join(WebService.CACHE_DIR,
             "documents", self.repository_id(),
             str(self.document_id()),
-            base64.urlsafe_b64encode(url))
+            b64_url)
 
 class DocumentList(list):
     """
@@ -391,7 +394,7 @@ class DocumentFactory(object):
         """
         Validate input file object.
         """
-        if not isinstance(f_obj, file):
+        if not const_isfileobj(f_obj):
             raise AssertionError("not a file object")
         if f_obj.tell() != 0:
             raise AssertionError("file position != 0")
@@ -1486,10 +1489,11 @@ class ClientWebService(WebService):
         file_params = {}
         for k, v in error_params.items():
             if isinstance(v, const_get_stringtype()):
-                sio = StringIO()
-                sio.write(v)
-                sio.seek(0)
-                file_params[k] = (k + ".txt", sio)
+                bio = BytesIO()
+                v_raw = const_convert_to_rawstring(v)
+                bio.write(v_raw)
+                bio.seek(0)
+                file_params[k] = (k + ".txt", bio)
             else:
                 params[k] = v
         self._method_getter("report_error", params,

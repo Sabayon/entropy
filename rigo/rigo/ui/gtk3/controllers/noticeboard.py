@@ -32,7 +32,7 @@ from _entropy.rigo.enums import RigoViewStates
 from _entropy.rigo.utils import open_url
 
 from entropy.cache import EntropyCacher
-from entropy.const import etpConst
+from entropy.const import const_convert_to_rawstring, etpConst
 
 import entropy.tools
 
@@ -95,9 +95,10 @@ class NoticeBoardViewController(GObject.Object):
         Hash a list of Notice objects
         """
         m = hashlib.md5()
-        m.update("")
+        m.update(const_convert_to_rawstring(""))
         for notice in notices:
-            m.update(notice.hash())
+            m.update(
+                const_convert_to_rawstring(notice.hash()))
         return m.hexdigest()
 
     def setup(self):

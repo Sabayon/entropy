@@ -29,7 +29,7 @@ except ImportError:
 from gi.repository import GLib
 
 from entropy.const import etpConst, const_convert_to_rawstring, \
-    const_isunicode
+    const_isunicode, const_is_python3
 from entropy.core.settings.base import SystemSettings
 from entropy.misc import ParallelTask
 
@@ -196,7 +196,7 @@ def escape_markup(text):
     """
     Escape markup text to use with GTK3 widgets.
     After escaping, text is converted to raw string
-    from unicode. brrr...
+    from unicode (Python 2). brrr...
     """
     return \
         GLib.markup_escape_text(
@@ -206,6 +206,9 @@ def prepare_markup(text):
     """
     Convert text to raw bytestring to make GTK3 happy.
     """
+    if const_is_python3():
+        return text  # str()-strings just work
+
     if const_isunicode(text):
         return \
             const_convert_to_rawstring(

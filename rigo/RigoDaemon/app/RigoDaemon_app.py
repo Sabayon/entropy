@@ -70,9 +70,9 @@ from entropy.db.cache import EntropyRepositoryCachePolicies
 _NONE_POL = EntropyRepositoryCachePolicies.NONE
 EntropyRepositoryCachePolicies.DEFAULT_CACHE_POLICY = _NONE_POL
 
-from entropy.const import etpConst, const_convert_to_rawstring, \
+from entropy.const import etpConst, \
     initconfig_entropy_constants, const_debug_write, dump_signal, \
-    const_mkstemp
+    const_mkstemp, const_is_python3
 from entropy.locks import EntropyResourcesLock, UpdatesNotificationResourceLock
 from entropy.exceptions import DependenciesNotFound, \
     DependenciesCollision, DependenciesNotRemovable, SystemDatabaseError, \
@@ -166,11 +166,12 @@ def uninstall_exception_handler():
     sys.excepthook = sys.__excepthook__
 
 def handle_exception(_exc_class, exc_instance, exc_tb):
-    t_back = entropy.tools.get_traceback(tb_obj = exc_tb)
+    t_back = entropy.tools.get_traceback(
+        exc_info = (_exc_class, exc_instance, exc_tb))
     # restore original exception handler, to avoid loops
     uninstall_exception_handler()
     # write exception to log file
-    write_output(const_convert_to_rawstring(t_back), debug=True)
+    write_output(t_back, debug=True)
     raise exc_instance
 
 install_exception_handler()
@@ -1159,7 +1160,10 @@ class RigoDaemonService(dbus.service.Object):
         """
         Convert dbus.String() to unicode object
         """
-        return dbus_string.decode(etpConst['conf_encoding'])
+        if const_is_python3():
+            return str(dbus_string)
+        else:
+            return dbus_string.decode(etpConst['conf_encoding'])
 
     def _execute_mainloop(self, function, *args, **kwargs):
         """

@@ -251,7 +251,8 @@ class ConfigurationFiles(dict):
                 self._entropy.output(
                     darkred("%s: %s") % (
                         _("Automerging file"),
-                        darkgreen(filepath),
+                        darkgreen(
+                            self._unicode_path(filepath)),
                         ),
                     importance = 0,
                     level = "info"
