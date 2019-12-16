@@ -1,3 +1,141 @@
+commit 285876cc86345b45cdba0a19878f4b809b750905
+Author: Ettore Di Giacinto <mudler@gentoo.org>
+Date:   Mon Dec 16 23:38:39 2019 +0100
+
+    Release Entropy 323
+
+commit 31c8df4017f7c947b36a75cd00d89bed434d9993
+Merge: 952eefa4c bad4b21f1
+Author: Enlik <slawomir.nizio@sabayon.org>
+Date:   Sat Dec 14 00:07:53 2019 +0100
+
+    Merge pull request #86 from Enlik/moar-py3
+    
+    More Python 3 fixes
+
+commit bad4b21f1a9869f0f1cf3d3bf01788adcb2f69d8
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Fri Dec 13 21:06:23 2019 +0100
+
+    [entropy.client.misc, entropy.output] fixes for Python 3
+    
+    ConfigurationFiles._load_maybe_add (equo.client.misc): path is in bytes here
+    
+    _std_write (entropy.output): fixes crash in equo conf update with "Replace
+    original with update" when there is an error in which case msg can be bytes:
+    
+      File ".../entropy/lib/entropy/tools.py", line 687, in movefile
+        print_generic("!!! Failed to move", src, "to", dest)
+      File ".../entropy/lib/entropy/output.py", line 596, in print_generic
+        _std_write(msg, stderr = stderr)
+      File ".../entropy/lib/entropy/output.py", line 493, in _std_write
+        obj.write(msg)
+
+commit 2aa2c69e2bf8be7ba40e64819fdda0ec4d0bce0f
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Fri Dec 13 01:20:59 2019 +0100
+
+    correct exception handling / error reporting with Python 3
+
+commit 4ab520925aadf302b9a827c93ad48c78f3ce9d57
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Wed Dec 11 01:17:33 2019 +0100
+
+    [entropy.output] fix for Python 3 in input_box()
+    
+    myresult = readtext(input_text+": ", password = password).decode('utf-8')
+    AttributeError: 'str' object has no attribute 'decode'
+
+commit 7abd4dad800592506eadda3b5da8c4988fabb313
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Fri Dec 6 01:04:04 2019 +0100
+
+    [entropy.qa] fix test_shared_objects() with Python 3
+    
+    Other parts of this function and called ones work or can work with
+    strings.
+
+commit d65f09fcf8c477c1079a4d8568537ae3e94a342b
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Thu Dec 5 22:58:42 2019 +0100
+
+    [rigo] correct Vte.Terminal.feed with Python 3
+    
+    With Python 3, prepare_markup() doesn't now convert string to bytes.
+
+commit 842979cbba3b9be4e1d5083d945b6f5a8df3479a
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Thu Dec 5 22:41:53 2019 +0100
+
+    [magneto, rigo] Python 3 fixes in _dbus_to_string
+
+commit e2de60dbc33f047e9d17e3577a8a558a0da5b323
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Wed Dec 4 23:16:07 2019 +0100
+
+    [entropy.client.services] Python 3 fix
+
+commit 97409d12d50b02544c20368b849fa7145470bb3f
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Wed Dec 4 22:52:59 2019 +0100
+
+    [rigo] Python 3 fixes
+
+commit e26d11b5f645dd842fd7634acbccac35f06562c5
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Wed Dec 4 22:01:22 2019 +0100
+
+    Python 3 fixes: open() and so, not file()
+
+commit 952eefa4c6573705e89067b04fc8811844e69fff
+Merge: 1fa4045ce fc13fa372
+Author: Enlik <slawomir.nizio@sabayon.org>
+Date:   Fri Nov 29 00:46:04 2019 +0100
+
+    Merge pull request #85 from Enlik/dirchiter
+    
+    [entropy.server] correct close_repositories() with Python 3
+
+commit fc13fa3727eecce0162e52852d2ac0f724da6aa2
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Thu Nov 14 01:16:17 2019 +0100
+
+    [entropy.server] correct close_repositories() with Python 3
+    
+    Function callers, in order (during eit commit):
+    
+    1. filename='lib/entropy/server/interfaces/main.py', function='switch_default_repository', code_context=[' self.close_repositories()\n'], index=0)
+    2. filename='server/eit/commands/command.py', function='_call_exclusive', code_context=[' server.close_repositories()\n'], index=0)
+    3. filename='lib/entropy/client/interfaces/client.py', function='destroy', code_context=[' self.close_repositories(mask_clear = False)\n'], index=0)
+    4. filename='lib/entropy/server/interfaces/main.py', function='destroy', code_context=[' self.close_repositories()\n'], index=0)
+    
+    Third one triggers packages set synchronization (which would cause "dictionary
+    changed size during iteration"), and marks sets as being synchronized.
+    
+    Fourth does not trigger sets synchronization, so closes all repositories
+    without new ones being opened in the meantime.
+    
+    Side note:
+    It's similar to this in "client," lib/entropy/client/interfaces/methods.py:
+    
+        def close_repositories(self, mask_clear = True):
+            ...
+                # list() -> python3 support
+                for item, val in list(repo_cache.items()):
+                    ...
+                    repo_cache.pop(item).close(_token = repository_id)
+                    ...
+    
+    but (based on shallow look), it doesn't do as much magic; just calls .pop()
+    (not sure if there are similar side effects in close() there, though), so the
+    explanation may possibly apply to the lib/entropy/server function only.
+
+commit 1fa4045cedebe0a07afdb0a46e5d5c3993dfcc9f
+Author: Ettore Di Giacinto <mudler@gentoo.org>
+Date:   Sun Nov 10 15:53:56 2019 +0100
+
+    Tagging Entropy version 322
+
 commit d2328561d9c8ae324280df63849316f15f7f0389
 Author: Ettore Di Giacinto <mudler@gentoo.org>
 Date:   Sun Nov 10 15:53:52 2019 +0100
