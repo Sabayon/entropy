@@ -2564,8 +2564,8 @@ class MaskableRepository(EntropyRepositoryBase):
 
         # if we get here, it means we didn't find a match in repositories
         # so we scan packages, last chance
-        for keyword in keyword_pkg.keys():
-            # use .keys() because keyword_pkg gets modified during iteration
+        for keyword in list(keyword_pkg.keys()):
+            # use list() because keyword_pkg gets modified during iteration
 
             # first of all check if keyword is in mykeywords
             if keyword not in mykeywords:

@@ -2855,7 +2855,8 @@ class CalculatorsMixin:
                 change = False
                 # now try to deeply remove unused packages
                 # iterate over a copy
-                for pkg_match in deep_dep_map.keys():
+                # list() because the dict gets modified in setup_revdeps()
+                for pkg_match in list(deep_dep_map.keys()):
                     deep_dep_map[pkg_match] -= flat_dep_tree
                     if (not deep_dep_map[pkg_match]) and \
                         (pkg_match not in flat_dep_tree):
