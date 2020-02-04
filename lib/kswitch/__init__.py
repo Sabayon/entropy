@@ -31,6 +31,7 @@ KERNEL_BINARY_VIRTUAL = const_convert_to_unicode("virtual/linux-binary")
 KERNEL_BINARY_LTS_VIRTUAL = const_convert_to_unicode("virtual/linux-binary-lts")
 KERNELS_DIR = const_convert_to_rawstring("/etc/kernels")
 RELEASE_LEVEL = const_convert_to_rawstring("RELEASE_LEVEL")
+KERNEL_LTS_AVAILABLES_SUFFIX = '-lts'
 
 
 def _remove_tag_from_slot(slot):
@@ -151,13 +152,45 @@ class KernelSwitcher(object):
         """
         self._entropy = entropy_client
 
+    def _parse_kernel_available_file(self, file):
+        ans = []
+
+        try:
+            f = open(file, "r")
+
+            for line in f:
+                if line.startswith('#'):
+                    continue
+
+                words = line.strip().split()
+                if len(words) > 0:
+                    ans.append(words[0])
+
+            f.close()
+        except (OSError, IOError):
+            pass
+
+        return ans
+
     def _get_kernels(self, virtual):
         """
-        Return a set of kernel package matches.
+        Return a set of kernel available.
 
-        @param virtual: the kernel virtual package name
+        @param virtual: the kernel virtual package name for retrieve
+                        the list of kernel in additional of the new
+                        way that uses files under
+                        /etc/kernels/available/{sabayon,sabayon-lts}.
         @type virtual: string
         """
+
+        kernel_availables_dir = os.path.join(
+            KERNELS_DIR,
+            const_convert_to_rawstring("availables")
+        )
+
+        klist = []
+        kernels = set()
+
         # We may have virtual/ kernels in multiple repos, make sure
         # to pick them all up.
         kernel_virtual_pkgs, _rc = self._entropy.atom_match(
@@ -165,11 +198,37 @@ class KernelSwitcher(object):
 
         # virtual/ kernels have a runtime dependency against a kernel
         # package provider. So, get the list of runtime deps from them.
-        kernels = set()
         for pkg_id, repo_id in kernel_virtual_pkgs:
             repo = self._entropy.open_repository(repo_id)
             kernel_deps = repo.retrieveRuntimeDependencies(pkg_id)
-            kernels.update(kernel_deps)
+            for k in kernel_deps:
+                # Here we have list of kernels separate by ;
+                kk = k.split(';')
+                kernels.update(kk)
+
+        # Check if exists kernel availables directory for
+        # introduce new kernels or custom kernels.
+        if os.path.exists(kernel_availables_dir):
+            for i in os.listdir(kernel_availables_dir):
+                if os.path.isdir(i):
+                    continue
+
+                if virtual == KERNEL_LTS_AVAILABLES_SUFFIX and \
+                        not i.endswith(KERNEL_LTS_AVAILABLES_SUFFIX):
+                    # We want only files *-lts
+                    continue
+
+                kernel_list = self._parse_kernel_available_file(
+                    os.path.join(
+                        kernel_availables_dir,
+                        const_convert_to_rawstring(i)
+                    )
+                )
+                if len(kernel_list) > 0:
+                    klist = klist + kernel_list
+
+            if len(kernel_list) > 0:
+                kernels.update(klist)
 
         # Match the dependencies collected against all repositories,
         # or we won't be able to pick up binaries in all of them.
