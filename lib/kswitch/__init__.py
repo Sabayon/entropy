@@ -153,11 +153,12 @@ class KernelSwitcher(object):
 
     def _get_kernels(self, virtual):
         """
-        Return a set of kernel package matches.
+        Return a set of kernel available.
 
         @param virtual: the kernel virtual package name
         @type virtual: string
         """
+
         # We may have virtual/ kernels in multiple repos, make sure
         # to pick them all up.
         kernel_virtual_pkgs, _rc = self._entropy.atom_match(
@@ -169,7 +170,10 @@ class KernelSwitcher(object):
         for pkg_id, repo_id in kernel_virtual_pkgs:
             repo = self._entropy.open_repository(repo_id)
             kernel_deps = repo.retrieveRuntimeDependencies(pkg_id)
-            kernels.update(kernel_deps)
+            for k in kernel_deps:
+                # Here we have list of kernels separate by ;
+                kk = k.split(';')
+                kernels.update(kk)
 
         # Match the dependencies collected against all repositories,
         # or we won't be able to pick up binaries in all of them.
