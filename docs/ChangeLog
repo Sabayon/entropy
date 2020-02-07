@@ -1,3 +1,71 @@
+commit 23f2e558798a46840576459b784e13169f66d2dd
+Author: Ettore Di Giacinto <mudler@gentoo.org>
+Date:   Fri Feb 7 16:25:39 2020 +0100
+
+    Release Entropy 324
+
+commit 5d58a8c5010609362a252f3868c6439d3f9dd6c5
+Merge: 08da648a2 464966005
+Author: geaaru <geaaru@sabayonlinux.org>
+Date:   Tue Feb 4 13:53:14 2020 +0100
+
+    Merge pull request #87 from geaaru/master
+    
+    Fix retrieve of kernel list when virtual/linux-binary contains RDEPEND with OR
+
+commit 4649660050b811f17183124a831816e9f70f8718
+Author: Daniele Rondina <geaaru@sabayonlinux.org>
+Date:   Tue Feb 4 13:40:03 2020 +0100
+
+    kswitch: Added a new way to retrieve list of kernels
+    
+    Added a new way to retrieve list of kernel available
+    that uses directory /etc/kernels/availables/{sabayon,sabayon-lts}.
+    If this directory is present is not used current logic for
+    retrieve the list of kernel.
+    
+    Under /etc/kernels/avaiables/ directory files with 'lts' extension
+    are used for retrieve list of LTS kernels.
+    
+    An user could return his kernel list just if he creates and
+    maintains his file in a similar format:
+    
+    $# cat /etc/kernel/availables/mykernel
+    sys-kernel/linux-sabayon:4.9
+    sys-kernel/linux-mykernel:4.4
+    
+    This logic now is used as an additional feature after retrieve
+    the existing kernels based on virtual/linux-binary or
+    virtual/linux-binary-lts.
+
+commit c9b1daece1ef26fd5731aa6d49958a89ed8cc7fb
+Author: Daniele Rondina <geaaru@sabayonlinux.org>
+Date:   Tue Feb 4 13:38:23 2020 +0100
+
+    kswitch: Fix parsing of kernel list
+    
+    Now virtual/linux-binary and virtual/linux-binary-lts have
+    kernel list in OR. So we need retrieve the list and split
+    result string by ';'.
+
+commit 5aec1b48e51488baf8390436a232e4492e12025f
+Author: Geaaru <geaaru@gmail.com>
+Date:   Sat Sep 8 18:36:42 2018 +0200
+
+    [kernel-switcher] Refactor
+
+commit 08da648a202d3c8587fedf7ef83f557fef41e2d5
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Wed Dec 18 22:20:29 2019 +0100
+
+    [entropy.client] fixes for "dictionary changed size during iteration"
+
+commit 47fc1e9f9ac5f3ace3f5c8a70534739e23c67e4b
+Author: Ettore Di Giacinto <mudler@gentoo.org>
+Date:   Mon Dec 16 23:38:50 2019 +0100
+
+    Tagging Entropy version 323
+
 commit 285876cc86345b45cdba0a19878f4b809b750905
 Author: Ettore Di Giacinto <mudler@gentoo.org>
 Date:   Mon Dec 16 23:38:39 2019 +0100
