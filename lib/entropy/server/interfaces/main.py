@@ -7126,7 +7126,8 @@ class Server(Client):
             return None
         gpg_sign_path = repo_sec.sign_file(repo, pkg_path)
         # read file content and add to 'gpg' signature
-        with open(gpg_sign_path, "rb") as gpg_f:
+        enc = etpConst['conf_encoding']
+        with codecs.open(gpg_sign_path, "r", encoding = enc) as gpg_f:
             gpg_signature = gpg_f.read()
         os.remove(gpg_sign_path)
         return gpg_signature
