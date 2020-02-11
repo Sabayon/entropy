@@ -3158,7 +3158,7 @@ class RigoDaemonService(dbus.service.Object):
                                 "enqueue_application_action: "
                                 "busied, but cannot remove previous path")
                     try:
-                        fobj = os.fdopen(tmp_fd, "w")
+                        fobj = os.fdopen(tmp_fd, "wb")
                     except OSError as err:
                         write_output(
                             "enqueue_application_action: "

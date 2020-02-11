@@ -10,6 +10,7 @@
 
 """
 import os
+import io
 import errno
 import bz2
 import hashlib
@@ -74,7 +75,8 @@ class StdoutSplitter(object):
                     self._buf.flush()
                     self._parent.flush()
 
-            self.buffer = Writer(self, self._std.buffer)
+            if isinstance(self._std, io.TextIOWrapper):
+                self.buffer = Writer(self, self._std.buffer)
 
     def __iter__(self):
         return self._std
