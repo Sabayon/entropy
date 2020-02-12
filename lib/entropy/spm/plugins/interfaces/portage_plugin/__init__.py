@@ -97,7 +97,7 @@ class StdoutSplitter(object):
                     break
                 raise
             try:
-                if const_is_python3():
+                if const_is_python3() and isinstance(self._std, io.TextIOWrapper):
                     self._std.buffer.write(chunk)
                 else:
                     self._std.write(chunk)
