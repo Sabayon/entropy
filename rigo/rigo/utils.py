@@ -186,8 +186,6 @@ def open_editor(path):
         exec_string += " \""
         exec_string += path
         exec_string += "\""
-    # shlex split() wants raw string
-    exec_string = const_convert_to_rawstring(exec_string)
     args = shlex.split(exec_string)
     proc = subprocess.Popen(args)
     return proc
