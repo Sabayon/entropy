@@ -1069,7 +1069,7 @@ Repository query tools.
 
         system_dirs_mask_regexp = []
         for mask in settings['system_dirs_mask']:
-            reg_mask = re.compile(mask)
+            reg_mask = re.compile(const_convert_to_rawstring(mask))
             system_dirs_mask_regexp.append(reg_mask)
 
         file_data = set()
