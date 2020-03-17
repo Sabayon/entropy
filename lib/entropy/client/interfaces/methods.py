@@ -2215,16 +2215,13 @@ class MiscMixin:
 
             # collect files
             for orig_path in contents:
-                # convert back to filesystem str
-                encoded_path = orig_path
-                orig_path = const_convert_to_rawstring(orig_path)
                 strip_orig_path = orig_path.lstrip(os.path.sep)
                 path = os.path.join(shiftpath, strip_orig_path)
                 try:
                     exist = os.lstat(path)
                 except OSError:
                     continue # skip file
-                ftype = entropy_package_metadata['content'][encoded_path]
+                ftype = entropy_package_metadata['content'][orig_path]
                 if str(ftype) == '0':
                     # force match below, '0' means databases without ftype
                     ftype = 'dir'
