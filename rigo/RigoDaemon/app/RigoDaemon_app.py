@@ -79,7 +79,7 @@ from entropy.exceptions import DependenciesNotFound, \
     EntropyPackageException, InterruptError, RepositoryError
 from entropy.i18n import _
 from entropy.misc import LogFile, ParallelTask, TimeScheduled, \
-    ReadersWritersSemaphore
+    ReadersWritersSemaphore, FileobjCompatBuffer
 from entropy.fetchers import UrlFetcher, MultipleUrlFetcher
 from entropy.output import TextInterface, purple, teal
 from entropy.client.interfaces import Client
@@ -340,6 +340,10 @@ class FakeOutFile(object):
         self._app_mgmt_mutex = app_mgmt_mutex
         self._app_mgmt_notes = app_mgmt_notes
         self._rfd, self._wfd = os.pipe()
+
+        if const_is_python3():
+            self.buffer = FileobjCompatBuffer(self)
+
         task = ParallelTask(self._pusher)
         task.name = "FakeOutFilePusher"
         task.daemon = True

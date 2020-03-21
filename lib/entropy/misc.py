@@ -35,7 +35,8 @@ import threading
 from collections import deque
 
 from entropy.const import etpConst, const_isunicode, \
-    const_isfileobj, const_convert_log_level, const_setup_file
+    const_isfileobj, const_convert_log_level, const_setup_file, \
+    const_convert_to_unicode
 from entropy.exceptions import EntropyException
 
 import entropy.tools
@@ -1665,6 +1666,24 @@ class FastRSS(object):
         const_setup_file(self.__file, etpConst['entropygid'], 0o664)
 
 
+class FileobjCompatBuffer:
+
+    """
+    Compatibility shim for file object with the buffer attribute.
+    To be used with classes whose write method expect strings.
+    """
+
+    def __init__(self, parent):
+        self._parent = parent
+
+    def write(self, msg):
+        msg_str = const_convert_to_unicode(msg)
+        self._parent.write(msg_str)
+
+    def flush(self):
+        self._parent.flush()
+
+
 class LogFile:
 
     """ Entropy simple logging interface, works as file object """
@@ -1714,6 +1733,9 @@ class LogFile:
         self.__handler.setFormatter(logging.Formatter(LogFile.LOG_FORMAT,
             LogFile.DATE_FORMAT))
         self.__logger.addHandler(self.__handler)
+
+        if const_is_python3():
+            self.buffer = FileobjCompatBuffer(self)
 
     def __enter__(self):
         """
