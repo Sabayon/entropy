@@ -65,7 +65,7 @@ class EntropyCacher(Singleton):
     >>> # now store something into its cache
     >>> cacher.push('my_identifier1', [1, 2, 3])
     >>> # now store something synchronously
-    >>> cacher.push('my_identifier2', [1, 2, 3], async = False)
+    >>> cacher.push('my_identifier2', [1, 2, 3], async_mode = False)
     ...
     >>> # now flush all the caches to disk, and make sure all
     >>> # is written
@@ -75,7 +75,7 @@ class EntropyCacher(Singleton):
     >>> data = cacher.pop('my_identifier1')
     [1, 2, 3]
     ...
-    >>> # now discard all the cached (async) writes
+    >>> # now discard all the cached (async_mode) writes
     >>> cacher.discard()
     ...
     >>> # and stop EntropyCacher
@@ -329,18 +329,18 @@ class EntropyCacher(Singleton):
             raise IOError("cannot store %s to %s. err: %s" % (
                 key, cache_dir, repr(err)))
 
-    def push(self, key, data, async = True, cache_dir = None):
+    def push(self, key, data, async_mode = True, cache_dir = None):
         """
         This is the place where data is either added
-        to the write queue or written to disk (if async == False)
+        to the write queue or written to disk (if async_mode == False)
         only and only if start() method has been called.
 
         @param key: cache data identifier
         @type key: string
         @param data: picklable object
         @type data: any picklable object
-        @keyword async: store cache asynchronously or not
-        @type async: bool
+        @keyword async_mode: store cache asynchronously or not
+        @type async_mode: bool
         @keyword cache_dir: alternative cache directory
         @type cache_dir: string
         """
@@ -350,7 +350,7 @@ class EntropyCacher(Singleton):
         if cache_dir is None:
             cache_dir = self.current_directory()
 
-        if async:
+        if async_mode:
             try:
                 obj_copy = self.__copy_obj(data)
                 self.__cache_buffer.push(((key, cache_dir,), obj_copy,))
@@ -365,7 +365,7 @@ class EntropyCacher(Singleton):
                 sys.stdout.flush()
             #if const_debug_enabled():
             #   const_debug_write(__name__,
-            #        "EntropyCacher.push, async push %s, into %s" % (
+            #        "EntropyCacher.push, async_mode push %s, into %s" % (
             #            key, cache_dir,))
         else:
             #if const_debug_enabled():

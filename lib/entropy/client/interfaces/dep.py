@@ -2432,7 +2432,7 @@ class CalculatorsMixin:
         }
 
         if self.xcache:
-            self._cacher.push(cache_key, data, async = False)
+            self._cacher.push(cache_key, data, async_mode = False)
 
         return data
 
@@ -3070,7 +3070,7 @@ class CalculatorsMixin:
         data = (atoms, matches)
 
         if self.xcache:
-            self._cacher.push(cache_key, data, async = False)
+            self._cacher.push(cache_key, data, async_mode = False)
 
         return data
 
@@ -3396,7 +3396,7 @@ class CalculatorsMixin:
             }
 
         if self.xcache:
-            self._cacher.push(cache_key, outcome, async = False)
+            self._cacher.push(cache_key, outcome, async_mode = False)
             self._cacher.sync()
 
         if not update:

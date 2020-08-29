@@ -137,7 +137,7 @@ class EntropyClientTest(unittest.TestCase):
         tmp_dir = const_mkdtemp()
         cacher.stop()
         try:
-            cacher.push("bar", "foo", async = False, cache_dir = tmp_dir)
+            cacher.push("bar", "foo", async_mode = False, cache_dir = tmp_dir)
             # must return None
             cacher.sync()
             self.assertEqual(cacher.pop("bar", cache_dir = tmp_dir), None)

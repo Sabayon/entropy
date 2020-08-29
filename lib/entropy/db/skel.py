@@ -5558,7 +5558,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                     hash_str,
                     ),
                 kwargs.get('result'),
-                async = False)
+                async_mode = False)
 
     def __filterSlot(self, package_id, slot):
         if slot is None:
