@@ -2,7 +2,6 @@
 
 set -x
 
-python2 --version
 python3 --version
 
 if [[ ! -e /usr/portage/profiles ]]; then
