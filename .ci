@@ -16,6 +16,5 @@ equo install dev-util/bsdiff || exit 1
 cd /entropy/lib/tests || exit 1
 
 ret=0
-python2 ./run || ret=$?
 python3 ./run || ret=$?
 exit $ret
